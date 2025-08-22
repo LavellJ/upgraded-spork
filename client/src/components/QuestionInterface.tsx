@@ -37,7 +37,11 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
     setIsAnswered(true);
     
     const isCorrect = answerIndex === question.correctAnswer;
-    onAnswered(isCorrect, answerIndex);
+    
+    // Show result for 2 seconds before advancing to next question
+    setTimeout(() => {
+      onAnswered(isCorrect, answerIndex);
+    }, 2000);
   };
 
   const getOptionClass = (optionIndex: number) => {

@@ -90,10 +90,8 @@ export default function Learning() {
 
     updateProgressMutation.mutate({ correct });
 
-    // Move to next question after a delay
-    setTimeout(() => {
-      setCurrentQuestionIndex(prev => prev + 1);
-    }, 3000);
+    // Move to next question immediately (the QuestionInterface handles the delay with feedback)
+    setCurrentQuestionIndex(prev => prev + 1);
   };
 
   const generateMoreQuestions = () => {
