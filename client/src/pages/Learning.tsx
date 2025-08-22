@@ -29,15 +29,15 @@ export default function Learning() {
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
   const topicId = urlParams.get('topic');
 
-  // Fetch topic information
+  // Fetch topic information  
   const { data: topic, isLoading: topicLoading } = useQuery<Topic>({
-    queryKey: ["/api/topics", topicId],
+    queryKey: [`/api/topics/${topicId}`],
     enabled: !!topicId,
   });
 
   // Fetch questions for the topic
   const { data: questions = [], isLoading: questionsLoading, refetch: refetchQuestions } = useQuery<Question[]>({
-    queryKey: ["/api/questions", topicId],
+    queryKey: [`/api/questions/${topicId}`],
     enabled: !!topicId,
   });
 
@@ -52,7 +52,7 @@ export default function Learning() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/questions", topicId] });
+      queryClient.invalidateQueries({ queryKey: [`/api/questions/${topicId}`] });
     },
   });
 
