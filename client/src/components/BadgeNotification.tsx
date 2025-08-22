@@ -59,16 +59,16 @@ export function BadgeNotification({ badges, onClose }: BadgeNotificationProps) {
   };
 
   const getBadgeIcon = (badgeId: string) => {
-    // Simple mapping based on common badge IDs
+    // Animal mascot mapping to match app theme
     const iconMap: Record<string, string> = {
-      "first_steps": "👣",
-      "daily_learner": "📚",
-      "focus_master": "🎯",
-      "knowledge_seeker": "🔍",
-      "topic_champion": "🏆",
-      "perfect_week": "⭐",
-      "genius_streak": "🧠",
-      "dedication_master": "💎",
+      "first_steps": "🐰",
+      "daily_learner": "🐿️",
+      "focus_master": "🦉",
+      "knowledge_seeker": "🐨",
+      "topic_champion": "🦘",
+      "perfect_week": "🐾",
+      "genius_streak": "🦅",
+      "dedication_master": "🐺",
     };
     return iconMap[badgeId] || "🌟";
   };
