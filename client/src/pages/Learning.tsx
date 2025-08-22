@@ -143,7 +143,7 @@ export default function Learning() {
                   {topic?.name}
                 </h1>
                 <div className="flex items-center justify-center space-x-6 text-white/80">
-                  <span data-testid="text-progress">Question {score.total + 1} of {questions.length}</span>
+                  <span data-testid="text-progress">Question {isComplete ? questions.length : score.total + 1} of {questions.length}</span>
                   <span data-testid="text-score">Score: {score.correct}/{score.total}</span>
                 </div>
               </>
