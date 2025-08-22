@@ -196,14 +196,10 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
           )}
           
           {showResult && (
-            <button 
-              className="bg-gradient-to-r from-sunset-orange to-warm-orange text-white px-6 py-2 rounded-lg text-sm hover:scale-105 transition-all duration-300 ml-auto"
-              onClick={() => window.location.reload()} // This would be replaced with proper navigation in a real app
-              data-testid="button-next-question"
-            >
-              Next Question
-              <i className="fas fa-arrow-right ml-2"></i>
-            </button>
+            <div className="text-accent-teal text-sm ml-auto flex items-center" data-testid="text-next-indicator">
+              <i className="fas fa-hourglass-half mr-2 animate-pulse"></i>
+              Next question coming up...
+            </div>
           )}
         </div>
       </div>
