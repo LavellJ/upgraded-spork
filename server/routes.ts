@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { generateQuestions, generateHint, generateExplanation } from "./services/openai";
+import { badgeSystem, BADGE_DEFINITIONS } from "./badgeSystem";
 import { 
   insertStudentSchema, 
   insertProgressSchema, 
@@ -173,7 +174,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         result = await storage.createProgress(progressData);
       }
       
-      res.json(result);
+      // Check for new badges after progress update
+      const student = await storage.getStudent(progressData.studentId);
+      if (student) {
+        const newBadges = await badgeSystem.checkAndAwardBadges(progressData.studentId, student.ageGroup);
+        res.json({
+          progress: result,
+          newBadges: newBadges
+        });
+      } else {
+        res.json({ progress: result, newBadges: [] });
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid progress data", errors: error.errors });
@@ -201,10 +212,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/pomodoro/:id", async (req, res) => {
     try {
       const session = await storage.updatePomodoroSession(req.params.id, req.body);
+      
+      // Check for new badges after completing a Pomodoro session
+      if (session.completed === "true") {
+        const student = await storage.getStudent(session.studentId);
+        if (student) {
+          await badgeSystem.checkAndAwardBadges(session.studentId, student.ageGroup);
+        }
+      }
+      
       res.json(session);
     } catch (error) {
       console.error("Error updating pomodoro session:", error);
       res.status(500).json({ message: "Failed to update pomodoro session" });
+    }
+  });
+
+  // Achievements
+  app.get("/api/achievements/:studentId", async (req, res) => {
+    try {
+      const achievements = await storage.getAchievementsByStudent(req.params.studentId);
+      const achievementsWithDetails = achievements.map(achievement => ({
+        ...achievement,
+        badge: badgeSystem.getBadgeDefinition(achievement.badgeId)
+      }));
+      res.json(achievementsWithDetails);
+    } catch (error) {
+      console.error("Error fetching achievements:", error);
+      res.status(500).json({ message: "Failed to fetch achievements" });
+    }
+  });
+
+  app.get("/api/badges", async (req, res) => {
+    try {
+      const { ageGroup } = req.query;
+      const badges = ageGroup 
+        ? BADGE_DEFINITIONS.filter(badge => badge.ageGroups.includes(ageGroup as any))
+        : BADGE_DEFINITIONS;
+      res.json(badges);
+    } catch (error) {
+      console.error("Error fetching badges:", error);
+      res.status(500).json({ message: "Failed to fetch badges" });
+    }
+  });
+
+  app.post("/api/achievements/check/:studentId", async (req, res) => {
+    try {
+      const student = await storage.getStudent(req.params.studentId);
+      if (!student) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+      
+      const newBadges = await badgeSystem.checkAndAwardBadges(req.params.studentId, student.ageGroup);
+      res.json(newBadges);
+    } catch (error) {
+      console.error("Error checking for badges:", error);
+      res.status(500).json({ message: "Failed to check for badges" });
     }
   });
 
