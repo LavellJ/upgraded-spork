@@ -30,17 +30,8 @@ export default function Home() {
             <div className="mb-12">
               <h1 className="font-display text-5xl md:text-7xl font-bold text-white mb-6 leading-tight" data-testid="text-main-title">
                 Learning Made
-                <span className="relative">
-                  <span className="bg-gradient-to-r from-warm-orange to-sunset-orange bg-clip-text text-transparent font-bold">
-                    {" "}Extraordinary
-                  </span>
-                  <span className="absolute inset-0 bg-gradient-to-r from-warm-orange to-sunset-orange bg-clip-text text-transparent animate-pulse-soft opacity-80">
-                    {" "}Extraordinary
-                  </span>
-                  {/* Fallback text shadow for better readability */}
-                  <span className="absolute inset-0 text-warm-orange opacity-20 blur-sm">
-                    {" "}Extraordinary
-                  </span>
+                <span className="bg-gradient-to-r from-warm-orange to-sunset-orange bg-clip-text text-transparent animate-pulse-soft drop-shadow-lg font-bold" style={{ textShadow: '0 0 20px rgba(255, 138, 101, 0.5)' }}>
+                  {" "}Extraordinary
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-white/80 font-light max-w-3xl mx-auto leading-relaxed" data-testid="text-main-description">
