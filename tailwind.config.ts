@@ -114,8 +114,8 @@ export default {
           "66%": { transform: "translateY(5px) rotate(-1deg)" },
         },
         "pulse-soft": {
-          "0%, 100%": { opacity: "0.6", transform: "scale(1)" },
-          "50%": { opacity: "1", transform: "scale(1.05)" },
+          "0%, 100%": { opacity: "0.8", transform: "scale(1)" },
+          "50%": { opacity: "1", transform: "scale(1.02)" },
         },
         "parallax": {
           "0%": { transform: "translateX(-100px)" },
