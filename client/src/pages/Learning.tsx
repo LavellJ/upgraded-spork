@@ -157,7 +157,10 @@ export default function Learning() {
             
             {/* Pomodoro Timer */}
             <div className="col-span-full lg:col-span-1" data-testid="timer-section">
-              <PomodoroTimer topicName={topic?.name || "Learning Session"} />
+              <PomodoroTimer 
+                topicName={topic?.name || "Learning Session"} 
+                autoStart={questions.length > 0}
+              />
             </div>
             
             {/* Question Interface */}
