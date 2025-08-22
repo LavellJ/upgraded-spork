@@ -26,7 +26,7 @@ export default function Learning() {
   }, []);
   
   // Get topic ID from URL parameters
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const urlParams = new URLSearchParams(window.location.search);
   const topicId = urlParams.get('topic');
 
   // Fetch topic information  
@@ -112,6 +112,7 @@ export default function Learning() {
               No topic selected
             </h2>
             <p className="text-white/80 mb-8">Please select a topic from the dashboard to start learning.</p>
+            <p className="text-white/60 text-sm mb-4">Debug: location = "{location}", search = "{window.location.search}"</p>
             <a href="/dashboard" className="bg-gradient-to-r from-sunset-orange to-warm-orange text-white px-8 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300">
               Go to Dashboard
             </a>
