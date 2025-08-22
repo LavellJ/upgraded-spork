@@ -176,13 +176,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Check for new badges after progress update
       const student = await storage.getStudent(progressData.studentId);
+      console.log(`Checking badges for student: ${progressData.studentId}, found student:`, !!student);
       if (student) {
+        console.log(`Student age group: ${student.ageGroup}`);
         const newBadges = await badgeSystem.checkAndAwardBadges(progressData.studentId, student.ageGroup);
+        console.log(`New badges earned: ${newBadges.length}`, newBadges.map(b => b.badgeId));
         res.json({
           progress: result,
           newBadges: newBadges
         });
       } else {
+        console.log('No student found, skipping badge check');
         res.json({ progress: result, newBadges: [] });
       }
     } catch (error) {
