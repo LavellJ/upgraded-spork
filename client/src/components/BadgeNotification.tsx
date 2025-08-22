@@ -39,7 +39,7 @@ export function BadgeNotification({ badges, onClose }: BadgeNotificationProps) {
         setIsVisible(false);
         setTimeout(onClose, 500);
       }
-    }, 3000);
+    }, 4000);
 
     return () => clearTimeout(timer);
   }, [currentIndex, badges.length, onClose]);
