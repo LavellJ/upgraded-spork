@@ -1,11 +1,13 @@
+import { useEffect } from "react";
 import { usePomodoro } from "@/hooks/usePomodoro";
 
 interface PomodoroTimerProps {
   topicName?: string;
   onSessionComplete?: (completed: boolean) => void;
+  autoStart?: boolean;
 }
 
-export function PomodoroTimer({ topicName = "Learning Session", onSessionComplete }: PomodoroTimerProps) {
+export function PomodoroTimer({ topicName = "Learning Session", onSessionComplete, autoStart = false }: PomodoroTimerProps) {
   const pomodoro = usePomodoro();
 
   const handleSessionComplete = (completed: boolean) => {
@@ -13,6 +15,13 @@ export function PomodoroTimer({ topicName = "Learning Session", onSessionComplet
       onSessionComplete(completed);
     }
   };
+
+  // Auto-start timer when autoStart prop becomes true
+  useEffect(() => {
+    if (autoStart && !pomodoro.isRunning && pomodoro.timeLeft > 0) {
+      pomodoro.start();
+    }
+  }, [autoStart, pomodoro.isRunning, pomodoro.timeLeft, pomodoro.start]);
 
   return (
     <div className="floating-ui rounded-3xl p-8" data-testid="pomodoro-timer">
