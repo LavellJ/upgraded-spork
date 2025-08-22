@@ -90,6 +90,54 @@ export class MemStorage implements IStorage {
         level: 2,
         isUnlocked: "true"
       },
+      {
+        id: randomUUID(),
+        name: "Letters & Sounds",
+        subject: "literacy",
+        ageGroup: "pre-primary",
+        level: 3,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Patterns & Sorting",
+        subject: "mathematics",
+        ageGroup: "pre-primary",
+        level: 4,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Sizes & Positions",
+        subject: "mathematics",
+        ageGroup: "pre-primary",
+        level: 5,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Animals & Their Homes",
+        subject: "science",
+        ageGroup: "pre-primary",
+        level: 6,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Days & Weather",
+        subject: "social-studies",
+        ageGroup: "pre-primary",
+        level: 7,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "My Body & Senses",
+        subject: "health",
+        ageGroup: "pre-primary",
+        level: 8,
+        isUnlocked: "true"
+      },
       // Primary topics
       {
         id: randomUUID(),
@@ -400,6 +448,408 @@ export class MemStorage implements IStorage {
             options: ["Red, Blue, Green", "Red, Blue, Yellow", "Yellow, Orange, Purple", "Blue, Green, Purple"],
             correctAnswer: 1,
             explanation: "Red, blue, and yellow are the primary colours. You can mix them to make all other colours!",
+            difficulty: 3
+          }
+        ];
+      } else if (topic.name === "Letters & Sounds") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What letter does 'apple' start with?",
+            options: ["B", "A", "C", "D"],
+            correctAnswer: 1,
+            explanation: "Apple starts with the letter A! A is for apple.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Which letter makes the 'mmm' sound?",
+            options: ["N", "L", "M", "P"],
+            correctAnswer: 2,
+            explanation: "M makes the 'mmm' sound, like in mummy!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "What letter does 'sun' start with?",
+            options: ["T", "S", "R", "N"],
+            correctAnswer: 1,
+            explanation: "Sun starts with S! S makes the 'sss' sound like a snake.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Which word rhymes with 'cat'?",
+            options: ["Dog", "Hat", "Fish", "Bird"],
+            correctAnswer: 1,
+            explanation: "Cat and hat rhyme! They both end with 'at'.",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What letter does 'ball' start with?",
+            options: ["D", "P", "B", "G"],
+            correctAnswer: 2,
+            explanation: "Ball starts with B! B makes the 'buh' sound.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Which word starts with the same sound as 'dog'?",
+            options: ["Cat", "Duck", "Fish", "Horse"],
+            correctAnswer: 1,
+            explanation: "Dog and duck both start with 'D' and make the 'duh' sound!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "How many sounds do you hear in 'big'?",
+            options: ["2", "3", "4", "5"],
+            correctAnswer: 1,
+            explanation: "Big has 3 sounds: b-i-g. We can clap for each sound!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Which letter comes after 'F' in the alphabet?",
+            options: ["E", "G", "H", "I"],
+            correctAnswer: 1,
+            explanation: "G comes after F! A-B-C-D-E-F-G!",
+            difficulty: 3
+          }
+        ];
+      } else if (topic.name === "Patterns & Sorting") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What comes next? Red, Blue, Red, Blue, ___",
+            options: ["Green", "Red", "Yellow", "Purple"],
+            correctAnswer: 1,
+            explanation: "The pattern is Red, Blue, Red, Blue, so Red comes next!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Which group do apples belong to?",
+            options: ["Animals", "Fruit", "Toys", "Clothes"],
+            correctAnswer: 1,
+            explanation: "Apples are fruit! We eat them and they grow on trees.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "What comes next? 1, 2, 1, 2, ___",
+            options: ["3", "1", "4", "2"],
+            correctAnswer: 1,
+            explanation: "The pattern repeats: 1, 2, 1, 2, so 1 comes next!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which one is different?",
+            options: ["Dog", "Cat", "Fish", "Car"],
+            correctAnswer: 3,
+            explanation: "Car is different because it's not an animal! The others are all animals.",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What comes next? Circle, Square, Circle, Square, ___",
+            options: ["Triangle", "Circle", "Rectangle", "Star"],
+            correctAnswer: 1,
+            explanation: "The pattern alternates: Circle, Square, so Circle comes next!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which things can fly?",
+            options: ["Car and Bus", "Bird and Plane", "Fish and Frog", "Cat and Dog"],
+            correctAnswer: 1,
+            explanation: "Birds and planes can fly! They both move through the air.",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What comes next? Big, Small, Big, Small, ___",
+            options: ["Medium", "Big", "Tiny", "Large"],
+            correctAnswer: 1,
+            explanation: "The pattern alternates sizes: Big, Small, so Big comes next!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "How should we sort these: spoons, forks, plates, cups?",
+            options: ["By colour", "Kitchen things", "By size", "Toys"],
+            correctAnswer: 1,
+            explanation: "They're all kitchen things we use for eating!",
+            difficulty: 3
+          }
+        ];
+      } else if (topic.name === "Sizes & Positions") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "Which is bigger: elephant or mouse?",
+            options: ["Mouse", "Elephant", "Same size", "Can't tell"],
+            correctAnswer: 1,
+            explanation: "An elephant is much bigger than a mouse! Elephants are huge animals.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Where is the bird? The bird is ___ the tree.",
+            options: ["Under", "On", "Inside", "Behind"],
+            correctAnswer: 1,
+            explanation: "Birds often sit ON tree branches or ON top of trees.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Which is the smallest?",
+            options: ["House", "Car", "Ant", "Chair"],
+            correctAnswer: 2,
+            explanation: "An ant is tiny! It's much smaller than all the other things.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "The ball is ___ the box.",
+            options: ["Over", "Inside", "Beside", "Far from"],
+            correctAnswer: 1,
+            explanation: "If you can't see the ball, it's probably INSIDE the box!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is the opposite of 'up'?",
+            options: ["Left", "Right", "Down", "Forward"],
+            correctAnswer: 2,
+            explanation: "Up and down are opposites! When you go up stairs, the opposite is going down.",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which comes first when you line up by height?",
+            options: ["Tallest person", "Shortest person", "Middle person", "Any person"],
+            correctAnswer: 1,
+            explanation: "When lining up by height from shortest to tallest, the shortest person comes first!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "The cat is hiding ___ the bed.",
+            options: ["On top", "Under", "Above", "Next to"],
+            correctAnswer: 1,
+            explanation: "Cats love to hide UNDER beds where it's cozy and dark!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Put these in order from smallest to biggest:",
+            options: ["Baby, Adult, Teenager", "Adult, Teenager, Baby", "Baby, Teenager, Adult", "Teenager, Baby, Adult"],
+            correctAnswer: 2,
+            explanation: "Babies are smallest, teenagers are medium, and adults are biggest!",
+            difficulty: 3
+          }
+        ];
+      } else if (topic.name === "Animals & Their Homes") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "Where do fish live?",
+            options: ["Trees", "Water", "Sky", "Underground"],
+            correctAnswer: 1,
+            explanation: "Fish live in water! They swim in oceans, rivers, and ponds.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "What do bees make?",
+            options: ["Milk", "Honey", "Eggs", "Wool"],
+            correctAnswer: 1,
+            explanation: "Bees make honey! They collect nectar from flowers to make sweet honey.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Where do birds build their homes?",
+            options: ["Underground", "In trees", "In water", "In caves"],
+            correctAnswer: 1,
+            explanation: "Birds build nests in trees! They use twigs and leaves to make cozy homes.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Which Australian animal carries babies in a pouch?",
+            options: ["Koala", "Kangaroo", "Wombat", "Emu"],
+            correctAnswer: 1,
+            explanation: "Kangaroos carry their babies (joeys) in a special pouch! This keeps them safe and warm.",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What sound do cows make?",
+            options: ["Woof", "Meow", "Moo", "Cluck"],
+            correctAnswer: 2,
+            explanation: "Cows say 'Moo!' They live on farms and give us milk.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Where would you find a penguin?",
+            options: ["Desert", "Hot jungle", "Cold places", "Top of trees"],
+            correctAnswer: 2,
+            explanation: "Penguins live in very cold places with lots of ice and snow!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What do caterpillars turn into?",
+            options: ["Frogs", "Butterflies", "Birds", "Fish"],
+            correctAnswer: 1,
+            explanation: "Caterpillars transform into beautiful butterflies! This amazing change is called metamorphosis.",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Which animal is famous for sleeping in eucalyptus trees in Australia?",
+            options: ["Kangaroo", "Koala", "Crocodile", "Dingo"],
+            correctAnswer: 1,
+            explanation: "Koalas sleep in eucalyptus trees and eat their leaves! They sleep about 20 hours a day.",
+            difficulty: 3
+          }
+        ];
+      } else if (topic.name === "Days & Weather") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "How many days are in a week?",
+            options: ["5", "6", "7", "8"],
+            correctAnswer: 2,
+            explanation: "A week has 7 days! Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "What do you wear when it's raining?",
+            options: ["Sunglasses", "Raincoat", "Shorts", "Sandals"],
+            correctAnswer: 1,
+            explanation: "A raincoat keeps you dry when it's raining! You might also use an umbrella.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "When is it hottest during the day?",
+            options: ["Morning", "Night", "Afternoon", "Midnight"],
+            correctAnswer: 2,
+            explanation: "The afternoon is usually the hottest time because the sun has been shining all day!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What comes after Wednesday?",
+            options: ["Tuesday", "Thursday", "Friday", "Monday"],
+            correctAnswer: 1,
+            explanation: "Thursday comes after Wednesday! The days go: Monday, Tuesday, Wednesday, Thursday...",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What do you see in the sky when it's sunny?",
+            options: ["Moon", "Sun", "Stars", "Clouds only"],
+            correctAnswer: 1,
+            explanation: "When it's sunny, you see the bright sun in the sky! It gives us light and warmth.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Which season comes after summer in Australia?",
+            options: ["Winter", "Autumn", "Spring", "Summer again"],
+            correctAnswer: 1,
+            explanation: "Autumn comes after summer! The leaves change colour and fall from trees.",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What should you do on a very hot day?",
+            options: ["Wear heavy clothes", "Stay in shade", "Run in the sun", "Don't drink water"],
+            correctAnswer: 1,
+            explanation: "On hot days, stay in the shade and drink lots of water to keep cool and safe!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "How many seasons are there in a year?",
+            options: ["2", "3", "4", "5"],
+            correctAnswer: 2,
+            explanation: "There are 4 seasons: Summer, Autumn, Winter, and Spring!",
+            difficulty: 3
+          }
+        ];
+      } else if (topic.name === "My Body & Senses") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "How many eyes do you have?",
+            options: ["1", "2", "3", "4"],
+            correctAnswer: 1,
+            explanation: "You have 2 eyes! They help you see the world around you.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "What do you use to hear sounds?",
+            options: ["Eyes", "Nose", "Ears", "Mouth"],
+            correctAnswer: 2,
+            explanation: "You use your ears to hear! They help you listen to music, voices, and sounds.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "What do you use to smell flowers?",
+            options: ["Ears", "Nose", "Eyes", "Hands"],
+            correctAnswer: 1,
+            explanation: "Your nose helps you smell! You can smell yummy food and beautiful flowers.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "How many fingers do you have on one hand?",
+            options: ["4", "5", "6", "3"],
+            correctAnswer: 1,
+            explanation: "You have 5 fingers on each hand! Count them: thumb, pointer, middle, ring, pinky.",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What helps you taste your food?",
+            options: ["Tongue", "Teeth", "Lips", "Cheeks"],
+            correctAnswer: 0,
+            explanation: "Your tongue has special taste buds that help you taste sweet, sour, salty, and bitter foods!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What should you do before eating?",
+            options: ["Watch TV", "Wash hands", "Run around", "Shout loudly"],
+            correctAnswer: 1,
+            explanation: "Always wash your hands before eating! This keeps germs away and keeps you healthy.",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which sense tells you if something is hot or cold?",
+            options: ["Hearing", "Seeing", "Touch", "Smell"],
+            correctAnswer: 2,
+            explanation: "Touch helps you feel if things are hot, cold, soft, or rough! Your skin can feel all these things.",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "How many senses do we have?",
+            options: ["3", "4", "5", "6"],
+            correctAnswer: 2,
+            explanation: "We have 5 senses: see, hear, smell, taste, and touch! They help us learn about the world.",
             difficulty: 3
           }
         ];
