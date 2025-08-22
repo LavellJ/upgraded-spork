@@ -68,6 +68,7 @@ export class MemStorage implements IStorage {
     // Initialize with sample topics and questions
     this.initializeSampleTopics();
     this.initializeSampleQuestions();
+    this.createDemoStudent();
   }
 
   private initializeSampleTopics() {
@@ -414,6 +415,19 @@ export class MemStorage implements IStorage {
         this.questions.set(question.id, question);
       });
     });
+  }
+
+  // Create demo student for testing
+  private createDemoStudent() {
+    const demoStudent: Student = {
+      id: "demo-student",
+      name: "Little Learner",
+      ageGroup: "pre-primary",
+      currentLevel: 1,
+      totalPoints: 0,
+      createdAt: new Date()
+    };
+    this.students.set("demo-student", demoStudent);
   }
 
   // Students
