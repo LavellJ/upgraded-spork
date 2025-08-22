@@ -54,6 +54,14 @@ export const pomodoroSessions = pgTable("pomodoro_sessions", {
   startedAt: timestamp("started_at").defaultNow(),
 });
 
+export const achievements = pgTable("achievements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  studentId: varchar("student_id").notNull(),
+  badgeId: text("badge_id").notNull(), // identifier for badge type
+  earnedAt: timestamp("earned_at").defaultNow(),
+  metadata: jsonb("metadata"), // optional data like streak length, topic completed, etc
+});
+
 // Insert schemas
 export const insertStudentSchema = createInsertSchema(students).omit({
   id: true,
@@ -79,6 +87,11 @@ export const insertPomodoroSessionSchema = createInsertSchema(pomodoroSessions).
   startedAt: true,
 });
 
+export const insertAchievementSchema = createInsertSchema(achievements).omit({
+  id: true,
+  earnedAt: true,
+});
+
 // Types
 export type Student = typeof students.$inferSelect;
 export type InsertStudent = z.infer<typeof insertStudentSchema>;
@@ -94,3 +107,6 @@ export type InsertProgress = z.infer<typeof insertProgressSchema>;
 
 export type PomodoroSession = typeof pomodoroSessions.$inferSelect;
 export type InsertPomodoroSession = z.infer<typeof insertPomodoroSessionSchema>;
+
+export type Achievement = typeof achievements.$inferSelect;
+export type InsertAchievement = z.infer<typeof insertAchievementSchema>;

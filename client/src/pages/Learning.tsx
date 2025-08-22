@@ -6,6 +6,7 @@ import { AtmosphericBackground } from "@/components/AtmosphericBackground";
 import { FloatingNavigation } from "@/components/FloatingNavigation";
 import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { QuestionInterface } from "@/components/QuestionInterface";
+import { BadgeNotification } from "@/components/BadgeNotification";
 import type { Topic, Question } from "@shared/schema";
 
 export default function Learning() {
@@ -13,6 +14,7 @@ export default function Learning() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>("");
+  const [newBadges, setNewBadges] = useState<Array<{badgeId: string; metadata?: any}>>([]);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -64,6 +66,12 @@ export default function Learning() {
         correctAnswers: data.correct ? 1 : 0,
       });
       return response.json();
+    },
+    onSuccess: (data: any) => {
+      // Check if new badges were earned
+      if (data.newBadges && data.newBadges.length > 0) {
+        setNewBadges(data.newBadges);
+      }
     },
   });
 
@@ -233,6 +241,14 @@ export default function Learning() {
           
         </div>
       </div>
+      
+      {/* Badge Notification */}
+      {newBadges.length > 0 && (
+        <BadgeNotification 
+          badges={newBadges}
+          onClose={() => setNewBadges([])}
+        />
+      )}
     </>
   );
 }

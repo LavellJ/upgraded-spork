@@ -5,6 +5,7 @@ import { AtmosphericBackground } from "@/components/AtmosphericBackground";
 import { FloatingNavigation } from "@/components/FloatingNavigation";
 import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { ProgressLandscape } from "@/components/ProgressLandscape";
+import { BadgeDisplay } from "@/components/BadgeDisplay";
 import type { Topic, Progress } from "@shared/schema";
 import type { AgeGroup } from "@/components/AgeSelector";
 
@@ -126,6 +127,27 @@ export default function Dashboard() {
                   </div>
                 )}
               </div>
+            </div>
+            
+            {/* Badge Display */}
+            <div className="col-span-full" data-testid="badge-section">
+              <div className="floating-ui rounded-3xl p-8">
+                <BadgeDisplay 
+                  studentId="demo-student" 
+                  ageGroup={selectedAgeGroup} 
+                  compact={true}
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* Full Badge Collection */}
+          <div className="mb-16" data-testid="badge-collection">
+            <div className="floating-ui rounded-3xl p-8">
+              <BadgeDisplay 
+                studentId="demo-student" 
+                ageGroup={selectedAgeGroup} 
+              />
             </div>
           </div>
 

@@ -8,7 +8,9 @@ import {
   type Progress,
   type InsertProgress,
   type PomodoroSession,
-  type InsertPomodoroSession
+  type InsertPomodoroSession,
+  type Achievement,
+  type InsertAchievement
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -40,6 +42,11 @@ export interface IStorage {
   getPomodoroSessionsByStudent(studentId: string): Promise<PomodoroSession[]>;
   createPomodoroSession(session: InsertPomodoroSession): Promise<PomodoroSession>;
   updatePomodoroSession(id: string, updates: Partial<PomodoroSession>): Promise<PomodoroSession>;
+  
+  // Achievements
+  getAchievementsByStudent(studentId: string): Promise<Achievement[]>;
+  createAchievement(achievement: InsertAchievement): Promise<Achievement>;
+  hasAchievement(studentId: string, badgeId: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -48,6 +55,7 @@ export class MemStorage implements IStorage {
   private questions: Map<string, Question>;
   private progress: Map<string, Progress>;
   private pomodoroSessions: Map<string, PomodoroSession>;
+  private achievements: Map<string, Achievement>;
 
   constructor() {
     this.students = new Map();
@@ -55,6 +63,7 @@ export class MemStorage implements IStorage {
     this.questions = new Map();
     this.progress = new Map();
     this.pomodoroSessions = new Map();
+    this.achievements = new Map();
     
     // Initialize with sample topics
     this.initializeSampleTopics();
@@ -266,6 +275,29 @@ export class MemStorage implements IStorage {
     const updatedSession = { ...session, ...updates };
     this.pomodoroSessions.set(id, updatedSession);
     return updatedSession;
+  }
+
+  // Achievements
+  async getAchievementsByStudent(studentId: string): Promise<Achievement[]> {
+    return Array.from(this.achievements.values()).filter(a => a.studentId === studentId);
+  }
+
+  async createAchievement(insertAchievement: InsertAchievement): Promise<Achievement> {
+    const id = randomUUID();
+    const achievement: Achievement = { 
+      ...insertAchievement, 
+      id,
+      earnedAt: new Date(),
+      metadata: insertAchievement.metadata || null
+    };
+    this.achievements.set(id, achievement);
+    return achievement;
+  }
+
+  async hasAchievement(studentId: string, badgeId: string): Promise<boolean> {
+    return Array.from(this.achievements.values()).some(a => 
+      a.studentId === studentId && a.badgeId === badgeId
+    );
   }
 }
 
