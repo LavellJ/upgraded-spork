@@ -13,6 +13,7 @@ export default function Learning() {
   const [location] = useLocation();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState({ correct: 0, total: 0 });
+  const [totalProgress, setTotalProgress] = useState({ correct: 0, total: 0 });
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>("");
   const [newBadges, setNewBadges] = useState<Array<{badgeId: string; metadata?: any}>>([]);
   const queryClient = useQueryClient();
@@ -40,6 +41,21 @@ export default function Learning() {
     queryKey: [`/api/questions/${topicId}`],
     enabled: !!topicId,
   });
+
+  // Fetch total progress across all topics for proper score display
+  const { data: allProgress = [] } = useQuery<any[]>({
+    queryKey: [`/api/progress/demo-student`],
+    enabled: true,
+  });
+
+  // Calculate total progress across all topics
+  useEffect(() => {
+    if (allProgress.length > 0) {
+      const totalCorrect = allProgress.reduce((sum, progress) => sum + progress.correctAnswers, 0);
+      const totalAnswered = allProgress.reduce((sum, progress) => sum + progress.questionsAnswered, 0);
+      setTotalProgress({ correct: totalCorrect, total: totalAnswered });
+    }
+  }, [allProgress]);
 
   // Generate new questions mutation
   const generateQuestionsMutation = useMutation({
@@ -72,6 +88,8 @@ export default function Learning() {
       if (data.newBadges && data.newBadges.length > 0) {
         setNewBadges(data.newBadges);
       }
+      // Invalidate progress query to update total score
+      queryClient.invalidateQueries({ queryKey: [`/api/progress/demo-student`] });
     },
   });
 
@@ -143,8 +161,8 @@ export default function Learning() {
                   {topic?.name}
                 </h1>
                 <div className="flex items-center justify-center space-x-6 text-white/80">
-                  <span data-testid="text-progress">Question {isComplete ? questions.length : score.total + 1} of {questions.length}</span>
-                  <span data-testid="text-score">Score: {score.correct}/{score.total}</span>
+                  <span data-testid="text-progress">Question {isComplete ? questions.length : currentQuestionIndex + 1} of {questions.length}</span>
+                  <span data-testid="text-score">Total Score: {totalProgress.correct}/{totalProgress.total} | This Topic: {score.correct}/{score.total}</span>
                 </div>
               </>
             )}
@@ -223,6 +241,8 @@ export default function Learning() {
                   onAnswered={handleAnswerSubmitted}
                   studentId="demo-student"
                   ageGroup={selectedAgeGroup as "pre-primary" | "primary" | "upper-primary"}
+                  questionNumber={currentQuestionIndex + 1}
+                  totalQuestions={questions.length}
                 />
               ) : (
                 <div className="floating-ui rounded-3xl p-8 text-center">
