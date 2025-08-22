@@ -83,11 +83,11 @@ export class MemStorage implements IStorage {
       },
       {
         id: randomUUID(),
-        name: "Shapes & Colors",
+        name: "Shapes & Colours",
         subject: "mathematics",
         ageGroup: "pre-primary",
         level: 2,
-        isUnlocked: "false"
+        isUnlocked: "true"
       },
       // Primary topics
       {
@@ -333,6 +333,73 @@ export class MemStorage implements IStorage {
             correctAnswer: 2,
             explanation: "72 ÷ 9 = 8. Think about your 9 times table: 9 × 8 = 72!",
             difficulty: 4
+          }
+        ];
+      } else if (topic.name === "Shapes & Colours") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What shape has 3 sides?",
+            options: ["Circle", "Square", "Triangle", "Rectangle"],
+            correctAnswer: 2,
+            explanation: "A triangle has 3 sides and 3 corners!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Which colour do you get when you mix red and yellow?",
+            options: ["Purple", "Orange", "Green", "Pink"],
+            correctAnswer: 1,
+            explanation: "Red and yellow make orange, just like a sunset!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "How many sides does a square have?",
+            options: ["2", "3", "4", "5"],
+            correctAnswer: 2,
+            explanation: "A square has 4 equal sides that are all the same length!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "What shape is a ball?",
+            options: ["Square", "Triangle", "Circle", "Rectangle"],
+            correctAnswer: 2,
+            explanation: "A ball is round like a circle! It's actually a sphere in 3D.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Which colour do you get when you mix blue and yellow?",
+            options: ["Purple", "Orange", "Green", "Red"],
+            correctAnswer: 2,
+            explanation: "Blue and yellow make green, like the colour of grass!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What shape has no corners?",
+            options: ["Triangle", "Square", "Rectangle", "Circle"],
+            correctAnswer: 3,
+            explanation: "A circle is perfectly round with no corners or sides!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "How many sides does a rectangle have?",
+            options: ["2", "3", "4", "6"],
+            correctAnswer: 2,
+            explanation: "A rectangle has 4 sides - 2 long sides and 2 short sides!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What are the three primary colours?",
+            options: ["Red, Blue, Green", "Red, Blue, Yellow", "Yellow, Orange, Purple", "Blue, Green, Purple"],
+            correctAnswer: 1,
+            explanation: "Red, blue, and yellow are the primary colours. You can mix them to make all other colours!",
+            difficulty: 3
           }
         ];
       }
