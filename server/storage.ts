@@ -159,6 +159,46 @@ export class MemStorage implements IStorage {
             correctAnswer: 1,
             explanation: "When you have 2 things and add 1 more, you get 3!",
             difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Count the dots: • • • How many are there?",
+            options: ["2", "3", "4", "5"],
+            correctAnswer: 1,
+            explanation: "Count each dot carefully - there are 3 dots!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Which number is bigger: 7 or 5?",
+            options: ["5", "7", "They're the same", "I don't know"],
+            correctAnswer: 1,
+            explanation: "7 is bigger than 5. When counting up, 7 comes after 5!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "What number comes before 10?",
+            options: ["8", "9", "11", "12"],
+            correctAnswer: 1,
+            explanation: "9 comes right before 10 when counting!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "If you have 4 toys and get 1 more, how many do you have?",
+            options: ["3", "4", "5", "6"],
+            correctAnswer: 2,
+            explanation: "4 + 1 = 5. You now have 5 toys in total!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Count by 2s: 2, 4, 6, ___",
+            options: ["7", "8", "9", "10"],
+            correctAnswer: 1,
+            explanation: "When counting by 2s, we add 2 each time: 2, 4, 6, 8!",
+            difficulty: 3
           }
         ];
       } else if (topic.name === "Addition & Subtraction") {
@@ -186,6 +226,46 @@ export class MemStorage implements IStorage {
             correctAnswer: 1,
             explanation: "7 - 2 = 5. You started with 7 and ate 2, so 5 apples remain.",
             difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is 6 + 4?",
+            options: ["9", "10", "11", "12"],
+            correctAnswer: 1,
+            explanation: "6 + 4 = 10. When you put 6 and 4 together, you get 10!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is 12 - 5?",
+            options: ["6", "7", "8", "9"],
+            correctAnswer: 1,
+            explanation: "12 - 5 = 7. Count backwards from 12: 11, 10, 9, 8, 7.",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Sarah has 8 stickers. She gives 3 to her friend. How many does she have left?",
+            options: ["4", "5", "6", "11"],
+            correctAnswer: 1,
+            explanation: "8 - 3 = 5. Sarah gave away 3 stickers, so she has 5 left.",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is 7 + 6?",
+            options: ["12", "13", "14", "15"],
+            correctAnswer: 1,
+            explanation: "7 + 6 = 13. You can think of it as 7 + 3 + 3 = 10 + 3 = 13!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is 15 - 8?",
+            options: ["6", "7", "8", "9"],
+            correctAnswer: 1,
+            explanation: "15 - 8 = 7. You can count up from 8 to 15: that's 7 steps!",
+            difficulty: 3
           }
         ];
       } else if (topic.name === "Multiplication & Division") {
@@ -212,6 +292,46 @@ export class MemStorage implements IStorage {
             options: ["5", "6", "7", "8"],
             correctAnswer: 1,
             explanation: "8 × 6 = 48. You can check: 48 ÷ 8 = 6.",
+            difficulty: 4
+          },
+          {
+            topicId: topic.id,
+            question: "What is 7 × 3?",
+            options: ["18", "20", "21", "24"],
+            correctAnswer: 2,
+            explanation: "7 × 3 = 21. Think of it as 7 + 7 + 7 = 21!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is 24 ÷ 6?",
+            options: ["3", "4", "5", "6"],
+            correctAnswer: 1,
+            explanation: "24 ÷ 6 = 4. If you have 24 items in 6 equal groups, each group has 4 items.",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is 9 × 5?",
+            options: ["40", "44", "45", "50"],
+            correctAnswer: 2,
+            explanation: "9 × 5 = 45. You can think of it as (10 × 5) - (1 × 5) = 50 - 5 = 45!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "If there are 4 boxes with 8 pencils each, how many pencils in total?",
+            options: ["28", "30", "32", "36"],
+            correctAnswer: 2,
+            explanation: "4 × 8 = 32. Four boxes with 8 pencils each means 32 pencils total.",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is 72 ÷ 9?",
+            options: ["6", "7", "8", "9"],
+            correctAnswer: 2,
+            explanation: "72 ÷ 9 = 8. Think about your 9 times table: 9 × 8 = 72!",
             difficulty: 4
           }
         ];
