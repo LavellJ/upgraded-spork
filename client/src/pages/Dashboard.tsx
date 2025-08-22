@@ -20,7 +20,7 @@ export default function Dashboard() {
   }, []);
 
   const { data: topics = [], isLoading: topicsLoading } = useQuery<Topic[]>({
-    queryKey: ["/api/topics", selectedAgeGroup],
+    queryKey: [`/api/topics?ageGroup=${selectedAgeGroup}`],
     enabled: !!selectedAgeGroup,
   });
 
