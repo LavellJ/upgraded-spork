@@ -8,9 +8,11 @@ interface QuestionInterfaceProps {
   onAnswered: (correct: boolean, selectedAnswer: number) => void;
   studentId?: string;
   ageGroup?: "pre-primary" | "primary" | "upper-primary";
+  questionNumber?: number;
+  totalQuestions?: number;
 }
 
-export function QuestionInterface({ question, onAnswered, studentId, ageGroup = "primary" }: QuestionInterfaceProps) {
+export function QuestionInterface({ question, onAnswered, studentId, ageGroup = "primary", questionNumber = 1, totalQuestions = 1 }: QuestionInterfaceProps) {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [hint, setHint] = useState<string>("");
@@ -117,7 +119,7 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
     <div className="floating-ui rounded-3xl p-8" data-testid="question-interface">
       <div className="flex items-center justify-between mb-6">
         <h3 className="font-display text-xl font-semibold text-white" data-testid="text-topic-name">
-          Question {question.difficulty}/5
+          Question {questionNumber} of {totalQuestions}
         </h3>
         <div className="flex items-center space-x-2 text-white/70">
           <i className="fas fa-brain text-accent-teal"></i>
