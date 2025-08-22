@@ -65,8 +65,9 @@ export class MemStorage implements IStorage {
     this.pomodoroSessions = new Map();
     this.achievements = new Map();
     
-    // Initialize with sample topics
+    // Initialize with sample topics and questions
     this.initializeSampleTopics();
+    this.initializeSampleQuestions();
   }
 
   private initializeSampleTopics() {
@@ -125,6 +126,107 @@ export class MemStorage implements IStorage {
     ];
 
     sampleTopics.forEach(topic => this.topics.set(topic.id, topic));
+  }
+
+  private initializeSampleQuestions() {
+    const topics = Array.from(this.topics.values());
+    
+    topics.forEach(topic => {
+      let questions: Omit<Question, 'id' | 'createdAt'>[] = [];
+      
+      if (topic.name === "Counting & Numbers") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What comes after the number 3?",
+            options: ["2", "4", "5", "6"],
+            correctAnswer: 1,
+            explanation: "When counting, 4 comes right after 3!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "How many fingers do you have on one hand?",
+            options: ["3", "4", "5", "6"],
+            correctAnswer: 2,
+            explanation: "Count your fingers - you have 5 on each hand!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "What is 2 + 1?",
+            options: ["2", "3", "4", "5"],
+            correctAnswer: 1,
+            explanation: "When you have 2 things and add 1 more, you get 3!",
+            difficulty: 2
+          }
+        ];
+      } else if (topic.name === "Addition & Subtraction") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What is 5 + 3?",
+            options: ["6", "7", "8", "9"],
+            correctAnswer: 2,
+            explanation: "5 + 3 = 8. You can count on your fingers!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is 10 - 4?",
+            options: ["5", "6", "7", "8"],
+            correctAnswer: 1,
+            explanation: "10 - 4 = 6. When you take away 4 from 10, you have 6 left.",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "If you have 7 apples and eat 2, how many are left?",
+            options: ["4", "5", "6", "7"],
+            correctAnswer: 1,
+            explanation: "7 - 2 = 5. You started with 7 and ate 2, so 5 apples remain.",
+            difficulty: 3
+          }
+        ];
+      } else if (topic.name === "Multiplication & Division") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What is 6 × 4?",
+            options: ["20", "22", "24", "26"],
+            correctAnswer: 2,
+            explanation: "6 × 4 = 24. This means 6 groups of 4 things each.",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is 35 ÷ 7?",
+            options: ["4", "5", "6", "7"],
+            correctAnswer: 1,
+            explanation: "35 ÷ 7 = 5. How many groups of 7 can you make from 35?",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "If 8 × ? = 48, what is the missing number?",
+            options: ["5", "6", "7", "8"],
+            correctAnswer: 1,
+            explanation: "8 × 6 = 48. You can check: 48 ÷ 8 = 6.",
+            difficulty: 4
+          }
+        ];
+      }
+      
+      // Create and store the questions
+      questions.forEach(questionData => {
+        const question: Question = {
+          ...questionData,
+          id: randomUUID(),
+          createdAt: new Date()
+        };
+        this.questions.set(question.id, question);
+      });
+    });
   }
 
   // Students
