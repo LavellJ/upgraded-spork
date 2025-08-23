@@ -88,42 +88,73 @@ export default function Dashboard() {
                 </h3>
                 
                 {topicsLoading ? (
-                  <div className="space-y-4">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="bg-white/10 rounded-xl p-4 animate-pulse">
-                        <div className="h-4 bg-white/20 rounded w-3/4 mb-2"></div>
-                        <div className="h-3 bg-white/20 rounded w-1/2"></div>
+                  <div className="space-y-6">
+                    {["Math", "Literacy", "Science"].map((subject) => (
+                      <div key={subject}>
+                        <div className="h-6 bg-white/20 rounded w-24 mb-4"></div>
+                        <div className="space-y-3">
+                          {[1, 2].map((i) => (
+                            <div key={i} className="bg-white/10 rounded-xl p-4 animate-pulse">
+                              <div className="h-4 bg-white/20 rounded w-3/4 mb-2"></div>
+                              <div className="h-3 bg-white/20 rounded w-1/2"></div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="grid gap-4">
-                    {topics.map((topic) => (
-                      <Link key={topic.id} href={`/learning?topic=${topic.id}`}>
-                        <div className="bg-white/20 hover:bg-white/30 rounded-xl p-6 cursor-pointer transition-all duration-300 group" data-testid={`card-topic-${topic.id}`}>
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h4 className="font-semibold text-white group-hover:text-warm-orange transition-colors" data-testid={`text-topic-name-${topic.id}`}>
-                                {topic.name}
-                              </h4>
-                              <p className="text-white/70 text-sm mt-1" data-testid={`text-topic-level-${topic.id}`}>
-                                Level {topic.level} • {topic.subject}
-                              </p>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              {topic.isUnlocked === "true" ? (
-                                <>
-                                  <i className="fas fa-unlock text-success-green"></i>
-                                  <i className="fas fa-arrow-right text-white/60 group-hover:text-warm-orange transition-colors"></i>
-                                </>
-                              ) : (
-                                <i className="fas fa-lock text-white/40"></i>
-                              )}
+                  <div className="space-y-8">
+                    {[
+                      { key: "mathematics", label: "🔢 Math", icon: "fas fa-calculator" },
+                      { key: "literacy", label: "🔤 Literacy", icon: "fas fa-book" },
+                      { key: "science", label: "🔬 Science", icon: "fas fa-flask" }
+                    ].map(({ key, label, icon }) => {
+                      const subjectTopics = topics.filter(topic => topic.subject === key);
+                      if (subjectTopics.length === 0) return null;
+                      
+                      return (
+                        <div key={key}>
+                          <div className="flex items-center mb-4">
+                            <i className={`${icon} text-warm-orange mr-3 text-lg`}></i>
+                            <h4 className="font-display text-lg font-semibold text-white">
+                              {label}
+                            </h4>
+                            <div className="ml-3 bg-warm-orange/20 text-warm-orange px-2 py-1 rounded-full text-xs font-medium">
+                              {subjectTopics.length} topics
                             </div>
                           </div>
+                          <div className="grid gap-3">
+                            {subjectTopics.map((topic) => (
+                              <Link key={topic.id} href={`/learning?topic=${topic.id}`}>
+                                <div className="bg-white/15 hover:bg-white/25 rounded-xl p-5 cursor-pointer transition-all duration-300 group border border-white/10 hover:border-warm-orange/30" data-testid={`card-topic-${topic.id}`}>
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <h5 className="font-semibold text-white group-hover:text-warm-orange transition-colors" data-testid={`text-topic-name-${topic.id}`}>
+                                        {topic.name}
+                                      </h5>
+                                      <p className="text-white/60 text-sm mt-1" data-testid={`text-topic-level-${topic.id}`}>
+                                        Level {topic.level}
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      {topic.isUnlocked === "true" ? (
+                                        <>
+                                          <i className="fas fa-unlock text-success-green"></i>
+                                          <i className="fas fa-arrow-right text-white/60 group-hover:text-warm-orange transition-colors"></i>
+                                        </>
+                                      ) : (
+                                        <i className="fas fa-lock text-white/40"></i>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
                         </div>
-                      </Link>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
