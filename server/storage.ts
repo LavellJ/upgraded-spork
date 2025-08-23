@@ -125,7 +125,7 @@ export class MemStorage implements IStorage {
       {
         id: randomUUID(),
         name: "Days & Weather",
-        subject: "social-studies",
+        subject: "science",
         ageGroup: "pre-primary",
         level: 7,
         isUnlocked: "true"
@@ -133,7 +133,7 @@ export class MemStorage implements IStorage {
       {
         id: randomUUID(),
         name: "My Body & Senses",
-        subject: "health",
+        subject: "science",
         ageGroup: "pre-primary",
         level: 8,
         isUnlocked: "true"
