@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateQuestions, generateSmartHint, generatePersonalizedExplanation, calculateAdaptiveDifficulty } from "./services/openai";
+import { generateQuestions, generateSmartHint, generatePersonalizedExplanation, calculateAdaptiveDifficulty, generateLearningPathRecommendations } from "./services/openai";
 import { badgeSystem, BADGE_DEFINITIONS } from "./badgeSystem";
 import { 
   insertStudentSchema, 
@@ -185,12 +185,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Calculate recent performance (basic implementation - could be enhanced)
+      // Enhanced performance analysis
+      const student = await storage.getStudent(studentId);
+      const topic = await storage.getTopic(topicId);
       const recentAccuracy = (topicProgress.correctAnswers || 0) / (topicProgress.questionsAnswered || 1);
       const overallCorrect = progress.reduce((sum: number, p: Progress) => sum + (p.correctAnswers || 0), 0);
       const overallTotal = progress.reduce((sum: number, p: Progress) => sum + (p.questionsAnswered || 0), 0);
-      const learningVelocity = recentAccuracy > 0.7 ? 0.8 : recentAccuracy > 0.5 ? 0.6 : 0.4;
-
+      
+      // Calculate learning velocity based on recent progress trend
+      const recentSessions = progress.filter(p => p.lastStudied && 
+        new Date(p.lastStudied).getTime() > Date.now() - (7 * 24 * 60 * 60 * 1000) // Last week
+      );
+      const avgRecentAccuracy = recentSessions.length > 0 ? 
+        recentSessions.reduce((sum, p) => sum + ((p.correctAnswers || 0) / (p.questionsAnswered || 1)), 0) / recentSessions.length :
+        recentAccuracy;
+      
+      const learningVelocity = Math.min(1, Math.max(0, 
+        avgRecentAccuracy > recentAccuracy ? 0.8 : 
+        avgRecentAccuracy === recentAccuracy ? 0.6 : 0.4
+      ));
+      
+      // Identify struggling concepts
+      const strugglingConcepts: string[] = [];
+      const allTopics = await storage.getAllTopics();
+      progress.forEach((p: Progress) => {
+        if (p.questionsAnswered && p.correctAnswers && p.questionsAnswered >= 3 && 
+            (p.correctAnswers / p.questionsAnswered) < 0.5) {
+          const topicInfo = allTopics.find(t => t.id === p.topicId);
+          if (topicInfo) strugglingConcepts.push(topicInfo.name);
+        }
+      });
+      
+      // Calculate session metrics (estimated)
+      const sessionStart = Date.now() - (30 * 60 * 1000); // Assume 30 min session
+      const sessionLength = 30; // minutes
+      const fatigueFactor = Math.min(1, sessionLength / 45); // More tired after 45 min
+      
+      // Get recent question difficulties (simplified - would need tracking)
+      const recentQuestionDifficulties = [3, 3, 3]; // Default to moderate
+      
       const difficultyResult = await calculateAdaptiveDifficulty({
         topicId,
         studentPerformance: {
@@ -198,9 +231,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           topicMastery: recentAccuracy,
           learningVelocity,
           streakLength: topicProgress.currentStreak || 0,
-          timeSpentPerQuestion: 60 // Default, could be tracked more precisely
+          timeSpentPerQuestion: 60, // Default, could be tracked more precisely
+          strugglingConcepts,
+          learningStyle: undefined, // Could be determined through assessment
+          sessionLength,
+          fatigueFactor,
+          ageGroup: (student?.ageGroup || topic?.ageGroup || "primary") as "pre-primary" | "primary" | "upper-primary"
         },
-        currentDifficulty: 3 // Default current difficulty
+        currentDifficulty: 3, // Default current difficulty
+        recentQuestionDifficulties
       });
 
       res.json(difficultyResult);
@@ -260,6 +299,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error generating personalized explanation:", error);
       res.status(500).json({ message: "Failed to generate explanation" });
+    }
+  });
+
+  // Learning path recommendations
+  app.post("/api/learning-path/recommendations", async (req, res) => {
+    try {
+      const { studentId = "demo-student" } = req.body;
+      
+      const student = await storage.getStudent(studentId);
+      if (!student) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+
+      const progress = await storage.getStudentProgress(studentId);
+      const allTopics = await storage.getAllTopics();
+      
+      // Calculate mastery for each topic the student has attempted
+      const currentProgress = progress.map((p: Progress) => {
+        const topic = allTopics.find(t => t.id === p.topicId);
+        const mastery = (p.questionsAnswered && p.questionsAnswered > 0) ? 
+          (p.correctAnswers || 0) / p.questionsAnswered : 0;
+        
+        const strugglingAreas: string[] = [];
+        if (mastery < 0.5 && topic) {
+          strugglingAreas.push(topic.subject);
+        }
+        
+        return {
+          topicId: p.topicId,
+          mastery,
+          difficulty: 3, // Default difficulty, could be tracked
+          strugglingAreas
+        };
+      });
+      
+      // Identify strengths and weaknesses based on performance
+      const strengths: string[] = [];
+      const weaknesses: string[] = [];
+      
+      const subjectPerformance = new Map();
+      progress.forEach((p: Progress) => {
+        const topic = allTopics.find(t => t.id === p.topicId);
+        if (topic && p.questionsAnswered && p.questionsAnswered > 0) {
+          const accuracy = (p.correctAnswers || 0) / p.questionsAnswered;
+          const current = subjectPerformance.get(topic.subject) || { total: 0, count: 0 };
+          current.total += accuracy;
+          current.count += 1;
+          subjectPerformance.set(topic.subject, current);
+        }
+      });
+      
+      subjectPerformance.forEach((perf, subject) => {
+        const avgAccuracy = perf.total / perf.count;
+        if (avgAccuracy >= 0.75) {
+          strengths.push(subject);
+        } else if (avgAccuracy < 0.5) {
+          weaknesses.push(subject);
+        }
+      });
+      
+      // If no clear strengths/weaknesses, provide defaults
+      if (strengths.length === 0) strengths.push("problem-solving", "curiosity");
+      if (weaknesses.length === 0) weaknesses.push("needs more practice");
+      
+      // Available topics for recommendations (filter out already mastered ones)
+      const masteredTopicIds = currentProgress.filter(p => p.mastery >= 0.9).map(p => p.topicId);
+      const availableTopics = allTopics
+        .filter(topic => !masteredTopicIds.includes(topic.id))
+        .map(topic => ({
+          id: topic.id,
+          name: topic.name,
+          subject: topic.subject,
+          level: topic.level,
+          prerequisites: [] // Could be enhanced with actual prerequisites
+        }));
+      
+      const recommendations = await generateLearningPathRecommendations({
+        studentId,
+        currentProgress,
+        studentProfile: {
+          ageGroup: student.ageGroup as "pre-primary" | "primary" | "upper-primary",
+          learningStyle: undefined, // Could be determined through assessment
+          strengths,
+          weaknesses,
+          interests: ["science", "nature"] // Could be tracked from user preferences
+        },
+        availableTopics
+      });
+      
+      res.json(recommendations);
+    } catch (error) {
+      console.error("Error generating learning path recommendations:", error);
+      res.status(500).json({ message: "Failed to generate learning path recommendations" });
     }
   });
 
