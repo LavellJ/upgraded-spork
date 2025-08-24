@@ -95,7 +95,7 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
       lg: 'w-12 h-12'
     };
     
-    const icons = {
+    const icons: Record<string, JSX.Element> = {
       bunny: (
         <svg viewBox="0 0 100 100" className={sizeClasses[size]}>
           <ellipse cx="50" cy="65" rx="22" ry="20" fill="currentColor" className="text-amber-300 animate-pulse-soft" />
