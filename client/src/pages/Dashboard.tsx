@@ -229,10 +229,12 @@ export default function Dashboard() {
                 Practice Mode
                 <i className="fas fa-dumbbell ml-2"></i>
               </button>
-              <button className="bg-white/20 text-white px-6 py-3 rounded-xl font-semibold hover:bg-white/30 transition-colors duration-300" data-testid="button-review-progress">
-                Review Progress
-                <i className="fas fa-chart-line ml-2"></i>
-              </button>
+              <Link href="/progress">
+                <button className="bg-gradient-to-r from-accent-teal to-sky-blue text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300" data-testid="button-review-progress">
+                  Progress Journey
+                  <i className="fas fa-route ml-2"></i>
+                </button>
+              </Link>
             </div>
           </div>
 
