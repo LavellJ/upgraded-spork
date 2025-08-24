@@ -79,12 +79,23 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
   };
 
   const calculateReflectionQuality = () => {
+    // Handle Scout format vs legacy format
+    if (isScoutFormat) {
+      return 100; // Scout experiences are always considered high quality
+    }
+    
     const textResponses = Object.values(responses).filter(r => typeof r === "string" && r.length > 10);
-    const thoughtfulnessScore = textResponses.length / reflectContent.metacognitionPrompts.length;
+    const promptsLength = legacyContent?.metacognitionPrompts?.length || 1;
+    const thoughtfulnessScore = textResponses.length / promptsLength;
     return Math.min(thoughtfulnessScore * 100, 100);
   };
 
   const generateLearningInsights = () => {
+    // Handle Scout format vs legacy format
+    if (isScoutFormat) {
+      return ["Completed Scout adventure with engagement and curiosity"];
+    }
+    
     const insights = [];
     
     if (responses.difficulty === "easy") {
