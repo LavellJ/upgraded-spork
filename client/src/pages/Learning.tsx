@@ -9,6 +9,7 @@ import { QuestionInterface } from "@/components/QuestionInterface";
 import { BadgeNotification } from "@/components/BadgeNotification";
 import { LearningPathRecommendations } from "@/components/LearningPathRecommendations";
 import { ExplorerBuddy } from "@/components/ExplorerBuddy";
+import { AchievementCelebration, useAchievementTrigger, ACHIEVEMENT_TEMPLATES } from "@/components/AchievementCelebration";
 import type { Topic, Question } from "@shared/schema";
 import type { AgeGroup } from "@/components/AgeSelector";
 
@@ -22,6 +23,9 @@ export default function Learning() {
   const [showRecommendations, setShowRecommendations] = useState(false);
   const [studyStartTime] = useState<number>(Date.now());
   const queryClient = useQueryClient();
+
+  // Achievement system
+  const { currentAchievement, triggerAchievement, closeAchievement } = useAchievementTrigger();
 
   useEffect(() => {
     // Get age group from localStorage
@@ -62,13 +66,29 @@ export default function Learning() {
     }
   }, [allProgress]);
 
-  // Generate new questions mutation
+  // Generate new questions mutation with adaptive difficulty
   const generateQuestionsMutation = useMutation({
     mutationFn: async () => {
+      // Calculate adaptive difficulty based on performance
+      const totalCorrect = totalProgress.correct;
+      const totalAnswered = totalProgress.total;
+      const accuracy = totalAnswered > 0 ? totalCorrect / totalAnswered : 0.5;
+      
+      // Adaptive difficulty: 1-5 scale based on performance
+      let adaptiveDifficulty = 3; // Start with medium
+      if (accuracy > 0.8) adaptiveDifficulty = Math.min(5, adaptiveDifficulty + 1);
+      else if (accuracy < 0.6) adaptiveDifficulty = Math.max(1, adaptiveDifficulty - 1);
+      
       const response = await apiRequest("POST", "/api/questions/generate", {
         topicId,
         count: 5,
-        difficulty: 3
+        difficulty: adaptiveDifficulty,
+        ageGroup: selectedAgeGroup,
+        studentPerformance: {
+          accuracy,
+          totalAnswered,
+          recentStreak: score.correct
+        }
       });
       return response.json();
     },
@@ -98,18 +118,54 @@ export default function Learning() {
     },
   });
 
-  // Generate questions if none exist (disabled while OpenAI quota is exceeded)
-  // useEffect(() => {
-  //   if (topicId && questions.length === 0 && !questionsLoading && !generateQuestionsMutation.isPending) {
-  //     generateQuestionsMutation.mutate();
-  //   }
-  // }, [topicId, questions.length, questionsLoading, generateQuestionsMutation]);
+  // Generate questions if none exist
+  useEffect(() => {
+    if (topicId && questions.length === 0 && !questionsLoading && !generateQuestionsMutation.isPending) {
+      generateQuestionsMutation.mutate();
+    }
+  }, [topicId, questions.length, questionsLoading, generateQuestionsMutation]);
 
   const handleAnswerSubmitted = (correct: boolean, selectedAnswer: number) => {
     setScore(prev => ({
       correct: prev.correct + (correct ? 1 : 0),
       total: prev.total + 1
     }));
+
+    // Achievement triggers
+    const newCorrectCount = score.correct + (correct ? 1 : 0);
+    const newTotalCount = score.total + 1;
+
+    // First question ever achievement
+    if (newTotalCount === 1) {
+      triggerAchievement({
+        ...ACHIEVEMENT_TEMPLATES.firstQuestion
+      });
+    }
+
+    // Streak achievements (5 in a row)
+    if (correct && newCorrectCount === 5 && newCorrectCount === newTotalCount) {
+      triggerAchievement({
+        ...ACHIEVEMENT_TEMPLATES.fiveStreak
+      });
+    }
+
+    // Perfect score achievement (if completing topic)
+    if (currentQuestionIndex === questions.length - 1) {
+      const finalScore = newCorrectCount;
+      
+      if (finalScore === newTotalCount && newTotalCount >= 3) {
+        triggerAchievement({
+          ...ACHIEVEMENT_TEMPLATES.perfectScore
+        });
+      }
+      
+      // Topic completion achievement
+      if (finalScore >= Math.ceil(newTotalCount * 0.8)) { // 80% completion threshold
+        triggerAchievement({
+          ...ACHIEVEMENT_TEMPLATES.firstTopic
+        });
+      }
+    }
 
     updateProgressMutation.mutate({ correct });
 
@@ -305,6 +361,12 @@ export default function Learning() {
         ageGroup={selectedAgeGroup as "pre-primary" | "primary" | "upper-primary"}
         show={showRecommendations}
         onClose={() => setShowRecommendations(false)}
+      />
+      
+      {/* Achievement Celebration System */}
+      <AchievementCelebration
+        achievement={currentAchievement}
+        onClose={closeAchievement}
       />
     </>
   );

@@ -52,7 +52,7 @@ export default function Home() {
             {/* Call to Action */}
             <div className="space-y-6">
               <Link 
-                href={selectedAgeGroup ? "/dashboard" : "#"}
+                href={selectedAgeGroup ? "/onboarding" : "#"}
                 className={`inline-block ${!selectedAgeGroup ? 'pointer-events-none opacity-50' : ''}`}
               >
                 <button 
@@ -87,7 +87,7 @@ export default function Home() {
               <h3 className="font-display text-3xl font-semibold text-white mb-6" data-testid="text-footer-cta">
                 Ready to Transform Learning?
               </h3>
-              <Link href={selectedAgeGroup ? "/dashboard" : "#"}>
+              <Link href={selectedAgeGroup ? "/onboarding" : "#"}>
                 <button 
                   className="bg-gradient-to-r from-sunset-orange to-warm-orange text-white px-12 py-4 rounded-2xl font-display font-semibold text-lg hover:scale-105 transition-all duration-300 shadow-2xl"
                   disabled={!selectedAgeGroup}

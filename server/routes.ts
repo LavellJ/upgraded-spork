@@ -757,26 +757,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
         studyDuration,
         recentProgress,
         messageType,
-        studentName
+        studentName = "friend"
       } = req.body;
 
       if (!ageGroup || !currentPage || !messageType) {
         return res.status(400).json({ message: "Missing required fields" });
       }
 
-      const message = await generateBuddyMessage({
+      // Enhanced context for more intelligent responses
+      const enhancedContext = {
         ageGroup,
         currentPage,
         studyDuration,
-        recentProgress,
+        recentProgress: {
+          ...recentProgress,
+          // Add calculated metrics for smarter responses
+          averageAccuracy: recentProgress?.questionsAnswered > 0 ? 
+            (recentProgress?.correctAnswers || 0) / recentProgress.questionsAnswered : 0,
+          isOnStreak: (recentProgress?.streakCount || 0) > 2,
+          needsEncouragement: (recentProgress?.questionsAnswered || 0) > 5 && 
+            ((recentProgress?.correctAnswers || 0) / recentProgress.questionsAnswered) < 0.6
+        },
         messageType,
+        timeContext: {
+          studyingTooLong: studyDuration > 25 * 60 * 1000, // 25+ minutes
+          justStarted: studyDuration < 5 * 60 * 1000, // Less than 5 minutes
+          inFocusZone: studyDuration >= 5 * 60 * 1000 && studyDuration <= 25 * 60 * 1000
+        },
+        pageContext: {
+          isLearning: currentPage.includes('/learning') || currentPage === '/learning',
+          isDashboard: currentPage === '/dashboard' || currentPage === '/',
+          isOnboarding: currentPage === '/onboarding',
+          isProgress: currentPage === '/progress'
+        },
         studentName
-      });
+      };
 
+      const message = await generateBuddyMessage(enhancedContext);
       res.json({ message });
     } catch (error) {
       console.error("Error generating buddy message:", error);
-      res.status(500).json({ message: "Failed to generate buddy message" });
+      
+      // Enhanced fallback messages
+      const fallbackMessages = {
+        celebration: `Amazing work, ${studentName}! You're doing fantastic! 🌟`,
+        encouragement: `Keep going, ${studentName}! I believe in you! 💪`,
+        break_suggestion: `How about a quick break, ${studentName}? Even explorers need rest! 🌿`,
+        curiosity: `I wonder what we'll discover next, ${studentName}! 🔍`,
+        companionship: `I'm here with you, ${studentName}! Let's learn together! 🤝`
+      };
+      
+      const fallbackMessage = fallbackMessages[messageType] || 
+        `Hey ${studentName}! Ready for our next adventure? 🚀`;
+      
+      res.json({ message: fallbackMessage });
     }
   });
 

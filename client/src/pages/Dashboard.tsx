@@ -7,7 +7,10 @@ import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { ProgressLandscape } from "@/components/ProgressLandscape";
 import { BadgeDisplay } from "@/components/BadgeDisplay";
 import { GeometricIcon } from "@/components/GeometricIcon";
+import { SkillTreeMap } from "@/components/SkillTreeMap";
 import { ExplorerBuddy } from "@/components/ExplorerBuddy";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Map, Grid3X3, Trophy } from "lucide-react";
 import type { Topic, Progress } from "@shared/schema";
 import type { AgeGroup } from "@/components/AgeSelector";
 
@@ -76,20 +79,69 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {/* Dashboard Grid */}
-          <div className="grid lg:grid-cols-3 gap-8 mb-16">
-            
-            {/* Pomodoro Timer */}
-            <div className="col-span-full lg:col-span-1" data-testid="pomodoro-section">
-              <PomodoroTimer topicName="Mathematics Session" />
-            </div>
-            
-            {/* Topic Selection */}
-            <div className="col-span-full lg:col-span-2" data-testid="topic-selection">
-              <div className="floating-ui rounded-3xl p-8">
-                <h3 className="font-display text-xl font-semibold text-white mb-6">
-                  Available Topics
-                </h3>
+          {/* Dashboard Content with Tabs */}
+          <Tabs defaultValue="adventure" className="space-y-8">
+            <TabsList className="bg-white/10 backdrop-blur-sm border-white/20 mx-auto">
+              <TabsTrigger value="adventure" className="text-white data-[state=active]:bg-white/20">
+                <Map className="w-4 h-4 mr-2" />
+                Adventure Map
+              </TabsTrigger>
+              <TabsTrigger value="topics" className="text-white data-[state=active]:bg-white/20">
+                <Grid3X3 className="w-4 h-4 mr-2" />
+                Topic Grid
+              </TabsTrigger>
+              <TabsTrigger value="progress" className="text-white data-[state=active]:bg-white/20">
+                <Trophy className="w-4 h-4 mr-2" />
+                Progress
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="adventure" className="space-y-8">
+              {/* Skill Tree Adventure Map */}
+              <div data-testid="skill-tree-section">
+                <div className="floating-ui rounded-3xl p-8">
+                  <h3 className="font-display text-2xl font-semibold text-white mb-6 text-center">
+                    Your Learning Adventure
+                  </h3>
+                  <p className="text-white/70 text-center mb-8">
+                    Explore topics, unlock new areas, and track your progress through the learning world!
+                  </p>
+                  <SkillTreeMap ageGroup={selectedAgeGroup as AgeGroup} studentId="demo-student" />
+                </div>
+              </div>
+              
+              {/* Pomodoro Timer for Adventure Mode */}
+              <div className="grid lg:grid-cols-2 gap-8">
+                <div data-testid="pomodoro-section">
+                  <PomodoroTimer topicName="Adventure Session" />
+                </div>
+                <div data-testid="badge-section">
+                  <div className="floating-ui rounded-3xl p-8">
+                    <BadgeDisplay 
+                      studentId="demo-student" 
+                      ageGroup={selectedAgeGroup} 
+                      compact={true}
+                    />
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="topics" className="space-y-8">
+              {/* Traditional Topic Grid */}
+              <div className="grid lg:grid-cols-3 gap-8">
+                
+                {/* Pomodoro Timer */}
+                <div className="col-span-full lg:col-span-1" data-testid="pomodoro-section">
+                  <PomodoroTimer topicName="Mathematics Session" />
+                </div>
+                
+                {/* Topic Selection */}
+                <div className="col-span-full lg:col-span-2" data-testid="topic-selection">
+                  <div className="floating-ui rounded-3xl p-8">
+                    <h3 className="font-display text-xl font-semibold text-white mb-6">
+                      Available Topics
+                    </h3>
                 
                 {topicsLoading ? (
                   <div className="space-y-6">
@@ -167,54 +219,58 @@ export default function Dashboard() {
                       );
                     })}
                   </div>
-                )}
-              </div>
-            </div>
-            
-            {/* Badge Display */}
-            <div className="col-span-full" data-testid="badge-section">
-              <div className="floating-ui rounded-3xl p-8">
-                <BadgeDisplay 
-                  studentId="demo-student" 
-                  ageGroup={selectedAgeGroup} 
-                  compact={true}
-                />
-              </div>
-            </div>
-          </div>
-          
-          {/* Full Badge Collection */}
-          <div className="mb-16" data-testid="badge-collection">
-            <div className="floating-ui rounded-3xl p-8">
-              <BadgeDisplay 
-                studentId="demo-student" 
-                ageGroup={selectedAgeGroup} 
-              />
-            </div>
-          </div>
-
-          {/* Progress Landscape */}
-          <div data-testid="progress-section">
-            {progressLoading ? (
-              <div className="floating-ui rounded-3xl p-8">
-                <div className="animate-pulse">
-                  <div className="h-6 bg-white/20 rounded w-1/4 mb-8"></div>
-                  <div className="h-32 bg-white/10 rounded-2xl mb-8"></div>
-                  <div className="grid grid-cols-4 gap-4">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="text-center">
-                        <div className="h-1 bg-white/20 rounded mb-2"></div>
-                        <div className="h-4 bg-white/20 rounded w-3/4 mx-auto mb-1"></div>
-                        <div className="h-3 bg-white/20 rounded w-1/2 mx-auto"></div>
-                      </div>
-                    ))}
+                    )}
+                  </div>
+                </div>
+                
+                {/* Badge Display */}
+                <div className="col-span-full" data-testid="badge-section">
+                  <div className="floating-ui rounded-3xl p-8">
+                    <BadgeDisplay 
+                      studentId="demo-student" 
+                      ageGroup={selectedAgeGroup} 
+                      compact={true}
+                    />
                   </div>
                 </div>
               </div>
-            ) : (
-              <ProgressLandscape progress={progress} topics={topics} />
-            )}
-          </div>
+            </TabsContent>
+
+            <TabsContent value="progress" className="space-y-8">
+              {/* Full Badge Collection */}
+              <div className="mb-8" data-testid="badge-collection">
+                <div className="floating-ui rounded-3xl p-8">
+                  <BadgeDisplay 
+                    studentId="demo-student" 
+                    ageGroup={selectedAgeGroup} 
+                  />
+                </div>
+              </div>
+
+              {/* Progress Landscape */}
+              <div data-testid="progress-section">
+                {progressLoading ? (
+                  <div className="floating-ui rounded-3xl p-8">
+                    <div className="animate-pulse">
+                      <div className="h-6 bg-white/20 rounded w-1/4 mb-8"></div>
+                      <div className="h-32 bg-white/10 rounded-2xl mb-8"></div>
+                      <div className="grid grid-cols-4 gap-4">
+                        {[1, 2, 3, 4].map((i) => (
+                          <div key={i} className="text-center">
+                            <div className="h-1 bg-white/20 rounded mb-2"></div>
+                            <div className="h-4 bg-white/20 rounded w-3/4 mx-auto mb-1"></div>
+                            <div className="h-3 bg-white/20 rounded w-1/2 mx-auto"></div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <ProgressLandscape progress={progress} topics={topics} />
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
 
           {/* Quick Actions */}
           <div className="mt-16 text-center" data-testid="quick-actions">
