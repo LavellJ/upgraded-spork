@@ -99,6 +99,48 @@ export const achievements = pgTable("achievements", {
   metadata: jsonb("metadata"), // optional data like streak length, topic completed, etc
 });
 
+// Learning Sessions - Teach → Try → Reflect → Create cycles
+export const learningSessions = pgTable("learning_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  studentId: varchar("student_id").notNull(),
+  topicId: varchar("topic_id").notNull(),
+  contentDescriptor: text("content_descriptor"), // Australian Curriculum code (e.g., "ACMNA056")
+  currentPhase: text("current_phase").notNull(), // "teach", "try", "reflect", "create"
+  phaseProgress: jsonb("phase_progress").default({}), // track completion of each phase
+  sessionData: jsonb("session_data").default({}), // store phase-specific data
+  isCompleted: boolean("is_completed").default(false),
+  completedAt: timestamp("completed_at"),
+  startedAt: timestamp("started_at").defaultNow(),
+});
+
+// Content for each learning phase
+export const learningContent = pgTable("learning_content", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  topicId: varchar("topic_id").notNull(),
+  contentDescriptor: text("content_descriptor"), // Australian Curriculum mapping
+  phase: text("phase").notNull(), // "teach", "try", "reflect", "create"
+  title: text("title").notNull(),
+  content: jsonb("content").notNull(), // phase-specific content structure
+  ageGroup: text("age_group").notNull(),
+  difficulty: integer("difficulty").default(3),
+  estimatedDuration: integer("estimated_duration").default(5), // minutes
+  prerequisites: jsonb("prerequisites").default([]), // array of content descriptor codes
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Student artifacts from Create phases
+export const studentArtifacts = pgTable("student_artifacts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  studentId: varchar("student_id").notNull(),
+  sessionId: varchar("session_id").notNull(),
+  topicId: varchar("topic_id").notNull(),
+  artifactType: text("artifact_type").notNull(), // "explanation", "project", "drawing", "voice_note"
+  content: jsonb("content").notNull(), // artifact data
+  aiAssessment: jsonb("ai_assessment"), // AI feedback and scoring
+  parentVisible: boolean("parent_visible").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Parent activity log for tracking oversight actions
 export const parentActivityLog = pgTable("parent_activity_log", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -161,6 +203,22 @@ export const insertParentActivityLogSchema = createInsertSchema(parentActivityLo
   timestamp: true,
 });
 
+export const insertLearningSessionSchema = createInsertSchema(learningSessions).omit({
+  id: true,
+  startedAt: true,
+  completedAt: true,
+});
+
+export const insertLearningContentSchema = createInsertSchema(learningContent).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertStudentArtifactSchema = createInsertSchema(studentArtifacts).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type Parent = typeof parents.$inferSelect;
 export type InsertParent = z.infer<typeof insertParentSchema>;
@@ -191,3 +249,12 @@ export type InsertPomodoroSession = z.infer<typeof insertPomodoroSessionSchema>;
 
 export type Achievement = typeof achievements.$inferSelect;
 export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
+
+export type LearningSession = typeof learningSessions.$inferSelect;
+export type InsertLearningSession = z.infer<typeof insertLearningSessionSchema>;
+
+export type LearningContent = typeof learningContent.$inferSelect;
+export type InsertLearningContent = z.infer<typeof insertLearningContentSchema>;
+
+export type StudentArtifact = typeof studentArtifacts.$inferSelect;
+export type InsertStudentArtifact = z.infer<typeof insertStudentArtifactSchema>;

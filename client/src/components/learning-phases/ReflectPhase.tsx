@@ -1,0 +1,328 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Brain, Heart, Target, ArrowRight, Star } from "lucide-react";
+import type { LearningContent } from "@shared/schema";
+import type { AgeGroup } from "../AgeSelector";
+
+interface ReflectPhaseProps {
+  content: LearningContent;
+  ageGroup: AgeGroup;
+  sessionData: any;
+  onPhaseComplete: (results: any) => void;
+  previousData?: any;
+}
+
+interface ReflectContent {
+  title: string;
+  metacognitionPrompts: Array<{
+    id: string;
+    type: "difficulty" | "strategy" | "confidence" | "application";
+    question: string;
+    options?: string[];
+    allowText?: boolean;
+  }>;
+  selfAssessment: {
+    criteria: Array<{
+      skill: string;
+      description: string;
+      levels: string[];
+    }>;
+  };
+}
+
+export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, previousData }: ReflectPhaseProps) {
+  const [responses, setResponses] = useState<Record<string, any>>({});
+  const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
+  const [selfAssessmentComplete, setSelfAssessmentComplete] = useState(false);
+  const [overallReflection, setOverallReflection] = useState("");
+
+  const reflectContent = content.content as ReflectContent;
+  const currentPrompt = reflectContent.metacognitionPrompts[currentPromptIndex];
+
+  const handleResponse = (promptId: string, response: any) => {
+    setResponses(prev => ({ ...prev, [promptId]: response }));
+  };
+
+  const handleNextPrompt = () => {
+    if (currentPromptIndex < reflectContent.metacognitionPrompts.length - 1) {
+      setCurrentPromptIndex(prev => prev + 1);
+    } else {
+      setSelfAssessmentComplete(true);
+    }
+  };
+
+  const handlePhaseComplete = () => {
+    const teachPhaseData = sessionData.teach || {};
+    const tryPhaseData = sessionData.try || {};
+
+    const results = {
+      metacognitionResponses: responses,
+      overallReflection,
+      reflectionQuality: calculateReflectionQuality(),
+      learningInsights: generateLearningInsights(),
+      selfRegulationSkills: {
+        awarenessOfDifficulty: responses.difficulty || "not-assessed",
+        strategyIdentification: responses.strategy || "not-assessed",
+        confidenceLevel: responses.confidence || "not-assessed"
+      },
+      timeSpent: Date.now() - (previousData?.startTime || Date.now())
+    };
+
+    onPhaseComplete(results);
+  };
+
+  const calculateReflectionQuality = () => {
+    const textResponses = Object.values(responses).filter(r => typeof r === "string" && r.length > 10);
+    const thoughtfulnessScore = textResponses.length / reflectContent.metacognitionPrompts.length;
+    return Math.min(thoughtfulnessScore * 100, 100);
+  };
+
+  const generateLearningInsights = () => {
+    const insights = [];
+    
+    if (responses.difficulty === "easy") {
+      insights.push("Student found the material manageable - ready for increased challenge");
+    } else if (responses.difficulty === "hard") {
+      insights.push("Student found the material challenging - may benefit from review or different approach");
+    }
+
+    if (responses.strategy && typeof responses.strategy === "string") {
+      insights.push(`Student identified helpful strategy: ${responses.strategy}`);
+    }
+
+    return insights;
+  };
+
+  const getAgeAppropriateLanguage = () => {
+    switch (ageGroup) {
+      case "pre-primary":
+        return {
+          title: "How Did That Feel?",
+          instruction: "Let's think about what we just learned!",
+          continueButton: "Next question",
+          finishButton: "I'm done thinking!"
+        };
+      case "primary":
+        return {
+          title: "Time to Reflect",
+          instruction: "Take a moment to think about your learning",
+          continueButton: "Continue",
+          finishButton: "Finish reflecting"
+        };
+      case "upper-primary":
+        return {
+          title: "Learning Reflection",
+          instruction: "Metacognition helps you become a better learner",
+          continueButton: "Next reflection",
+          finishButton: "Complete reflection"
+        };
+      default:
+        return {
+          title: "Time to Reflect",
+          instruction: "Take a moment to think about your learning",
+          continueButton: "Continue",
+          finishButton: "Finish reflecting"
+        };
+    }
+  };
+
+  const language = getAgeAppropriateLanguage();
+
+  return (
+    <div className="space-y-6">
+      {/* Phase Header */}
+      <div className="floating-ui rounded-2xl p-6 text-center" data-testid="reflect-phase-header">
+        <h2 className="font-display text-2xl font-bold text-white mb-2">
+          {language.title}
+        </h2>
+        <p className="text-white/80 text-lg">
+          {reflectContent.title}
+        </p>
+        <p className="text-white/60 mt-2">
+          {language.instruction}
+        </p>
+        
+        {/* Progress Indicator */}
+        <div className="flex justify-center items-center gap-4 mt-4">
+          <span className="text-white/60">
+            Question {currentPromptIndex + 1} of {reflectContent.metacognitionPrompts.length}
+          </span>
+          <div className="w-32 bg-white/20 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full transition-all"
+              style={{ width: `${((currentPromptIndex + 1) / reflectContent.metacognitionPrompts.length) * 100}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {!selfAssessmentComplete ? (
+        /* Metacognition Prompts */
+        <motion.div
+          key={currentPromptIndex}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          className="floating-ui rounded-2xl p-8"
+          data-testid="metacognition-prompt"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full flex items-center justify-center">
+              {currentPrompt?.type === "difficulty" && <Target className="w-6 h-6 text-white" />}
+              {currentPrompt?.type === "strategy" && <Brain className="w-6 h-6 text-white" />}
+              {currentPrompt?.type === "confidence" && <Heart className="w-6 h-6 text-white" />}
+              {currentPrompt?.type === "application" && <Star className="w-6 h-6 text-white" />}
+            </div>
+            <h3 className="font-display text-xl font-semibold text-white">
+              {currentPrompt?.question}
+            </h3>
+          </div>
+
+          {currentPrompt?.options ? (
+            /* Multiple Choice Response */
+            <div className="space-y-3 mb-6">
+              {currentPrompt.options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleResponse(currentPrompt.id, option)}
+                  className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+                    responses[currentPrompt.id] === option
+                      ? 'bg-purple-400/20 border-purple-400/50 text-white'
+                      : 'bg-white/10 border-white/20 text-white/80 hover:bg-white/15'
+                  }`}
+                  data-testid={`option-${index}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-full border-2 transition-all ${
+                      responses[currentPrompt.id] === option
+                        ? 'bg-purple-400 border-purple-400'
+                        : 'border-white/40'
+                    }`}>
+                      {responses[currentPrompt.id] === option && (
+                        <div className="w-full h-full rounded-full bg-white/20" />
+                      )}
+                    </div>
+                    <span>{option}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            /* Text Response */
+            <div className="mb-6">
+              <textarea
+                value={responses[currentPrompt.id] || ""}
+                onChange={(e) => handleResponse(currentPrompt.id, e.target.value)}
+                placeholder={ageGroup === "pre-primary" ? "Tell me what you think..." : "Share your thoughts..."}
+                className="w-full h-32 bg-white/10 border border-white/30 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:border-purple-400 focus:outline-none resize-none"
+                data-testid="text-response"
+              />
+            </div>
+          )}
+
+          {/* Continue Button */}
+          {responses[currentPrompt.id] && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex justify-center"
+            >
+              <button
+                onClick={handleNextPrompt}
+                className="bg-gradient-to-r from-purple-400 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300 flex items-center gap-2"
+                data-testid="button-continue-prompt"
+              >
+                {currentPromptIndex < reflectContent.metacognitionPrompts.length - 1 ? 
+                  language.continueButton : "Review my learning"
+                }
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </motion.div>
+          )}
+        </motion.div>
+      ) : (
+        /* Self-Assessment Summary */
+        <div className="space-y-6">
+          {/* Learning Summary */}
+          <div className="floating-ui rounded-2xl p-8" data-testid="learning-summary">
+            <h3 className="font-display text-xl font-semibold text-white mb-6">
+              Your Learning Journey Summary
+            </h3>
+            
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              {/* Teach Phase Summary */}
+              <div className="bg-blue-400/20 rounded-xl p-4">
+                <h4 className="text-blue-400 font-semibold mb-2">📚 Learn Phase</h4>
+                <p className="text-white/80 text-sm">
+                  {sessionData.teach?.conceptUnderstood ? 
+                    "You understood Scout's explanation well!" : 
+                    "You're building understanding step by step."
+                  }
+                </p>
+              </div>
+
+              {/* Try Phase Summary */}
+              <div className="bg-green-400/20 rounded-xl p-4">
+                <h4 className="text-green-400 font-semibold mb-2">🎯 Practice Phase</h4>
+                <p className="text-white/80 text-sm">
+                  You completed {sessionData.try?.stepsCompleted || 0} out of {sessionData.try?.totalSteps || 0} practice steps
+                  {sessionData.try?.accuracy > 0.8 && " with great accuracy!"}
+                </p>
+              </div>
+            </div>
+            
+            {/* Self-Assessment Skills */}
+            <div className="bg-white/10 rounded-xl p-6">
+              <h4 className="text-white font-semibold mb-4">How I Learn Best</h4>
+              <div className="space-y-3">
+                {Object.entries(responses).map(([key, value], index) => (
+                  <div key={key} className="flex justify-between items-center">
+                    <span className="text-white/70 capitalize">{key.replace(/([A-Z])/g, ' $1')}:</span>
+                    <span className="text-white font-medium">
+                      {typeof value === "string" && value.length > 50 ? 
+                        `${value.substring(0, 50)}...` : 
+                        value
+                      }
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Overall Reflection */}
+          <div className="floating-ui rounded-2xl p-8" data-testid="overall-reflection">
+            <h3 className="font-display text-xl font-semibold text-white mb-4">
+              One Final Thought
+            </h3>
+            <p className="text-white/70 mb-4">
+              {ageGroup === "pre-primary" ? 
+                "What was the best part of learning this?" :
+                "What's one thing you'll remember from this lesson?"
+              }
+            </p>
+            <textarea
+              value={overallReflection}
+              onChange={(e) => setOverallReflection(e.target.value)}
+              placeholder={ageGroup === "pre-primary" ? "I liked..." : "I learned that..."}
+              className="w-full h-24 bg-white/10 border border-white/30 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:border-purple-400 focus:outline-none resize-none mb-6"
+              data-testid="overall-reflection-input"
+            />
+            
+            <div className="flex justify-center">
+              <button
+                onClick={handlePhaseComplete}
+                disabled={!overallReflection.trim()}
+                className="bg-gradient-to-r from-purple-400 to-purple-600 disabled:from-gray-400 disabled:to-gray-500 text-white px-8 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300 flex items-center gap-2"
+                data-testid="button-complete-reflection"
+              >
+                {language.finishButton}
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
