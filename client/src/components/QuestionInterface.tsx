@@ -19,15 +19,32 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
   const [isAnswered, setIsAnswered] = useState(false);
   const queryClient = useQueryClient();
 
-  const hintMutation = useMutation({
+  const smartHintMutation = useMutation({
     mutationFn: async () => {
       const response = await apiRequest("POST", "/api/questions/hint", {
-        questionId: question.id
+        questionId: question.id,
+        studentId
       });
       return response.json();
     },
     onSuccess: (data) => {
       setHint(data.hint);
+    },
+  });
+
+  const personalizedExplanationMutation = useMutation({
+    mutationFn: async (answerData: { selectedAnswer: number, isCorrect: boolean }) => {
+      const response = await apiRequest("POST", "/api/questions/personalized-explanation", {
+        questionId: question.id,
+        studentAnswer: (question.options as string[])[answerData.selectedAnswer],
+        studentId,
+        isCorrect: answerData.isCorrect
+      });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      // Could update the explanation display with personalized content
+      console.log("Personalized explanation:", data.explanation);
     },
   });
 
@@ -39,6 +56,9 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
     setIsAnswered(true);
     
     const isCorrect = answerIndex === question.correctAnswer;
+    
+    // Generate personalized explanation based on the answer
+    personalizedExplanationMutation.mutate({ selectedAnswer: answerIndex, isCorrect });
     
     // Show result for 2 seconds before advancing to next question
     setTimeout(() => {
@@ -187,13 +207,23 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
         <div className="flex items-center justify-between">
           {!showResult && (
             <button 
-              className="text-accent-teal hover:text-white transition-colors duration-300 text-sm"
-              onClick={() => hintMutation.mutate()}
-              disabled={hintMutation.isPending}
+              className="text-accent-teal hover:text-white transition-colors duration-300 text-sm flex items-center"
+              onClick={() => smartHintMutation.mutate()}
+              disabled={smartHintMutation.isPending}
               data-testid="button-get-hint"
             >
               <i className="fas fa-lightbulb mr-2"></i>
-              {hintMutation.isPending ? 'Getting hint...' : 'Get a hint'}
+              {smartHintMutation.isPending ? (
+                <>
+                  <i className="fas fa-brain mr-1 animate-pulse"></i>
+                  AI is thinking...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-robot mr-1"></i>
+                  Get smart hint
+                </>
+              )}
             </button>
           )}
           

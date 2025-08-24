@@ -1,13 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateQuestions, generateHint, generateExplanation } from "./services/openai";
+import { generateQuestions, generateSmartHint, generatePersonalizedExplanation, calculateAdaptiveDifficulty } from "./services/openai";
 import { badgeSystem, BADGE_DEFINITIONS } from "./badgeSystem";
 import { 
   insertStudentSchema, 
   insertProgressSchema, 
   insertPomodoroSessionSchema,
-  type Question
+  type Question,
+  type Progress
 } from "@shared/schema";
 import { z } from "zod";
 
@@ -114,23 +115,151 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get hint for question
+  // Get smart contextual hint for question
   app.post("/api/questions/hint", async (req, res) => {
     try {
-      const { questionId } = req.body;
+      const { questionId, studentId = "demo-student" } = req.body;
       
       const question = await storage.getQuestion(questionId);
       if (!question) {
         return res.status(404).json({ message: "Question not found" });
       }
 
+      // Get student performance data
+      const student = await storage.getStudent(studentId);
+      const progress = await storage.getStudentProgress(studentId);
+      const topic = await storage.getTopic(question.topicId);
+      
+      // Calculate performance metrics
+      const topicProgress = progress.find((p: Progress) => p.topicId === question.topicId);
+      const overallCorrect = progress.reduce((sum: number, p: Progress) => sum + (p.correctAnswers || 0), 0);
+      const overallTotal = progress.reduce((sum: number, p: Progress) => sum + (p.questionsAnswered || 0), 0);
+      const overallAccuracy = overallTotal > 0 ? overallCorrect / overallTotal : 0.5;
+      const topicAccuracy = topicProgress ? 
+        (topicProgress.questionsAnswered && topicProgress.questionsAnswered > 0 ? (topicProgress.correctAnswers || 0) / topicProgress.questionsAnswered : 0.5) : 0.5;
+
+      // Analyze struggling areas (basic implementation)
+      const strugglingAreas: string[] = [];
+      const allTopics = await storage.getAllTopics();
+      progress.forEach((p: Progress) => {
+        if (p.questionsAnswered && p.correctAnswers && p.questionsAnswered >= 3 && (p.correctAnswers / p.questionsAnswered) < 0.5) {
+          const topicInfo = allTopics.find(t => t.id === p.topicId);
+          if (topicInfo) strugglingAreas.push(topicInfo.subject);
+        }
+      });
+
       const correctOption = (question.options as string[])[question.correctAnswer];
-      const hint = await generateHint(question.question, correctOption);
+      const hint = await generateSmartHint({
+        question: question.question,
+        correctAnswer: correctOption,
+        studentPerformance: {
+          ageGroup: (student?.ageGroup || topic?.ageGroup || "primary") as "pre-primary" | "primary" | "upper-primary",
+          topicProgress: topicAccuracy,
+          overallAccuracy,
+          strugglingAreas,
+          learningStyle: undefined as "visual" | "analytical" | "practical" | "creative" | undefined
+        }
+      });
       
       res.json({ hint });
     } catch (error) {
-      console.error("Error generating hint:", error);
+      console.error("Error generating smart hint:", error);
       res.status(500).json({ message: "Failed to generate hint" });
+    }
+  });
+
+  // Adaptive difficulty calculation
+  app.post("/api/questions/adaptive-difficulty", async (req, res) => {
+    try {
+      const { topicId, studentId = "demo-student" } = req.body;
+      
+      const progress = await storage.getStudentProgress(studentId);
+      const topicProgress = progress.find((p: Progress) => p.topicId === topicId);
+      
+      if (!topicProgress || !topicProgress.questionsAnswered || topicProgress.questionsAnswered < 3) {
+        // Not enough data, start with moderate difficulty
+        return res.json({ 
+          difficulty: 3, 
+          reasoning: "Starting with moderate difficulty - not enough performance data yet.",
+          encouragement: "Let's find the perfect challenge level for you!"
+        });
+      }
+
+      // Calculate recent performance (basic implementation - could be enhanced)
+      const recentAccuracy = (topicProgress.correctAnswers || 0) / (topicProgress.questionsAnswered || 1);
+      const overallCorrect = progress.reduce((sum: number, p: Progress) => sum + (p.correctAnswers || 0), 0);
+      const overallTotal = progress.reduce((sum: number, p: Progress) => sum + (p.questionsAnswered || 0), 0);
+      const learningVelocity = recentAccuracy > 0.7 ? 0.8 : recentAccuracy > 0.5 ? 0.6 : 0.4;
+
+      const difficultyResult = await calculateAdaptiveDifficulty({
+        topicId,
+        studentPerformance: {
+          recentAccuracy,
+          topicMastery: recentAccuracy,
+          learningVelocity,
+          streakLength: topicProgress.currentStreak || 0,
+          timeSpentPerQuestion: 60 // Default, could be tracked more precisely
+        },
+        currentDifficulty: 3 // Default current difficulty
+      });
+
+      res.json(difficultyResult);
+    } catch (error) {
+      console.error("Error calculating adaptive difficulty:", error);
+      res.status(500).json({ message: "Failed to calculate adaptive difficulty" });
+    }
+  });
+
+  // Personalized explanation generation
+  app.post("/api/questions/personalized-explanation", async (req, res) => {
+    try {
+      const { 
+        questionId, 
+        studentAnswer, 
+        studentId = "demo-student", 
+        isCorrect 
+      } = req.body;
+      
+      const question = await storage.getQuestion(questionId);
+      if (!question) {
+        return res.status(404).json({ message: "Question not found" });
+      }
+
+      const student = await storage.getStudent(studentId);
+      const progress = await storage.getStudentProgress(studentId);
+      const topic = await storage.getTopic(question.topicId);
+      
+      // Calculate confidence level based on recent performance
+      const overallCorrect = progress.reduce((sum: number, p: Progress) => sum + (p.correctAnswers || 0), 0);
+      const overallTotal = progress.reduce((sum: number, p: Progress) => sum + (p.questionsAnswered || 0), 0);
+      const confidenceLevel = overallTotal > 0 ? overallCorrect / overallTotal : 0.5;
+
+      // Basic mistake pattern analysis (could be enhanced)
+      const previousMistakes: string[] = [];
+      progress.forEach((p: Progress) => {
+        if (p.questionsAnswered && p.correctAnswers && p.questionsAnswered > 0 && (p.correctAnswers / p.questionsAnswered) < 0.5) {
+          previousMistakes.push("calculation errors"); // Simplified for now
+        }
+      });
+
+      const correctOption = (question.options as string[])[question.correctAnswer];
+      const explanation = await generatePersonalizedExplanation({
+        question: question.question,
+        studentAnswer,
+        correctAnswer: correctOption,
+        studentProfile: {
+          ageGroup: (student?.ageGroup || topic?.ageGroup || "primary") as "pre-primary" | "primary" | "upper-primary",
+          learningStyle: undefined as "visual" | "analytical" | "practical" | "creative" | undefined,
+          confidenceLevel,
+          previousMistakes
+        },
+        isCorrect
+      });
+
+      res.json({ explanation });
+    } catch (error) {
+      console.error("Error generating personalized explanation:", error);
+      res.status(500).json({ message: "Failed to generate explanation" });
     }
   });
 
