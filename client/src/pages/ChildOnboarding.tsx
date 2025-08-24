@@ -30,6 +30,7 @@ import {
   HeartIcon
 } from "@/components/GeometricIcons";
 import type { AgeGroup } from "@/components/AgeSelector";
+import scoutImage from '@assets/image_1756014874313.png';
 
 interface OnboardingStep {
   id: string;
@@ -415,7 +416,7 @@ export default function ChildOnboarding() {
                   <div className="animate-bounce">
                     <div className="w-32 h-32 relative">
                       <img
-                        src="/attached_assets/image_1756014874313.png"
+                        src={scoutImage}
                         alt="Scout - Your Explorer Buddy"
                         className="w-full h-full object-contain drop-shadow-lg"
                       />
