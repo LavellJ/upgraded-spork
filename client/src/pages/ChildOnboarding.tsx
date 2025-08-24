@@ -42,7 +42,6 @@ export default function ChildOnboarding() {
   const [currentStep, setCurrentStep] = useState(0);
   const [childName, setChildName] = useState("");
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<AgeGroup | "">("");
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [learningStyle, setLearningStyle] = useState<string>("");
   const [isComplete, setIsComplete] = useState(false);
   const { toast } = useToast();
@@ -59,7 +58,6 @@ export default function ChildOnboarding() {
         id: data.id,
         name: childName,
         ageGroup: selectedAgeGroup,
-        interests: selectedInterests,
         learningStyle
       }));
       localStorage.setItem("selectedAgeGroup", selectedAgeGroup);
@@ -79,69 +77,51 @@ export default function ChildOnboarding() {
       id: "pre-primary", 
       label: "Little Explorer", 
       description: "Ages 4-6 • Fun with letters, numbers & colors",
-      icon: <LittleExplorerIcon size={48} className="mx-auto" />
+      icon: <LittleExplorerIcon size={96} className="mx-auto" />
     },
     { 
       id: "primary", 
       label: "Young Adventurer", 
       description: "Ages 6-9 • Reading, math & discovering the world",
-      icon: <YoungAdventurerIcon size={48} className="mx-auto" />
+      icon: <YoungAdventurerIcon size={96} className="mx-auto" />
     },
     { 
       id: "upper-primary", 
       label: "Brave Scholar", 
       description: "Ages 9-12 • Advanced thinking & problem solving",
-      icon: <BraveScholarIcon size={48} className="mx-auto" />
+      icon: <BraveScholarIcon size={96} className="mx-auto" />
     }
   ];
 
-  const interests = [
-    { id: "animals", label: "Animals", icon: <AnimalsIcon size={32} /> },
-    { id: "space", label: "Space", icon: <SpaceIcon size={32} /> },
-    { id: "nature", label: "Nature", icon: <NatureIcon size={32} /> },
-    { id: "art", label: "Art", icon: <ArtIcon size={32} /> },
-    { id: "music", label: "Music", icon: <MusicIcon size={32} /> },
-    { id: "sports", label: "Sports", icon: <SportsIcon size={32} /> },
-    { id: "books", label: "Books", icon: <BooksIcon size={32} /> },
-    { id: "science", label: "Science", icon: <ScienceIcon size={32} /> }
-  ];
 
   const learningStyles = [
     { 
       id: "visual", 
       label: "I love pictures and colors", 
-      icon: <VisualLearningIcon size={32} />,
+      icon: <VisualLearningIcon size={128} />,
       description: "Learn best with images, charts, and visual aids"
     },
     { 
       id: "hands-on", 
       label: "I like to touch and build things", 
-      icon: <HandsOnLearningIcon size={32} />,
+      icon: <HandsOnLearningIcon size={128} />,
       description: "Learn best by doing activities and experiments"
     },
     { 
       id: "listening", 
       label: "I enjoy stories and music", 
-      icon: <AudioLearningIcon size={32} />,
+      icon: <AudioLearningIcon size={128} />,
       description: "Learn best through sounds, songs, and discussions"
     }
   ];
 
-  const toggleInterest = (interestId: string) => {
-    setSelectedInterests(prev => 
-      prev.includes(interestId) 
-        ? prev.filter(id => id !== interestId)
-        : [...prev, interestId]
-    );
-  };
 
   const canProceed = () => {
     switch (currentStep) {
       case 0: return true; // Welcome step
       case 1: return childName.trim().length > 0;
       case 2: return selectedAgeGroup !== "";
-      case 3: return selectedInterests.length > 0;
-      case 4: return learningStyle !== "";
+      case 3: return learningStyle !== ""; // Learning style is now step 3
       default: return false;
     }
   };
@@ -293,59 +273,6 @@ export default function ChildOnboarding() {
       )
     },
     {
-      id: "interests",
-      title: "What Do You Love?",
-      component: (
-        <div className="space-y-8">
-          <div className="text-center space-y-4">
-            <div className="mb-6">
-              <HeartIcon size={72} className="mx-auto text-pink-300" />
-            </div>
-            <h2 className="font-display text-3xl font-bold text-white">
-              Tell us what makes you excited!
-            </h2>
-            <p className="text-white/80">
-              Pick as many as you like - we'll make learning super fun!
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {interests.map((interest) => (
-              <Card
-                key={interest.id}
-                className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
-                  selectedInterests.includes(interest.id)
-                    ? 'bg-gradient-to-r from-pink-500/30 to-yellow-500/30 border-pink-400/50'
-                    : 'bg-white/10 border-white/20'
-                } backdrop-blur-sm`}
-                onClick={() => toggleInterest(interest.id)}
-                data-testid={`card-interest-${interest.id}`}
-              >
-                <CardContent className="p-4 text-center">
-                  <div className="mb-2">{interest.icon}</div>
-                  <p className="text-white font-semibold text-sm">{interest.label}</p>
-                  {selectedInterests.includes(interest.id) && (
-                    <Star className="w-4 h-4 text-yellow-400 mx-auto mt-2 animate-spin" />
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          
-          {selectedInterests.length > 0 && (
-            <div className="text-center">
-              <Badge className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2">
-                <div className="flex items-center gap-2">
-                  {selectedInterests.length} awesome choice{selectedInterests.length !== 1 ? 's' : ''}!
-                  <SparkleIcon size={16} className="text-yellow-300" />
-                </div>
-              </Badge>
-            </div>
-          )}
-        </div>
-      )
-    },
-    {
       id: "learning-style",
       title: "How Do You Like to Learn?",
       component: (
@@ -374,12 +301,12 @@ export default function ChildOnboarding() {
                 onClick={() => setLearningStyle(style.id)}
                 data-testid={`card-style-${style.id}`}
               >
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-4">
-                    <div>{style.icon}</div>
-                    <div className="flex-1">
-                      <h3 className="text-white font-bold text-lg">{style.label}</h3>
-                      <p className="text-white/70 text-sm">{style.description}</p>
+                <CardContent className="p-8">
+                  <div className="flex flex-col items-center space-y-4 text-center">
+                    <div className="mb-4">{style.icon}</div>
+                    <div>
+                      <h3 className="text-white font-bold text-xl">{style.label}</h3>
+                      <p className="text-white/70 text-base mt-2">{style.description}</p>
                     </div>
                     {learningStyle === style.id && (
                       <Heart className="w-6 h-6 text-pink-400 animate-pulse" />
@@ -502,7 +429,7 @@ export default function ChildOnboarding() {
       </div>
       
       {/* Show Explorer Buddy from step 2 onwards */}
-      {currentStep >= 2 && selectedAgeGroup && (
+      {currentStep >= 1 && selectedAgeGroup && (
         <ExplorerBuddy 
           ageGroup={selectedAgeGroup as AgeGroup}
           currentPage="/onboarding"
