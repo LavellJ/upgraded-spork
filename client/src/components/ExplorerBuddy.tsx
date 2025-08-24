@@ -191,24 +191,10 @@ export function ExplorerBuddy({
     };
   }, [generateMessage]);
 
-  // Get appropriate expression image based on mood
+  // Always use the default expression for consistent feel
   const getExpressionImage = useCallback(() => {
-    switch (buddyMood) {
-      case 'excited':
-      case 'happy':
-        return explorerHappy;
-      case 'thinking':
-      case 'thoughtful':
-        return explorerThinking;
-      case 'surprised':
-        return explorerSurprised;
-      case 'celebrating':
-        return explorerCelebrating;
-      case 'neutral':
-      default:
-        return explorerDefault;
-    }
-  }, [buddyMood]);
+    return explorerDefault;
+  }, []);
 
   // Explorer character visual design (Alto-inspired) with mood animations
   const ExplorerCharacter = () => (
