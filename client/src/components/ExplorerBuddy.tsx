@@ -239,7 +239,7 @@ export function ExplorerBuddy({
       >
         <img
           src={getExpressionImage()}
-          alt="Explorer Buddy"
+          alt="Scout - Explorer Buddy"
           className="w-full h-full object-contain"
           style={{
             filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12))',
@@ -310,7 +310,7 @@ export function ExplorerBuddy({
               >
                 {currentMessage.text}
               </p>
-              <div className="text-xs text-gray-400">Your explorer buddy</div>
+              <div className="text-xs text-gray-400">Scout, your explorer buddy</div>
               
               {/* Speech bubble arrow */}
               <div className="absolute -bottom-2 right-6 w-4 h-4 bg-white/95 border-r border-b border-white/20 rotate-45 backdrop-blur-sm"></div>

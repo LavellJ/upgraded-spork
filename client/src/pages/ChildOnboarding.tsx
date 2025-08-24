@@ -159,7 +159,7 @@ export default function ChildOnboarding() {
               Ready for an Amazing Adventure?
             </h2>
             <p className="text-white/80 text-lg max-w-md mx-auto">
-              You're about to meet your learning buddy and start exploring a magical world of knowledge!
+              You're about to meet Scout, your learning buddy, and start exploring a magical world of knowledge!
             </p>
           </div>
           
@@ -179,7 +179,7 @@ export default function ChildOnboarding() {
               </div>
               <div className="flex items-center gap-3">
                 <LittleExplorerIcon size={16} className="text-green-300" />
-                <span>Your buddy will help you!</span>
+                <span>Scout will help you!</span>
               </div>
             </div>
           </div>
