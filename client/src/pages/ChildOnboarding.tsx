@@ -399,8 +399,8 @@ export default function ChildOnboarding() {
       <>
         <AtmosphericBackground />
         <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
-          <div className="max-w-2xl mx-auto text-center space-y-8">
-            <div className="mb-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-8 text-center">
               <div className="text-4xl mb-4">✨</div>
               <h2 className="font-display text-3xl font-bold text-white mb-2">
                 Meet Scout!
@@ -408,37 +408,58 @@ export default function ChildOnboarding() {
               <div className="text-4xl">✨</div>
             </div>
             
-            <div className="floating-ui rounded-3xl p-8 max-w-xl mx-auto">
-              <div className="space-y-6 text-white">
-                <p className="text-lg font-medium">
-                  "Hi, I'm Scout!
-                </p>
-                
-                <p className="text-base leading-relaxed">
-                  I love exploring, discovering new things, and sometimes even getting a little lost (that's how the best adventures begin!). Just like you, I'm here to learn, grow, and have fun along the way.
-                </p>
-                
-                <p className="text-base leading-relaxed">
-                  We'll be journeying side by side—sometimes I'll cheer you on, sometimes I'll need your help, and whenever you feel stuck, I'll be right here to figure it out with you.
-                </p>
-                
-                <p className="text-base leading-relaxed">
-                  Think of me as your adventure buddy. Together, we'll unlock new worlds, face challenges, and celebrate every step forward.
-                </p>
-                
-                <p className="text-lg font-medium text-center mt-8">
-                  Are you ready? Let's start our adventure!"
-                </p>
+            <div className="grid lg:grid-cols-2 gap-8 items-center">
+              {/* Scout Character */}
+              <div className="flex justify-center lg:justify-end">
+                <div className="relative">
+                  <div className="animate-bounce">
+                    {selectedAgeGroup && (
+                      <ExplorerBuddy 
+                        ageGroup={selectedAgeGroup as AgeGroup}
+                        currentPage="/onboarding"
+                        isStudying={false}
+                      />
+                    )}
+                  </div>
+                  <div className="absolute -top-4 -right-4 text-4xl animate-pulse">👋</div>
+                </div>
+              </div>
+              
+              {/* Scout's Introduction Text */}
+              <div className="floating-ui rounded-3xl p-8">
+                <div className="space-y-6 text-white">
+                  <p className="text-lg font-medium">
+                    "Hi, I'm Scout!
+                  </p>
+                  
+                  <p className="text-base leading-relaxed">
+                    I love exploring, discovering new things, and sometimes even getting a little lost (that's how the best adventures begin!). Just like you, I'm here to learn, grow, and have fun along the way.
+                  </p>
+                  
+                  <p className="text-base leading-relaxed">
+                    We'll be journeying side by side—sometimes I'll cheer you on, sometimes I'll need your help, and whenever you feel stuck, I'll be right here to figure it out with you.
+                  </p>
+                  
+                  <p className="text-base leading-relaxed">
+                    Think of me as your adventure buddy. Together, we'll unlock new worlds, face challenges, and celebrate every step forward.
+                  </p>
+                  
+                  <p className="text-lg font-medium text-center mt-8">
+                    Are you ready? Let's start our adventure!"
+                  </p>
+                </div>
               </div>
             </div>
             
-            <Button
-              onClick={() => setLocation("/dashboard")}
-              className="bg-gradient-to-r from-sunset-orange to-warm-orange text-white px-8 py-4 rounded-2xl font-display font-semibold text-lg hover:scale-105 transition-all duration-300 shadow-2xl"
-              data-testid="button-start-adventure"
-            >
-              Let's Go, Scout!
-            </Button>
+            <div className="text-center mt-8">
+              <Button
+                onClick={() => setLocation("/dashboard")}
+                className="bg-gradient-to-r from-sunset-orange to-warm-orange text-white px-8 py-4 rounded-2xl font-display font-semibold text-lg hover:scale-105 transition-all duration-300 shadow-2xl"
+                data-testid="button-start-adventure"
+              >
+                Let's Go, Scout!
+              </Button>
+            </div>
           </div>
         </div>
         
