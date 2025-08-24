@@ -213,87 +213,122 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
     return <div>Loading examples...</div>;
   }
 
-  // Clean, minimalist try phase for pre-primary - matching Alto's Odyssey aesthetic
+  // Co-Learning phase for pre-primary following Scout's Teaching Cycle
   if (ageGroup === "pre-primary") {
-    const [currentStep, setCurrentStep] = useState(0);
-    const [showSuccess, setShowSuccess] = useState(false);
+    const [coLearningStep, setCoLearningStep] = useState<'buddy' | 'guided' | 'success'>('buddy');
+    const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
     
-    // Get actual logical questions from the content
-    const practiceSteps = [
-      {
-        question: "Let's try together",
-        instruction: "Touch the right answer", 
-        choices: [
-          { text: "Yes", visual: "✓", correct: true },
-          { text: "No", visual: "✗", correct: false }
-        ]
-      }
-    ];
-    
-    const current = practiceSteps[currentStep] || practiceSteps[0];
-    
-    const handleChoice = (choice: any) => {
-      setShowSuccess(true);
+    const handleCoSolve = (choice: string) => {
+      setSelectedChoice(choice);
+      setCoLearningStep('guided');
+      
+      // After showing guidance, move to success
       setTimeout(() => {
-        if (currentStep < practiceSteps.length - 1) {
-          setCurrentStep(prev => prev + 1);
-          setShowSuccess(false);
-        } else {
+        setCoLearningStep('success');
+        setTimeout(() => {
           handlePhaseComplete();
-        }
-      }, 1500);
+        }, 2000);
+      }, 3000);
     };
     
     return (
       <div className="space-y-8 max-w-2xl mx-auto">
-        {/* Minimalist Header */}
-        <div className="floating-ui rounded-3xl p-8 text-center" data-testid="try-phase-header">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-warm-orange to-sunset-orange flex items-center justify-center">
-            <div className="text-2xl text-white">✓</div>
-          </div>
-          <h2 className="font-display text-2xl font-bold text-white">
-            Try It
-          </h2>
-        </div>
-
-        {!showSuccess ? (
-          <div className="floating-ui rounded-3xl p-12" data-testid="simple-practice">
-            <div className="text-center space-y-8">
-              <div className="text-white text-xl font-medium">
-                {current.question}
+        {/* Co-Learning (Buddy System) */}
+        {coLearningStep === 'buddy' && (
+          <div className="floating-ui rounded-3xl p-8" data-testid="co-learning">
+            <div className="text-center space-y-6">
+              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center">
+                <div className="text-white text-3xl">🤝</div>
               </div>
               
-              <div className="text-white/70 text-lg">
-                {current.instruction}
+              <div className="text-white text-xl font-bold">
+                Let's figure this out together!
               </div>
               
-              <div className="grid grid-cols-2 gap-6 max-w-sm mx-auto">
-                {current.choices.map((choice, index) => (
+              <div className="text-white/80 text-lg leading-relaxed">
+                I'm not sure either... but I have an idea. Want to try it with me?
+              </div>
+              
+              {/* Interactive Problem Solving */}
+              <div className="bg-white/10 rounded-2xl p-8 backdrop-blur-sm">
+                <div className="text-white text-base mb-6">
+                  Which one do you think we should choose?
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
                   <button
-                    key={index}
-                    onClick={() => handleChoice(choice)}
-                    className="aspect-square p-8 bg-gradient-to-b from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 rounded-2xl border-2 border-white/20 hover:border-white/40 transition-all duration-300 hover:scale-105 flex flex-col items-center justify-center"
-                    data-testid={`choice-${index}`}
+                    onClick={() => handleCoSolve('first')}
+                    className="p-6 bg-gradient-to-b from-green-400/30 to-green-400/20 hover:from-green-400/40 hover:to-green-400/30 rounded-2xl border-2 border-green-400/40 hover:border-green-400/60 transition-all hover:scale-105 flex flex-col items-center justify-center"
+                    data-testid="choice-first"
                   >
-                    <div className="text-4xl mb-3 text-white">{choice.visual}</div>
-                    <div className="text-white text-lg font-medium">{choice.text}</div>
+                    <div className="text-3xl mb-2 text-white">✨</div>
+                    <div className="text-white text-base font-medium">This one</div>
                   </button>
-                ))}
+                  
+                  <button
+                    onClick={() => handleCoSolve('second')}
+                    className="p-6 bg-gradient-to-b from-blue-400/30 to-blue-400/20 hover:from-blue-400/40 hover:to-blue-400/30 rounded-2xl border-2 border-blue-400/40 hover:border-blue-400/60 transition-all hover:scale-105 flex flex-col items-center justify-center"
+                    data-testid="choice-second"
+                  >
+                    <div className="text-3xl mb-2 text-white">🌟</div>
+                    <div className="text-white text-base font-medium">That one</div>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        ) : (
+        )}
+        
+        {/* Guided Practice */}
+        {coLearningStep === 'guided' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="floating-ui rounded-3xl p-8"
+            data-testid="guided-practice"
+          >
+            <div className="text-center space-y-6">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center">
+                <div className="text-white text-2xl">💬</div>
+              </div>
+              
+              <div className="text-white text-lg font-bold">
+                Great choice!
+              </div>
+              
+              <div className="bg-white/10 rounded-2xl p-8 backdrop-blur-sm">
+                <div className="text-white/90 text-base leading-relaxed">
+                  I think you picked {selectedChoice === 'first' ? 'the sparkly one' : 'the star one'}! 
+                  That makes sense because... <br/><br/>
+                  <span className="text-green-300">You're learning to think through problems step by step!</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+        
+        {/* Success & Encouragement */}
+        {coLearningStep === 'success' && (
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5 }}
             className="floating-ui rounded-3xl p-12 text-center"
-            data-testid="success-state"
+            data-testid="co-learning-success"
           >
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center">
-              <div className="text-3xl text-white">✓</div>
+            <div className="space-y-6">
+              <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center">
+                <div className="text-white text-4xl">🎉</div>
+              </div>
+              
+              <div className="text-white text-2xl font-bold">
+                We did it together!
+              </div>
+              
+              <div className="text-white/80 text-lg">
+                You're getting really good at this exploring!
+              </div>
             </div>
-            <div className="text-white text-2xl font-bold">Well done!</div>
           </motion.div>
         )}
       </div>

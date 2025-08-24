@@ -128,73 +128,128 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
 
   const language = getAgeAppropriateLanguage();
 
-  // Clean, minimalist reflect phase for pre-primary - Alto's Odyssey aesthetic
+  // Memory Anchors & Real-World Application for pre-primary
   if (ageGroup === "pre-primary") {
+    const [reflectStep, setReflectStep] = useState<'memory' | 'realworld' | 'complete'>('memory');
+    const [memoryAnchor, setMemoryAnchor] = useState<string | null>(null);
+    
+    const handleMemoryChoice = (anchor: string) => {
+      setMemoryAnchor(anchor);
+      setReflectStep('realworld');
+    };
+    
     return (
       <div className="space-y-8 max-w-2xl mx-auto">
-        {/* Minimalist Header */}
-        <div className="floating-ui rounded-3xl p-8 text-center" data-testid="reflect-phase-header">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
-            <div className="text-2xl text-white">⟲</div>
-          </div>
-          <h2 className="font-display text-2xl font-bold text-white">
-            Reflect
-          </h2>
-        </div>
-
-        {!selfAssessmentComplete ? (
-          <div className="floating-ui rounded-3xl p-12" data-testid="simple-reflect-content">
-            <div className="text-center space-y-8">
-              <div className="text-white text-lg font-medium">
-                How did that feel?
+        {/* Memory Anchors Phase */}
+        {reflectStep === 'memory' && (
+          <div className="floating-ui rounded-3xl p-8" data-testid="memory-anchors">
+            <div className="text-center space-y-6">
+              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                <div className="text-white text-3xl">🧠</div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+              <div className="text-white text-xl font-bold">
+                Let's remember this adventure!
+              </div>
+              
+              <div className="text-white/80 text-lg">
+                What was the most fun part?
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                 <button
-                  onClick={() => {
-                    handleResponse(currentPrompt?.id || 'feeling', 'good');
-                    handleNextPrompt();
-                  }}
-                  className="aspect-square p-6 bg-gradient-to-b from-green-400/30 to-green-400/20 hover:from-green-400/40 hover:to-green-400/30 rounded-2xl border-2 border-green-400/40 hover:border-green-400/60 transition-all hover:scale-105 flex flex-col items-center justify-center"
-                  data-testid="feeling-good"
+                  onClick={() => handleMemoryChoice('discovery')}
+                  className="p-6 bg-gradient-to-b from-blue-400/30 to-blue-400/20 hover:from-blue-400/40 hover:to-blue-400/30 rounded-2xl border-2 border-blue-400/40 hover:border-blue-400/60 transition-all hover:scale-105 flex flex-col items-center justify-center"
+                  data-testid="memory-discovery"
                 >
-                  <div className="text-2xl mb-2 text-white">✓</div>
-                  <div className="text-white text-sm font-medium">Good</div>
+                  <div className="text-3xl mb-2 text-white">🔍</div>
+                  <div className="text-white text-base font-medium">Exploring</div>
                 </button>
                 
                 <button
-                  onClick={() => {
-                    handleResponse(currentPrompt?.id || 'feeling', 'tricky');
-                    handleNextPrompt();
-                  }}
-                  className="aspect-square p-6 bg-gradient-to-b from-orange-400/30 to-orange-400/20 hover:from-orange-400/40 hover:to-orange-400/30 rounded-2xl border-2 border-orange-400/40 hover:border-orange-400/60 transition-all hover:scale-105 flex flex-col items-center justify-center"
-                  data-testid="feeling-tricky"
+                  onClick={() => handleMemoryChoice('solving')}
+                  className="p-6 bg-gradient-to-b from-green-400/30 to-green-400/20 hover:from-green-400/40 hover:to-green-400/30 rounded-2xl border-2 border-green-400/40 hover:border-green-400/60 transition-all hover:scale-105 flex flex-col items-center justify-center"
+                  data-testid="memory-solving"
                 >
-                  <div className="text-2xl mb-2 text-white">?</div>
-                  <div className="text-white text-sm font-medium">Tricky</div>
+                  <div className="text-3xl mb-2 text-white">🧩</div>
+                  <div className="text-white text-base font-medium">Solving</div>
                 </button>
               </div>
             </div>
           </div>
-        ) : (
-          <div className="floating-ui rounded-3xl p-12 text-center" data-testid="simple-reflect-complete">
-            <div className="space-y-6">
-              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center">
-                <div className="text-3xl text-white">✓</div>
+        )}
+        
+        {/* Real-World Application */}
+        {reflectStep === 'realworld' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="floating-ui rounded-3xl p-8"
+            data-testid="real-world-connection"
+          >
+            <div className="text-center space-y-6">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-r from-warm-orange to-sunset-orange flex items-center justify-center">
+                <div className="text-white text-2xl">🏠</div>
               </div>
-              <div className="text-white text-xl font-medium">
-                Great thinking!
+              
+              <div className="text-white text-lg font-bold">
+                Where might you use this at home?
+              </div>
+              
+              <div className="bg-white/10 rounded-2xl p-8 backdrop-blur-sm">
+                <div className="text-white/90 text-base leading-relaxed">
+                  {memoryAnchor === 'discovery' 
+                    ? "Next time you're playing, you could explore and discover new things just like we did!"
+                    : "When you have a tricky problem at home, you can think it through step by step like we practiced!"
+                  }
+                </div>
+              </div>
+              
+              <button
+                onClick={() => {
+                  handleResponse(currentPrompt?.id || 'memory', memoryAnchor || 'learned');
+                  setReflectStep('complete');
+                }}
+                className="px-6 py-3 bg-gradient-to-r from-green-400 to-blue-400 text-white font-medium rounded-2xl hover:scale-105 transition-all"
+                data-testid="understand-connection"
+              >
+                I get it!
+              </button>
+            </div>
+          </motion.div>
+        )}
+        
+        {/* Completion with Reward */}
+        {reflectStep === 'complete' && (
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="floating-ui rounded-3xl p-12 text-center"
+            data-testid="reflection-complete"
+          >
+            <div className="space-y-6">
+              <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                <div className="text-white text-4xl">🏆</div>
+              </div>
+              
+              <div className="text-white text-2xl font-bold">
+                Explorer's Badge Earned!
+              </div>
+              
+              <div className="text-white/80 text-lg">
+                You're becoming a great learner!
               </div>
               
               <button
                 onClick={handlePhaseComplete}
                 className="px-8 py-4 bg-gradient-to-r from-purple-400 to-pink-400 text-white text-lg font-medium rounded-2xl hover:scale-105 transition-all"
-                data-testid="button-continue"
+                data-testid="create-something"
               >
-                Create
+                Let's create something!
               </button>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
     );

@@ -199,74 +199,145 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
 
   const language = getAgeAppropriateLanguage();
 
-  // Clean, minimalist create phase for pre-primary - Alto's Odyssey aesthetic
+  // Reward & Progression phase for pre-primary - completing Scout's Teaching Cycle
   if (ageGroup === "pre-primary") {
+    const [createStep, setCreateStep] = useState<'share' | 'celebrate' | 'next'>('share');
+    
     return (
       <div className="space-y-8 max-w-2xl mx-auto">
-        {/* Minimalist Header */}
-        <div className="floating-ui rounded-3xl p-8 text-center" data-testid="create-phase-header">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 flex items-center justify-center">
-            <div className="text-2xl text-white">✦</div>
-          </div>
-          <h2 className="font-display text-2xl font-bold text-white">
-            Create
-          </h2>
-        </div>
-
-        <div className="floating-ui rounded-3xl p-12" data-testid="simple-creation">
-          <div className="text-center space-y-8">
-            <div className="text-white text-lg font-medium mb-8">
-              Show what you learned
-            </div>
-            
-            <div className="space-y-6">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-                id="creation-upload"
-              />
-              <label
-                htmlFor="creation-upload"
-                className="block w-full p-8 bg-gradient-to-b from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 rounded-2xl border-2 border-white/20 hover:border-white/40 transition-all duration-300 hover:scale-105 cursor-pointer"
-                data-testid="upload-creation"
-              >
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-warm-orange to-sunset-orange flex items-center justify-center">
-                  <div className="text-white text-2xl">📷</div>
-                </div>
-                <div className="text-white text-lg font-medium">Add Photo</div>
-                <div className="text-white/60 text-sm mt-2">Take a picture or upload</div>
-              </label>
+        {/* Share Your Adventure */}
+        {createStep === 'share' && (
+          <div className="floating-ui rounded-3xl p-8" data-testid="share-adventure">
+            <div className="text-center space-y-6">
+              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-purple-400 to-blue-400 flex items-center justify-center">
+                <div className="text-white text-3xl">🎨</div>
+              </div>
               
-              <div className="text-white/60 text-sm">or</div>
+              <div className="text-white text-xl font-bold">
+                Let's capture our adventure!
+              </div>
               
-              <textarea
-                value={textContent}
-                onChange={(e) => setTextContent(e.target.value)}
-                placeholder="Tell about what you learned..."
-                className="w-full h-24 bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl p-4 text-white placeholder-white/60 focus:border-white/40 focus:outline-none resize-none"
-                data-testid="text-creation"
-              />
-            </div>
-            
-            {(artifacts.length > 0 || textContent.trim()) && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="pt-6"
-              >
-                <button
-                  onClick={handlePhaseComplete}
-                  className="px-8 py-4 bg-gradient-to-r from-purple-400 to-blue-400 text-white text-lg font-medium rounded-2xl hover:scale-105 transition-all"
-                  data-testid="finish-creation"
+              <div className="text-white/80 text-lg">
+                Show someone what we discovered together
+              </div>
+              
+              <div className="space-y-4">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    handleImageUpload(e);
+                    setCreateStep('celebrate');
+                  }}
+                  className="hidden"
+                  id="adventure-photo"
+                />
+                <label
+                  htmlFor="adventure-photo"
+                  className="block p-6 bg-gradient-to-b from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 rounded-2xl border-2 border-white/20 hover:border-white/40 transition-all duration-300 hover:scale-105 cursor-pointer"
+                  data-testid="capture-adventure"
                 >
-                  Finish
+                  <div className="text-center">
+                    <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gradient-to-r from-warm-orange to-sunset-orange flex items-center justify-center">
+                      <div className="text-white text-xl">📷</div>
+                    </div>
+                    <div className="text-white text-base font-medium">Take a Photo</div>
+                    <div className="text-white/60 text-sm mt-1">Of your work or yourself!</div>
+                  </div>
+                </label>
+                
+                <div className="text-white/40 text-sm">or</div>
+                
+                <button
+                  onClick={() => {
+                    setTextContent('I went on an amazing learning adventure!');
+                    setCreateStep('celebrate');
+                  }}
+                  className="w-full p-6 bg-gradient-to-b from-blue-400/20 to-blue-400/10 hover:from-blue-400/30 hover:to-blue-400/20 rounded-2xl border-2 border-blue-400/30 hover:border-blue-400/50 transition-all hover:scale-105"
+                  data-testid="tell-story"
+                >
+                  <div className="text-center">
+                    <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gradient-to-r from-green-400 to-blue-400 flex items-center justify-center">
+                      <div className="text-white text-xl">💬</div>
+                    </div>
+                    <div className="text-white text-base font-medium">Tell the Story</div>
+                    <div className="text-white/60 text-sm mt-1">Share what you learned</div>
+                  </div>
                 </button>
-              </motion.div>
-            )}
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+        
+        {/* Celebrate Achievement */}
+        {createStep === 'celebrate' && (
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="floating-ui rounded-3xl p-12 text-center"
+            data-testid="celebration"
+          >
+            <div className="space-y-6">
+              <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 flex items-center justify-center animate-pulse">
+                <div className="text-white text-6xl">🏆</div>
+              </div>
+              
+              <div className="text-white text-3xl font-bold">
+                Amazing Explorer!
+              </div>
+              
+              <div className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm">
+                <div className="text-white/90 text-lg leading-relaxed">
+                  You completed the whole adventure! You learned, tried, thought about it, and shared it. 
+                  <br/><br/>
+                  <span className="text-yellow-300 font-medium">That's what great learners do!</span>
+                </div>
+              </div>
+              
+              <button
+                onClick={() => setCreateStep('next')}
+                className="px-8 py-4 bg-gradient-to-r from-green-400 to-blue-400 text-white text-lg font-medium rounded-2xl hover:scale-105 transition-all"
+                data-testid="whats-next"
+              >
+                What's next?
+              </button>
+            </div>
+          </motion.div>
+        )}
+        
+        {/* Future Adventures */}
+        {createStep === 'next' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="floating-ui rounded-3xl p-8"
+            data-testid="future-adventures"
+          >
+            <div className="text-center space-y-6">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-r from-dawn-pink to-warm-orange flex items-center justify-center">
+                <div className="text-white text-2xl">🗺️</div>
+              </div>
+              
+              <div className="text-white text-lg font-bold">
+                Ready for another adventure?
+              </div>
+              
+              <div className="text-white/80 text-base">
+                There are so many more amazing things to explore and discover!
+              </div>
+              
+              <button
+                onClick={handlePhaseComplete}
+                className="px-8 py-4 bg-gradient-to-r from-purple-400 to-pink-400 text-white text-lg font-medium rounded-2xl hover:scale-105 transition-all"
+                data-testid="new-adventure"
+              >
+                New Adventure!
+              </button>
+            </div>
+          </motion.div>
+        )}
       </div>
     );
   }
