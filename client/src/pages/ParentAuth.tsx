@@ -33,11 +33,13 @@ export default function ParentAuth() {
   const authMutation = useMutation({
     mutationFn: async (data: any): Promise<AuthResponse> => {
       const endpoint = isLogin ? "/api/parents/login" : "/api/parents/signup";
-      return apiRequest(endpoint, {
+      const response = await fetch(endpoint, {
         method: "POST",
         body: JSON.stringify(data),
         headers: { "Content-Type": "application/json" }
       });
+      if (!response.ok) throw new Error('Authentication failed');
+      return response.json();
     },
     onSuccess: (response: AuthResponse) => {
       // Store session token and parent info
@@ -165,7 +167,7 @@ export default function ParentAuth() {
                 }
               </Button>
               
-              <div className="text-center">
+              <div className="text-center space-y-3">
                 <button
                   type="button"
                   onClick={() => setIsLogin(!isLogin)}
@@ -177,6 +179,31 @@ export default function ParentAuth() {
                     : "Already have an account? Sign in"
                   }
                 </button>
+                
+                <div className="pt-3 border-t border-gray-200">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => {
+                      // Set demo mode data
+                      localStorage.setItem("parentDemoMode", "true");
+                      localStorage.setItem("parentInfo", JSON.stringify({
+                        id: "demo-parent",
+                        name: "Demo Parent",
+                        email: "demo@example.com"
+                      }));
+                      localStorage.setItem("parentSessionToken", "demo-token");
+                      setLocation("/parent/dashboard");
+                    }}
+                    data-testid="button-demo-mode"
+                  >
+                    Preview Dashboard (Demo Mode)
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Explore all parent features with sample data
+                  </p>
+                </div>
               </div>
             </form>
           </CardContent>
