@@ -47,6 +47,22 @@ export default function ChildOnboarding() {
   const [isComplete, setIsComplete] = useState(false);
   const { toast } = useToast();
 
+  // Get the age group from localStorage when component mounts
+  useEffect(() => {
+    const storedAgeGroup = localStorage.getItem("selectedAgeGroup");
+    if (storedAgeGroup) {
+      setSelectedAgeGroup(storedAgeGroup as AgeGroup);
+    } else {
+      // If no age group is selected, redirect back to home
+      toast({
+        title: "Please select an age group first",
+        description: "You need to choose an adventure level before continuing.",
+        variant: "destructive"
+      });
+      setTimeout(() => setLocation("/"), 2000);
+    }
+  }, [setLocation, toast]);
+
   // Create child profile mutation
   const createProfileMutation = useMutation({
     mutationFn: async (profileData: any) => {
