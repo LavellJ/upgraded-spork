@@ -462,14 +462,6 @@ export default function ChildOnboarding() {
             </div>
           </div>
         </div>
-        
-        {selectedAgeGroup && (
-          <ExplorerBuddy 
-            ageGroup={selectedAgeGroup as AgeGroup}
-            currentPage="/onboarding"
-            isStudying={false}
-          />
-        )}
       </>
     );
   }
