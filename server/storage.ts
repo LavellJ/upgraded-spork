@@ -235,7 +235,7 @@ export class MemStorage implements IStorage {
         level: 12,
         isUnlocked: "true"
       },
-      // Upper primary topics
+      // Upper primary topics (Advanced Minds)
       {
         id: randomUUID(),
         name: "Multiplication & Division",
@@ -250,7 +250,87 @@ export class MemStorage implements IStorage {
         subject: "mathematics",
         ageGroup: "upper-primary",
         level: 2,
-        isUnlocked: "false"
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Fractions & Percentages",
+        subject: "mathematics",
+        ageGroup: "upper-primary",
+        level: 3,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Data & Probability",
+        subject: "mathematics",
+        ageGroup: "upper-primary",
+        level: 4,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Advanced Comprehension",
+        subject: "literacy",
+        ageGroup: "upper-primary",
+        level: 5,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Persuasive Writing",
+        subject: "literacy",
+        ageGroup: "upper-primary",
+        level: 6,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Poetry & Language Arts",
+        subject: "literacy",
+        ageGroup: "upper-primary",
+        level: 7,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Research & Information Skills",
+        subject: "literacy",
+        ageGroup: "upper-primary",
+        level: 8,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Chemistry Basics",
+        subject: "science",
+        ageGroup: "upper-primary",
+        level: 9,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Ecosystems & Environment",
+        subject: "science",
+        ageGroup: "upper-primary",
+        level: 10,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Physics & Energy",
+        subject: "science",
+        ageGroup: "upper-primary",
+        level: 11,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Australian History & Civics",
+        subject: "social-studies",
+        ageGroup: "upper-primary",
+        level: 12,
+        isUnlocked: "true"
       }
     ];
 
@@ -1601,6 +1681,743 @@ export class MemStorage implements IStorage {
             correctAnswer: 0,
             explanation: "'Aussie' is a friendly nickname for an Australian person!",
             difficulty: 1
+          }
+        ];
+      } else if (topic.name === "Geometry & Measurement") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What is the area of a rectangle that is 8cm long and 5cm wide?",
+            options: ["13 cm²", "26 cm²", "40 cm²", "80 cm²"],
+            correctAnswer: 2,
+            explanation: "Area = length × width. 8cm × 5cm = 40 cm²",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "How many faces does a cube have?",
+            options: ["4", "6", "8", "12"],
+            correctAnswer: 1,
+            explanation: "A cube has 6 faces - think of a dice!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is the perimeter of a square with sides of 7cm?",
+            options: ["14 cm", "21 cm", "28 cm", "49 cm"],
+            correctAnswer: 2,
+            explanation: "Perimeter = 4 × side length. 4 × 7cm = 28cm",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What type of angle measures exactly 90 degrees?",
+            options: ["Acute", "Right", "Obtuse", "Straight"],
+            correctAnswer: 1,
+            explanation: "A right angle measures exactly 90 degrees - like the corner of a square!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "How many millimetres are in 3.5 centimetres?",
+            options: ["35 mm", "350 mm", "3.5 mm", "0.35 mm"],
+            correctAnswer: 0,
+            explanation: "1 cm = 10 mm, so 3.5 cm = 35 mm",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is the volume of a rectangular prism 4cm × 3cm × 2cm?",
+            options: ["9 cm³", "18 cm³", "24 cm³", "48 cm³"],
+            correctAnswer: 2,
+            explanation: "Volume = length × width × height. 4 × 3 × 2 = 24 cm³",
+            difficulty: 4
+          },
+          {
+            topicId: topic.id,
+            question: "If an angle measures 45 degrees, what type of angle is it?",
+            options: ["Right angle", "Acute angle", "Obtuse angle", "Straight angle"],
+            correctAnswer: 1,
+            explanation: "Acute angles measure less than 90 degrees. 45° < 90°, so it's acute!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is the area of a triangle with base 6cm and height 4cm?",
+            options: ["10 cm²", "12 cm²", "24 cm²", "48 cm²"],
+            correctAnswer: 1,
+            explanation: "Area of triangle = ½ × base × height. ½ × 6 × 4 = 12 cm²",
+            difficulty: 4
+          }
+        ];
+      } else if (topic.name === "Fractions & Percentages") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What is ¾ + ½?",
+            options: ["1¼", "5/6", "1", "2/6"],
+            correctAnswer: 0,
+            explanation: "¾ + ½ = ¾ + 2/4 = 5/4 = 1¼",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is 25% of 80?",
+            options: ["15", "20", "25", "30"],
+            correctAnswer: 1,
+            explanation: "25% = ¼, so 25% of 80 = 80 ÷ 4 = 20",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Which fraction is equivalent to 0.75?",
+            options: ["¾", "⅔", "⅘", "⅝"],
+            correctAnswer: 0,
+            explanation: "0.75 = 75/100 = ¾ when simplified",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "If 60% of students like pizza, what fraction is this?",
+            options: ["⅗", "⅔", "¾", "⅘"],
+            correctAnswer: 0,
+            explanation: "60% = 60/100 = ⅗ when simplified",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is ⅔ - ¼?",
+            options: ["⅜", "5/12", "⅙", "7/12"],
+            correctAnswer: 1,
+            explanation: "⅔ - ¼ = 8/12 - 3/12 = 5/12",
+            difficulty: 4
+          },
+          {
+            topicId: topic.id,
+            question: "If a shirt costs $40 and is 30% off, what is the sale price?",
+            options: ["$28", "$30", "$32", "$35"],
+            correctAnswer: 0,
+            explanation: "30% off means pay 70%. 70% of $40 = $28",
+            difficulty: 4
+          },
+          {
+            topicId: topic.id,
+            question: "What is the ratio 12:8 in its simplest form?",
+            options: ["6:4", "3:2", "4:3", "2:1"],
+            correctAnswer: 1,
+            explanation: "Divide both numbers by 4: 12÷4 : 8÷4 = 3:2",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "If ⅜ of a pizza is eaten, what percentage is left?",
+            options: ["37.5%", "62.5%", "75%", "87.5%"],
+            correctAnswer: 1,
+            explanation: "⅜ eaten = 37.5% eaten, so 100% - 37.5% = 62.5% left",
+            difficulty: 4
+          }
+        ];
+      } else if (topic.name === "Data & Probability") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What is the mean of these numbers: 4, 6, 8, 10, 12?",
+            options: ["6", "8", "9", "10"],
+            correctAnswer: 1,
+            explanation: "Mean = (4+6+8+10+12) ÷ 5 = 40 ÷ 5 = 8",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "If you flip a fair coin, what is the probability of getting heads?",
+            options: ["¼", "⅓", "½", "¾"],
+            correctAnswer: 2,
+            explanation: "A fair coin has 2 equal outcomes (heads or tails), so P(heads) = 1/2",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is the median of: 3, 7, 9, 12, 15?",
+            options: ["7", "9", "10", "12"],
+            correctAnswer: 1,
+            explanation: "The median is the middle value when numbers are in order: 9",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "In a bag with 3 red balls and 7 blue balls, what's the probability of picking red?",
+            options: ["3/10", "3/7", "7/10", "1/3"],
+            correctAnswer: 0,
+            explanation: "P(red) = red balls ÷ total balls = 3 ÷ 10 = 3/10",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is the mode of: 2, 3, 3, 5, 7, 3, 9?",
+            options: ["2", "3", "5", "7"],
+            correctAnswer: 1,
+            explanation: "The mode is the most frequent value. 3 appears three times!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "If you roll a die, what's the probability of getting a number greater than 4?",
+            options: ["⅙", "¼", "⅓", "½"],
+            correctAnswer: 2,
+            explanation: "Numbers greater than 4 are 5 and 6. That's 2 out of 6 = ⅓",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is the range of: 15, 8, 23, 12, 19?",
+            options: ["11", "15", "19", "23"],
+            correctAnswer: 1,
+            explanation: "Range = highest - lowest = 23 - 8 = 15",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "In a survey of 20 students, 8 like maths, 12 like science. How many more like science?",
+            options: ["2", "4", "8", "12"],
+            correctAnswer: 1,
+            explanation: "12 - 8 = 4 more students like science than maths",
+            difficulty: 2
+          }
+        ];
+      } else if (topic.name === "Advanced Comprehension") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What is the author's main purpose in writing a persuasive advertisement?",
+            options: ["To inform", "To entertain", "To persuade", "To describe"],
+            correctAnswer: 2,
+            explanation: "Persuasive advertisements are designed to convince people to buy or do something!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "When comparing two texts about the same topic, what should you look for?",
+            options: ["Similar words", "Different viewpoints", "Same length", "Same author"],
+            correctAnswer: 1,
+            explanation: "Comparing texts means looking for different perspectives and viewpoints on the same topic!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What does it mean to 'read between the lines'?",
+            options: ["Read every other line", "Skip difficult words", "Understand hidden meanings", "Read very slowly"],
+            correctAnswer: 2,
+            explanation: "Reading between the lines means understanding what the author suggests but doesn't directly say!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "If a character says 'Fine!' and slams their book shut, how are they feeling?",
+            options: ["Happy", "Confused", "Frustrated", "Excited"],
+            correctAnswer: 2,
+            explanation: "The tone and actions (slamming the book) show frustration, even though 'fine' usually means okay!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is bias in a text?",
+            options: ["A spelling mistake", "The author's opinion influencing the writing", "A long paragraph", "A difficult word"],
+            correctAnswer: 1,
+            explanation: "Bias is when an author's personal opinions influence how they present information!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What makes a source reliable?",
+            options: ["It's on the internet", "It's written by an expert", "It's very long", "It has pictures"],
+            correctAnswer: 1,
+            explanation: "Reliable sources are written by experts who know the topic well and use evidence!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is foreshadowing in a story?",
+            options: ["Hints about what will happen later", "Describing the weather", "Introducing characters", "The story's ending"],
+            correctAnswer: 0,
+            explanation: "Foreshadowing gives readers clues about future events in the story!",
+            difficulty: 4
+          },
+          {
+            topicId: topic.id,
+            question: "Why might an author choose to tell a story from a child's point of view?",
+            options: ["To make it shorter", "To show innocence and wonder", "To use simple words", "To avoid dialogue"],
+            correctAnswer: 1,
+            explanation: "A child's perspective can show innocence, wonder, and a unique way of seeing the world!",
+            difficulty: 3
+          }
+        ];
+      } else if (topic.name === "Persuasive Writing") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What is the most important part of a persuasive argument?",
+            options: ["Using big words", "Providing strong evidence", "Writing very long sentences", "Using lots of adjectives"],
+            correctAnswer: 1,
+            explanation: "Strong evidence (facts, examples, expert opinions) makes your argument convincing!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which word would make your argument stronger: 'I think...' or 'Research shows...'?",
+            options: ["I think", "Research shows", "Both are equal", "Neither"],
+            correctAnswer: 1,
+            explanation: "'Research shows' uses evidence, which is much more persuasive than personal opinion!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is a counter-argument?",
+            options: ["Agreeing with everyone", "A point that opposes your view", "Writing backwards", "Using numbers"],
+            correctAnswer: 1,
+            explanation: "A counter-argument is an opposing viewpoint that you address to strengthen your case!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Which persuasive technique uses famous people to support your point?",
+            options: ["Statistics", "Celebrity endorsement", "Emotional appeal", "Logical reasoning"],
+            correctAnswer: 1,
+            explanation: "Celebrity endorsement uses famous people's influence to persuade others!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What should you do before writing a persuasive letter?",
+            options: ["Choose fancy paper", "Research your audience", "Count the words", "Pick a pen colour"],
+            correctAnswer: 1,
+            explanation: "Understanding your audience helps you choose the best arguments and tone!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which is an example of emotional appeal?",
+            options: ["'Studies show that 90% agree'", "'Think of the poor animals'", "'The data proves'", "'According to experts'"],
+            correctAnswer: 1,
+            explanation: "'Think of the poor animals' appeals to emotions like sympathy and compassion!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What makes a call to action effective?",
+            options: ["It's very polite", "It's clear and specific", "It's very long", "It rhymes"],
+            correctAnswer: 1,
+            explanation: "Effective calls to action tell people exactly what to do in simple, clear language!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Why is it important to acknowledge different viewpoints?",
+            options: ["To make writing longer", "To show you're fair and thoughtful", "To confuse readers", "To fill space"],
+            correctAnswer: 1,
+            explanation: "Acknowledging other views shows you've considered all sides, making you more credible!",
+            difficulty: 3
+          }
+        ];
+      } else if (topic.name === "Poetry & Language Arts") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What is a metaphor?",
+            options: ["Comparing using 'like' or 'as'", "Comparing without 'like' or 'as'", "A type of rhyme", "Describing sounds"],
+            correctAnswer: 1,
+            explanation: "A metaphor directly compares two things without using 'like' or 'as' - 'Her voice is music'!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is alliteration?",
+            options: ["Words that rhyme", "Repeated consonant sounds", "Long sentences", "Silent letters"],
+            correctAnswer: 1,
+            explanation: "Alliteration repeats the same consonant sound - 'Peter Piper picked a peck'!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is personification?",
+            options: ["Describing a person", "Giving human qualities to non-human things", "Using personal pronouns", "Writing about yourself"],
+            correctAnswer: 1,
+            explanation: "Personification gives human traits to objects or animals - 'The wind whispered'!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is the rhyme scheme of: 'Roses are red (A), Violets are blue (B), Sugar is sweet (C), And so are you (B)'?",
+            options: ["AABB", "ABAB", "ABCB", "ABCC"],
+            correctAnswer: 2,
+            explanation: "Each different ending sound gets a letter: red=A, blue=B, sweet=C, you=B, so ABCB!",
+            difficulty: 4
+          },
+          {
+            topicId: topic.id,
+            question: "Which is an example of onomatopoeia?",
+            options: ["Beautiful bird", "Buzz", "Big balloon", "Happy home"],
+            correctAnswer: 1,
+            explanation: "Onomatopoeia words sound like what they describe - 'buzz' sounds like a bee!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is a simile?",
+            options: ["A happy poem", "Comparing with 'like' or 'as'", "A short story", "Repeated words"],
+            correctAnswer: 1,
+            explanation: "Similes compare using 'like' or 'as' - 'as brave as a lion'!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What creates rhythm in poetry?",
+            options: ["Rhyming words", "The pattern of stressed syllables", "Long lines", "Big words"],
+            correctAnswer: 1,
+            explanation: "Rhythm comes from the pattern of stressed and unstressed syllables - like a heartbeat!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is imagery in poetry?",
+            options: ["Pictures in books", "Words that create mental pictures", "Rhyming words", "Short poems"],
+            correctAnswer: 1,
+            explanation: "Imagery uses descriptive words to help readers 'see' what the poet describes!",
+            difficulty: 3
+          }
+        ];
+      } else if (topic.name === "Research & Information Skills") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What should you do first when starting a research project?",
+            options: ["Write the conclusion", "Choose a specific topic", "Make it pretty", "Count the pages"],
+            correctAnswer: 1,
+            explanation: "Choosing a clear, specific topic helps focus your research and makes it manageable!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which source would be most reliable for information about climate change?",
+            options: ["A friend's opinion", "A scientific journal", "A random blog", "A social media post"],
+            correctAnswer: 1,
+            explanation: "Scientific journals are peer-reviewed and written by experts, making them very reliable!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is the purpose of taking notes while researching?",
+            options: ["To make your project longer", "To record important information", "To practice handwriting", "To use different colours"],
+            correctAnswer: 1,
+            explanation: "Notes help you remember and organise important information from your sources!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Why is it important to check multiple sources?",
+            options: ["To have more pages", "To confirm information is accurate", "To use bigger words", "To impress teachers"],
+            correctAnswer: 1,
+            explanation: "Multiple sources help verify facts and give you a complete, balanced view of the topic!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is plagiarism?",
+            options: ["Good research", "Using someone else's work without credit", "Writing neatly", "Using the internet"],
+            correctAnswer: 1,
+            explanation: "Plagiarism is using someone else's ideas or words without giving them credit - it's like stealing!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What makes a good research question?",
+            options: ["It's very long", "It can be answered with yes or no", "It's specific and focused", "It has big words"],
+            correctAnswer: 2,
+            explanation: "Good research questions are specific, focused, and lead to interesting discoveries!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "When presenting research, what should you include?",
+            options: ["Only your opinion", "Your sources and evidence", "Lots of decorations", "Very small text"],
+            correctAnswer: 1,
+            explanation: "Always include your sources and evidence so others can verify your information!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is a bibliography?",
+            options: ["A type of book", "A list of sources you used", "A summary paragraph", "A research method"],
+            correctAnswer: 1,
+            explanation: "A bibliography lists all the sources you used, giving credit to the original authors!",
+            difficulty: 3
+          }
+        ];
+      } else if (topic.name === "Chemistry Basics") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What are the three main states of matter?",
+            options: ["Hot, cold, warm", "Solid, liquid, gas", "Big, medium, small", "Heavy, light, medium"],
+            correctAnswer: 1,
+            explanation: "The three states of matter are solid, liquid, and gas - like ice, water, and steam!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What happens to water molecules when water boils?",
+            options: ["They disappear", "They move faster and turn to gas", "They freeze", "They get bigger"],
+            correctAnswer: 1,
+            explanation: "When water boils, molecules move so fast they escape as steam (water vapour)!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Which is an example of a chemical change?",
+            options: ["Ice melting", "Burning wood", "Cutting paper", "Breaking glass"],
+            correctAnswer: 1,
+            explanation: "Burning creates new substances (ash, smoke) - that's a chemical change!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is the smallest part of an element called?",
+            options: ["A molecule", "An atom", "A particle", "A piece"],
+            correctAnswer: 1,
+            explanation: "An atom is the smallest unit of an element - like tiny building blocks!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Which is an example of a physical change?",
+            options: ["Rust forming", "Bread toasting", "Ice melting", "Candle burning"],
+            correctAnswer: 2,
+            explanation: "Ice melting to water is just changing state - it's still the same substance (H₂O)!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What happens when you mix baking soda and vinegar?",
+            options: ["Nothing", "They separate", "They react and fizz", "They get hot"],
+            correctAnswer: 2,
+            explanation: "Baking soda and vinegar react chemically, producing carbon dioxide gas that makes it fizz!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is a compound?",
+            options: ["A single element", "Two or more elements joined together", "A state of matter", "A type of atom"],
+            correctAnswer: 1,
+            explanation: "A compound is made when different elements bond together, like water (H₂O)!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Why does ice float on water?",
+            options: ["It's magic", "Ice is less dense than water", "Ice is warmer", "Water pushes it up"],
+            correctAnswer: 1,
+            explanation: "When water freezes, it expands and becomes less dense, so ice floats!",
+            difficulty: 4
+          }
+        ];
+      } else if (topic.name === "Ecosystems & Environment") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What is biodiversity?",
+            options: ["The study of biology", "The variety of life in an ecosystem", "The size of animals", "The age of plants"],
+            correctAnswer: 1,
+            explanation: "Biodiversity is the variety of different plants, animals and organisms in an ecosystem!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is the difference between a food chain and a food web?",
+            options: ["No difference", "Food webs show multiple connected food chains", "Food chains are bigger", "Food webs are for water animals"],
+            correctAnswer: 1,
+            explanation: "A food web shows how multiple food chains connect together in an ecosystem!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is the main cause of habitat destruction?",
+            options: ["Natural disasters", "Human activities", "Animal behaviour", "Weather changes"],
+            correctAnswer: 1,
+            explanation: "Human activities like clearing forests and building cities are the main cause of habitat loss!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is a keystone species?",
+            options: ["The biggest animal", "A species that has a large impact on its ecosystem", "The rarest animal", "The first animal in food chain"],
+            correctAnswer: 1,
+            explanation: "Keystone species have a huge impact - if they disappear, the whole ecosystem changes!",
+            difficulty: 4
+          },
+          {
+            topicId: topic.id,
+            question: "What is the greenhouse effect?",
+            options: ["Growing plants in glass houses", "Gases trapping heat in Earth's atmosphere", "Green plants making oxygen", "Houses painted green"],
+            correctAnswer: 1,
+            explanation: "Greenhouse gases trap heat in our atmosphere, just like glass traps heat in a greenhouse!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Which human activity helps reduce carbon dioxide in the atmosphere?",
+            options: ["Driving cars", "Planting trees", "Burning fossil fuels", "Using electricity"],
+            correctAnswer: 1,
+            explanation: "Trees absorb carbon dioxide from the air during photosynthesis!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is conservation?",
+            options: ["Talking quietly", "Protecting natural resources and wildlife", "Saving money", "Eating less food"],
+            correctAnswer: 1,
+            explanation: "Conservation means protecting and preserving nature for future generations!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Why are decomposers important in ecosystems?",
+            options: ["They eat all the plants", "They break down dead materials and recycle nutrients", "They are the biggest animals", "They make the food chains longer"],
+            correctAnswer: 1,
+            explanation: "Decomposers like bacteria and fungi recycle nutrients back to the soil for plants to use!",
+            difficulty: 3
+          }
+        ];
+      } else if (topic.name === "Physics & Energy") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What are the main forms of energy?",
+            options: ["Big and small", "Kinetic and potential", "Fast and slow", "Hot and cold"],
+            correctAnswer: 1,
+            explanation: "Kinetic energy is energy of motion, potential energy is stored energy!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What happens to energy - can it be created or destroyed?",
+            options: ["It can be created but not destroyed", "It can be destroyed but not created", "It cannot be created or destroyed, only transformed", "It can be both created and destroyed"],
+            correctAnswer: 2,
+            explanation: "Energy cannot be created or destroyed, only changed from one form to another!",
+            difficulty: 4
+          },
+          {
+            topicId: topic.id,
+            question: "What do you need to complete an electrical circuit?",
+            options: ["Just a battery", "A complete path for electricity to flow", "Only wires", "Just a light bulb"],
+            correctAnswer: 1,
+            explanation: "Electricity needs a complete path (circuit) to flow from the power source and back!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is friction?",
+            options: ["A type of energy", "A force that opposes motion", "The speed of objects", "The weight of objects"],
+            correctAnswer: 1,
+            explanation: "Friction is a force that slows down moving objects when surfaces rub together!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is the difference between speed and velocity?",
+            options: ["No difference", "Velocity includes direction", "Speed is faster", "Velocity is slower"],
+            correctAnswer: 1,
+            explanation: "Speed is how fast you go, velocity is how fast you go in a specific direction!",
+            difficulty: 4
+          },
+          {
+            topicId: topic.id,
+            question: "What type of energy does a stretched rubber band have?",
+            options: ["Kinetic energy", "Heat energy", "Potential energy", "Light energy"],
+            correctAnswer: 2,
+            explanation: "A stretched rubber band stores potential energy that can be released when let go!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What makes sound travel?",
+            options: ["Light waves", "Water", "Vibrations", "Electricity"],
+            correctAnswer: 2,
+            explanation: "Sound travels through vibrations that move through air, water, or solid materials!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is Newton's First Law of Motion?",
+            options: ["Objects at rest stay at rest unless acted upon by a force", "Force equals mass times acceleration", "Every action has an equal and opposite reaction", "Energy cannot be created or destroyed"],
+            correctAnswer: 0,
+            explanation: "Objects at rest stay at rest, and moving objects keep moving, unless a force acts on them!",
+            difficulty: 4
+          }
+        ];
+      } else if (topic.name === "Australian History & Civics") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "When did European settlement begin in Australia?",
+            options: ["1770", "1788", "1801", "1850"],
+            correctAnswer: 1,
+            explanation: "The First Fleet arrived in 1788, beginning European settlement in Australia!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What happened in 1901 that was important for Australia?",
+            options: ["First convicts arrived", "Gold was discovered", "Federation - Australia became a nation", "World War I began"],
+            correctAnswer: 2,
+            explanation: "In 1901, the six colonies joined together to form the Commonwealth of Australia!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Who makes the laws in Australia?",
+            options: ["The Prime Minister alone", "Parliament", "The Governor-General", "State Premiers"],
+            correctAnswer: 1,
+            explanation: "Parliament (elected representatives) makes laws for Australia!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What are the three levels of government in Australia?",
+            options: ["Big, medium, small", "Federal, state, local", "Past, present, future", "Executive, legislative, judicial"],
+            correctAnswer: 1,
+            explanation: "Australia has federal (national), state, and local government levels!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is democracy?",
+            options: ["Rule by one person", "Government by the people", "No government", "Government by the military"],
+            correctAnswer: 1,
+            explanation: "Democracy means government by the people - we vote to choose our leaders!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Who were the Aboriginal people in relation to Australia?",
+            options: ["The second people to arrive", "The first people to live here", "Visitors from other countries", "People who came in 1788"],
+            correctAnswer: 1,
+            explanation: "Aboriginal and Torres Strait Islander peoples are Australia's First Nations - they lived here for over 60,000 years!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is the role of the Prime Minister?",
+            options: ["To make all the laws", "To lead the government", "To judge court cases", "To command the army"],
+            correctAnswer: 1,
+            explanation: "The Prime Minister leads the government and is the head of the political party with the most seats in Parliament!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What rights do Australian citizens have?",
+            options: ["Only the right to work", "The right to vote and free speech", "Only the right to travel", "No special rights"],
+            correctAnswer: 1,
+            explanation: "Australian citizens have many rights including voting, free speech, and equal treatment under the law!",
+            difficulty: 3
           }
         ];
       }
