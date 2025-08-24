@@ -13,8 +13,10 @@ interface TryPhaseProps {
 }
 
 interface TryContent {
-  title: string;
-  fadedExamples: Array<{
+  title?: string;
+  content?: string;
+  // Legacy support for old structure
+  fadedExamples?: Array<{
     id: string;
     problem: string;
     steps: Array<{
@@ -37,7 +39,7 @@ interface TryContent {
     type: "number-line" | "fraction-circles" | "base-ten-blocks" | "geometry-sketch" | "spelling-tiles";
     instructions: string;
   };
-  misconceptionDetector: {
+  misconceptionDetector?: {
     commonErrors: Array<{
       pattern: string;
       explanation: string;
@@ -59,9 +61,14 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
   const [misconceptionTriggered, setMisconceptionTriggered] = useState<string | null>(null);
 
-  const tryContent = content.content as TryContent;
-  const currentExample = tryContent.fadedExamples[currentExampleIndex];
-  const currentStep = currentExample?.steps[currentStepIndex];
+  const tryContent = content.content;
+  
+  // Handle both new Scout format (simple string) and legacy format
+  const isScoutFormat = typeof tryContent === 'string';
+  const scoutMessage = isScoutFormat ? tryContent : null;
+  const legacyContent = !isScoutFormat ? tryContent as TryContent : null;
+  const currentExample = legacyContent?.fadedExamples?.[currentExampleIndex];
+  const currentStep = currentExample?.steps?.[currentStepIndex];
 
   const getStepKey = () => `${currentExampleIndex}-${currentStepIndex}`;
 
@@ -74,9 +81,9 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
   };
 
   const checkForMisconceptions = (answer: string) => {
-    if (!currentStep?.answer) return;
+    if (!currentStep?.answer || !legacyContent?.misconceptionDetector) return;
 
-    const misconception = tryContent.misconceptionDetector.commonErrors.find(
+    const misconception = legacyContent.misconceptionDetector.commonErrors.find(
       error => answer.toLowerCase().includes(error.pattern.toLowerCase())
     );
 
@@ -110,9 +117,9 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
       setMisconceptionTriggered(null);
       
       // Move to next step or example
-      if (currentStepIndex < currentExample.steps.length - 1) {
+      if (currentExample && currentStepIndex < currentExample.steps.length - 1) {
         setCurrentStepIndex(prev => prev + 1);
-      } else if (currentExampleIndex < tryContent.fadedExamples.length - 1) {
+      } else if (legacyContent?.fadedExamples && currentExampleIndex < legacyContent.fadedExamples.length - 1) {
         setCurrentExampleIndex(prev => prev + 1);
         setCurrentStepIndex(0);
       } else {
@@ -209,7 +216,37 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
 
   const language = getAgeAppropriateLanguage();
 
-  if (!currentExample) {
+  // For Scout format, show simplified interaction
+  if (isScoutFormat) {
+    return (
+      <div className="space-y-8 max-w-2xl mx-auto">
+        <div className="floating-ui rounded-3xl p-8" data-testid="scout-try-phase">
+          <div className="text-center space-y-6">
+            <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center">
+              <div className="text-white text-3xl">🤝</div>
+            </div>
+            <div className="text-white text-xl font-bold">
+              Let's try this together!
+            </div>
+            <div className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm">
+              <div className="text-white text-lg leading-relaxed">
+                {scoutMessage}
+              </div>
+            </div>
+            <button
+              onClick={() => handlePhaseComplete()}
+              className="px-6 py-3 bg-gradient-to-r from-purple-400 to-blue-400 text-white font-medium rounded-2xl hover:scale-105 transition-all"
+              data-testid="continue-button"
+            >
+              Let's keep exploring!
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentExample || !legacyContent) {
     return <div>Loading examples...</div>;
   }
 
