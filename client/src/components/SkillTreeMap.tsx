@@ -8,6 +8,21 @@ import { Button } from "@/components/ui/button";
 import { Lock, Star, Play, CheckCircle, Trophy, Sparkles } from "lucide-react";
 import type { Topic, Progress as StudentProgress } from "@shared/schema";
 import type { AgeGroup } from "@/components/AgeSelector";
+import {
+  LittleExplorerIcon,
+  YoungAdventurerIcon,
+  BraveScholarIcon,
+  AnimalsIcon,
+  SpaceIcon,
+  NatureIcon,
+  ArtIcon,
+  MusicIcon,
+  SportsIcon,
+  BooksIcon,
+  ScienceIcon,
+  StarIcon,
+  SparkleIcon
+} from "@/components/GeometricIcons";
 
 interface SkillTreeMapProps {
   ageGroup: AgeGroup;
@@ -22,8 +37,8 @@ interface TopicNode {
   prerequisites: string[];
   difficulty: number;
   category: string;
-  emoji: string;
-  animalGuide: string;
+  icon: React.ReactNode;
+  animalGuide: React.ReactNode;
 }
 
 export function SkillTreeMap({ ageGroup, studentId }: SkillTreeMapProps) {
@@ -48,46 +63,46 @@ export function SkillTreeMap({ ageGroup, studentId }: SkillTreeMapProps) {
     // Different layouts for different age groups
     const layouts = {
       "pre-primary": [
-        { x: 50, y: 80, category: "foundation", emoji: "🌱", animalGuide: "🐛" },
-        { x: 30, y: 60, category: "numbers", emoji: "🔢", animalGuide: "🐸" },
-        { x: 70, y: 60, category: "letters", emoji: "🔤", animalGuide: "🦋" },
-        { x: 20, y: 40, category: "shapes", emoji: "⭐", animalGuide: "🐰" },
-        { x: 50, y: 40, category: "colors", emoji: "🎨", animalGuide: "🦜" },
-        { x: 80, y: 40, category: "sounds", emoji: "🎵", animalGuide: "🐺" },
-        { x: 35, y: 20, category: "patterns", emoji: "🔮", animalGuide: "🦊" },
-        { x: 65, y: 20, category: "matching", emoji: "🧩", animalGuide: "🐨" },
+        { x: 50, y: 80, category: "foundation", icon: <NatureIcon size={24} />, animalGuide: <LittleExplorerIcon size={20} /> },
+        { x: 30, y: 60, category: "numbers", icon: <ScienceIcon size={24} />, animalGuide: <LittleExplorerIcon size={20} /> },
+        { x: 70, y: 60, category: "letters", icon: <BooksIcon size={24} />, animalGuide: <YoungAdventurerIcon size={20} /> },
+        { x: 20, y: 40, category: "shapes", icon: <StarIcon size={24} />, animalGuide: <LittleExplorerIcon size={20} /> },
+        { x: 50, y: 40, category: "colors", icon: <ArtIcon size={24} />, animalGuide: <YoungAdventurerIcon size={20} /> },
+        { x: 80, y: 40, category: "sounds", icon: <MusicIcon size={24} />, animalGuide: <LittleExplorerIcon size={20} /> },
+        { x: 35, y: 20, category: "patterns", icon: <SparkleIcon size={24} />, animalGuide: <YoungAdventurerIcon size={20} /> },
+        { x: 65, y: 20, category: "matching", icon: <ScienceIcon size={24} />, animalGuide: <BraveScholarIcon size={20} /> },
       ],
       "primary": [
-        { x: 50, y: 85, category: "foundation", emoji: "🏠", animalGuide: "🐻" },
-        { x: 25, y: 70, category: "arithmetic", emoji: "➕", animalGuide: "🦔" },
-        { x: 75, y: 70, category: "reading", emoji: "📖", animalGuide: "🦉" },
-        { x: 15, y: 55, category: "geometry", emoji: "📐", animalGuide: "🐧" },
-        { x: 50, y: 55, category: "science", emoji: "🔬", animalGuide: "🦝" },
-        { x: 85, y: 55, category: "writing", emoji: "✏️", animalGuide: "🐺" },
-        { x: 30, y: 40, category: "fractions", emoji: "🍕", animalGuide: "🐰" },
-        { x: 70, y: 40, category: "stories", emoji: "📚", animalGuide: "🦊" },
-        { x: 20, y: 25, category: "measurement", emoji: "📏", animalGuide: "🐸" },
-        { x: 50, y: 25, category: "nature", emoji: "🌿", animalGuide: "🦋" },
-        { x: 80, y: 25, category: "creative", emoji: "🎭", animalGuide: "🦜" },
-        { x: 50, y: 10, category: "logic", emoji: "🧠", animalGuide: "🐨" },
+        { x: 50, y: 85, category: "foundation", icon: <NatureIcon size={24} />, animalGuide: <YoungAdventurerIcon size={20} /> },
+        { x: 25, y: 70, category: "arithmetic", icon: <ScienceIcon size={24} />, animalGuide: <LittleExplorerIcon size={20} /> },
+        { x: 75, y: 70, category: "reading", icon: <BooksIcon size={24} />, animalGuide: <BraveScholarIcon size={20} /> },
+        { x: 15, y: 55, category: "geometry", icon: <ScienceIcon size={24} />, animalGuide: <YoungAdventurerIcon size={20} /> },
+        { x: 50, y: 55, category: "science", icon: <ScienceIcon size={24} />, animalGuide: <BraveScholarIcon size={20} /> },
+        { x: 85, y: 55, category: "writing", icon: <BooksIcon size={24} />, animalGuide: <LittleExplorerIcon size={20} /> },
+        { x: 30, y: 40, category: "fractions", icon: <ScienceIcon size={24} />, animalGuide: <LittleExplorerIcon size={20} /> },
+        { x: 70, y: 40, category: "stories", icon: <BooksIcon size={24} />, animalGuide: <YoungAdventurerIcon size={20} /> },
+        { x: 20, y: 25, category: "measurement", icon: <ScienceIcon size={24} />, animalGuide: <LittleExplorerIcon size={20} /> },
+        { x: 50, y: 25, category: "nature", icon: <NatureIcon size={24} />, animalGuide: <YoungAdventurerIcon size={20} /> },
+        { x: 80, y: 25, category: "creative", icon: <ArtIcon size={24} />, animalGuide: <YoungAdventurerIcon size={20} /> },
+        { x: 50, y: 10, category: "logic", icon: <ScienceIcon size={24} />, animalGuide: <BraveScholarIcon size={20} /> },
       ],
       "upper-primary": [
-        { x: 50, y: 85, category: "foundation", emoji: "🏛️", animalGuide: "🦁" },
-        { x: 20, y: 70, category: "algebra", emoji: "🔢", animalGuide: "🐺" },
-        { x: 50, y: 70, category: "science", emoji: "⚗️", animalGuide: "🦉" },
-        { x: 80, y: 70, category: "literature", emoji: "📜", animalGuide: "🦊" },
-        { x: 10, y: 55, category: "equations", emoji: "📊", animalGuide: "🐧" },
-        { x: 35, y: 55, category: "physics", emoji: "⚡", animalGuide: "🦔" },
-        { x: 65, y: 55, category: "chemistry", emoji: "🧪", animalGuide: "🐨" },
-        { x: 90, y: 55, category: "essays", emoji: "📝", animalGuide: "🦝" },
-        { x: 25, y: 40, category: "geometry", emoji: "📐", animalGuide: "🐰" },
-        { x: 50, y: 40, category: "biology", emoji: "🧬", animalGuide: "🦋" },
-        { x: 75, y: 40, category: "research", emoji: "🔍", animalGuide: "🐸" },
-        { x: 15, y: 25, category: "statistics", emoji: "📈", animalGuide: "🦜" },
-        { x: 40, y: 25, category: "coding", emoji: "💻", animalGuide: "🐺" },
-        { x: 60, y: 25, category: "ecology", emoji: "🌍", animalGuide: "🦊" },
-        { x: 85, y: 25, category: "debate", emoji: "🗣️", animalGuide: "🦁" },
-        { x: 50, y: 10, category: "critical", emoji: "🎯", animalGuide: "🦉" },
+        { x: 50, y: 85, category: "foundation", icon: <NatureIcon size={24} />, animalGuide: <BraveScholarIcon size={20} /> },
+        { x: 20, y: 70, category: "algebra", icon: <ScienceIcon size={24} />, animalGuide: <LittleExplorerIcon size={20} /> },
+        { x: 50, y: 70, category: "science", icon: <ScienceIcon size={24} />, animalGuide: <BraveScholarIcon size={20} /> },
+        { x: 80, y: 70, category: "literature", icon: <BooksIcon size={24} />, animalGuide: <YoungAdventurerIcon size={20} /> },
+        { x: 10, y: 55, category: "equations", icon: <ScienceIcon size={24} />, animalGuide: <YoungAdventurerIcon size={20} /> },
+        { x: 35, y: 55, category: "physics", icon: <ScienceIcon size={24} />, animalGuide: <LittleExplorerIcon size={20} /> },
+        { x: 65, y: 55, category: "chemistry", icon: <ScienceIcon size={24} />, animalGuide: <BraveScholarIcon size={20} /> },
+        { x: 90, y: 55, category: "essays", icon: <BooksIcon size={24} />, animalGuide: <BraveScholarIcon size={20} /> },
+        { x: 25, y: 40, category: "geometry", icon: <ScienceIcon size={24} />, animalGuide: <LittleExplorerIcon size={20} /> },
+        { x: 50, y: 40, category: "biology", icon: <ScienceIcon size={24} />, animalGuide: <YoungAdventurerIcon size={20} /> },
+        { x: 75, y: 40, category: "research", icon: <ScienceIcon size={24} />, animalGuide: <LittleExplorerIcon size={20} /> },
+        { x: 15, y: 25, category: "statistics", icon: <ScienceIcon size={24} />, animalGuide: <YoungAdventurerIcon size={20} /> },
+        { x: 40, y: 25, category: "coding", icon: <SpaceIcon size={24} />, animalGuide: <LittleExplorerIcon size={20} /> },
+        { x: 60, y: 25, category: "ecology", icon: <NatureIcon size={24} />, animalGuide: <YoungAdventurerIcon size={20} /> },
+        { x: 85, y: 25, category: "debate", icon: <BooksIcon size={24} />, animalGuide: <BraveScholarIcon size={20} /> },
+        { x: 50, y: 10, category: "critical", icon: <StarIcon size={24} />, animalGuide: <BraveScholarIcon size={20} /> },
       ]
     };
 
@@ -96,13 +111,13 @@ export function SkillTreeMap({ ageGroup, studentId }: SkillTreeMapProps) {
     return baseTopics.map((topic, index) => ({
       id: topic.id,
       name: topic.name,
-      description: topic.description || `Learn about ${topic.name.toLowerCase()}`,
+      description: `Learn about ${topic.name.toLowerCase()}`,
       position: layout[index] || { x: 50, y: 50 },
       prerequisites: index > 0 ? [baseTopics[index - 1].id] : [],
-      difficulty: topic.difficulty || Math.ceil((index + 1) / 2),
+      difficulty: Math.ceil((index + 1) / 2),
       category: layout[index]?.category || "general",
-      emoji: layout[index]?.emoji || "📚",
-      animalGuide: layout[index]?.animalGuide || "🐻"
+      icon: layout[index]?.icon || <BooksIcon size={24} />,
+      animalGuide: layout[index]?.animalGuide || <YoungAdventurerIcon size={20} />
     }));
   };
 
@@ -258,7 +273,7 @@ export function SkillTreeMap({ ageGroup, studentId }: SkillTreeMapProps) {
               </div>
               
               {/* Animal guide */}
-              <div className="absolute -top-2 -right-2 text-lg animate-bounce">
+              <div className="absolute -top-2 -right-2 animate-bounce">
                 {node.animalGuide}
               </div>
               
@@ -283,7 +298,7 @@ export function SkillTreeMap({ ageGroup, studentId }: SkillTreeMapProps) {
               <Card className="absolute top-20 left-1/2 transform -translate-x-1/2 w-64 bg-white/95 backdrop-blur-sm border-white/30 shadow-xl z-50 animate-fade-in">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">{node.emoji}</span>
+                    <div className="text-2xl">{node.icon}</div>
                     <h3 className="font-bold text-gray-800">{node.name}</h3>
                   </div>
                   

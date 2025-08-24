@@ -4,13 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Trophy, Star, Sparkles, Award, Target, Zap, Heart, Crown, Medal, Gift } from "lucide-react";
+import { StarIcon, TrophyIcon, SparkleIcon } from "@/components/GeometricIcons";
 
 interface Achievement {
   id: string;
   type: "badge" | "milestone" | "streak" | "mastery" | "discovery" | "special";
   title: string;
   description: string;
-  icon: string;
+  icon: React.ReactNode;
   reward?: {
     type: "badge" | "points" | "unlock" | "title";
     value: string | number;
@@ -321,13 +322,18 @@ export function AchievementCelebration({ achievement, onClose }: AchievementCele
                       `}
                       data-testid="button-close-achievement"
                     >
-                      Awesome! ✨
+                      <div className="flex items-center gap-2">
+                        Awesome! <SparkleIcon size={20} className="text-yellow-300" />
+                      </div>
                     </Button>
                   </div>
 
                   {/* Share encouragement */}
                   <p className="text-white/60 text-sm">
-                    Keep exploring to unlock more achievements! 🌟
+                    <div className="flex items-center gap-2">
+                      Keep exploring to unlock more achievements!
+                      <StarIcon size={20} className="text-yellow-300" />
+                    </div>
                   </p>
                 </CardContent>
               </div>
@@ -365,7 +371,7 @@ export const ACHIEVEMENT_TEMPLATES = {
     type: "milestone" as const,
     title: "First Steps!",
     description: "You answered your very first question! Every expert was once a beginner.",
-    icon: "🌟",
+    icon: <StarIcon size={24} />,
     rarity: "common" as const,
     reward: { type: "points" as const, value: 10 }
   },
@@ -375,7 +381,7 @@ export const ACHIEVEMENT_TEMPLATES = {
     type: "mastery" as const,
     title: "Perfect Explorer!",
     description: "You got every question right in this topic! Absolutely brilliant!",
-    icon: "🏆",
+    icon: <TrophyIcon size={24} />,
     rarity: "epic" as const,
     reward: { type: "badge" as const, value: "Perfect Score Master" }
   },
@@ -385,7 +391,7 @@ export const ACHIEVEMENT_TEMPLATES = {
     type: "streak" as const,
     title: "On Fire!",
     description: "Five correct answers in a row! You're unstoppable!",
-    icon: "🔥",
+    icon: <SparkleIcon size={24} />,
     rarity: "rare" as const,
     reward: { type: "points" as const, value: 50 }
   },
@@ -395,7 +401,7 @@ export const ACHIEVEMENT_TEMPLATES = {
     type: "milestone" as const,
     title: "Topic Master!",
     description: "You completed your first topic! Ready for the next adventure?",
-    icon: "🎯",
+    icon: <StarIcon size={24} />,
     rarity: "rare" as const,
     reward: { type: "unlock" as const, value: "New Learning Path" }
   },
@@ -405,7 +411,7 @@ export const ACHIEVEMENT_TEMPLATES = {
     type: "mastery" as const,
     title: "Learning Legend!",
     description: "Ten topics mastered! You're becoming a true scholar!",
-    icon: "👑",
+    icon: <TrophyIcon size={24} />,
     rarity: "legendary" as const,
     reward: { type: "title" as const, value: "Learning Legend" }
   },
@@ -415,7 +421,7 @@ export const ACHIEVEMENT_TEMPLATES = {
     type: "discovery" as const,
     title: "Curious Mind!",
     description: "You explored 5 different subjects! Your curiosity knows no bounds!",
-    icon: "🔍",
+    icon: <StarIcon size={24} />,
     rarity: "rare" as const,
     reward: { type: "badge" as const, value: "Curious Explorer" }
   }
