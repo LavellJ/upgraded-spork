@@ -414,7 +414,7 @@ export default function ChildOnboarding() {
               <div className="flex justify-center lg:justify-end">
                 <div className="relative">
                   <div className="animate-bounce">
-                    <div className="w-32 h-32 relative">
+                    <div className="w-96 h-96 relative">
                       <img
                         src={scoutImage}
                         alt="Scout - Your Explorer Buddy"
