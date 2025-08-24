@@ -52,29 +52,14 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
     };
   };
 
-  // Get the current biome/environment based on progress
-  const getCurrentBiome = () => {
+  // Get the current environment based on progress (Alto's Odyssey inspired)
+  const getCurrentEnvironment = () => {
     const overallProgress = getOverallProgress();
-    if (overallProgress >= 80) return { name: 'Crystal Peaks', emoji: '🏔️', color: 'from-purple-400 to-blue-500' };
-    if (overallProgress >= 60) return { name: 'Floating Islands', emoji: '☁️', color: 'from-cyan-400 to-blue-400' };
-    if (overallProgress >= 40) return { name: 'Mystic Forest', emoji: '🌲', color: 'from-green-400 to-emerald-500' };
-    if (overallProgress >= 20) return { name: 'Sunny Meadows', emoji: '🌻', color: 'from-yellow-400 to-green-400' };
-    return { name: 'Starting Village', emoji: '🏡', color: 'from-orange-400 to-yellow-400' };
-  };
-
-  // Get story milestone based on progress
-  const getStoryMilestone = () => {
-    const completedCount = topics.filter(topic => {
-      const prog = getProgressForTopic(topic.id);
-      return prog && (prog.completionPercentage || 0) >= 85;
-    }).length;
-    
-    if (completedCount >= 8) return "🏆 Master Explorer! You've conquered many realms!";
-    if (completedCount >= 6) return "⚡ Lightning Learner! Power flows through you!";
-    if (completedCount >= 4) return "🗝️ Key Collector! New paths unlock before you!";
-    if (completedCount >= 2) return "🌟 Rising Star! Your journey gains momentum!";
-    if (completedCount >= 1) return "👶 First Steps! Your adventure has begun!";
-    return "🚪 Welcome, Brave Explorer! Step into the learning realm!";
+    if (overallProgress >= 80) return { name: 'Mountain Heights', color: 'from-purple-400 to-blue-500' };
+    if (overallProgress >= 60) return { name: 'Cloud Valleys', color: 'from-cyan-400 to-blue-400' };
+    if (overallProgress >= 40) return { name: 'Forest Paths', color: 'from-green-400 to-emerald-500' };
+    if (overallProgress >= 20) return { name: 'Sunny Hills', color: 'from-yellow-400 to-green-400' };
+    return { name: 'Learning Journey', color: 'from-orange-400 to-yellow-400' };
   };
 
   const segments = getProgressSegments();
@@ -85,20 +70,11 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
   return (
     <div className="floating-ui rounded-3xl p-8" data-testid="progress-landscape">
       <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center space-x-3">
-          <span className="text-2xl">{getCurrentBiome().emoji}</span>
-          <div>
-            <h3 className="font-display text-xl font-semibold text-white" data-testid="text-journey-title">
-              {getCurrentBiome().name}
-            </h3>
-            <p className="text-white/60 text-sm">Learning Adventure</p>
-          </div>
-        </div>
-        <div className="text-right">
-          <div className="text-white/70 text-sm mb-1" data-testid="text-overall-progress">
-            <span className="text-lg font-bold text-white">{getOverallProgress()}%</span> Explored
-          </div>
-          <div className="text-xs text-white/50">of the realm</div>
+        <h3 className="font-display text-xl font-semibold text-white" data-testid="text-journey-title">
+          Learning Journey
+        </h3>
+        <div className="text-white/70 text-sm" data-testid="text-overall-progress">
+          <span>{getOverallProgress()}%</span> Complete
         </div>
       </div>
       
@@ -109,44 +85,31 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
           <div className="flex items-center space-x-4 text-sm">
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 rounded-full bg-gradient-to-r from-green-400 to-teal-400"></div>
-              <span className="text-white/80">🏆 Conquered</span>
+              <span className="text-white/80">Completed</span>
               <span className="text-green-400 font-medium">{segments.completed}%</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 rounded-full bg-gradient-to-r from-orange-400 to-red-400"></div>
-              <span className="text-white/80">⚔️ Exploring</span>
+              <span className="text-white/80">In Progress</span>
               <span className="text-orange-400 font-medium">{segments.current}%</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-400/50 to-blue-400/50"></div>
-              <span className="text-white/80">🗺️ Undiscovered</span>
+              <span className="text-white/80">Future</span>
               <span className="text-purple-400 font-medium">{segments.future}%</span>
             </div>
           </div>
           <button
             onClick={() => setShowLegend(!showLegend)}
-            className="text-white/60 hover:text-white transition-colors text-sm flex items-center space-x-1"
+            className="text-white/60 hover:text-white transition-colors text-sm"
           >
-            <span>📜</span>
-            <span>{showLegend ? 'Hide' : 'View'} Quest Log</span>
+            <i className="fas fa-info-circle mr-1"></i>
+            {showLegend ? 'Hide' : 'Show'} Details
           </button>
         </div>
 
-        {/* Story Progress Notification */}
-        <motion.div
-          className="mb-4 p-4 bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-2xl border border-purple-400/30"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <div className="text-center">
-            <p className="text-purple-200 text-sm font-medium mb-1">Your Current Achievement</p>
-            <p className="text-white">{getStoryMilestone()}</p>
-          </div>
-        </motion.div>
-
-        {/* Dynamic Adventure Path */}
-        <div className={`relative h-40 overflow-hidden rounded-2xl bg-gradient-to-r ${getCurrentBiome().color}/10 border border-white/10`}>
+        {/* Dynamic Progress Path */}
+        <div className={`relative h-40 overflow-hidden rounded-2xl bg-gradient-to-r ${getCurrentEnvironment().color}/10 border border-white/10`}>
           <svg viewBox="0 0 800 160" className="absolute inset-0 w-full h-full">
             {/* Dynamic paths based on actual progress */}
             {completedWidth > 0 && (
@@ -238,15 +201,15 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
               >
-                {hoveredTopic === 'completed' && `🏆 ${topics.filter(t => (getProgressForTopic(t.id)?.completionPercentage || 0) >= 85).length} realms conquered!`}
-                {hoveredTopic === 'current' && `⚔️ ${topics.filter(t => {
+                {hoveredTopic === 'completed' && `${topics.filter(t => (getProgressForTopic(t.id)?.completionPercentage || 0) >= 85).length} topics completed`}
+                {hoveredTopic === 'current' && `${topics.filter(t => {
                   const p = getProgressForTopic(t.id)?.completionPercentage || 0;
                   return p > 0 && p < 85;
-                }).length} active quests underway`}
-                {hoveredTopic === 'future' && `🗺️ ${topics.filter(t => (getProgressForTopic(t.id)?.completionPercentage || 0) === 0).length} mysterious lands await!`}
+                }).length} topics in progress`}
+                {hoveredTopic === 'future' && `${topics.filter(t => (getProgressForTopic(t.id)?.completionPercentage || 0) === 0).length} topics to explore`}
                 {topics.find(t => t.id === hoveredTopic) && (
                   <span>
-                    🎯 {topics.find(t => t.id === hoveredTopic)?.name}: {getProgressForTopic(hoveredTopic)?.completionPercentage || 0}% explored
+                    {topics.find(t => t.id === hoveredTopic)?.name}: {getProgressForTopic(hoveredTopic)?.completionPercentage || 0}% complete
                   </span>
                 )}
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-black/90"></div>
@@ -277,7 +240,7 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="text-white font-semibold text-lg capitalize">{subject}</h4>
                   <div className="text-white/60 text-sm">
-                    {subjectTopics.filter(t => (getProgressForTopic(t.id)?.completionPercentage || 0) >= 85).length} of {subjectTopics.length} realms conquered
+                    {subjectTopics.filter(t => (getProgressForTopic(t.id)?.completionPercentage || 0) >= 85).length} of {subjectTopics.length} completed
                   </div>
                 </div>
                 
@@ -324,9 +287,9 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
                               completionPercentage > 0 ? 'text-orange-400' :
                               isUnlocked ? 'text-white/60' : 'text-white/40'
                             }`}>
-                              {completionPercentage >= 85 ? '👑 Mastered' :
-                               completionPercentage > 0 ? '⚔️ Exploring' :
-                               isUnlocked ? '🗝️ Unlocked' : '🚪 Sealed'}
+                              {completionPercentage >= 85 ? '✓ Complete' :
+                               completionPercentage > 0 ? '⏳ In Progress' :
+                               isUnlocked ? '🔓 Available' : '🔒 Locked'}
                             </span>
                           </div>
                           
@@ -339,7 +302,7 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
                         
                         {completionPercentage > 0 && (
                           <div className="mt-2 text-xs text-white/50">
-                            {Math.round(completionPercentage)}% explored
+                            {Math.round(completionPercentage)}% complete
                           </div>
                         )}
                       </motion.div>
@@ -352,41 +315,37 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
         )}
       </AnimatePresence>
       
-      {/* Adventure Summary Stats */}
+      {/* Quick Summary Stats */}
       <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 hover:border-green-400/30 transition-colors">
-          <div className="text-3xl mb-2">🏆</div>
+        <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
           <div className="text-2xl font-bold text-green-400 mb-1">
             {topics.filter(t => (getProgressForTopic(t.id)?.completionPercentage || 0) >= 85).length}
           </div>
-          <div className="text-white/70 text-sm">Realms Conquered</div>
+          <div className="text-white/70 text-sm">Topics Mastered</div>
         </div>
         
-        <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 hover:border-orange-400/30 transition-colors">
-          <div className="text-3xl mb-2">⚔️</div>
+        <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
           <div className="text-2xl font-bold text-orange-400 mb-1">
             {topics.filter(t => {
               const p = getProgressForTopic(t.id)?.completionPercentage || 0;
               return p > 0 && p < 85;
             }).length}
           </div>
-          <div className="text-white/70 text-sm">Active Quests</div>
+          <div className="text-white/70 text-sm">In Progress</div>
         </div>
         
-        <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 hover:border-cyan-400/30 transition-colors">
-          <div className="text-3xl mb-2">💫</div>
-          <div className="text-2xl font-bold text-cyan-400 mb-1">
+        <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
+          <div className="text-2xl font-bold text-accent-teal mb-1">
             {progress.reduce((sum, p) => sum + (p.questionsAnswered || 0), 0)}
           </div>
-          <div className="text-white/70 text-sm">Challenges Faced</div>
+          <div className="text-white/70 text-sm">Questions Answered</div>
         </div>
         
-        <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 hover:border-purple-400/30 transition-colors">
-          <div className="text-3xl mb-2">🔥</div>
+        <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
           <div className="text-2xl font-bold text-purple-400 mb-1">
             {progress.reduce((sum, p) => sum + (p.currentStreak || 0), 0)}
           </div>
-          <div className="text-white/70 text-sm">Power Level</div>
+          <div className="text-white/70 text-sm">Total Streak</div>
         </div>
       </div>
     </div>
