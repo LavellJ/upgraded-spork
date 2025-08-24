@@ -458,7 +458,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
             
             <div className="flex justify-center items-center gap-4">
               <span className="text-white/60">
-                Step {currentDeliverable + 1} of {currentMission?.deliverables.length}
+                Step {currentDeliverable + 1} of {currentMission?.deliverables?.length || 1}
               </span>
               <div className="w-48 bg-white/20 rounded-full h-2">
                 <div 
@@ -470,7 +470,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
           </div>
 
           {/* Current Deliverable */}
-          {currentMission && currentDeliverable < currentMission.deliverables.length && (
+          {currentMission && currentMission.deliverables && currentDeliverable < currentMission.deliverables.length && (
             <div className="floating-ui rounded-2xl p-8" data-testid="current-deliverable">
               <div className="mb-6">
                 <h4 className="text-white font-semibold text-lg mb-2">

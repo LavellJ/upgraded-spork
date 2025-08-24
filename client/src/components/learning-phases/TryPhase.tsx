@@ -117,7 +117,7 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
       setMisconceptionTriggered(null);
       
       // Move to next step or example
-      if (currentExample && currentStepIndex < currentExample.steps.length - 1) {
+      if (currentExample && currentExample.steps && currentStepIndex < currentExample.steps.length - 1) {
         setCurrentStepIndex(prev => prev + 1);
       } else if (legacyContent?.fadedExamples && currentExampleIndex < legacyContent.fadedExamples.length - 1) {
         setCurrentExampleIndex(prev => prev + 1);
@@ -141,9 +141,9 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
     const key = getStepKey();
     setCompleted(prev => ({ ...prev, [key]: false }));
     
-    if (currentStepIndex < currentExample.steps.length - 1) {
+    if (currentExample?.steps && currentStepIndex < currentExample.steps.length - 1) {
       setCurrentStepIndex(prev => prev + 1);
-    } else if (currentExampleIndex < tryContent.fadedExamples.length - 1) {
+    } else if (legacyContent?.fadedExamples && currentExampleIndex < legacyContent.fadedExamples.length - 1) {
       setCurrentExampleIndex(prev => prev + 1);
       setCurrentStepIndex(0);
     } else {
