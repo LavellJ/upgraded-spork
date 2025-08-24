@@ -85,9 +85,8 @@ export function ExplorerBuddy({
   const generateMessage = useCallback(async (): Promise<BuddyMessage | null> => {
     const now = Date.now();
     
-    // Don't show messages too frequently - be much less chatty during learning
-    const minInterval = isStudying ? 300000 : 30000; // 5 minutes when studying, 30 seconds otherwise
-    if (now - lastInteraction < minInterval) return null;
+    // Don't show messages too frequently
+    if (now - lastInteraction < 15000) return null; // 15 seconds minimum
     
     let messageType: BuddyMessage['type'] = 'companionship';
     let duration = 4000;
@@ -182,12 +181,9 @@ export function ExplorerBuddy({
       }
     };
     
-    // Initial message, then periodic updates - less frequent during study
-    const initialDelay = isStudying ? 60000 : 2000; // Wait 1 minute if studying, 2 seconds otherwise
-    const intervalTime = isStudying ? 300000 : 60000; // Every 5 minutes when studying, 1 minute otherwise
-    
-    const initialTimeout = setTimeout(updateBuddy, initialDelay);
-    const interval = setInterval(updateBuddy, intervalTime);
+    // Initial message, then periodic updates
+    const initialTimeout = setTimeout(updateBuddy, 2000);
+    const interval = setInterval(updateBuddy, 20000); // Update every 20 seconds
     
     return () => {
       clearTimeout(initialTimeout);
