@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateQuestions, generateSmartHint, generatePersonalizedExplanation, calculateAdaptiveDifficulty, generateLearningPathRecommendations } from "./services/openai";
+import { generateQuestions, generateSmartHint, generatePersonalizedExplanation, calculateAdaptiveDifficulty, generateLearningPathRecommendations, generateBuddyMessage } from "./services/openai";
 import { badgeSystem, BADGE_DEFINITIONS } from "./badgeSystem";
 import { 
   insertStudentSchema, 
@@ -533,6 +533,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error checking for badges:", error);
       res.status(500).json({ message: "Failed to check for badges" });
+    }
+  });
+
+  // Explorer Buddy Messages
+  app.post("/api/buddy/message", async (req, res) => {
+    try {
+      const {
+        ageGroup,
+        currentPage,
+        studyDuration,
+        recentProgress,
+        messageType,
+        studentName
+      } = req.body;
+
+      if (!ageGroup || !currentPage || !messageType) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const message = await generateBuddyMessage({
+        ageGroup,
+        currentPage,
+        studyDuration,
+        recentProgress,
+        messageType,
+        studentName
+      });
+
+      res.json({ message });
+    } catch (error) {
+      console.error("Error generating buddy message:", error);
+      res.status(500).json({ message: "Failed to generate buddy message" });
     }
   });
 
