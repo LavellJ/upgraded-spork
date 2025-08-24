@@ -223,15 +223,39 @@ export function ExplorerBuddy({
           ease: "easeInOut" 
         }}
       >
-        <img
-          src={explorerAvatar}
-          alt="Explorer Buddy"
-          className="w-full h-full object-contain"
+        <div 
+          className="w-full h-full relative"
           style={{
-            filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12))',
             background: 'transparent'
           }}
-        />
+        >
+          {/* Base character image */}
+          <img
+            src={explorerAvatar}
+            alt="Explorer Buddy"
+            className="w-full h-full object-contain absolute inset-0"
+            style={{
+              mixBlendMode: 'multiply',
+              filter: 'brightness(1.2) saturate(1.1)',
+              opacity: 0.95
+            }}
+          />
+          {/* Character overlay for colours */}
+          <img
+            src={explorerAvatar}
+            alt=""
+            className="w-full h-full object-contain absolute inset-0"
+            style={{
+              mixBlendMode: 'screen',
+              filter: `
+                drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15))
+                brightness(0.9)
+                contrast(1.1)
+              `,
+              opacity: 0.8
+            }}
+          />
+        </div>
       </motion.div>
       
       {/* Adventure sparkles - more active when excited */}
