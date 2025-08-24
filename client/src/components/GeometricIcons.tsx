@@ -7,7 +7,7 @@ interface IconProps {
 }
 
 // Age Group Animals
-export const LittleExplorerIcon = ({ className = "", size = 24 }: IconProps) => (
+export const LittleExplorerIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="rabbitGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -25,7 +25,7 @@ export const LittleExplorerIcon = ({ className = "", size = 24 }: IconProps) => 
   </svg>
 );
 
-export const YoungAdventurerIcon = ({ className = "", size = 24 }: IconProps) => (
+export const YoungAdventurerIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="foxGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -43,7 +43,7 @@ export const YoungAdventurerIcon = ({ className = "", size = 24 }: IconProps) =>
   </svg>
 );
 
-export const BraveScholarIcon = ({ className = "", size = 24 }: IconProps) => (
+export const BraveScholarIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="owlGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -62,7 +62,7 @@ export const BraveScholarIcon = ({ className = "", size = 24 }: IconProps) => (
 );
 
 // Subject Icons
-export const AnimalsIcon = ({ className = "", size = 24 }: IconProps) => (
+export const AnimalsIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="elephantGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -78,7 +78,7 @@ export const AnimalsIcon = ({ className = "", size = 24 }: IconProps) => (
   </svg>
 );
 
-export const SpaceIcon = ({ className = "", size = 24 }: IconProps) => (
+export const SpaceIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="rocketGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -94,7 +94,7 @@ export const SpaceIcon = ({ className = "", size = 24 }: IconProps) => (
   </svg>
 );
 
-export const NatureIcon = ({ className = "", size = 24 }: IconProps) => (
+export const NatureIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="treeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -109,7 +109,7 @@ export const NatureIcon = ({ className = "", size = 24 }: IconProps) => (
   </svg>
 );
 
-export const ArtIcon = ({ className = "", size = 24 }: IconProps) => (
+export const ArtIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="paletteGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -126,7 +126,7 @@ export const ArtIcon = ({ className = "", size = 24 }: IconProps) => (
   </svg>
 );
 
-export const MusicIcon = ({ className = "", size = 24 }: IconProps) => (
+export const MusicIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="musicGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -142,7 +142,7 @@ export const MusicIcon = ({ className = "", size = 24 }: IconProps) => (
   </svg>
 );
 
-export const SportsIcon = ({ className = "", size = 24 }: IconProps) => (
+export const SportsIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="ballGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -158,7 +158,7 @@ export const SportsIcon = ({ className = "", size = 24 }: IconProps) => (
   </svg>
 );
 
-export const BooksIcon = ({ className = "", size = 24 }: IconProps) => (
+export const BooksIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="bookGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -174,7 +174,7 @@ export const BooksIcon = ({ className = "", size = 24 }: IconProps) => (
   </svg>
 );
 
-export const ScienceIcon = ({ className = "", size = 24 }: IconProps) => (
+export const ScienceIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="beakerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -191,7 +191,7 @@ export const ScienceIcon = ({ className = "", size = 24 }: IconProps) => (
 );
 
 // Learning Style Icons
-export const VisualLearningIcon = ({ className = "", size = 24 }: IconProps) => (
+export const VisualLearningIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="eyeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -206,7 +206,7 @@ export const VisualLearningIcon = ({ className = "", size = 24 }: IconProps) => 
   </svg>
 );
 
-export const HandsOnLearningIcon = ({ className = "", size = 24 }: IconProps) => (
+export const HandsOnLearningIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="handsGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -224,7 +224,7 @@ export const HandsOnLearningIcon = ({ className = "", size = 24 }: IconProps) =>
   </svg>
 );
 
-export const AudioLearningIcon = ({ className = "", size = 24 }: IconProps) => (
+export const AudioLearningIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="soundGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -240,7 +240,7 @@ export const AudioLearningIcon = ({ className = "", size = 24 }: IconProps) => (
 );
 
 // Achievement Icons
-export const TrophyIcon = ({ className = "", size = 24 }: IconProps) => (
+export const TrophyIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="trophyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -256,7 +256,7 @@ export const TrophyIcon = ({ className = "", size = 24 }: IconProps) => (
   </svg>
 );
 
-export const StarIcon = ({ className = "", size = 24 }: IconProps) => (
+export const StarIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="starGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -268,7 +268,7 @@ export const StarIcon = ({ className = "", size = 24 }: IconProps) => (
   </svg>
 );
 
-export const HeartIcon = ({ className = "", size = 24 }: IconProps) => (
+export const HeartIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -280,7 +280,7 @@ export const HeartIcon = ({ className = "", size = 24 }: IconProps) => (
   </svg>
 );
 
-export const SparkleIcon = ({ className = "", size = 24 }: IconProps) => (
+export const SparkleIcon = ({ className = "", size = 32 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <defs>
       <linearGradient id="sparkleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
