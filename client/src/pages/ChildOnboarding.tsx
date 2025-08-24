@@ -413,7 +413,9 @@ export default function ChildOnboarding() {
               {/* Scout Character */}
               <div className="flex justify-center lg:justify-end">
                 <div className="relative">
-                  <div className="animate-bounce">
+                  <div className="animate-pulse" style={{
+                    animation: 'gentle-bounce 2s ease-in-out infinite'
+                  }}>
                     <div className="w-96 h-96 relative">
                       <img
                         src={scoutImage}
