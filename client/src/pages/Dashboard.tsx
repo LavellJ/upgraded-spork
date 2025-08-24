@@ -16,14 +16,21 @@ import type { AgeGroup } from "@/components/AgeSelector";
 
 export default function Dashboard() {
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>("");
+  const [studentName, setStudentName] = useState<string>("");
   const [location] = useLocation();
   const [studyStartTime, setStudyStartTime] = useState<number | null>(null);
 
   useEffect(() => {
-    // Get age group from localStorage
+    // Get age group and student info from localStorage
     const storedAgeGroup = localStorage.getItem("selectedAgeGroup");
     if (storedAgeGroup) {
       setSelectedAgeGroup(storedAgeGroup);
+    }
+    
+    const storedChild = localStorage.getItem("childProfile");
+    if (storedChild) {
+      const childData = JSON.parse(storedChild);
+      setStudentName(childData.name || "Learner");
     }
   }, []);
 
@@ -71,7 +78,7 @@ export default function Dashboard() {
             <h1 className="font-display text-4xl md:text-6xl font-bold text-white mb-6">
               Welcome Back,
               <span className="bg-gradient-to-r from-warm-orange to-sunset-orange bg-clip-text text-transparent">
-                {" "}Learner
+                {" "}{studentName || "Learner"}
               </span>
             </h1>
             <p className="text-xl text-white/80 max-w-3xl mx-auto" data-testid="text-welcome-description">
