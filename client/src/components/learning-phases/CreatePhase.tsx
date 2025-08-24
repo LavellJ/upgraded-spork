@@ -202,6 +202,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
   // Reward & Progression phase for pre-primary - completing Scout's Teaching Cycle
   if (ageGroup === "pre-primary") {
     const [createStep, setCreateStep] = useState<'share' | 'celebrate' | 'next'>('share');
+  const createContent = content.content;
     
     return (
       <div className="space-y-8 max-w-2xl mx-auto">

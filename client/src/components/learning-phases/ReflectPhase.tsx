@@ -132,6 +132,7 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
   if (ageGroup === "pre-primary") {
     const [reflectStep, setReflectStep] = useState<'memory' | 'realworld' | 'complete'>('memory');
     const [memoryAnchor, setMemoryAnchor] = useState<string | null>(null);
+    const reflectContent = content.content;
     
     const handleMemoryChoice = (anchor: string) => {
       setMemoryAnchor(anchor);

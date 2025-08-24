@@ -218,7 +218,9 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
     const [coLearningStep, setCoLearningStep] = useState<'buddy' | 'guided' | 'success'>('buddy');
     const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
     
-    const handleCoSolve = (choice: string) => {
+    const tryContent = content.content;
+  
+  const handleCoSolve = (choice: string) => {
       setSelectedChoice(choice);
       setCoLearningStep('guided');
       
@@ -252,7 +254,10 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
               {/* Interactive Problem Solving */}
               <div className="bg-white/10 rounded-2xl p-8 backdrop-blur-sm">
                 <div className="text-white text-base mb-6">
-                  Which one do you think we should choose?
+                  {typeof tryContent === 'string' 
+                    ? tryContent.slice(0, 100) + '...' 
+                    : 'Which one do you think we should choose?'
+                  }
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
