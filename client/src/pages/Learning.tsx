@@ -8,7 +8,9 @@ import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { QuestionInterface } from "@/components/QuestionInterface";
 import { BadgeNotification } from "@/components/BadgeNotification";
 import { LearningPathRecommendations } from "@/components/LearningPathRecommendations";
+import { ExplorerBuddy } from "@/components/ExplorerBuddy";
 import type { Topic, Question } from "@shared/schema";
+import type { AgeGroup } from "@/components/AgeSelector";
 
 export default function Learning() {
   const [location] = useLocation();
@@ -18,6 +20,7 @@ export default function Learning() {
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>("");
   const [newBadges, setNewBadges] = useState<Array<{badgeId: string; metadata?: any}>>([]);
   const [showRecommendations, setShowRecommendations] = useState(false);
+  const [studyStartTime] = useState<number>(Date.now());
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -272,6 +275,21 @@ export default function Learning() {
           
         </div>
       </div>
+      
+      {/* Explorer Buddy - Persistent Learning Companion */}
+      {selectedAgeGroup && (
+        <ExplorerBuddy 
+          ageGroup={selectedAgeGroup as AgeGroup}
+          currentPage={location}
+          isStudying={true}
+          studyDuration={Date.now() - studyStartTime}
+          recentProgress={{
+            questionsAnswered: score.total,
+            streakCount: score.correct,
+            topicName: topic?.name
+          }}
+        />
+      )}
       
       {/* Badge Notification */}
       {newBadges.length > 0 && (
