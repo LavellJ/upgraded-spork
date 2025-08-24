@@ -6,6 +6,7 @@ import { FloatingNavigation } from "@/components/FloatingNavigation";
 import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { ProgressLandscape } from "@/components/ProgressLandscape";
 import { BadgeDisplay } from "@/components/BadgeDisplay";
+import { GeometricIcon } from "@/components/GeometricIcon";
 import type { Topic, Progress } from "@shared/schema";
 import type { AgeGroup } from "@/components/AgeSelector";
 
@@ -106,17 +107,24 @@ export default function Dashboard() {
                 ) : (
                   <div className="space-y-8">
                     {[
-                      { key: "mathematics", label: "🔢 Math", icon: "fas fa-calculator" },
-                      { key: "literacy", label: "🔤 Literacy", icon: "fas fa-book" },
-                      { key: "science", label: "🔬 Science", icon: "fas fa-flask" }
-                    ].map(({ key, label, icon }) => {
+                      { key: "mathematics", label: "Math" },
+                      { key: "literacy", label: "Literacy" },
+                      { key: "science", label: "Science" }
+                    ].map(({ key, label }) => {
                       const subjectTopics = topics.filter(topic => topic.subject === key);
                       if (subjectTopics.length === 0) return null;
                       
                       return (
                         <div key={key}>
                           <div className="flex items-center mb-4">
-                            <i className={`${icon} text-warm-orange mr-3 text-lg`}></i>
+                            <div className="mr-3">
+                              <GeometricIcon 
+                                type="subject" 
+                                variant={key}
+                                size="lg"
+                                animated={true}
+                              />
+                            </div>
                             <h4 className="font-display text-lg font-semibold text-white">
                               {label}
                             </h4>

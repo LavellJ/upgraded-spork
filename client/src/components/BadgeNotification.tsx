@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { GeometricIcon } from "./GeometricIcon";
 
 interface BadgeDefinition {
   id: string;
@@ -59,18 +60,15 @@ export function BadgeNotification({ badges, onClose }: BadgeNotificationProps) {
   };
 
   const getBadgeIcon = (badgeId: string) => {
-    // Animal mascot mapping to match app theme
-    const iconMap: Record<string, string> = {
-      "first_steps": "🐰",
-      "daily_learner": "🐿️",
-      "focus_master": "🦉",
-      "knowledge_seeker": "🐨",
-      "topic_champion": "🦘",
-      "perfect_week": "🐾",
-      "genius_streak": "🦅",
-      "dedication_master": "🐺",
-    };
-    return iconMap[badgeId] || "🌟";
+    return (
+      <GeometricIcon 
+        type="badge" 
+        variant={badgeId}
+        size="xl"
+        animated={true}
+        className="mx-auto"
+      />
+    );
   };
 
   return (
@@ -89,7 +87,7 @@ export function BadgeNotification({ badges, onClose }: BadgeNotificationProps) {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 500 }}
-              className="text-6xl mb-3"
+              className="flex justify-center mb-6"
               data-testid={`badge-icon-${currentBadge.badgeId}`}
             >
               {getBadgeIcon(currentBadge.badgeId)}
