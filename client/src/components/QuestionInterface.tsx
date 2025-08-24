@@ -17,6 +17,7 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
   const [showResult, setShowResult] = useState(false);
   const [hint, setHint] = useState<string>("");
   const [isAnswered, setIsAnswered] = useState(false);
+  const [waitingForContinue, setWaitingForContinue] = useState(false);
   const queryClient = useQueryClient();
 
   const smartHintMutation = useMutation({
@@ -60,10 +61,22 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
     // Generate personalized explanation based on the answer
     personalizedExplanationMutation.mutate({ selectedAnswer: answerIndex, isCorrect });
     
-    // Show result for 2 seconds before advancing to next question
-    setTimeout(() => {
-      onAnswered(isCorrect, answerIndex);
-    }, 2000);
+    if (isCorrect) {
+      // For correct answers, advance automatically after 2 seconds
+      setTimeout(() => {
+        onAnswered(isCorrect, answerIndex);
+      }, 2000);
+    } else {
+      // For incorrect answers, wait for user to click continue - this gives them time to learn
+      setWaitingForContinue(true);
+    }
+  };
+
+  const handleContinue = () => {
+    if (selectedAnswer !== null) {
+      const isCorrect = selectedAnswer === question.correctAnswer;
+      onAnswered(isCorrect, selectedAnswer);
+    }
   };
 
   const getOptionClass = (optionIndex: number) => {
@@ -227,11 +240,22 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
             </button>
           )}
           
-          {showResult && (
+          {showResult && !waitingForContinue && (
             <div className="text-accent-teal text-sm ml-auto flex items-center" data-testid="text-next-indicator">
               <i className="fas fa-hourglass-half mr-2 animate-pulse"></i>
               Next question coming up...
             </div>
+          )}
+          
+          {waitingForContinue && (
+            <button 
+              className="btn-primary ml-auto px-6 py-2 rounded-xl bg-accent-teal hover:bg-accent-teal/80 text-white font-medium transition-all duration-300"
+              onClick={handleContinue}
+              data-testid="button-continue"
+            >
+              <i className="fas fa-arrow-right mr-2"></i>
+              Continue Learning
+            </button>
           )}
         </div>
       </div>
