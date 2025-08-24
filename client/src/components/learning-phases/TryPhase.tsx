@@ -152,14 +152,25 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
   };
 
   const handlePhaseComplete = () => {
-    const totalSteps = tryContent.fadedExamples.reduce((sum, ex) => sum + ex.steps.length, 0);
+    // Handle Scout format vs legacy format
+    if (isScoutFormat) {
+      const results = {
+        phase: 'try',
+        format: 'scout',
+        completed: true
+      };
+      onPhaseComplete(results);
+      return;
+    }
+
+    const totalSteps = legacyContent?.fadedExamples?.reduce((sum: number, ex: any) => sum + ex.steps.length, 0) || 0;
     const completedSteps = Object.values(completed).filter(Boolean).length;
     const hintsUsedCount = Object.keys(hintsUsed).length;
-    const totalAttempts = Object.values(attempts).reduce((sum, att) => sum + att, 0);
+    const totalAttempts = Object.values(attempts).reduce((sum: number, att: number) => sum + att, 0);
 
     const results = {
       examplesCompleted: currentExampleIndex + 1,
-      totalExamples: tryContent.fadedExamples.length,
+      totalExamples: legacyContent?.fadedExamples?.length || 0,
       stepsCompleted: completedSteps,
       totalSteps,
       hintsUsed: hintsUsedCount,
