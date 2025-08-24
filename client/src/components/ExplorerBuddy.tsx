@@ -205,7 +205,7 @@ export function ExplorerBuddy({
         setTimeout(() => setBuddyMood('neutral'), 1000);
       }}
     >
-      <svg viewBox="0 0 120 140" className="w-20 h-24">
+      <svg viewBox="0 0 120 140" className="w-50 h-60">
         <defs>
           <linearGradient id="hatGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#D2691E" />
@@ -414,54 +414,41 @@ export function ExplorerBuddy({
   );
 
   return (
-    <motion.div
-      initial={{ x: 100, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 120, damping: 20, delay: 1 }}
-      className="fixed bottom-6 right-6 z-50 max-w-sm"
-    >
-      <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 flex items-start space-x-3 min-h-[100px]">
+    <div className="fixed bottom-6 right-6 z-50">
+      {/* Character overlay */}
+      <motion.div
+        initial={{ x: 100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 120, damping: 20, delay: 1 }}
+        className="relative"
+      >
         <ExplorerCharacter />
         
-        <div className="flex-1">
-          <AnimatePresence mode="wait">
-            {currentMessage ? (
-              <motion.div
-                key={currentMessage.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
+        {/* Message bubble that appears above the character */}
+        <AnimatePresence mode="wait">
+          {currentMessage && (
+            <motion.div
+              key={currentMessage.id}
+              initial={{ opacity: 0, y: 10, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.8 }}
+              transition={{ duration: 0.3 }}
+              className="absolute bottom-full right-0 mb-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-3 max-w-xs"
+            >
+              <p
+                className="text-sm text-gray-700 leading-relaxed font-medium mb-1"
+                data-testid={`buddy-message-${currentMessage.type}`}
               >
-                <p
-                  className="text-sm text-gray-700 leading-relaxed font-medium mb-2"
-                  data-testid={`buddy-message-${currentMessage.type}`}
-                >
-                  {currentMessage.text}
-                </p>
-                <div className="text-xs text-gray-400">Your explorer buddy</div>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="idle"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <p className="text-sm text-gray-500 leading-relaxed font-medium mb-2">
-                  {buddyMood === 'neutral' ? (
-                    ageGroup === 'pre-primary' ? "Ready to explore together!" :
-                    ageGroup === 'primary' ? "I'm here if you need me!" :
-                    "Standing by, fellow explorer."
-                  ) : "..."}
-                </p>
-                <div className="text-xs text-gray-400">Your explorer buddy</div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    </motion.div>
+                {currentMessage.text}
+              </p>
+              <div className="text-xs text-gray-400">Your explorer buddy</div>
+              
+              {/* Speech bubble arrow */}
+              <div className="absolute -bottom-2 right-6 w-4 h-4 bg-white/95 border-r border-b border-white/20 rotate-45 backdrop-blur-sm"></div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </div>
   );
 }
