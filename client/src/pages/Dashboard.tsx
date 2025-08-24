@@ -141,6 +141,7 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
+          </div>
         </div>
       </div>
       
@@ -151,12 +152,9 @@ export default function Dashboard() {
           currentPage={location}
           isStudying={false}
           studyDuration={0}
-          recentProgress={null}
+          recentProgress={{}}
         />
       )}
     </>
   );
 }
-                </div>
-                
-                {/* Topic Selection */}
