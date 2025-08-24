@@ -250,6 +250,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid student data", errors: error.errors });
       }
       console.error("Error creating student:", error);
+      console.error("Request body was:", req.body);
       res.status(500).json({ message: "Failed to create student" });
     }
   });

@@ -150,11 +150,10 @@ export default function ChildOnboarding() {
     createProfileMutation.mutate({
       name: childName,
       ageGroup: selectedAgeGroup,
-      interests: selectedInterests,
-      learningStyle,
-      isActive: true,
-      parentId: null, // For demo purposes, real app would use auth
-      animalBuddy: "explorer" // Set default buddy
+      currentLevel: 1,
+      totalPoints: 0,
+      parentId: undefined, // For demo purposes, real app would use auth
+      isActive: true
     });
   };
 

@@ -30,7 +30,7 @@ export const students = pgTable("students", {
   ageGroup: text("age_group").notNull(), // "pre-primary", "primary", "upper-primary"
   currentLevel: integer("current_level").default(1),
   totalPoints: integer("total_points").default(0),
-  parentId: varchar("parent_id").notNull(), // Link to parent account
+  parentId: varchar("parent_id"), // Link to parent account (nullable for demo)
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
