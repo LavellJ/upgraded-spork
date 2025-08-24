@@ -2460,6 +2460,10 @@ export class MemStorage implements IStorage {
         topicId: "counting-numbers",
         questionsAnswered: 12,
         correctAnswers: 10,
+        currentStreak: 3,
+        bestStreak: 5,
+        completionPercentage: 83,
+        lastStudied: new Date(),
         createdAt: new Date()
       },
       // Mathematics - In Progress  
@@ -2469,6 +2473,10 @@ export class MemStorage implements IStorage {
         topicId: "shapes-colors",
         questionsAnswered: 6,
         correctAnswers: 4,
+        currentStreak: 2,
+        bestStreak: 2,
+        completionPercentage: 67,
+        lastStudied: new Date(),
         createdAt: new Date()
       },
       // Primary Math - Completed
@@ -2478,6 +2486,10 @@ export class MemStorage implements IStorage {
         topicId: "addition-subtraction",
         questionsAnswered: 15,
         correctAnswers: 13,
+        currentStreak: 4,
+        bestStreak: 6,
+        completionPercentage: 87,
+        lastStudied: new Date(),
         createdAt: new Date()
       },
       // Primary Math - In Progress
@@ -2487,6 +2499,10 @@ export class MemStorage implements IStorage {
         topicId: "multiplication-tables", 
         questionsAnswered: 8,
         correctAnswers: 6,
+        currentStreak: 1,
+        bestStreak: 3,
+        completionPercentage: 75,
+        lastStudied: new Date(),
         createdAt: new Date()
       },
       // Primary Literacy - Completed
@@ -2496,6 +2512,10 @@ export class MemStorage implements IStorage {
         topicId: "reading-comprehension",
         questionsAnswered: 11,
         correctAnswers: 9,
+        currentStreak: 3,
+        bestStreak: 4,
+        completionPercentage: 82,
+        lastStudied: new Date(),
         createdAt: new Date()
       },
       // Primary Science - In Progress
@@ -2505,6 +2525,10 @@ export class MemStorage implements IStorage {
         topicId: "living-things",
         questionsAnswered: 4,
         correctAnswers: 3,
+        currentStreak: 2,
+        bestStreak: 2,
+        completionPercentage: 75,
+        lastStudied: new Date(),
         createdAt: new Date()
       }
     ];
