@@ -132,78 +132,132 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
 
   const language = getAgeAppropriateLanguage();
 
-  // Clean, minimalist teach phase for pre-primary - Alto's Odyssey aesthetic
+  // Adventure-based teaching for pre-primary following Scout's Universal Teaching Cycle
   if (ageGroup === "pre-primary") {
+    const [teachingStep, setTeachingStep] = useState<'hook' | 'experience' | 'ready'>('hook');
+    const [showVisualDemo, setShowVisualDemo] = useState(false);
+    
     return (
       <div className="space-y-8 max-w-2xl mx-auto">
-        {/* Minimalist Header */}
-        <div className="floating-ui rounded-3xl p-8 text-center" data-testid="teach-phase-header">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-dawn-pink to-warm-orange flex items-center justify-center">
-            <div className="text-2xl text-white">✦</div>
-          </div>
-          <h2 className="font-display text-2xl font-bold text-white">
-            Learn
-          </h2>
-        </div>
-
-        {/* Clean Learning Content */}
-        <div className="floating-ui rounded-3xl p-12 text-center" data-testid="simple-teach-content">
-          <div className="space-y-8">
-            {!isPlaying ? (
+        {/* Adventure Hook */}
+        {teachingStep === 'hook' && (
+          <div className="floating-ui rounded-3xl p-8" data-testid="adventure-hook">
+            <div className="text-center space-y-6">
+              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-dawn-pink to-warm-orange flex items-center justify-center">
+                <div className="text-white text-3xl">🗺️</div>
+              </div>
+              
+              <div className="text-white text-xl font-bold">
+                Hey explorer!
+              </div>
+              
+              <div className="text-white/80 text-lg leading-relaxed">
+                I've got something amazing to show you. Want to go on an adventure together?
+              </div>
+              
               <button
-                onClick={handlePlayPause}
-                className="w-32 h-32 bg-gradient-to-b from-white/30 to-white/20 hover:from-white/40 hover:to-white/30 rounded-full flex items-center justify-center border-2 border-white/30 hover:border-white/50 transition-all duration-300 hover:scale-105"
-                data-testid="button-simple-play"
+                onClick={() => setTeachingStep('experience')}
+                className="px-8 py-4 bg-gradient-to-r from-warm-orange to-sunset-orange text-white text-lg font-medium rounded-2xl hover:scale-105 transition-all"
+                data-testid="start-adventure"
               >
-                <div className="text-white text-3xl ml-1">▶</div>
+                Let's explore!
               </button>
-            ) : (
-              <div className="space-y-6">
-                <div className="bg-white/10 rounded-2xl p-8 backdrop-blur-sm">
-                  <div className="text-white text-lg leading-relaxed">
-                    {steps[currentStep]?.text}
+            </div>
+          </div>
+        )}
+        
+        {/* Teaching Through Experience */}
+        {teachingStep === 'experience' && (
+          <div className="floating-ui rounded-3xl p-8" data-testid="visual-teaching">
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center">
+                  <div className="text-white text-2xl">👀</div>
+                </div>
+                <div className="text-white text-lg font-medium mb-6">Watch this!</div>
+              </div>
+              
+              {!showVisualDemo ? (
+                <div className="text-center">
+                  <button
+                    onClick={() => setShowVisualDemo(true)}
+                    className="w-40 h-40 bg-gradient-to-b from-white/30 to-white/20 hover:from-white/40 hover:to-white/30 rounded-full flex items-center justify-center border-2 border-white/30 hover:border-white/50 transition-all duration-300 hover:scale-105"
+                    data-testid="show-demo"
+                  >
+                    <div className="text-white text-4xl">▶</div>
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="bg-white/10 rounded-2xl p-8 backdrop-blur-sm">
+                    <div className="text-white text-lg leading-relaxed text-center">
+                      {teachContent.content || "Here's how this works..."}
+                    </div>
+                  </div>
+                  
+                  {/* Interactive Visual Element */}
+                  <div className="bg-gradient-to-b from-white/20 to-white/10 rounded-2xl p-8 border-2 border-white/20">
+                    <div className="text-center space-y-4">
+                      <div className="text-white/80 text-base">Try touching this:</div>
+                      <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+                        <div className="aspect-square bg-gradient-to-br from-green-400/40 to-green-500/40 rounded-2xl border-2 border-green-400/60 flex items-center justify-center cursor-pointer hover:scale-105 transition-all">
+                          <div className="text-white text-2xl">✨</div>
+                        </div>
+                        <div className="aspect-square bg-gradient-to-br from-blue-400/40 to-blue-500/40 rounded-2xl border-2 border-blue-400/60 flex items-center justify-center cursor-pointer hover:scale-105 transition-all">
+                          <div className="text-white text-2xl">🌟</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <button
+                      onClick={() => setTeachingStep('ready')}
+                      className="px-6 py-3 bg-gradient-to-r from-purple-400 to-blue-400 text-white font-medium rounded-2xl hover:scale-105 transition-all"
+                      data-testid="got-it"
+                    >
+                      I get it!
+                    </button>
                   </div>
                 </div>
-                
-                <button
-                  onClick={handlePlayPause}
-                  className="w-20 h-20 bg-gradient-to-b from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 rounded-full flex items-center justify-center border-2 border-white/20 hover:border-white/40 transition-all"
-                  data-testid="button-simple-pause"
-                >
-                  <div className="text-white text-2xl">⏸</div>
-                </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-
-        {/* Simple Understanding Check */}
-        {(currentStep >= steps.length - 1 || showWorkedExample) && (
+        )}
+        
+        {/* Ready Check */}
+        {teachingStep === 'ready' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="floating-ui rounded-3xl p-8"
-            data-testid="simple-understanding-check"
+            data-testid="ready-check"
           >
             <div className="text-center space-y-6">
-              <div className="text-white text-lg font-medium">Ready to try?</div>
+              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center">
+                <div className="text-white text-2xl">🤝</div>
+              </div>
+              
+              <div className="text-white text-lg font-medium">
+                Ready to try this together?
+              </div>
               
               <div className="flex justify-center gap-4">
                 <button
                   onClick={() => handleUnderstandingCheck("confused")}
-                  className={`w-20 h-20 rounded-full transition-all border-2 ${
+                  className={`w-20 h-20 rounded-full transition-all border-2 flex items-center justify-center ${
                     understandingLevel === "confused" ? 'bg-orange-400/30 border-orange-400 scale-110' : 'bg-white/10 border-white/20 hover:bg-white/20 hover:border-white/40'
                   }`}
-                  data-testid="feeling-confused"
+                  data-testid="need-help"
                 >
                   <div className="text-white text-2xl">?</div>
                 </button>
                 <button
                   onClick={() => handleUnderstandingCheck("clear")}
-                  className={`w-20 h-20 rounded-full transition-all border-2 ${
+                  className={`w-20 h-20 rounded-full transition-all border-2 flex items-center justify-center ${
                     understandingLevel === "clear" ? 'bg-green-400/30 border-green-400 scale-110' : 'bg-white/10 border-white/20 hover:bg-white/20 hover:border-white/40'
                   }`}
-                  data-testid="feeling-ready"
+                  data-testid="ready-to-try"
                 >
                   <div className="text-white text-2xl">✓</div>
                 </button>
@@ -215,9 +269,9 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                   animate={{ opacity: 1 }}
                   onClick={handlePhaseComplete}
                   className="px-8 py-4 bg-gradient-to-r from-warm-orange to-sunset-orange text-white text-lg font-medium rounded-2xl hover:scale-105 transition-all"
-                  data-testid="button-continue"
+                  data-testid="lets-try-together"
                 >
-                  Continue
+                  Let's try together!
                 </motion.button>
               )}
             </div>
