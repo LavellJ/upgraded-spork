@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { AgeGroup } from "./AgeSelector";
+import explorerAvatar from '@assets/image_1756012340707.png';
 
 interface ExplorerBuddyProps {
   ageGroup: AgeGroup;
@@ -205,196 +206,53 @@ export function ExplorerBuddy({
         setTimeout(() => setBuddyMood('neutral'), 1000);
       }}
     >
-      <svg viewBox="0 0 100 130" className="w-50 h-60">
-        {/* Shadow */}
-        <ellipse cx="50" cy="120" rx="18" ry="2" fill="rgba(0,0,0,0.15)" />
-        
-        <motion.g
+      <motion.img
+        src={explorerAvatar}
+        alt="Explorer Buddy"
+        className="w-50 h-60 drop-shadow-lg"
+        animate={{ 
+          y: buddyMood === 'excited' ? [-2, 2, -2] : 0,
+          rotate: buddyMood === 'celebrating' ? [-2, 2, -2] : 0,
+          scale: buddyMood === 'excited' ? [1, 1.05, 1] : 1
+        }}
+        transition={{ 
+          duration: buddyMood === 'excited' ? 1.5 : 2, 
+          repeat: Infinity, 
+          ease: "easeInOut" 
+        }}
+      />
+      
+      {/* Adventure sparkles - more active when excited */}
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div
+          className="absolute top-2 right-2 w-3 h-3 rounded-full bg-yellow-400"
           animate={{ 
-            y: buddyMood === 'excited' ? [-0.5, 0.5, -0.5] : 0,
+            opacity: buddyMood === 'celebrating' ? [0.5, 1, 0.5] : [0.3, 0.7, 0.3], 
+            scale: buddyMood === 'celebrating' ? [1, 1.5, 1] : [0.8, 1.2, 0.8] 
           }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        >
-          {/* Backpack - brown, simple rounded rectangle */}
-          <rect
-            x="30"
-            y="55"
-            width="12"
-            height="18"
-            rx="6"
-            fill="#8B4513"
-            stroke="#654321"
-            strokeWidth="2"
-          />
-          <rect x="33" y="50" width="6" height="8" rx="3" fill="#654321" />
-          
-          {/* Boots - simple brown ovals */}
-          <ellipse cx="45" cy="110" rx="6" ry="4" fill="#8B4513" stroke="#654321" strokeWidth="2" />
-          <ellipse cx="55" cy="110" rx="6" ry="4" fill="#8B4513" stroke="#654321" strokeWidth="2" />
-          
-          {/* Legs - brown shorts/pants */}
-          <rect x="44" y="85" width="5" height="25" fill="#8B4513" stroke="#654321" strokeWidth="2" rx="2.5" />
-          <rect x="51" y="85" width="5" height="25" fill="#8B4513" stroke="#654321" strokeWidth="2" rx="2.5" />
-          
-          {/* Belt */}
-          <rect x="42" y="82" width="16" height="3" fill="#654321" rx="1.5" />
-          <rect x="48.5" y="81" width="3" height="5" fill="#8B4513" rx="1.5" />
-          
-          {/* Body - orange/brown vest exactly like reference */}
-          <rect
-            x="44"
-            y="55"
-            width="12"
-            height="27"
-            rx="6"
-            fill="#D2691E"
-            stroke="#8B4513"
-            strokeWidth="2"
-          />
-          
-          {/* V-neck collar - orange triangle */}
-          <path
-            d="M48 55 L52 55 L50 62 Z"
-            fill="#CD853F"
-            stroke="#8B4513"
-            strokeWidth="1.5"
-          />
-          
-          {/* Arms - skin colored, simple */}
-          <motion.ellipse
-            cx="40"
-            cy="65"
-            rx="4"
-            ry="10"
-            fill="#F5DEB3"
-            stroke="#D2691E"
-            strokeWidth="2"
-            animate={{ rotate: buddyMood === 'celebrating' ? [-8, 8, -8] : 0 }}
-            transition={{ duration: 0.8, repeat: Infinity }}
-          />
-          <motion.ellipse
-            cx="60"
-            cy="65"
-            rx="4"
-            ry="10"
-            fill="#F5DEB3"
-            stroke="#D2691E"
-            strokeWidth="2"
-            animate={{ rotate: buddyMood === 'celebrating' ? [8, -8, 8] : 0 }}
-            transition={{ duration: 0.8, repeat: Infinity }}
-          />
-          
-          {/* Head - perfectly round like reference */}
-          <circle
-            cx="50"
-            cy="40"
-            r="20"
-            fill="#F5DEB3"
-            stroke="#D2691E"
-            strokeWidth="2.5"
-          />
-          
-          {/* Hat - brown safari hat exactly like reference */}
-          {/* Hat crown - rounded dome */}
-          <path
-            d="M32 35 Q32 25 50 25 Q68 25 68 35 Q68 40 50 40 Q32 40 32 35 Z"
-            fill="#CD853F"
-            stroke="#8B4513"
-            strokeWidth="2.5"
-          />
-          
-          {/* Hat brim - wide circular brim */}
-          <ellipse
-            cx="50"
-            cy="37"
-            rx="24"
-            ry="6"
-            fill="#A0522D"
-            stroke="#8B4513"
-            strokeWidth="2.5"
-          />
-          
-          {/* Hat band */}
-          <ellipse
-            cx="50"
-            cy="35"
-            rx="18"
-            ry="2"
-            fill="#8B4513"
-          />
-          
-          {/* Face features - exactly like reference */}
-          {/* Eyes - simple small dark ovals */}
-          <ellipse cx="45" cy="40" rx="1.5" ry="2" fill="#2F1B14" />
-          <ellipse cx="55" cy="40" rx="1.5" ry="2" fill="#2F1B14" />
-          
-          {/* Nose - tiny dark oval */}
-          <ellipse cx="50" cy="43" rx="0.8" ry="1.2" fill="#D2691E" />
-          
-          {/* Rosy cheeks - perfect circles like reference */}
-          <circle cx="41" cy="45" r="3" fill="#FFB6C1" opacity="0.7" />
-          <circle cx="59" cy="45" r="3" fill="#FFB6C1" opacity="0.7" />
-          
-          {/* Smile - simple curved line */}
-          <motion.path
-            d="M46 48 Q50 52 54 48"
-            fill="none"
-            stroke="#2F1B14"
-            strokeWidth="2"
-            strokeLinecap="round"
-            animate={{ 
-              scaleY: buddyMood === 'celebrating' ? [1, 1.2, 1] : 1
-            }}
-            transition={{ duration: 0.6, repeat: Infinity }}
-          />
-          
-          {/* Ears - small circles */}
-          <circle cx="30" cy="40" r="4" fill="#F5DEB3" stroke="#D2691E" strokeWidth="2" />
-          <circle cx="70" cy="40" r="4" fill="#F5DEB3" stroke="#D2691E" strokeWidth="2" />
-        </motion.g>
-        
-          {/* Adventure sparkles - more active when excited */}
-          <motion.circle
-            cx="95"
-            cy="25"
-            r="1.5"
-            fill="currentColor"
-            className="text-yellow-400"
-            animate={{ 
-              opacity: buddyMood === 'celebrating' ? [0.5, 1, 0.5] : [0.3, 0.7, 0.3], 
-              scale: buddyMood === 'celebrating' ? [1, 1.5, 1] : [0.8, 1.2, 0.8] 
-            }}
-            transition={{ 
-              duration: buddyMood === 'celebrating' ? 0.8 : 2, 
-              repeat: Infinity, 
-              delay: 0 
-            }}
-          />
-          <motion.circle
-            cx="100"
-            cy="45"
-            r="1"
-            fill="currentColor"
-            className="text-cyan-400"
-            animate={{ 
-              opacity: buddyMood === 'excited' ? [0.6, 1, 0.6] : [0.4, 0.8, 0.4], 
-              scale: [0.9, 1.1, 0.9] 
-            }}
-            transition={{ duration: 2.5, repeat: Infinity, delay: 1 }}
-          />
-          <motion.circle
-            cx="90"
-            cy="65"
-            r="1.2"
-            fill="currentColor"
-            className="text-pink-400"
-            animate={{ 
-              opacity: [0.2, 0.7, 0.2], 
-              scale: buddyMood === 'thoughtful' ? [0.5, 0.9, 0.5] : [0.7, 1.3, 0.7] 
-            }}
-            transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-          />
-      </svg>
+          transition={{ 
+            duration: buddyMood === 'celebrating' ? 0.8 : 2, 
+            repeat: Infinity, 
+            delay: 0 
+          }}
+        />
+        <motion.div
+          className="absolute top-12 right-0 w-2 h-2 rounded-full bg-cyan-400"
+          animate={{ 
+            opacity: buddyMood === 'excited' ? [0.6, 1, 0.6] : [0.4, 0.8, 0.4], 
+            scale: [0.9, 1.1, 0.9] 
+          }}
+          transition={{ duration: 2.5, repeat: Infinity, delay: 1 }}
+        />
+        <motion.div
+          className="absolute top-20 right-4 w-2.5 h-2.5 rounded-full bg-pink-400"
+          animate={{ 
+            opacity: [0.2, 0.7, 0.2], 
+            scale: buddyMood === 'thoughtful' ? [0.5, 0.9, 0.5] : [0.7, 1.3, 0.7] 
+          }}
+          transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
+        />
+      </div>
     </motion.div>
   );
 
