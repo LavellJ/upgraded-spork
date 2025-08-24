@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import type { Question } from "@shared/schema";
+import { DifficultyIndicator, DifficultyFeedback } from "./DifficultyIndicator";
 
 interface QuestionInterfaceProps {
   question: Question;
@@ -18,6 +19,14 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
   const [hint, setHint] = useState<string>("");
   const [isAnswered, setIsAnswered] = useState(false);
   const [waitingForContinue, setWaitingForContinue] = useState(false);
+  const [difficultyFeedback, setDifficultyFeedback] = useState<{
+    newDifficulty?: number;
+    reasoning?: string;
+    encouragement?: string;
+    learningInsights?: string[];
+    suggestedFocus?: string;
+  } | null>(null);
+  const [showDifficultyAnimation, setShowDifficultyAnimation] = useState(false);
   const queryClient = useQueryClient();
 
   const smartHintMutation = useMutation({
@@ -49,6 +58,24 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
     },
   });
 
+  const adaptiveDifficultyMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/questions/adaptive-difficulty", {
+        topicId: question.topicId,
+        studentId
+      });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data.newDifficulty !== undefined && data.newDifficulty !== question.difficulty) {
+        setDifficultyFeedback(data);
+        setShowDifficultyAnimation(true);
+        // Hide animation after 4 seconds
+        setTimeout(() => setShowDifficultyAnimation(false), 4000);
+      }
+    },
+  });
+
   const handleAnswerSelect = (answerIndex: number) => {
     if (isAnswered) return;
     
@@ -58,8 +85,9 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
     
     const isCorrect = answerIndex === question.correctAnswer;
     
-    // Generate personalized explanation based on the answer
+    // Generate personalized explanation and check for difficulty adjustment
     personalizedExplanationMutation.mutate({ selectedAnswer: answerIndex, isCorrect });
+    adaptiveDifficultyMutation.mutate();
     
     if (isCorrect) {
       // For correct answers, advance automatically after 2 seconds
@@ -154,9 +182,19 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
         <h3 className="font-display text-xl font-semibold text-white" data-testid="text-topic-name">
           Question {questionNumber} of {totalQuestions}
         </h3>
-        <div className="flex items-center space-x-2 text-white/70">
-          <i className="fas fa-brain text-accent-teal"></i>
-          <span className="text-sm" data-testid="text-ai-indicator">AI Generated</span>
+        <div className="flex items-center space-x-4">
+          <div className="flex flex-col items-end space-y-1">
+            <span className="text-white/60 text-xs">Challenge Level</span>
+            <DifficultyIndicator 
+              currentDifficulty={question.difficulty} 
+              ageGroup={ageGroup}
+              showAnimation={false}
+            />
+          </div>
+          <div className="flex items-center space-x-2 text-white/70">
+            <i className="fas fa-brain text-accent-teal"></i>
+            <span className="text-sm" data-testid="text-ai-indicator">AI Generated</span>
+          </div>
         </div>
       </div>
       
@@ -259,6 +297,14 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
           )}
         </div>
       </div>
+      
+      {/* Difficulty Feedback Overlay */}
+      <DifficultyFeedback
+        feedback={difficultyFeedback || {}}
+        show={showDifficultyAnimation}
+        ageGroup={ageGroup}
+        onClose={() => setShowDifficultyAnimation(false)}
+      />
     </div>
   );
 }

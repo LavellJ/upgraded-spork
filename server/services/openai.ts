@@ -181,76 +181,192 @@ export interface AdaptiveDifficultyRequest {
     learningVelocity: number; // How quickly they're improving (0-1)
     streakLength: number; // Current correct answer streak
     timeSpentPerQuestion: number; // Average time in seconds
+    strugglingConcepts?: string[]; // Areas where they frequently make mistakes
+    learningStyle?: "visual" | "analytical" | "practical" | "creative";
+    sessionLength: number; // Minutes spent in current session
+    fatigueFactor: number; // 0-1, how tired they might be based on session time
+    ageGroup: "pre-primary" | "primary" | "upper-primary";
   };
   currentDifficulty: number; // 1-5
+  recentQuestionDifficulties: number[]; // Track last 5 question difficulties
 }
 
 export async function calculateAdaptiveDifficulty(request: AdaptiveDifficultyRequest): Promise<{
   newDifficulty: number;
   reasoning: string;
   encouragement: string;
+  learningInsights?: string[];
+  suggestedFocus?: string;
 }> {
-  // Advanced adaptive algorithm
+  // Enhanced adaptive algorithm with AI-powered analysis
   let adjustmentFactor = 0;
   let reasoning = "";
+  const insights: string[] = [];
+  let suggestedFocus = "";
   
-  // Performance-based adjustments
-  if (request.studentPerformance.recentAccuracy >= 0.8 && request.studentPerformance.streakLength >= 3) {
-    adjustmentFactor += 0.5; // Increase difficulty
-    reasoning += "Consistent high performance suggests readiness for more challenge. ";
+  // Age-appropriate difficulty bounds
+  const ageGroupLimits = {
+    "pre-primary": { min: 1, max: 3 },
+    "primary": { min: 1, max: 4 },
+    "upper-primary": { min: 2, max: 5 }
+  };
+  
+  const limits = ageGroupLimits[request.studentPerformance.ageGroup];
+  
+  // Performance pattern analysis
+  if (request.studentPerformance.recentAccuracy >= 0.85 && request.studentPerformance.streakLength >= 4) {
+    adjustmentFactor += 0.6;
+    reasoning += "Exceptional performance with strong consistency suggests readiness for advanced challenges. ";
+    insights.push("Student is mastering concepts quickly and confidently");
+  } else if (request.studentPerformance.recentAccuracy >= 0.7 && request.studentPerformance.streakLength >= 2) {
+    adjustmentFactor += 0.3;
+    reasoning += "Good performance with building confidence indicates room for moderate challenge increase. ";
   } else if (request.studentPerformance.recentAccuracy <= 0.4) {
-    adjustmentFactor -= 0.7; // Decrease difficulty
-    reasoning += "Recent struggles indicate need for easier questions to build confidence. ";
+    adjustmentFactor -= 0.8;
+    reasoning += "Recent struggles indicate need for easier questions to rebuild confidence and understanding. ";
+    insights.push("Student may need review of fundamental concepts");
+    suggestedFocus = "Focus on foundational concepts before advancing";
+  } else if (request.studentPerformance.recentAccuracy <= 0.6) {
+    adjustmentFactor -= 0.4;
+    reasoning += "Performance below target suggests slight reduction in difficulty for better comprehension. ";
   }
   
-  // Learning velocity considerations
-  if (request.studentPerformance.learningVelocity > 0.7) {
-    adjustmentFactor += 0.3; // Faster learners can handle more challenge
-    reasoning += "Fast learning pace allows for accelerated progression. ";
+  // Learning velocity and adaptation speed
+  if (request.studentPerformance.learningVelocity > 0.8) {
+    adjustmentFactor += 0.4;
+    reasoning += "Rapid learning progression allows for accelerated difficulty increases. ";
+    insights.push("Fast learner who adapts quickly to new challenges");
+  } else if (request.studentPerformance.learningVelocity < 0.3) {
+    adjustmentFactor -= 0.3;
+    reasoning += "Slower learning pace requires more gradual progression. ";
   }
   
-  // Time-based adjustments
-  if (request.studentPerformance.timeSpentPerQuestion > 120) { // More than 2 minutes
-    adjustmentFactor -= 0.3; // Too much thinking time suggests difficulty too high
-    reasoning += "Lengthy question times suggest current difficulty may be too high. ";
-  } else if (request.studentPerformance.timeSpentPerQuestion < 30) { // Less than 30 seconds
-    adjustmentFactor += 0.2; // Very quick answers might mean too easy
-    reasoning += "Quick answer times suggest room for increased challenge. ";
+  // Response time analysis with age considerations
+  const ageTimeThresholds = {
+    "pre-primary": { long: 90, quick: 20 },
+    "primary": { long: 120, quick: 30 },
+    "upper-primary": { long: 150, quick: 45 }
+  };
+  
+  const timeThreshold = ageTimeThresholds[request.studentPerformance.ageGroup];
+  
+  if (request.studentPerformance.timeSpentPerQuestion > timeThreshold.long) {
+    adjustmentFactor -= 0.4;
+    reasoning += "Extended thinking time suggests current difficulty may be too challenging. ";
+  } else if (request.studentPerformance.timeSpentPerQuestion < timeThreshold.quick) {
+    adjustmentFactor += 0.3;
+    reasoning += "Quick response times indicate potential for increased challenge. ";
   }
   
-  // Calculate new difficulty (clamped between 1-5)
-  const newDifficulty = Math.max(1, Math.min(5, Math.round(request.currentDifficulty + adjustmentFactor)));
+  // Fatigue and session length considerations
+  if (request.studentPerformance.sessionLength > 30) {
+    adjustmentFactor -= request.studentPerformance.fatigueFactor * 0.5;
+    reasoning += "Extended session time with fatigue suggests maintaining or reducing difficulty. ";
+    insights.push("Consider taking a break to maintain focus");
+  }
   
-  // Generate encouragement based on performance
+  // Learning style optimisation
+  if (request.studentPerformance.learningStyle) {
+    const styleBonus = {
+      "analytical": request.studentPerformance.recentAccuracy > 0.7 ? 0.2 : 0,
+      "visual": request.studentPerformance.timeSpentPerQuestion < timeThreshold.quick ? 0.1 : 0,
+      "practical": request.studentPerformance.streakLength > 2 ? 0.15 : 0,
+      "creative": request.studentPerformance.learningVelocity > 0.6 ? 0.2 : 0
+    };
+    adjustmentFactor += styleBonus[request.studentPerformance.learningStyle];
+  }
+  
+  // Struggling concepts analysis
+  if (request.studentPerformance.strugglingConcepts && request.studentPerformance.strugglingConcepts.length > 0) {
+    adjustmentFactor -= 0.3;
+    reasoning += "Identified struggling areas require focused practice at current or easier levels. ";
+    suggestedFocus = `Review these areas: ${request.studentPerformance.strugglingConcepts.join(", ")}`;
+  }
+  
+  // Recent difficulty pattern analysis
+  if (request.recentQuestionDifficulties.length >= 3) {
+    const avgRecentDifficulty = request.recentQuestionDifficulties.reduce((a, b) => a + b, 0) / request.recentQuestionDifficulties.length;
+    const difficultyTrend = avgRecentDifficulty - request.currentDifficulty;
+    
+    if (Math.abs(difficultyTrend) > 0.5) {
+      adjustmentFactor += difficultyTrend * 0.2; // Smooth out difficulty jumps
+      reasoning += "Adjusting based on recent difficulty patterns for smoother progression. ";
+    }
+  }
+  
+  // Calculate new difficulty with age-appropriate bounds
+  let newDifficulty = Math.round(request.currentDifficulty + adjustmentFactor);
+  newDifficulty = Math.max(limits.min, Math.min(limits.max, newDifficulty));
+  
+  // Generate age-appropriate encouragement
   const encouragementPrompts = {
-    increasing: [
-      "You're doing brilliantly! Let's try something a bit more challenging.",
-      "Amazing progress! Ready for the next level?",
-      "Your hard work is paying off - time to stretch those brain muscles!"
-    ],
-    maintaining: [
-      "You're finding your perfect learning pace - keep it up!",
-      "This difficulty level is working well for you!",
-      "Great steady progress at just the right challenge level!"
-    ],
-    decreasing: [
-      "Let's take a step back and make sure you feel confident.",
-      "Sometimes the best learning happens when we slow down a little.",
-      "Building strong foundations with easier questions first!"
-    ]
+    "pre-primary": {
+      increasing: [
+        "You're such a clever little learner! Let's try something a bit trickier! 🌟",
+        "Wow! You're getting so good at this! Ready for a bigger challenge?",
+        "Your brain is growing stronger! Let's see what else you can do!"
+      ],
+      maintaining: [
+        "You're doing such a great job! Keep going, superstar!",
+        "This is just right for you - you're learning perfectly!",
+        "You're getting better and better! Well done!"
+      ],
+      decreasing: [
+        "Let's try some easier ones so you feel super confident!",
+        "We'll take it step by step - you're doing wonderfully!",
+        "Let's practice a bit more with these easier questions!"
+      ]
+    },
+    "primary": {
+      increasing: [
+        "Excellent work! You're ready for more challenging questions!",
+        "Your learning is really impressive - let's step it up!",
+        "You've mastered this level - time for the next challenge!"
+      ],
+      maintaining: [
+        "You're finding your perfect learning rhythm - fantastic!",
+        "This difficulty suits you perfectly - keep it up!",
+        "Great steady progress at just the right level!"
+      ],
+      decreasing: [
+        "Let's focus on building a strong foundation first!",
+        "We'll take it a bit easier to make sure you really understand!",
+        "Stepping back helps build confidence - well done for trying!"
+      ]
+    },
+    "upper-primary": {
+      increasing: [
+        "Outstanding performance! You're ready for advanced challenges!",
+        "Your problem-solving skills are developing excellently!",
+        "Time to push your abilities further - you can handle it!"
+      ],
+      maintaining: [
+        "You've found your optimal challenge zone - excellent!",
+        "This difficulty level is maximising your learning potential!",
+        "Perfect balance of challenge and success!"
+      ],
+      decreasing: [
+        "Let's consolidate your understanding with some review!",
+        "Building mastery requires sometimes stepping back - smart approach!",
+        "We'll strengthen your foundations before advancing further!"
+      ]
+    }
   };
   
   const difficultyChange = newDifficulty > request.currentDifficulty ? "increasing" : 
                           newDifficulty < request.currentDifficulty ? "decreasing" : "maintaining";
   
-  const encouragement = encouragementPrompts[difficultyChange][
-    Math.floor(Math.random() * encouragementPrompts[difficultyChange].length)
+  const agePrompts = encouragementPrompts[request.studentPerformance.ageGroup];
+  const encouragement = agePrompts[difficultyChange][
+    Math.floor(Math.random() * agePrompts[difficultyChange].length)
   ];
   
   return {
     newDifficulty,
     reasoning: reasoning || "Maintaining current difficulty level based on steady performance.",
-    encouragement
+    encouragement,
+    learningInsights: insights.length > 0 ? insights : undefined,
+    suggestedFocus: suggestedFocus || undefined
   };
 }
 
@@ -333,5 +449,125 @@ Keep it concise but impactful - this explanation will shape how they feel about 
   } catch (error) {
     console.error("Failed to generate personalized explanation:", error);
     throw new Error("Failed to generate explanation. Please try again.");
+  }
+}
+
+export interface LearningPathRequest {
+  studentId: string;
+  currentProgress: {
+    topicId: string;
+    mastery: number; // 0-1
+    difficulty: number;
+    strugglingAreas?: string[];
+  }[];
+  studentProfile: {
+    ageGroup: "pre-primary" | "primary" | "upper-primary";
+    learningStyle?: "visual" | "analytical" | "practical" | "creative";
+    strengths: string[];
+    weaknesses: string[];
+    interests?: string[];
+  };
+  availableTopics: {
+    id: string;
+    name: string;
+    subject: string;
+    level: number;
+    prerequisites?: string[];
+  }[];
+}
+
+export async function generateLearningPathRecommendations(request: LearningPathRequest): Promise<{
+  recommendations: {
+    topicId: string;
+    priority: number; // 1-5, 5 being highest
+    reasoning: string;
+    estimatedTime: string;
+    difficulty: number;
+    focusAreas: string[];
+  }[];
+  overallStrategy: string;
+  motivationalMessage: string;
+}> {
+  const ageGroupGuidance = {
+    "pre-primary": "Focus on foundational concepts, play-based learning, and building confidence through success. Keep sessions short and engaging.",
+    "primary": "Balance skill building with exploration. Introduce new concepts gradually while reinforcing basics.",
+    "upper-primary": "Encourage deeper thinking, problem-solving strategies, and connections between subjects. Challenge appropriately."
+  };
+
+  const learningStyleAdaptation = {
+    "visual": "Recommend topics that can benefit from visual learning approaches, diagrams, and spatial thinking.",
+    "analytical": "Suggest topics with logical progression, patterns, and systematic problem-solving opportunities.",
+    "practical": "Focus on topics with real-world applications and hands-on learning opportunities.",
+    "creative": "Emphasise topics that allow for creative expression, storytelling, and imaginative approaches."
+  };
+
+  // Analyze current performance patterns
+  const strongTopics = request.currentProgress.filter(p => p.mastery >= 0.8);
+  const strugglingTopics = request.currentProgress.filter(p => p.mastery < 0.5);
+  const developingTopics = request.currentProgress.filter(p => p.mastery >= 0.5 && p.mastery < 0.8);
+
+  const prompt = `As an expert AI educational consultant, create a personalised learning path for this student:
+
+STUDENT PROFILE:
+- Age Group: ${request.studentProfile.ageGroup} (${ageGroupGuidance[request.studentProfile.ageGroup]})
+- Learning Style: ${request.studentProfile.learningStyle || "balanced"} ${request.studentProfile.learningStyle ? `(${learningStyleAdaptation[request.studentProfile.learningStyle]})` : ""}
+- Current Strengths: ${request.studentProfile.strengths.join(", ")}
+- Areas for Growth: ${request.studentProfile.weaknesses.join(", ")}
+- Interests: ${request.studentProfile.interests?.join(", ") || "Not specified"}
+
+CURRENT PROGRESS:
+- Strong Topics (80%+ mastery): ${strongTopics.map(t => `${t.topicId} (${Math.round(t.mastery * 100)}%)`).join(", ") || "None yet"}
+- Developing Topics (50-80% mastery): ${developingTopics.map(t => `${t.topicId} (${Math.round(t.mastery * 100)}%)`).join(", ") || "None"}
+- Challenging Topics (<50% mastery): ${strugglingTopics.map(t => `${t.topicId} (${Math.round(t.mastery * 100)}%)`).join(", ") || "None"}
+
+AVAILABLE TOPICS:
+${request.availableTopics.map(t => `- ${t.name} (${t.subject}, Level ${t.level})${t.prerequisites ? ` [Requires: ${t.prerequisites.join(", ")}]` : ""}`).join("\n")}
+
+Create recommendations that:
+1. Address the student's current learning needs
+2. Build on their strengths while supporting growth areas
+3. Follow a logical progression appropriate for their age
+4. Match their learning style preferences
+5. Maintain motivation through appropriate challenge levels
+6. Include specific focus areas for each recommended topic
+
+Respond with JSON in this exact format:
+{
+  "recommendations": [
+    {
+      "topicId": "topic-id-from-available-list",
+      "priority": 5,
+      "reasoning": "Detailed explanation of why this topic is recommended now",
+      "estimatedTime": "15-20 minutes",
+      "difficulty": 3,
+      "focusAreas": ["specific concept 1", "specific skill 2"]
+    }
+  ],
+  "overallStrategy": "Brief summary of the learning approach and progression strategy",
+  "motivationalMessage": "Encouraging message tailored to the student's age group and achievements"
+}`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert educational AI consultant specialising in personalised learning paths for Australian curriculum students. You understand child development, learning psychology, and adaptive education strategies."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.7,
+    });
+
+    const result = JSON.parse(response.choices[0].message.content!);
+    return result;
+  } catch (error) {
+    console.error("Failed to generate learning path recommendations:", error);
+    throw new Error("Failed to generate learning path. Please try again.");
   }
 }

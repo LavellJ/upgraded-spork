@@ -7,6 +7,7 @@ import { FloatingNavigation } from "@/components/FloatingNavigation";
 import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { QuestionInterface } from "@/components/QuestionInterface";
 import { BadgeNotification } from "@/components/BadgeNotification";
+import { LearningPathRecommendations } from "@/components/LearningPathRecommendations";
 import type { Topic, Question } from "@shared/schema";
 
 export default function Learning() {
@@ -16,6 +17,7 @@ export default function Learning() {
   const [totalProgress, setTotalProgress] = useState({ correct: 0, total: 0 });
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>("");
   const [newBadges, setNewBadges] = useState<Array<{badgeId: string; metadata?: any}>>([]);
+  const [showRecommendations, setShowRecommendations] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -217,6 +219,14 @@ export default function Learning() {
                   
                   <div className="flex flex-wrap justify-center gap-4">
                     <button 
+                      onClick={() => setShowRecommendations(true)}
+                      className="bg-gradient-to-r from-accent-teal to-sky-blue text-white px-8 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300"
+                      data-testid="button-show-recommendations"
+                    >
+                      <i className="fas fa-route mr-2"></i>
+                      What's Next?
+                    </button>
+                    <button 
                       onClick={generateMoreQuestions}
                       className="bg-gradient-to-r from-sunset-orange to-warm-orange text-white px-8 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300"
                       data-testid="button-more-questions"
@@ -270,6 +280,14 @@ export default function Learning() {
           onClose={() => setNewBadges([])}
         />
       )}
+      
+      {/* Learning Path Recommendations Modal */}
+      <LearningPathRecommendations
+        studentId="demo-student"
+        ageGroup={selectedAgeGroup as "pre-primary" | "primary" | "upper-primary"}
+        show={showRecommendations}
+        onClose={() => setShowRecommendations(false)}
+      />
     </>
   );
 }
