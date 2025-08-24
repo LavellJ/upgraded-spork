@@ -2446,6 +2446,72 @@ export class MemStorage implements IStorage {
       createdAt: new Date()
     };
     this.students.set("demo-student", demoStudent);
+    
+    // Add some sample progress data to showcase the skill trees
+    this.createSampleProgress();
+  }
+
+  private createSampleProgress() {
+    const sampleProgress = [
+      // Mathematics - Completed
+      {
+        id: randomUUID(),
+        studentId: "demo-student",
+        topicId: "counting-numbers",
+        questionsAnswered: 12,
+        correctAnswers: 10,
+        createdAt: new Date()
+      },
+      // Mathematics - In Progress  
+      {
+        id: randomUUID(),
+        studentId: "demo-student",
+        topicId: "shapes-colors",
+        questionsAnswered: 6,
+        correctAnswers: 4,
+        createdAt: new Date()
+      },
+      // Primary Math - Completed
+      {
+        id: randomUUID(),
+        studentId: "demo-student", 
+        topicId: "addition-subtraction",
+        questionsAnswered: 15,
+        correctAnswers: 13,
+        createdAt: new Date()
+      },
+      // Primary Math - In Progress
+      {
+        id: randomUUID(),
+        studentId: "demo-student",
+        topicId: "multiplication-tables", 
+        questionsAnswered: 8,
+        correctAnswers: 6,
+        createdAt: new Date()
+      },
+      // Primary Literacy - Completed
+      {
+        id: randomUUID(),
+        studentId: "demo-student",
+        topicId: "reading-comprehension",
+        questionsAnswered: 11,
+        correctAnswers: 9,
+        createdAt: new Date()
+      },
+      // Primary Science - In Progress
+      {
+        id: randomUUID(),
+        studentId: "demo-student",
+        topicId: "living-things",
+        questionsAnswered: 4,
+        correctAnswers: 3,
+        createdAt: new Date()
+      }
+    ];
+
+    sampleProgress.forEach(progress => {
+      this.progress.set(progress.id, progress);
+    });
   }
 
   // Students
