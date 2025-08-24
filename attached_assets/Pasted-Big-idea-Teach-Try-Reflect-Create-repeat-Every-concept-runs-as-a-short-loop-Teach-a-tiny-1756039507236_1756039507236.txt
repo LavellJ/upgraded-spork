@@ -1,0 +1,144 @@
+Big idea: Teach → Try → Reflect → Create (repeat)
+
+Every concept runs as a short loop:
+
+Teach a tiny idea (30–60s),
+
+Try it with scaffolds,
+
+Reflect on what happened,
+
+Create something new that uses the idea.
+
+Below are concrete features you can drop in to make that loop come alive.
+
+1) Scout “think-alouds” (I do)
+
+Scout solves one example while narrating the why, not just the steps.
+
+“I’m splitting this chocolate bar into 4 equal pieces… now each piece is one quarter.”
+
+Toggle: Slower / Another way / Show a diagram.
+
+2) Faded worked examples (We do → You do)
+
+Give partially-completed examples and fade support:
+
+Step 1 filled in, Step 2 hint, Step 3 blank.
+
+Kids tap Hint Ladder: (nudge → strategy → reveal) so they learn methods, not guess.
+
+3) Misconception detector
+
+When a common error appears, teach into it:
+
+“Looks like we counted the denominator as things chosen instead of total parts. Watch this quick fix.”
+
+Instant micro-lesson tailored to that mistake.
+
+4) Interactive manipulatives (concrete → pictorial → abstract)
+
+Built-in tools: number line, base-ten blocks, fraction circles, place-value sliders, geometry sketch, spelling tiles.
+
+Scout prompts: “Drag blocks to make 243. Now regroup to hundreds-tens-ones.”
+
+5) Personalised story problems
+
+Auto-generate tasks using Aussie context & the child’s interests:
+
+AFL scores, beach distances, bushwalking maps, kangaroo counts, Aussie coins/time.
+
+Same skill, many contexts → transfer, not rote.
+
+6) Micro-videos & doodle explainers
+
+15–40s visual explainers with captions. Scout pauses to ask, “What do you predict happens next?” → retrieval before reveal.
+
+7) Teach-back mode
+
+Learner explains to Scout (text or voice).
+
+AI scores clarity using a simple rubric (idea, steps, vocab) and suggests one upgrade.
+
+“Coach me, Scout” flips roles: Scout pretends to be stuck so the child teaches.
+
+8) Productive failure mini-challenges
+
+Start with a slightly-too-hard puzzle, then unlock the tool/idea that makes it easy.
+
+“That was tough! Here’s a trick mathematicians use…” → intrinsic need for the strategy.
+
+9) Reflection & metacognition (1 minute)
+
+After each loop:
+
+Emoji slider: How tricky was this?
+
+One prompt: “What helped most?” or “What would you try first next time?”
+
+Builds self-regulation without feeling like a test.
+
+10) Spaced + interleaved practice (stealth)
+
+A scheduler mixes new, nearly-forgotten, and review items automatically.
+
+“Lightning Round with Scout” surfaces 4 mixed problems in 60 seconds—no penalty, all momentum.
+
+11) Project missions (apply + create)
+
+End of unit = a tiny project with choice:
+
+Maths: “Design a mini skate park. Use area/perimeter to place ramps.”
+
+English: “Make a 6-panel comic that uses three powerful verbs.”
+
+Science: “Plan a fair test to compare soil types for seedlings.”
+Scout acts as collaborator, not judge.
+
+12) Parent/teacher view (evidence over scores)
+
+Show skills mastered, misconceptions addressed, and artifacts created (explanations, projects), mapped to Australian strands/content descriptors. No red X walls.
+
+How this aligns to the Australian Curriculum (practical)
+
+Build a skills graph (Year → Strand → Sub-strand → Content descriptor).
+
+Tag every activity with one or more descriptors (e.g., “ACMNA056 – model and represent unit fractions”).
+
+Each node has templates:
+
+I do (Scout think-aloud)
+
+We do (faded example + hint ladder)
+
+You do (independent + detector)
+
+Create (mini project)
+
+Mix (spaced/interleaved cards)
+
+Example end-to-end flow (Year 3 Fractions)
+
+Teach: 25s doodle—Scout shares a “bushwalk snack” chocolate bar split into 4 equal parts.
+Try: Drag to partition circles/rectangles; label one part as 1/4 (hint ladder available).
+Reflect: “What must stay the same for fair shares?”
+Create: Photo your lunch, draw lines to show halves/quarters; record a 10s explanation for Scout.
+Mix (later): quick card compares 1/2 vs 1/4 using number line; a story problem about sharing lamingtons.
+
+Example flow (Reading – inference)
+
+Teach: Scout models a think-aloud: “The text doesn’t say ‘storm’, but the sky was ‘inky’ and ‘the trees hissed’—so I infer…”
+Try: Choose clues → form inference sentence; hint ladder gives clue stems not answers.
+Create: Rewrite a sentence swapping in stronger clues; or record a 15s inference voice note for Scout.
+
+Implementation blueprint (simple but powerful)
+
+Hint Ladder: nudge → strategy → worked step → reveal.
+
+Misconception rules per skill (trigger phrase + targeted micro-lesson).
+
+Voice everywhere (kids can speak; Scout can narrate).
+
+Session length: aim for 6–10 minute loops; auto-save artifacts to a portfolio.
+
+Tone: peer-buddy. Scout celebrates effort, models mistakes, never shames.
