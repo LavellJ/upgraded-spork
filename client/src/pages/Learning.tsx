@@ -347,13 +347,7 @@ export default function Learning() {
         />
       )}
       
-      {/* Badge Notification */}
-      {newBadges.length > 0 && (
-        <BadgeNotification 
-          badges={newBadges}
-          onClose={() => setNewBadges([])}
-        />
-      )}
+      {/* Badge notifications disabled - too distracting during learning */}
       
       {/* Learning Path Recommendations Modal */}
       <LearningPathRecommendations
