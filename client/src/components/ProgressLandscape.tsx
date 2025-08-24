@@ -56,35 +56,47 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
   const getCurrentPath = () => {
     const overallProgress = getOverallProgress();
     if (overallProgress >= 80) return { 
-      name: 'Mountain Summit Path', 
-      description: 'High peaks and endless views',
+      name: 'Eagle Heights', 
+      description: 'Soaring high with wisdom and grace',
       color: 'from-purple-400 to-blue-500',
-      emoji: '🏔️'
+      character: 'eagle'
     };
     if (overallProgress >= 60) return { 
-      name: 'Cloud Valley Trail', 
-      description: 'Mystical paths through floating clouds',
+      name: 'Owl Valley', 
+      description: 'Thoughtful paths through misty wisdom',
       color: 'from-cyan-400 to-blue-400',
-      emoji: '☁️'
+      character: 'owl'
     };
     if (overallProgress >= 40) return { 
-      name: 'Forest Pathway', 
-      description: 'Gentle trails through ancient woods',
+      name: 'Squirrel Forest', 
+      description: 'Busy trails through learning trees',
       color: 'from-green-400 to-emerald-500',
-      emoji: '🌲'
+      character: 'squirrel'
     };
     if (overallProgress >= 20) return { 
-      name: 'Rolling Hills Route', 
-      description: 'Peaceful paths across sunny meadows',
+      name: 'Fox Meadows', 
+      description: 'Clever paths across sunny fields',
       color: 'from-yellow-400 to-green-400',
-      emoji: '🌻'
+      character: 'fox'
     };
     return { 
-      name: 'Garden Path', 
-      description: 'Your learning journey begins here',
+      name: 'Bunny Garden', 
+      description: 'Your gentle learning journey begins',
       color: 'from-orange-400 to-yellow-400',
-      emoji: '🌱'
+      character: 'bunny'
     };
+  };
+
+  // Get small animal character for display
+  const getCharacterIcon = (character: string) => {
+    const icons = {
+      bunny: (<svg viewBox="0 0 100 100" className="w-6 h-6"><ellipse cx="50" cy="65" rx="22" ry="20" fill="currentColor" className="text-amber-300" /><ellipse cx="50" cy="45" rx="18" ry="16" fill="currentColor" className="text-amber-200" /><ellipse cx="38" cy="25" rx="6" ry="16" fill="currentColor" className="text-amber-300" /><ellipse cx="62" cy="25" rx="6" ry="16" fill="currentColor" className="text-amber-300" /><circle cx="42" cy="40" r="3" fill="currentColor" className="text-charcoal" /><circle cx="58" cy="40" r="3" fill="currentColor" className="text-charcoal" /></svg>),
+      fox: (<svg viewBox="0 0 100 100" className="w-6 h-6"><ellipse cx="50" cy="70" rx="20" ry="15" fill="currentColor" className="text-orange-300" /><ellipse cx="50" cy="50" rx="16" ry="14" fill="currentColor" className="text-orange-200" /><polygon points="30,35 35,20 45,35" fill="currentColor" className="text-orange-300" /><polygon points="55,35 65,20 70,35" fill="currentColor" className="text-orange-300" /><circle cx="42" cy="45" r="3" fill="currentColor" className="text-charcoal" /><circle cx="58" cy="45" r="3" fill="currentColor" className="text-charcoal" /></svg>),
+      squirrel: (<svg viewBox="0 0 100 100" className="w-6 h-6"><ellipse cx="50" cy="70" rx="18" ry="16" fill="currentColor" className="text-emerald-300" /><ellipse cx="50" cy="50" rx="15" ry="13" fill="currentColor" className="text-emerald-200" /><polygon points="35,35 40,20 45,35" fill="currentColor" className="text-emerald-300" /><polygon points="55,35 60,20 65,35" fill="currentColor" className="text-emerald-300" /><ellipse cx="75" cy="60" rx="15" ry="25" fill="currentColor" className="text-teal-400" /></svg>),
+      owl: (<svg viewBox="0 0 100 100" className="w-6 h-6"><ellipse cx="50" cy="65" rx="18" ry="20" fill="currentColor" className="text-purple-300" /><circle cx="50" cy="45" r="16" fill="currentColor" className="text-purple-200" /><polygon points="30,25 35,15 40,25" fill="currentColor" className="text-purple-300" /><polygon points="60,25 65,15 70,25" fill="currentColor" className="text-purple-300" /><circle cx="42" cy="43" r="8" fill="currentColor" className="text-indigo-100" /><circle cx="58" cy="43" r="8" fill="currentColor" className="text-indigo-100" /></svg>),
+      eagle: (<svg viewBox="0 0 100 100" className="w-6 h-6"><ellipse cx="50" cy="70" rx="18" ry="16" fill="currentColor" className="text-violet-300" /><ellipse cx="50" cy="50" rx="15" ry="14" fill="currentColor" className="text-violet-200" /><polygon points="40,30 50,15 60,30" fill="currentColor" className="text-violet-300" /><circle cx="43" cy="45" r="4" fill="currentColor" className="text-charcoal" /><circle cx="57" cy="45" r="4" fill="currentColor" className="text-charcoal" /></svg>)
+    };
+    return icons[character] || icons.bunny;
   };
 
   // Create a winding path through the topics
@@ -108,7 +120,7 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
     <div className="floating-ui rounded-3xl p-8" data-testid="progress-landscape">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center space-x-3">
-          <span className="text-2xl">{getCurrentPath().emoji}</span>
+          <div className="text-white">{getCharacterIcon(getCurrentPath().character)}</div>
           <div>
             <h3 className="font-display text-xl font-semibold text-white" data-testid="text-journey-title">
               {getCurrentPath().name}
@@ -130,18 +142,18 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-4 text-sm">
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-green-400 to-teal-400"></div>
-              <span className="text-white/80">🚩 Reached</span>
+              <div className="text-green-400">{getCharacterIcon('eagle')}</div>
+              <span className="text-white/80">Reached</span>
               <span className="text-green-400 font-medium">{segments.completed}%</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-orange-400 to-red-400"></div>
-              <span className="text-white/80">👣 Walking</span>
+              <div className="text-orange-400">{getCharacterIcon('fox')}</div>
+              <span className="text-white/80">Walking</span>
               <span className="text-orange-400 font-medium">{segments.current}%</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-400/50 to-blue-400/50"></div>
-              <span className="text-white/80">🗺️ Ahead</span>
+              <div className="text-purple-400">{getCharacterIcon('bunny')}</div>
+              <span className="text-white/80">Ahead</span>
               <span className="text-purple-400 font-medium">{segments.future}%</span>
             </div>
           </div>
@@ -149,7 +161,7 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
             onClick={() => setShowLegend(!showLegend)}
             className="text-white/60 hover:text-white transition-colors text-sm flex items-center space-x-1"
           >
-            <span>🧭</span>
+            <div className="text-white/60">{getCharacterIcon('owl')}</div>
             <span>{showLegend ? 'Hide' : 'View'} Trail Map</span>
           </button>
         </div>
@@ -255,15 +267,15 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
               >
-                {hoveredTopic === 'completed' && `🚩 ${topics.filter(t => (getProgressForTopic(t.id)?.completionPercentage || 0) >= 85).length} waypoints reached`}
-                {hoveredTopic === 'current' && `👣 ${topics.filter(t => {
+                {hoveredTopic === 'completed' && `🏃 ${topics.filter(t => (getProgressForTopic(t.id)?.completionPercentage || 0) >= 85).length} waypoints reached`}
+                {hoveredTopic === 'current' && `🦊 ${topics.filter(t => {
                   const p = getProgressForTopic(t.id)?.completionPercentage || 0;
                   return p > 0 && p < 85;
                 }).length} paths being explored`}
-                {hoveredTopic === 'future' && `🗺️ ${topics.filter(t => (getProgressForTopic(t.id)?.completionPercentage || 0) === 0).length} trails ahead`}
+                {hoveredTopic === 'future' && `🐰 ${topics.filter(t => (getProgressForTopic(t.id)?.completionPercentage || 0) === 0).length} trails ahead`}
                 {topics.find(t => t.id === hoveredTopic) && (
                   <span>
-                    🏔️ {topics.find(t => t.id === hoveredTopic)?.name}: {getProgressForTopic(hoveredTopic)?.completionPercentage || 0}% of the trail
+                    🌟 {topics.find(t => t.id === hoveredTopic)?.name}: {getProgressForTopic(hoveredTopic)?.completionPercentage || 0}% of the trail
                   </span>
                 )}
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-black/90"></div>
@@ -341,9 +353,9 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
                               completionPercentage > 0 ? 'text-orange-400' :
                               isUnlocked ? 'text-white/60' : 'text-white/40'
                             }`}>
-                              {completionPercentage >= 85 ? '🚩 Reached' :
-                               completionPercentage > 0 ? '👣 Walking' :
-                               isUnlocked ? '🗺️ Open Trail' : '🚫 Trail Closed'}
+                              {completionPercentage >= 85 ? '🏆 Reached' :
+                               completionPercentage > 0 ? '🦊 Walking' :
+                               isUnlocked ? '🐰 Open Trail' : '🚪 Trail Closed'}
                             </span>
                           </div>
                           
@@ -372,7 +384,7 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
       {/* Journey Summary Stats */}
       <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 hover:border-green-400/30 transition-colors">
-          <div className="text-3xl mb-2">🚩</div>
+          <div className="mb-2 flex justify-center text-green-400">{getCharacterIcon('eagle')}</div>
           <div className="text-2xl font-bold text-green-400 mb-1">
             {topics.filter(t => (getProgressForTopic(t.id)?.completionPercentage || 0) >= 85).length}
           </div>
@@ -380,7 +392,7 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
         </div>
         
         <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 hover:border-orange-400/30 transition-colors">
-          <div className="text-3xl mb-2">👣</div>
+          <div className="mb-2 flex justify-center text-orange-400">{getCharacterIcon('fox')}</div>
           <div className="text-2xl font-bold text-orange-400 mb-1">
             {topics.filter(t => {
               const p = getProgressForTopic(t.id)?.completionPercentage || 0;
@@ -391,7 +403,7 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
         </div>
         
         <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 hover:border-cyan-400/30 transition-colors">
-          <div className="text-3xl mb-2">⛰️</div>
+          <div className="mb-2 flex justify-center text-cyan-400">{getCharacterIcon('squirrel')}</div>
           <div className="text-2xl font-bold text-cyan-400 mb-1">
             {progress.reduce((sum, p) => sum + (p.questionsAnswered || 0), 0)}
           </div>
@@ -399,7 +411,7 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
         </div>
         
         <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 hover:border-purple-400/30 transition-colors">
-          <div className="text-3xl mb-2">✨</div>
+          <div className="mb-2 flex justify-center text-purple-400">{getCharacterIcon('owl')}</div>
           <div className="text-2xl font-bold text-purple-400 mb-1">
             {progress.reduce((sum, p) => sum + (p.currentStreak || 0), 0)}
           </div>
