@@ -13,15 +13,17 @@ interface ReflectPhaseProps {
 }
 
 interface ReflectContent {
-  title: string;
-  metacognitionPrompts: Array<{
+  title?: string;
+  content?: string;
+  // Legacy support for old structure
+  metacognitionPrompts?: Array<{
     id: string;
     type: "difficulty" | "strategy" | "confidence" | "application";
     question: string;
     options?: string[];
     allowText?: boolean;
   }>;
-  selfAssessment: {
+  selfAssessment?: {
     criteria: Array<{
       skill: string;
       description: string;
@@ -36,15 +38,20 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
   const [selfAssessmentComplete, setSelfAssessmentComplete] = useState(false);
   const [overallReflection, setOverallReflection] = useState("");
 
-  const reflectContent = content.content as ReflectContent;
-  const currentPrompt = reflectContent.metacognitionPrompts[currentPromptIndex];
+  const reflectContent = content.content;
+  
+  // Handle both new Scout format (simple string) and legacy format
+  const isScoutFormat = typeof reflectContent === 'string';
+  const scoutMessage = isScoutFormat ? reflectContent : null;
+  const legacyContent = !isScoutFormat ? reflectContent as ReflectContent : null;
+  const currentPrompt = legacyContent?.metacognitionPrompts?.[currentPromptIndex];
 
   const handleResponse = (promptId: string, response: any) => {
     setResponses(prev => ({ ...prev, [promptId]: response }));
   };
 
   const handleNextPrompt = () => {
-    if (currentPromptIndex < reflectContent.metacognitionPrompts.length - 1) {
+    if (legacyContent?.metacognitionPrompts && currentPromptIndex < legacyContent.metacognitionPrompts.length - 1) {
       setCurrentPromptIndex(prev => prev + 1);
     } else {
       setSelfAssessmentComplete(true);
@@ -128,11 +135,40 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
 
   const language = getAgeAppropriateLanguage();
 
+  // For Scout format, show simplified reflection
+  if (isScoutFormat) {
+    return (
+      <div className="space-y-8 max-w-2xl mx-auto">
+        <div className="floating-ui rounded-3xl p-8" data-testid="scout-reflect-phase">
+          <div className="text-center space-y-6">
+            <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+              <div className="text-white text-3xl">🌟</div>
+            </div>
+            <div className="text-white text-xl font-bold">
+              What did we discover together?
+            </div>
+            <div className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm">
+              <div className="text-white text-lg leading-relaxed">
+                {scoutMessage}
+              </div>
+            </div>
+            <button
+              onClick={() => handlePhaseComplete()}
+              className="px-6 py-3 bg-gradient-to-r from-purple-400 to-blue-400 text-white font-medium rounded-2xl hover:scale-105 transition-all"
+              data-testid="continue-reflection"
+            >
+              Ready for our next adventure!
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Memory Anchors & Real-World Application for pre-primary
   if (ageGroup === "pre-primary") {
     const [reflectStep, setReflectStep] = useState<'memory' | 'realworld' | 'complete'>('memory');
     const [memoryAnchor, setMemoryAnchor] = useState<string | null>(null);
-    const reflectContent = content.content;
     
     const handleMemoryChoice = (anchor: string) => {
       setMemoryAnchor(anchor);
