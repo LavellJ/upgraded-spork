@@ -199,6 +199,182 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
 
   const language = getAgeAppropriateLanguage();
 
+  // Simplified for pre-primary - big visual creation
+  if (ageGroup === "pre-primary") {
+    return (
+      <div className="space-y-8">
+        {/* Simple Visual Header */}
+        <div className="floating-ui rounded-3xl p-8 text-center" data-testid="create-phase-header">
+          <div className="text-6xl mb-4">🎨</div>
+          <h2 className="font-display text-3xl font-bold text-white mb-4">
+            Make Something Cool!
+          </h2>
+          <div className="text-4xl">✨</div>
+        </div>
+
+        {!selectedMission ? (
+          /* Simple Mission Selection - Visual Only */
+          <div className="floating-ui rounded-3xl p-12" data-testid="simple-mission-selection">
+            <div className="text-white text-2xl font-bold text-center mb-8">
+              What do you want to make?
+            </div>
+            
+            <div className="grid grid-cols-2 gap-8">
+              <button
+                onClick={() => handleMissionSelect('draw')}
+                className="p-8 bg-gradient-to-r from-pink-400/30 to-purple-400/30 border-4 border-pink-400/50 rounded-3xl hover:scale-105 transition-all"
+                data-testid="mission-draw"
+              >
+                <div className="text-8xl mb-4">🖍️</div>
+                <div className="text-white text-xl font-bold">Draw</div>
+              </button>
+              
+              <button
+                onClick={() => handleMissionSelect('photo')}
+                className="p-8 bg-gradient-to-r from-blue-400/30 to-green-400/30 border-4 border-blue-400/50 rounded-3xl hover:scale-105 transition-all"
+                data-testid="mission-photo"
+              >
+                <div className="text-8xl mb-4">📸</div>
+                <div className="text-white text-xl font-bold">Picture</div>
+              </button>
+              
+              <button
+                onClick={() => handleMissionSelect('voice')}
+                className="p-8 bg-gradient-to-r from-yellow-400/30 to-orange-400/30 border-4 border-yellow-400/50 rounded-3xl hover:scale-105 transition-all"
+                data-testid="mission-voice"
+              >
+                <div className="text-8xl mb-4">🎤</div>
+                <div className="text-white text-xl font-bold">Talk</div>
+              </button>
+              
+              <button
+                onClick={() => handleMissionSelect('story')}
+                className="p-8 bg-gradient-to-r from-green-400/30 to-blue-400/30 border-4 border-green-400/50 rounded-3xl hover:scale-105 transition-all"
+                data-testid="mission-story"
+              >
+                <div className="text-8xl mb-4">📖</div>
+                <div className="text-white text-xl font-bold">Story</div>
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* Simple Creation Interface */
+          <div className="floating-ui rounded-3xl p-12 text-center" data-testid="simple-creation-interface">
+            <div className="space-y-8">
+              <div className="text-white text-2xl font-bold mb-8">
+                Show what you learned!
+              </div>
+              
+              {selectedMission === 'draw' && (
+                <div>
+                  <div className="text-8xl mb-6">🖍️</div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="simple-image-upload"
+                  />
+                  <label
+                    htmlFor="simple-image-upload"
+                    className="w-48 h-20 bg-gradient-to-r from-pink-400 to-purple-400 text-white text-xl font-bold rounded-2xl hover:scale-105 transition-all cursor-pointer flex items-center justify-center"
+                    data-testid="button-simple-draw"
+                  >
+                    <div>📷 Show Drawing</div>
+                  </label>
+                </div>
+              )}
+              
+              {selectedMission === 'photo' && (
+                <div>
+                  <div className="text-8xl mb-6">📸</div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="simple-photo-upload"
+                  />
+                  <label
+                    htmlFor="simple-photo-upload"
+                    className="w-48 h-20 bg-gradient-to-r from-blue-400 to-green-400 text-white text-xl font-bold rounded-2xl hover:scale-105 transition-all cursor-pointer flex items-center justify-center"
+                    data-testid="button-simple-photo"
+                  >
+                    <div>📷 Take Picture</div>
+                  </label>
+                </div>
+              )}
+              
+              {selectedMission === 'voice' && (
+                <div>
+                  <div className="text-8xl mb-6">🎤</div>
+                  <button
+                    onClick={handleVoiceRecord}
+                    disabled={isRecording}
+                    className={`w-48 h-20 ${
+                      isRecording ? 'bg-red-400 animate-pulse' : 'bg-gradient-to-r from-yellow-400 to-orange-400'
+                    } text-white text-xl font-bold rounded-2xl hover:scale-105 transition-all`}
+                    data-testid="button-simple-record"
+                  >
+                    <div>{isRecording ? '🔴 Recording...' : '🎤 Start Talking'}</div>
+                  </button>
+                </div>
+              )}
+              
+              {selectedMission === 'story' && (
+                <div>
+                  <div className="text-8xl mb-6">📖</div>
+                  <textarea
+                    value={textContent}
+                    onChange={(e) => setTextContent(e.target.value)}
+                    placeholder="Tell your story..."
+                    className="w-full h-32 bg-white text-black text-xl rounded-2xl p-4 mb-6"
+                    data-testid="simple-story-input"
+                  />
+                  <button
+                    onClick={handleTextSubmit}
+                    disabled={!textContent.trim()}
+                    className="w-48 h-20 bg-gradient-to-r from-green-400 to-blue-400 disabled:bg-gray-400 text-white text-xl font-bold rounded-2xl hover:scale-105 transition-all"
+                    data-testid="button-simple-story"
+                  >
+                    <div>✨ Done!</div>
+                  </button>
+                </div>
+              )}
+              
+              {artifacts.length > 0 && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="p-8 bg-green-400/20 rounded-2xl"
+                >
+                  <div className="text-6xl mb-4">🎉</div>
+                  <div className="text-white text-2xl font-bold mb-6">Amazing Work!</div>
+                  <button
+                    onClick={handlePhaseComplete}
+                    className="w-48 h-20 bg-gradient-to-r from-purple-400 to-pink-400 text-white text-xl font-bold rounded-2xl hover:scale-105 transition-all"
+                    data-testid="button-simple-finish"
+                  >
+                    <div>🏆</div>
+                    <div>All Done!</div>
+                  </button>
+                </motion.div>
+              )}
+              
+              <button
+                onClick={() => setSelectedMission(null)}
+                className="w-32 h-16 bg-white/20 text-white text-lg rounded-2xl hover:scale-105 transition-all"
+                data-testid="button-back"
+              >
+                ← Back
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Phase Header */}

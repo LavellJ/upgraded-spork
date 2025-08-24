@@ -213,6 +213,106 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
     return <div>Loading examples...</div>;
   }
 
+  // Simplified for pre-primary - big visual interactions
+  if (ageGroup === "pre-primary") {
+    const currentStep = currentExample.steps[currentStepIndex];
+    const stepKey = getStepKey();
+    
+    return (
+      <div className="space-y-8">
+        {/* Simple Visual Header */}
+        <div className="floating-ui rounded-3xl p-8 text-center" data-testid="try-phase-header">
+          <div className="text-6xl mb-4">🎯</div>
+          <h2 className="font-display text-3xl font-bold text-white mb-4">
+            Your Turn!
+          </h2>
+          <div className="text-4xl">⭐</div>
+        </div>
+
+        {/* Big Simple Problem */}
+        <div className="floating-ui rounded-3xl p-12 text-center" data-testid="simple-try-content">
+          <div className="space-y-8">
+            <div className="text-6xl">🧩</div>
+            
+            <div className="text-white text-2xl font-bold leading-relaxed">
+              {currentExample.problem}
+            </div>
+            
+            {currentStep && (
+              <div className="bg-white/20 rounded-2xl p-8">
+                <div className="text-white text-xl mb-6">
+                  {currentStep.stepText}
+                </div>
+                
+                {currentStep.support === "blank" && (
+                  <div className="space-y-6">
+                    <input
+                      type="text"
+                      value={stepAnswers[stepKey] || ""}
+                      onChange={(e) => handleAnswerChange(e.target.value)}
+                      className="w-full h-16 bg-white text-black text-2xl text-center rounded-2xl border-4 border-blue-400 focus:border-green-400 focus:outline-none"
+                      data-testid="big-answer-input"
+                    />
+                    
+                    <div className="flex justify-center gap-4">
+                      <button
+                        onClick={handleSubmitStep}
+                        disabled={!stepAnswers[stepKey]?.trim()}
+                        className="w-24 h-24 bg-green-400 disabled:bg-gray-400 rounded-full text-4xl hover:scale-105 transition-all"
+                        data-testid="button-big-check"
+                      >
+                        ✓
+                      </button>
+                      
+                      <button
+                        onClick={handleHintRequest}
+                        className="w-24 h-24 bg-yellow-400 rounded-full text-4xl hover:scale-105 transition-all"
+                        data-testid="button-big-help"
+                      >
+                        💡
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
+                {currentStep.support === "filled" && currentStep.answer && (
+                  <div className="text-3xl font-bold text-green-400">
+                    ✨ {currentStep.answer} ✨
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Big Progress Dots */}
+            <div className="flex justify-center gap-3">
+              {currentExample.steps.map((_, index) => (
+                <div 
+                  key={index}
+                  className={`w-6 h-6 rounded-full ${
+                    index === currentStepIndex ? 'bg-blue-400' :
+                    index < currentStepIndex ? 'bg-green-400' : 'bg-white/30'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        {/* Simple Success Message */}
+        {Object.keys(completed).length > 0 && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="floating-ui rounded-3xl p-8 text-center bg-green-400/20"
+          >
+            <div className="text-6xl mb-4">🎉</div>
+            <div className="text-white text-2xl font-bold">Great Job!</div>
+          </motion.div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Phase Header */}
