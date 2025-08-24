@@ -1,6 +1,14 @@
 import { 
   type Student, 
   type InsertStudent,
+  type Parent,
+  type InsertParent,
+  type ParentSession,
+  type InsertParentSession,
+  type ParentControls,
+  type InsertParentControls,
+  type ParentActivityLog,
+  type InsertParentActivityLog,
   type Topic,
   type InsertTopic,
   type Question,
@@ -15,8 +23,29 @@ import {
 import { randomUUID } from "crypto";
 
 export interface IStorage {
+  // Parents
+  getParent(id: string): Promise<Parent | undefined>;
+  getParentByEmail(email: string): Promise<Parent | undefined>;
+  createParent(parent: InsertParent): Promise<Parent>;
+  updateParent(id: string, updates: Partial<Parent>): Promise<Parent>;
+  
+  // Parent Sessions
+  createParentSession(session: InsertParentSession): Promise<ParentSession>;
+  getParentSession(sessionToken: string): Promise<ParentSession | undefined>;
+  deleteParentSession(sessionToken: string): Promise<void>;
+  
+  // Parent Controls
+  getParentControls(parentId: string, studentId: string): Promise<ParentControls | undefined>;
+  createParentControls(controls: InsertParentControls): Promise<ParentControls>;
+  updateParentControls(parentId: string, studentId: string, updates: Partial<ParentControls>): Promise<ParentControls>;
+  
+  // Parent Activity Log
+  createParentActivity(activity: InsertParentActivityLog): Promise<ParentActivityLog>;
+  getParentActivityLog(parentId: string): Promise<ParentActivityLog[]>;
+  
   // Students
   getStudent(id: string): Promise<Student | undefined>;
+  getStudentsByParent(parentId: string): Promise<Student[]>;
   createStudent(student: InsertStudent): Promise<Student>;
   updateStudent(id: string, updates: Partial<Student>): Promise<Student>;
   
@@ -51,6 +80,10 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
+  private parents: Map<string, Parent>;
+  private parentSessions: Map<string, ParentSession>;
+  private parentControls: Map<string, ParentControls>;
+  private parentActivityLogs: Map<string, ParentActivityLog>;
   private students: Map<string, Student>;
   private topics: Map<string, Topic>;
   private questions: Map<string, Question>;
@@ -59,6 +92,10 @@ export class MemStorage implements IStorage {
   private achievements: Map<string, Achievement>;
 
   constructor() {
+    this.parents = new Map();
+    this.parentSessions = new Map();
+    this.parentControls = new Map();
+    this.parentActivityLogs = new Map();
     this.students = new Map();
     this.topics = new Map();
     this.questions = new Map();
@@ -2435,17 +2472,48 @@ export class MemStorage implements IStorage {
     });
   }
 
-  // Create demo student for testing
+  // Create demo parent and student for testing
   private createDemoStudent() {
+    // First create a demo parent
+    const demoParent: Parent = {
+      id: "demo-parent",
+      email: "parent@example.com",
+      password: "$2a$10$dummy.hashed.password.for.demo.purposes.only", // Hashed "password123"
+      name: "Demo Parent",
+      phone: "+61 400 123 456",
+      isEmailVerified: true,
+      accountType: "parent",
+      createdAt: new Date()
+    };
+    this.parents.set("demo-parent", demoParent);
+
+    // Then create the demo student linked to parent
     const demoStudent: Student = {
       id: "demo-student",
       name: "Little Learner",
       ageGroup: "pre-primary",
       currentLevel: 1,
       totalPoints: 0,
+      parentId: "demo-parent",
+      isActive: true,
       createdAt: new Date()
     };
     this.students.set("demo-student", demoStudent);
+    
+    // Create default parent controls for the demo student
+    const demoControls: ParentControls = {
+      id: randomUUID(),
+      parentId: "demo-parent",
+      studentId: "demo-student",
+      dailyTimeLimit: 60, // 1 hour
+      allowedSubjects: ["mathematics", "literacy", "science"],
+      blockedTopics: [],
+      requiresApproval: false,
+      pomodoroEnabled: true,
+      reportsEnabled: true,
+      updatedAt: new Date()
+    };
+    this.parentControls.set(`${demoParent.id}-${demoStudent.id}`, demoControls);
     
     // Add some sample progress data to showcase the skill trees
     this.createSampleProgress();
@@ -2550,6 +2618,7 @@ export class MemStorage implements IStorage {
       id,
       currentLevel: insertStudent.currentLevel ?? 1,
       totalPoints: insertStudent.totalPoints ?? 0,
+      isActive: insertStudent.isActive ?? true,
       createdAt: new Date()
     };
     this.students.set(id, student);
@@ -2561,7 +2630,11 @@ export class MemStorage implements IStorage {
     if (!student) {
       throw new Error("Student not found");
     }
-    const updatedStudent = { ...student, ...updates };
+    const updatedStudent = { 
+      ...student, 
+      ...updates,
+      isActive: updates.isActive ?? student.isActive
+    };
     this.students.set(id, updatedStudent);
     return updatedStudent;
   }
@@ -2713,6 +2786,127 @@ export class MemStorage implements IStorage {
     return Array.from(this.achievements.values()).some(a => 
       a.studentId === studentId && a.badgeId === badgeId
     );
+  }
+
+  // Parent Methods
+  async getParent(id: string): Promise<Parent | undefined> {
+    return this.parents.get(id);
+  }
+
+  async getParentByEmail(email: string): Promise<Parent | undefined> {
+    return Array.from(this.parents.values()).find(p => p.email === email);
+  }
+
+  async createParent(insertParent: InsertParent): Promise<Parent> {
+    const id = randomUUID();
+    const parent: Parent = {
+      ...insertParent,
+      id,
+      phone: insertParent.phone ?? null,
+      isEmailVerified: insertParent.isEmailVerified ?? false,
+      accountType: insertParent.accountType ?? "parent",
+      createdAt: new Date()
+    };
+    this.parents.set(id, parent);
+    return parent;
+  }
+
+  async updateParent(id: string, updates: Partial<Parent>): Promise<Parent> {
+    const parent = this.parents.get(id);
+    if (!parent) {
+      throw new Error("Parent not found");
+    }
+    const updatedParent = { ...parent, ...updates };
+    this.parents.set(id, updatedParent);
+    return updatedParent;
+  }
+
+  // Parent Session Methods
+  async createParentSession(insertSession: InsertParentSession): Promise<ParentSession> {
+    const id = randomUUID();
+    const session: ParentSession = {
+      ...insertSession,
+      id,
+      createdAt: new Date()
+    };
+    this.parentSessions.set(session.sessionToken, session);
+    return session;
+  }
+
+  async getParentSession(sessionToken: string): Promise<ParentSession | undefined> {
+    const session = this.parentSessions.get(sessionToken);
+    if (session && session.expiresAt < new Date()) {
+      // Session expired, remove it
+      this.parentSessions.delete(sessionToken);
+      return undefined;
+    }
+    return session;
+  }
+
+  async deleteParentSession(sessionToken: string): Promise<void> {
+    this.parentSessions.delete(sessionToken);
+  }
+
+  // Parent Controls Methods
+  async getParentControls(parentId: string, studentId: string): Promise<ParentControls | undefined> {
+    return this.parentControls.get(`${parentId}-${studentId}`);
+  }
+
+  async createParentControls(insertControls: InsertParentControls): Promise<ParentControls> {
+    const id = randomUUID();
+    const controls: ParentControls = {
+      ...insertControls,
+      id,
+      dailyTimeLimit: insertControls.dailyTimeLimit ?? 60,
+      allowedSubjects: insertControls.allowedSubjects ?? [],
+      blockedTopics: insertControls.blockedTopics ?? [],
+      requiresApproval: insertControls.requiresApproval ?? false,
+      pomodoroEnabled: insertControls.pomodoroEnabled ?? true,
+      reportsEnabled: insertControls.reportsEnabled ?? true,
+      updatedAt: new Date()
+    };
+    this.parentControls.set(`${insertControls.parentId}-${insertControls.studentId}`, controls);
+    return controls;
+  }
+
+  async updateParentControls(parentId: string, studentId: string, updates: Partial<ParentControls>): Promise<ParentControls> {
+    const key = `${parentId}-${studentId}`;
+    const controls = this.parentControls.get(key);
+    if (!controls) {
+      throw new Error("Parent controls not found");
+    }
+    const updatedControls = { 
+      ...controls, 
+      ...updates, 
+      updatedAt: new Date() 
+    };
+    this.parentControls.set(key, updatedControls);
+    return updatedControls;
+  }
+
+  // Parent Activity Log Methods
+  async createParentActivity(insertActivity: InsertParentActivityLog): Promise<ParentActivityLog> {
+    const id = randomUUID();
+    const activity: ParentActivityLog = {
+      ...insertActivity,
+      id,
+      studentId: insertActivity.studentId ?? null,
+      details: insertActivity.details ?? null,
+      timestamp: new Date()
+    };
+    this.parentActivityLogs.set(id, activity);
+    return activity;
+  }
+
+  async getParentActivityLog(parentId: string): Promise<ParentActivityLog[]> {
+    return Array.from(this.parentActivityLogs.values())
+      .filter(log => log.parentId === parentId)
+      .sort((a, b) => (b.timestamp?.getTime() ?? 0) - (a.timestamp?.getTime() ?? 0)); // Most recent first
+  }
+
+  // Additional Student Methods  
+  async getStudentsByParent(parentId: string): Promise<Student[]> {
+    return Array.from(this.students.values()).filter(s => s.parentId === parentId);
   }
 }
 
