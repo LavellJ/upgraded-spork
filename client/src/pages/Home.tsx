@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { AtmosphericBackground } from "@/components/AtmosphericBackground";
 import { FloatingNavigation } from "@/components/FloatingNavigation";
 import { AgeSelector, type AgeGroup } from "@/components/AgeSelector";
 import { BreakActivities } from "@/components/BreakActivities";
+import { Button } from "@/components/ui/button";
+import { ExplorerBuddy } from "@/components/ExplorerBuddy";
 
 export default function Home() {
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<AgeGroup | undefined>();
+  const [, setLocation] = useLocation();
 
   const handleAgeGroupSelect = (ageGroup: AgeGroup) => {
     setSelectedAgeGroup(ageGroup);
@@ -109,6 +112,26 @@ export default function Home() {
             </div>
           </div>
         </footer>
+        
+        {/* Explorer Buddy */}
+        <div className="fixed bottom-8 right-8 z-20">
+          <ExplorerBuddy 
+            ageGroup={selectedAgeGroup || 'primary'} 
+            currentPage="home" 
+          />
+        </div>
+        
+        {/* Parent Access Button */}
+        <div className="fixed top-4 right-4 z-20">
+          <Button
+            onClick={() => setLocation("/parent/auth")}
+            variant="outline"
+            className="bg-white/90 backdrop-blur-sm text-gray-800 hover:bg-white"
+            data-testid="button-parent-access"
+          >
+            Parent Dashboard →
+          </Button>
+        </div>
       </div>
     </>
   );

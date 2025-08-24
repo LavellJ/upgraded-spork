@@ -7,13 +7,225 @@ import {
   insertStudentSchema, 
   insertProgressSchema, 
   insertPomodoroSessionSchema,
+  insertParentSchema,
+  insertParentControlsSchema,
   type Question,
   type Progress
 } from "@shared/schema";
 import { z } from "zod";
+import { 
+  hashPassword, 
+  verifyPassword, 
+  generateSessionToken, 
+  getSessionExpiry, 
+  requireParentAuth, 
+  getCurrentParent,
+  logParentActivity
+} from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
+  // Parent Authentication Routes
+  app.post("/api/parents/signup", async (req, res) => {
+    try {
+      const { name, email, password } = req.body;
+      
+      // Check if parent already exists
+      const existingParent = await storage.getParentByEmail(email);
+      if (existingParent) {
+        return res.status(400).json({ error: "Parent already exists with this email" });
+      }
+      
+      // Hash password and create parent
+      const hashedPassword = await hashPassword(password);
+      const parentData = insertParentSchema.parse({ 
+        name, 
+        email, 
+        password: hashedPassword 
+      });
+      
+      const parent = await storage.createParent(parentData);
+      
+      // Create session  
+      const sessionToken = generateSessionToken();
+      await storage.createParentSession({
+        parentId: parent.id,
+        sessionToken,
+        expiresAt: getSessionExpiry()
+      });
+      
+      // Log signup activity
+      await logParentActivity(parent.id, "account_created");
+      
+      // Return parent info (without password) and session
+      const { password: _, ...safeParent } = parent;
+      res.json({ 
+        parent: safeParent, 
+        sessionToken,
+        message: "Parent account created successfully" 
+      });
+      
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid data", details: error.errors });
+      }
+      console.error("Signup error:", error);
+      res.status(500).json({ error: "Failed to create account" });
+    }
+  });
+
+  app.post("/api/parents/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      const parent = await storage.getParentByEmail(email);
+      if (!parent) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+      
+      const isValidPassword = await verifyPassword(password, parent.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+      
+      // Create new session
+      const sessionToken = generateSessionToken();
+      await storage.createParentSession({
+        parentId: parent.id,
+        sessionToken,
+        expiresAt: getSessionExpiry()
+      });
+      
+      // Log login activity  
+      await logParentActivity(parent.id, "logged_in");
+      
+      // Return parent info (without password) and session
+      const { password: _, ...safeParent } = parent;
+      res.json({ 
+        parent: safeParent, 
+        sessionToken,
+        message: "Login successful" 
+      });
+      
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  app.post("/api/parents/logout", requireParentAuth, async (req: any, res) => {
+    try {
+      const sessionToken = req.headers.authorization?.replace('Bearer ', '');
+      if (sessionToken) {
+        await storage.deleteParentSession(sessionToken);
+      }
+      
+      // Log logout activity
+      await logParentActivity(req.parentId, "logged_out");
+      
+      res.json({ message: "Logged out successfully" });
+    } catch (error) {
+      console.error("Logout error:", error);
+      res.status(500).json({ error: "Logout failed" });
+    }
+  });
+
+  // Parent Dashboard Routes
+  app.get("/api/parents/me", requireParentAuth, async (req: any, res) => {
+    try {
+      const parent = await getCurrentParent(req);
+      const { password: _, ...safeParent } = parent;
+      res.json(safeParent);
+    } catch (error) {
+      console.error("Get parent error:", error);
+      res.status(500).json({ error: "Failed to get parent data" });
+    }
+  });
+
+  app.get("/api/parents/children", requireParentAuth, async (req: any, res) => {
+    try {
+      const children = await storage.getStudentsByParent(req.parentId);
+      await logParentActivity(req.parentId, "viewed_children_list");
+      res.json(children);
+    } catch (error) {
+      console.error("Get children error:", error);
+      res.status(500).json({ error: "Failed to get children" });
+    }
+  });
+
+  app.post("/api/parents/children", requireParentAuth, async (req: any, res) => {
+    try {
+      const childData = insertStudentSchema.parse({
+        ...req.body,
+        parentId: req.parentId
+      });
+      
+      const child = await storage.createStudent(childData);
+      
+      // Create default parent controls for the new child
+      await storage.createParentControls({
+        parentId: req.parentId,
+        studentId: child.id,
+        dailyTimeLimit: 60,
+        allowedSubjects: ["mathematics", "literacy", "science"],
+        blockedTopics: [],
+        requiresApproval: false,
+        pomodoroEnabled: true,
+        reportsEnabled: true
+      });
+      
+      await logParentActivity(req.parentId, "added_child", child.id, { childName: child.name });
+      
+      res.json(child);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid child data", details: error.errors });
+      }
+      console.error("Add child error:", error);
+      res.status(500).json({ error: "Failed to add child" });
+    }
+  });
+
+  // Parent Controls Routes
+  app.get("/api/parents/controls/:studentId", requireParentAuth, async (req: any, res) => {
+    try {
+      const controls = await storage.getParentControls(req.parentId, req.params.studentId);
+      if (!controls) {
+        return res.status(404).json({ error: "Controls not found" });
+      }
+      
+      await logParentActivity(req.parentId, "viewed_controls", req.params.studentId);
+      res.json(controls);
+    } catch (error) {
+      console.error("Get controls error:", error);
+      res.status(500).json({ error: "Failed to get controls" });
+    }
+  });
+
+  app.put("/api/parents/controls/:studentId", requireParentAuth, async (req: any, res) => {
+    try {
+      const updates = req.body;
+      const controls = await storage.updateParentControls(req.parentId, req.params.studentId, updates);
+      
+      await logParentActivity(req.parentId, "updated_controls", req.params.studentId, updates);
+      res.json(controls);
+    } catch (error) {
+      console.error("Update controls error:", error);
+      res.status(500).json({ error: "Failed to update controls" });
+    }
+  });
+
+  // Parent Activity Log Route
+  app.get("/api/parents/activity", requireParentAuth, async (req: any, res) => {
+    try {
+      const activities = await storage.getParentActivityLog(req.parentId);
+      res.json(activities);
+    } catch (error) {
+      console.error("Get activity log error:", error);
+      res.status(500).json({ error: "Failed to get activity log" });
+    }
+  });
+
   // Students
   app.get("/api/students/:id", async (req, res) => {
     try {

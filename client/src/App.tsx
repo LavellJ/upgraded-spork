@@ -7,6 +7,9 @@ import Home from "@/pages/Home";
 import Dashboard from "@/pages/Dashboard";
 import Learning from "@/pages/Learning";
 import { ProgressShowcase } from "@/pages/ProgressShowcase";
+import ParentAuth from "@/pages/ParentAuth";
+import ParentDashboard from "@/pages/ParentDashboard";
+import AddChild from "@/pages/AddChild";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -16,6 +19,9 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/learning" component={Learning} />
       <Route path="/progress" component={ProgressShowcase} />
+      <Route path="/parent/auth" component={ParentAuth} />
+      <Route path="/parent/dashboard" component={ParentDashboard} />
+      <Route path="/parent/add-child" component={AddChild} />
       <Route component={NotFound} />
     </Switch>
   );
