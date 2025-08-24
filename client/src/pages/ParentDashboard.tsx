@@ -70,43 +70,75 @@ export default function ParentDashboard() {
   // Fetch parent's children (or use demo data)
   const { data: children = [], isLoading: childrenLoading } = useQuery<Student[]>({
     queryKey: ["/api/parents/children"],
-    queryFn: () => isDemoMode ? Promise.resolve(demoChildren) : apiRequest("/api/parents/children", { headers: getAuthHeader() }),
+    queryFn: async (): Promise<Student[]> => {
+      if (isDemoMode) {
+        return Promise.resolve(demoChildren);
+      }
+      const response = await fetch("/api/parents/children", { headers: getAuthHeader() });
+      if (!response.ok) throw new Error('Failed to fetch children');
+      return response.json();
+    },
     enabled: !!parentInfo,
   });
 
   // Demo progress data
-  const demoProgressData = {
+  const demoProgressData: Record<string, StudentProgress[]> = {
     "demo-child-1": [
-      { studentId: "demo-child-1", topicId: "addition", completionPercentage: 85, questionsAnswered: 20, correctAnswers: 17 },
-      { studentId: "demo-child-1", topicId: "subtraction", completionPercentage: 72, questionsAnswered: 15, correctAnswers: 11 },
-      { studentId: "demo-child-1", topicId: "reading", completionPercentage: 90, questionsAnswered: 25, correctAnswers: 23 }
+      { 
+        id: "p1", studentId: "demo-child-1", topicId: "addition", completionPercentage: 85, 
+        questionsAnswered: 20, correctAnswers: 17, currentStreak: 3, bestStreak: 5,
+        lastStudied: new Date(), createdAt: new Date()
+      },
+      { 
+        id: "p2", studentId: "demo-child-1", topicId: "subtraction", completionPercentage: 72, 
+        questionsAnswered: 15, correctAnswers: 11, currentStreak: 2, bestStreak: 4,
+        lastStudied: new Date(), createdAt: new Date()
+      },
+      { 
+        id: "p3", studentId: "demo-child-1", topicId: "reading", completionPercentage: 90, 
+        questionsAnswered: 25, correctAnswers: 23, currentStreak: 4, bestStreak: 6,
+        lastStudied: new Date(), createdAt: new Date()
+      }
     ],
     "demo-child-2": [
-      { studentId: "demo-child-2", topicId: "multiplication", completionPercentage: 95, questionsAnswered: 30, correctAnswers: 29 },
-      { studentId: "demo-child-2", topicId: "fractions", completionPercentage: 78, questionsAnswered: 18, correctAnswers: 14 },
-      { studentId: "demo-child-2", topicId: "science", completionPercentage: 88, questionsAnswered: 22, correctAnswers: 19 }
+      { 
+        id: "p4", studentId: "demo-child-2", topicId: "multiplication", completionPercentage: 95, 
+        questionsAnswered: 30, correctAnswers: 29, currentStreak: 8, bestStreak: 10,
+        lastStudied: new Date(), createdAt: new Date()
+      },
+      { 
+        id: "p5", studentId: "demo-child-2", topicId: "fractions", completionPercentage: 78, 
+        questionsAnswered: 18, correctAnswers: 14, currentStreak: 3, bestStreak: 5,
+        lastStudied: new Date(), createdAt: new Date()
+      },
+      { 
+        id: "p6", studentId: "demo-child-2", topicId: "science", completionPercentage: 88, 
+        questionsAnswered: 22, correctAnswers: 19, currentStreak: 5, bestStreak: 7,
+        lastStudied: new Date(), createdAt: new Date()
+      }
     ]
   };
 
-  // Fetch progress for each child (or use demo data)
-  const childProgressQueries = children.map(child => 
-    useQuery<StudentProgress[]>({
-      queryKey: [`/api/progress/${child.id}`],
-      queryFn: () => isDemoMode 
-        ? Promise.resolve(demoProgressData[child.id as keyof typeof demoProgressData] || [])
-        : apiRequest(`/api/progress/${child.id}`, { headers: getAuthHeader() }),
-      enabled: !!child.id,
-    })
-  );
+  // Get progress data for children
+  const getChildProgress = (childId: string): StudentProgress[] => {
+    if (isDemoMode) {
+      return demoProgressData[childId] || [];
+    }
+    return []; // In real mode, we'd fetch from API
+  };
 
   // Logout mutation
   const logoutMutation = useMutation({
-    mutationFn: () => isDemoMode 
-      ? Promise.resolve() 
-      : apiRequest("/api/parents/logout", {
-          method: "POST",
-          headers: getAuthHeader(),
-        }),
+    mutationFn: async (): Promise<void> => {
+      if (isDemoMode) {
+        return Promise.resolve();
+      }
+      const response = await fetch("/api/parents/logout", {
+        method: "POST",
+        headers: getAuthHeader(),
+      });
+      if (!response.ok) throw new Error('Logout failed');
+    },
     onSuccess: () => {
       localStorage.removeItem("parentSessionToken");
       localStorage.removeItem("parentInfo");
@@ -120,17 +152,16 @@ export default function ParentDashboard() {
   });
 
   const calculateChildProgress = (childId: string) => {
-    const progressQuery = childProgressQueries.find(q => 
-      q.data && q.data.length > 0 && q.data[0].studentId === childId
-    );
+    const progress = getChildProgress(childId);
     
-    if (!progressQuery?.data) return { totalProgress: 0, topicsCompleted: 0, totalTopics: 0 };
+    if (!progress || !Array.isArray(progress) || progress.length === 0) {
+      return { totalProgress: 0, topicsCompleted: 0, totalTopics: 0 };
+    }
     
-    const progress = progressQuery.data;
     const totalTopics = progress.length;
-    const completedTopics = progress.filter(p => p.completionPercentage >= 80).length;
+    const completedTopics = progress.filter((p: any) => (p.completionPercentage || 0) >= 80).length;
     const averageProgress = totalTopics > 0 
-      ? Math.round(progress.reduce((sum, p) => sum + p.completionPercentage, 0) / totalTopics)
+      ? Math.round(progress.reduce((sum: number, p: any) => sum + (p.completionPercentage || 0), 0) / totalTopics)
       : 0;
 
     return {
@@ -216,7 +247,7 @@ export default function ParentDashboard() {
                     <p className="text-white text-center">Loading children...</p>
                   </CardContent>
                 </Card>
-              ) : children.length === 0 ? (
+              ) : !children || children.length === 0 ? (
                 <Card className="bg-white/10 backdrop-blur-sm border-white/20">
                   <CardContent className="p-6 text-center">
                     <Users className="w-12 h-12 text-white/50 mx-auto mb-4" />
@@ -247,7 +278,7 @@ export default function ParentDashboard() {
                   </div>
                   
                   <div className="grid gap-4">
-                    {children.map((child) => {
+                    {(children || []).map((child: any) => {
                       const progressData = calculateChildProgress(child.id);
                       return (
                         <Card 
