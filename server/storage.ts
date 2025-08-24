@@ -77,6 +77,14 @@ export interface IStorage {
   getAchievementsByStudent(studentId: string): Promise<Achievement[]>;
   createAchievement(achievement: InsertAchievement): Promise<Achievement>;
   hasAchievement(studentId: string, badgeId: string): Promise<boolean>;
+  
+  // Learning Sessions
+  createLearningSession(data: any): Promise<any>;
+  getLearningSession(topicId: string, studentId: string): Promise<any>;
+  updateLearningSession(sessionId: string, updates: any): Promise<any>;
+  
+  // Student Artifacts
+  createStudentArtifact(data: any): Promise<any>;
 }
 
 export class MemStorage implements IStorage {
@@ -90,6 +98,8 @@ export class MemStorage implements IStorage {
   private progress: Map<string, Progress>;
   private pomodoroSessions: Map<string, PomodoroSession>;
   private achievements: Map<string, Achievement>;
+  private learningSessions: Map<string, any>;
+  private studentArtifacts: Map<string, any>;
 
   constructor() {
     this.parents = new Map();
@@ -102,6 +112,8 @@ export class MemStorage implements IStorage {
     this.progress = new Map();
     this.pomodoroSessions = new Map();
     this.achievements = new Map();
+    this.learningSessions = new Map();
+    this.studentArtifacts = new Map();
     
     // Initialize with sample topics and questions
     this.initializeSampleTopics();
@@ -2907,6 +2919,45 @@ export class MemStorage implements IStorage {
   // Additional Student Methods  
   async getStudentsByParent(parentId: string): Promise<Student[]> {
     return Array.from(this.students.values()).filter(s => s.parentId === parentId);
+  }
+
+  // Learning Session Methods
+  async createLearningSession(data: any): Promise<any> {
+    const id = randomUUID();
+    const session = {
+      ...data,
+      id,
+      startedAt: data.startedAt || new Date()
+    };
+    this.learningSessions.set(id, session);
+    return session;
+  }
+
+  async getLearningSession(topicId: string, studentId: string): Promise<any> {
+    return Array.from(this.learningSessions.values())
+      .find(session => session.topicId === topicId && session.studentId === studentId);
+  }
+
+  async updateLearningSession(sessionId: string, updates: any): Promise<any> {
+    const session = this.learningSessions.get(sessionId);
+    if (!session) {
+      throw new Error("Learning session not found");
+    }
+    const updatedSession = { ...session, ...updates };
+    this.learningSessions.set(sessionId, updatedSession);
+    return updatedSession;
+  }
+
+  // Student Artifact Methods
+  async createStudentArtifact(data: any): Promise<any> {
+    const id = randomUUID();
+    const artifact = {
+      ...data,
+      id,
+      createdAt: new Date()
+    };
+    this.studentArtifacts.set(id, artifact);
+    return artifact;
   }
 }
 

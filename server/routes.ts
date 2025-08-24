@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { generateQuestions, generateSmartHint, generatePersonalizedExplanation, calculateAdaptiveDifficulty, generateLearningPathRecommendations, generateBuddyMessage } from "./services/openai";
+import { generateLearningContent } from "./aiServices/learningContent";
 import { badgeSystem, BADGE_DEFINITIONS } from "./badgeSystem";
 import { 
   insertStudentSchema, 
@@ -703,6 +704,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating pomodoro session:", error);
       res.status(500).json({ message: "Failed to update pomodoro session" });
+    }
+  });
+
+  // Learning Sessions API
+  app.get("/api/learning-sessions/:topicId/:studentId", async (req, res) => {
+    try {
+      const { topicId, studentId } = req.params;
+      
+      // Check if session exists
+      let session = await storage.getLearningSession(topicId, studentId);
+      
+      if (!session) {
+        // Create new session
+        session = await storage.createLearningSession({
+          topicId,
+          studentId,
+          currentPhase: "teach",
+          startedAt: new Date(),
+          isCompleted: false,
+          phaseProgress: {}
+        });
+      }
+      
+      res.json(session);
+    } catch (error) {
+      console.error("Error managing learning session:", error);
+      res.status(500).json({ message: "Failed to manage learning session" });
+    }
+  });
+
+  app.patch("/api/learning-sessions/:sessionId", async (req, res) => {
+    try {
+      const sessionId = req.params.sessionId;
+      const updates = req.body;
+      
+      const session = await storage.updateLearningSession(sessionId, updates);
+      res.json(session);
+    } catch (error) {
+      console.error("Error updating learning session:", error);
+      res.status(500).json({ message: "Failed to update learning session" });
+    }
+  });
+
+  // Learning Content Generation API
+  app.get("/api/learning-content/:topicId/:phase/:ageGroup", async (req, res) => {
+    try {
+      const { topicId, phase, ageGroup } = req.params;
+      
+      const topic = await storage.getTopic(topicId);
+      if (!topic) {
+        return res.status(404).json({ message: "Topic not found" });
+      }
+
+      const content = await generateLearningContent({
+        topicId,
+        phase,
+        ageGroup: ageGroup as "pre-primary" | "primary" | "upper-primary",
+        topic: topic.name,
+        subject: topic.subject
+      });
+      
+      res.json(content);
+    } catch (error) {
+      console.error("Error generating learning content:", error);
+      res.status(500).json({ message: "Failed to generate learning content" });
+    }
+  });
+
+  // Student Artifacts API
+  app.post("/api/student-artifacts", async (req, res) => {
+    try {
+      const artifactData = req.body;
+      const artifact = await storage.createStudentArtifact(artifactData);
+      res.json(artifact);
+    } catch (error) {
+      console.error("Error creating student artifact:", error);
+      res.status(500).json({ message: "Failed to create artifact" });
     }
   });
 

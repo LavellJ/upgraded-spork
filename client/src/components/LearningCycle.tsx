@@ -267,10 +267,8 @@ export function LearningCycle({ topicId, ageGroup, studentId, onSessionComplete 
         isStudying={true}
         studyDuration={Date.now() - (session?.startedAt ? new Date(session.startedAt).getTime() : Date.now())}
         recentProgress={{
-          completedPhases: Object.keys(session?.phaseProgress || {}).filter(
-            phase => (session?.phaseProgress as any)?.[phase]?.completed
-          ).length,
-          artifactsCreated: sessionArtifacts.length
+          questionsAnswered: Object.keys(session?.phaseProgress || {}).length,
+          completedTopics: sessionArtifacts.length
         }}
       />
     </div>
