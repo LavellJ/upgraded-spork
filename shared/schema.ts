@@ -113,6 +113,8 @@ export const parentActivityLog = pgTable("parent_activity_log", {
 export const insertStudentSchema = createInsertSchema(students).omit({
   id: true,
   createdAt: true,
+}).extend({
+  parentId: z.string().optional(), // Make parentId optional for demo mode
 });
 
 export const insertTopicSchema = createInsertSchema(topics).omit({

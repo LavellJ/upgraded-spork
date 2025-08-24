@@ -169,9 +169,9 @@ export default function ChildOnboarding() {
               <SparkleIcon size={96} className="mx-auto" />
             </div>
             <div className="absolute inset-0 animate-pulse">
-              <SparkleIcon size={24} className="text-yellow-300 absolute top-2 left-1/3" />
+              <SparkleIcon size={32} className="text-yellow-300 absolute top-2 left-1/3" />
               <StarIcon size={16} className="text-blue-300 absolute bottom-4 right-1/3" />
-              <HeartIcon size={20} className="text-pink-300 absolute top-8 right-1/4" />
+              <HeartIcon size={28} className="text-pink-300 absolute top-8 right-1/4" />
             </div>
           </div>
           
