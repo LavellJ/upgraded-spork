@@ -128,88 +128,70 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
 
   const language = getAgeAppropriateLanguage();
 
-  // Simplified for pre-primary - big visual feelings
+  // Clean, minimalist reflect phase for pre-primary - Alto's Odyssey aesthetic
   if (ageGroup === "pre-primary") {
     return (
-      <div className="space-y-8">
-        {/* Simple Visual Header */}
+      <div className="space-y-8 max-w-2xl mx-auto">
+        {/* Minimalist Header */}
         <div className="floating-ui rounded-3xl p-8 text-center" data-testid="reflect-phase-header">
-          <div className="text-6xl mb-4">🤔</div>
-          <h2 className="font-display text-3xl font-bold text-white mb-4">
-            How Did That Feel?
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+            <div className="text-2xl text-white">⟲</div>
+          </div>
+          <h2 className="font-display text-2xl font-bold text-white">
+            Reflect
           </h2>
-          <div className="text-4xl">💭</div>
         </div>
 
         {!selfAssessmentComplete ? (
-          <div className="floating-ui rounded-3xl p-12 text-center" data-testid="simple-reflect-content">
-            <div className="space-y-8">
-              <div className="text-white text-2xl font-bold mb-8">
-                {currentPrompt?.question || "How was learning today?"}
+          <div className="floating-ui rounded-3xl p-12" data-testid="simple-reflect-content">
+            <div className="text-center space-y-8">
+              <div className="text-white text-lg font-medium">
+                How did that feel?
               </div>
               
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
                 <button
                   onClick={() => {
-                    handleResponse(currentPrompt?.id || 'feeling', 'happy');
+                    handleResponse(currentPrompt?.id || 'feeling', 'good');
                     handleNextPrompt();
                   }}
-                  className="w-32 h-32 bg-green-400/30 hover:bg-green-400 rounded-full text-6xl hover:scale-110 transition-all"
-                  data-testid="feeling-happy"
+                  className="aspect-square p-6 bg-gradient-to-b from-green-400/30 to-green-400/20 hover:from-green-400/40 hover:to-green-400/30 rounded-2xl border-2 border-green-400/40 hover:border-green-400/60 transition-all hover:scale-105 flex flex-col items-center justify-center"
+                  data-testid="feeling-good"
                 >
-                  😊
+                  <div className="text-2xl mb-2 text-white">✓</div>
+                  <div className="text-white text-sm font-medium">Good</div>
                 </button>
                 
                 <button
                   onClick={() => {
-                    handleResponse(currentPrompt?.id || 'feeling', 'okay');
+                    handleResponse(currentPrompt?.id || 'feeling', 'tricky');
                     handleNextPrompt();
                   }}
-                  className="w-32 h-32 bg-yellow-400/30 hover:bg-yellow-400 rounded-full text-6xl hover:scale-110 transition-all"
-                  data-testid="feeling-okay"
+                  className="aspect-square p-6 bg-gradient-to-b from-orange-400/30 to-orange-400/20 hover:from-orange-400/40 hover:to-orange-400/30 rounded-2xl border-2 border-orange-400/40 hover:border-orange-400/60 transition-all hover:scale-105 flex flex-col items-center justify-center"
+                  data-testid="feeling-tricky"
                 >
-                  🤔
-                </button>
-                
-                <button
-                  onClick={() => {
-                    handleResponse(currentPrompt?.id || 'feeling', 'hard');
-                    handleNextPrompt();
-                  }}
-                  className="w-32 h-32 bg-orange-400/30 hover:bg-orange-400 rounded-full text-6xl hover:scale-110 transition-all"
-                  data-testid="feeling-hard"
-                >
-                  😓
-                </button>
-                
-                <button
-                  onClick={() => {
-                    handleResponse(currentPrompt?.id || 'feeling', 'confused');
-                    handleNextPrompt();
-                  }}
-                  className="w-32 h-32 bg-red-400/30 hover:bg-red-400 rounded-full text-6xl hover:scale-110 transition-all"
-                  data-testid="feeling-confused"
-                >
-                  😕
+                  <div className="text-2xl mb-2 text-white">?</div>
+                  <div className="text-white text-sm font-medium">Tricky</div>
                 </button>
               </div>
             </div>
           </div>
         ) : (
           <div className="floating-ui rounded-3xl p-12 text-center" data-testid="simple-reflect-complete">
-            <div className="space-y-8">
-              <div className="text-8xl">🌟</div>
-              <div className="text-white text-2xl font-bold">
-                You Did Great!
+            <div className="space-y-6">
+              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center">
+                <div className="text-3xl text-white">✓</div>
+              </div>
+              <div className="text-white text-xl font-medium">
+                Great thinking!
               </div>
               
               <button
                 onClick={handlePhaseComplete}
-                className="w-48 h-20 bg-gradient-to-r from-purple-400 to-purple-600 text-white text-xl font-bold rounded-2xl hover:scale-105 transition-all"
-                data-testid="button-simple-finish"
+                className="px-8 py-4 bg-gradient-to-r from-purple-400 to-pink-400 text-white text-lg font-medium rounded-2xl hover:scale-105 transition-all"
+                data-testid="button-continue"
               >
-                <div>✨</div>
-                <div>Make Something!</div>
+                Create
               </button>
             </div>
           </div>

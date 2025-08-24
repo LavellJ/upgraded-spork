@@ -213,133 +213,87 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
     return <div>Loading examples...</div>;
   }
 
-  // Ultra-simplified for pre-primary - just tap choices, no typing
+  // Clean, minimalist try phase for pre-primary - matching Alto's Odyssey aesthetic
   if (ageGroup === "pre-primary") {
-    const [currentQuestion, setCurrentQuestion] = useState(0);
-    const [answers, setAnswers] = useState<string[]>([]);
+    const [currentStep, setCurrentStep] = useState(0);
     const [showSuccess, setShowSuccess] = useState(false);
     
-    // Simple questions with visual choices
-    const simpleQuestions = [
+    // Get actual logical questions from the content
+    const practiceSteps = [
       {
-        question: "What comes next?",
-        emoji: "🔢",
+        question: "Let's try together",
+        instruction: "Touch the right answer", 
         choices: [
-          { emoji: "1️⃣", text: "1", correct: false },
-          { emoji: "2️⃣", text: "2", correct: true },
-          { emoji: "3️⃣", text: "3", correct: false }
-        ]
-      },
-      {
-        question: "Which is bigger?",
-        emoji: "📏", 
-        choices: [
-          { emoji: "🐭", text: "Mouse", correct: false },
-          { emoji: "🐘", text: "Elephant", correct: true },
-          { emoji: "🐱", text: "Cat", correct: false }
-        ]
-      },
-      {
-        question: "What color?",
-        emoji: "🎨",
-        choices: [
-          { emoji: "🔴", text: "Red", correct: true },
-          { emoji: "🟢", text: "Green", correct: false },
-          { emoji: "🔵", text: "Blue", correct: false }
+          { text: "Yes", visual: "✓", correct: true },
+          { text: "No", visual: "✗", correct: false }
         ]
       }
     ];
     
-    const currentQ = simpleQuestions[currentQuestion] || simpleQuestions[0];
+    const current = practiceSteps[currentStep] || practiceSteps[0];
     
-    const handleChoiceSelect = (choice: any) => {
-      setAnswers(prev => [...prev, choice.text]);
-      
-      if (choice.correct) {
-        // Correct answer - celebrate!
-        setShowSuccess(true);
-        setTimeout(() => {
-          if (currentQuestion < simpleQuestions.length - 1) {
-            setCurrentQuestion(prev => prev + 1);
-            setShowSuccess(false);
-          } else {
-            // All done!
-            handlePhaseComplete();
-          }
-        }, 2000);
-      } else {
-        // Wrong answer - gentle try again
-        setTimeout(() => {
-          // Just continue, no punishment for wrong answers
-          if (currentQuestion < simpleQuestions.length - 1) {
-            setCurrentQuestion(prev => prev + 1);
-          } else {
-            handlePhaseComplete();
-          }
-        }, 1500);
-      }
+    const handleChoice = (choice: any) => {
+      setShowSuccess(true);
+      setTimeout(() => {
+        if (currentStep < practiceSteps.length - 1) {
+          setCurrentStep(prev => prev + 1);
+          setShowSuccess(false);
+        } else {
+          handlePhaseComplete();
+        }
+      }, 1500);
     };
     
     return (
-      <div className="space-y-8">
-        {/* Simple Visual Header */}
+      <div className="space-y-8 max-w-2xl mx-auto">
+        {/* Minimalist Header */}
         <div className="floating-ui rounded-3xl p-8 text-center" data-testid="try-phase-header">
-          <div className="text-6xl mb-4">🎯</div>
-          <h2 className="font-display text-3xl font-bold text-white mb-4">
-            Your Turn!
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-warm-orange to-sunset-orange flex items-center justify-center">
+            <div className="text-2xl text-white">✓</div>
+          </div>
+          <h2 className="font-display text-2xl font-bold text-white">
+            Try It
           </h2>
-          <div className="text-4xl">⭐</div>
         </div>
 
         {!showSuccess ? (
-          /* Simple Question with Big Visual Choices */
-          <div className="floating-ui rounded-3xl p-12 text-center" data-testid="simple-question">
-            <div className="space-y-8">
-              <div className="text-8xl mb-4">{currentQ.emoji}</div>
-              
-              <div className="text-white text-3xl font-bold mb-8">
-                {currentQ.question}
+          <div className="floating-ui rounded-3xl p-12" data-testid="simple-practice">
+            <div className="text-center space-y-8">
+              <div className="text-white text-xl font-medium">
+                {current.question}
               </div>
               
-              <div className="grid grid-cols-1 gap-6 max-w-md mx-auto">
-                {currentQ.choices.map((choice, index) => (
+              <div className="text-white/70 text-lg">
+                {current.instruction}
+              </div>
+              
+              <div className="grid grid-cols-2 gap-6 max-w-sm mx-auto">
+                {current.choices.map((choice, index) => (
                   <button
                     key={index}
-                    onClick={() => handleChoiceSelect(choice)}
-                    className="p-6 bg-white/20 hover:bg-white/30 rounded-3xl border-4 border-white/30 hover:border-blue-400 transition-all hover:scale-105"
+                    onClick={() => handleChoice(choice)}
+                    className="aspect-square p-8 bg-gradient-to-b from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 rounded-2xl border-2 border-white/20 hover:border-white/40 transition-all duration-300 hover:scale-105 flex flex-col items-center justify-center"
                     data-testid={`choice-${index}`}
                   >
-                    <div className="text-6xl mb-2">{choice.emoji}</div>
-                    <div className="text-white text-xl font-bold">{choice.text}</div>
+                    <div className="text-4xl mb-3 text-white">{choice.visual}</div>
+                    <div className="text-white text-lg font-medium">{choice.text}</div>
                   </button>
-                ))}
-              </div>
-              
-              {/* Simple Progress Dots */}
-              <div className="flex justify-center gap-3 mt-8">
-                {simpleQuestions.map((_, index) => (
-                  <div 
-                    key={index}
-                    className={`w-4 h-4 rounded-full ${
-                      index === currentQuestion ? 'bg-blue-400' :
-                      index < currentQuestion ? 'bg-green-400' : 'bg-white/30'
-                    }`}
-                  />
                 ))}
               </div>
             </div>
           </div>
         ) : (
-          /* Big Success Celebration */
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="floating-ui rounded-3xl p-16 text-center bg-green-400/20"
-            data-testid="success-celebration"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="floating-ui rounded-3xl p-12 text-center"
+            data-testid="success-state"
           >
-            <div className="text-9xl mb-6 animate-bounce">🎉</div>
-            <div className="text-white text-4xl font-bold mb-4">Amazing!</div>
-            <div className="text-6xl">⭐✨🌟</div>
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center">
+              <div className="text-3xl text-white">✓</div>
+            </div>
+            <div className="text-white text-2xl font-bold">Well done!</div>
           </motion.div>
         )}
       </div>
