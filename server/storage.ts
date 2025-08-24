@@ -138,7 +138,7 @@ export class MemStorage implements IStorage {
         level: 8,
         isUnlocked: "true"
       },
-      // Primary topics
+      // Primary topics (Young Explorers)
       {
         id: randomUUID(),
         name: "Addition & Subtraction",
@@ -149,11 +149,91 @@ export class MemStorage implements IStorage {
       },
       {
         id: randomUUID(),
-        name: "Fractions & Decimals",
+        name: "Multiplication Tables",
         subject: "mathematics",
         ageGroup: "primary",
         level: 2,
-        isUnlocked: "false"
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Fractions & Decimals",
+        subject: "mathematics",
+        ageGroup: "primary",
+        level: 3,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Time & Money",
+        subject: "mathematics",
+        ageGroup: "primary",
+        level: 4,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Reading Comprehension",
+        subject: "literacy",
+        ageGroup: "primary",
+        level: 5,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Creative Writing",
+        subject: "literacy",
+        ageGroup: "primary",
+        level: 6,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Spelling & Vocabulary",
+        subject: "literacy",
+        ageGroup: "primary",
+        level: 7,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Grammar & Punctuation",
+        subject: "literacy",
+        ageGroup: "primary",
+        level: 8,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Living Things",
+        subject: "science",
+        ageGroup: "primary",
+        level: 9,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Earth & Space",
+        subject: "science",
+        ageGroup: "primary",
+        level: 10,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Physical Science",
+        subject: "science",
+        ageGroup: "primary",
+        level: 11,
+        isUnlocked: "true"
+      },
+      {
+        id: randomUUID(),
+        name: "Australian Studies",
+        subject: "social-studies",
+        ageGroup: "primary",
+        level: 12,
+        isUnlocked: "true"
       },
       // Upper primary topics
       {
@@ -851,6 +931,676 @@ export class MemStorage implements IStorage {
             correctAnswer: 2,
             explanation: "We have 5 senses: see, hear, smell, taste, and touch! They help us learn about the world.",
             difficulty: 3
+          }
+        ];
+      } else if (topic.name === "Multiplication Tables") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What is 3 × 4?",
+            options: ["10", "11", "12", "13"],
+            correctAnswer: 2,
+            explanation: "3 × 4 = 12. Think of 3 groups of 4 things: 4 + 4 + 4 = 12!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is 2 × 7?",
+            options: ["12", "13", "14", "15"],
+            correctAnswer: 2,
+            explanation: "2 × 7 = 14. Double 7 gives you 14!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is 5 × 6?",
+            options: ["25", "30", "35", "40"],
+            correctAnswer: 1,
+            explanation: "5 × 6 = 30. Count by 5s six times: 5, 10, 15, 20, 25, 30!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is 4 × 8?",
+            options: ["28", "30", "32", "36"],
+            correctAnswer: 2,
+            explanation: "4 × 8 = 32. Four groups of 8 makes 32!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is 9 × 3?",
+            options: ["24", "25", "26", "27"],
+            correctAnswer: 3,
+            explanation: "9 × 3 = 27. Think of 9 + 9 + 9 = 27!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is 6 × 7?",
+            options: ["40", "41", "42", "43"],
+            correctAnswer: 2,
+            explanation: "6 × 7 = 42. This is a tricky one to remember!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What is 8 × 5?",
+            options: ["35", "40", "45", "50"],
+            correctAnswer: 1,
+            explanation: "8 × 5 = 40. Five groups of 8 makes 40!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is 7 × 8?",
+            options: ["54", "55", "56", "57"],
+            correctAnswer: 2,
+            explanation: "7 × 8 = 56. This is one of the harder times tables!",
+            difficulty: 3
+          }
+        ];
+      } else if (topic.name === "Time & Money") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "If the time is 3:30, what time will it be in 30 minutes?",
+            options: ["3:60", "4:00", "4:30", "5:00"],
+            correctAnswer: 1,
+            explanation: "3:30 + 30 minutes = 4:00. Remember, 60 minutes makes a whole hour!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "How many minutes are in 1 hour?",
+            options: ["50", "60", "70", "100"],
+            correctAnswer: 1,
+            explanation: "There are 60 minutes in 1 hour!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "If you have 2 × $1 coins and 3 × 20c coins, how much money do you have?",
+            options: ["$2.30", "$2.60", "$3.20", "$3.60"],
+            correctAnswer: 1,
+            explanation: "$2.00 + 60 cents = $2.60. Count: $1, $2, 20c, 40c, 60c!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What time does the clock show when the big hand points to 6 and the small hand points to 2?",
+            options: ["2:30", "6:02", "2:06", "6:30"],
+            correctAnswer: 0,
+            explanation: "When the big hand points to 6, it means 30 minutes past the hour. Small hand on 2 means 2:30!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "If something costs $4.50 and you pay with a $5 note, how much change do you get?",
+            options: ["$0.50", "$1.00", "$1.50", "$4.50"],
+            correctAnswer: 0,
+            explanation: "$5.00 - $4.50 = $0.50. That's 50 cents change!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "How many 5-cent coins make 50 cents?",
+            options: ["5", "10", "15", "20"],
+            correctAnswer: 1,
+            explanation: "50 ÷ 5 = 10. You need 10 five-cent coins to make 50 cents!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "If you start reading at 7:15 and read for 45 minutes, what time do you finish?",
+            options: ["7:45", "8:00", "8:15", "8:30"],
+            correctAnswer: 1,
+            explanation: "7:15 + 45 minutes = 8:00. 15 + 45 = 60 minutes = 1 hour!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Which Australian coin is gold coloured?",
+            options: ["5 cents", "10 cents", "$1", "$2"],
+            correctAnswer: 3,
+            explanation: "The $2 coin is gold coloured and has an Aboriginal elder on it!",
+            difficulty: 2
+          }
+        ];
+      } else if (topic.name === "Reading Comprehension") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "In the story 'The Three Little Pigs', what did the third pig build his house from?",
+            options: ["Straw", "Sticks", "Bricks", "Leaves"],
+            correctAnswer: 2,
+            explanation: "The third pig built his house from bricks, which kept him safe from the wolf!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "What is the main idea of a story about a lost dog finding its way home?",
+            options: ["Dogs are smart", "Never give up hope", "Animals get lost", "Home is important"],
+            correctAnswer: 1,
+            explanation: "The main idea is about never giving up hope, even when things seem difficult!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "If a character in a story is 'nervous', how are they feeling?",
+            options: ["Happy", "Worried", "Angry", "Excited"],
+            correctAnswer: 1,
+            explanation: "Nervous means worried or anxious about something!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is a good prediction for a story that starts 'The dark clouds gathered overhead'?",
+            options: ["It will be sunny", "It might rain", "Someone will be happy", "It's nighttime"],
+            correctAnswer: 1,
+            explanation: "Dark clouds gathering usually means rain is coming!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "In a story, what does 'setting' mean?",
+            options: ["The main character", "When and where the story happens", "What the character wants", "How the story ends"],
+            correctAnswer: 1,
+            explanation: "Setting is when and where the story takes place - like 'in a forest long ago'!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "If you read 'Sarah slammed the door', how is Sarah probably feeling?",
+            options: ["Happy", "Sleepy", "Angry", "Surprised"],
+            correctAnswer: 2,
+            explanation: "Slamming a door usually shows anger or frustration!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is the problem called in a story?",
+            options: ["Setting", "Character", "Conflict", "Theme"],
+            correctAnswer: 2,
+            explanation: "The problem in a story is called the conflict - it's what the character needs to solve!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "If an author writes 'The cat crept quietly', what does this tell us?",
+            options: ["The cat is loud", "The cat is trying not to be heard", "The cat is sleeping", "The cat is running"],
+            correctAnswer: 1,
+            explanation: "Crept quietly means the cat is moving carefully and silently!",
+            difficulty: 2
+          }
+        ];
+      } else if (topic.name === "Creative Writing") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What makes a good story beginning?",
+            options: ["'The End'", "A hook that grabs attention", "Lots of big words", "A very long sentence"],
+            correctAnswer: 1,
+            explanation: "A good beginning hooks the reader and makes them want to keep reading!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which sentence uses better descriptive language?",
+            options: ["The dog ran.", "The big dog ran fast.", "The golden retriever bounded joyfully.", "A dog moved."],
+            correctAnswer: 2,
+            explanation: "'Golden retriever bounded joyfully' paints a clear picture with specific, exciting words!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What should every story have?",
+            options: ["A beginning, middle, and end", "At least 10 pages", "Difficult words", "Lots of characters"],
+            correctAnswer: 0,
+            explanation: "Every story needs a beginning, middle, and end to feel complete!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Which word would make this sentence more exciting: 'The girl _____ across the playground'?",
+            options: ["went", "walked", "raced", "moved"],
+            correctAnswer: 2,
+            explanation: "'Raced' is much more exciting and shows speed and energy!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is dialogue in a story?",
+            options: ["The setting", "Words that characters speak", "The ending", "The author's name"],
+            correctAnswer: 1,
+            explanation: "Dialogue is when characters talk to each other, usually shown with quotation marks!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which sentence shows, rather than tells?",
+            options: ["Sam was scared.", "Sam trembled and hid behind the tree.", "Sam felt afraid.", "Sam was not brave."],
+            correctAnswer: 1,
+            explanation: "'Trembled and hid' shows us Sam's fear through actions rather than just telling us!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What should you do before writing your final story?",
+            options: ["Plan your ideas", "Count the words", "Check the time", "Choose a pen colour"],
+            correctAnswer: 0,
+            explanation: "Planning your ideas first helps you write a better, more organised story!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which makes a character more interesting?",
+            options: ["Giving them a problem to solve", "Making them perfect", "Giving them a common name", "Making them very tall"],
+            correctAnswer: 0,
+            explanation: "Characters become interesting when they face challenges and problems to overcome!",
+            difficulty: 2
+          }
+        ];
+      } else if (topic.name === "Spelling & Vocabulary") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "Which word means the opposite of 'hot'?",
+            options: ["Warm", "Cool", "Cold", "Freezing"],
+            correctAnswer: 2,
+            explanation: "Cold is the direct opposite of hot! Cool and freezing are also cooler, but cold is the best opposite.",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Which word is spelled correctly?",
+            options: ["recieve", "receive", "recive", "receeve"],
+            correctAnswer: 1,
+            explanation: "Remember: 'i before e except after c' - so it's 'receive'!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What does 'enormous' mean?",
+            options: ["Very small", "Very big", "Very fast", "Very slow"],
+            correctAnswer: 1,
+            explanation: "Enormous means very, very big - like an enormous elephant!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which word rhymes with 'night'?",
+            options: ["not", "neat", "bright", "net"],
+            correctAnswer: 2,
+            explanation: "Night and bright both end with the same 'ight' sound!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which word has the same meaning as 'happy'?",
+            options: ["Sad", "Angry", "Joyful", "Tired"],
+            correctAnswer: 2,
+            explanation: "Joyful and happy both mean feeling good and pleased!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which is the correct spelling?",
+            options: ["frend", "friend", "freind", "friand"],
+            correctAnswer: 1,
+            explanation: "Friend - remember 'fri-end' - a friend is there to the end!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "If something is 'ancient', it is very...",
+            options: ["new", "old", "big", "small"],
+            correctAnswer: 1,
+            explanation: "Ancient means very, very old - like ancient dinosaurs or ancient pyramids!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which word family do these belong to: light, night, sight, fight?",
+            options: ["-ight words", "-ight words", "-ight words", "-ight words"],
+            correctAnswer: 0,
+            explanation: "These all belong to the '-ight' word family - they all end with the same sound and spelling!",
+            difficulty: 2
+          }
+        ];
+      } else if (topic.name === "Grammar & Punctuation") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What punctuation mark goes at the end of a question?",
+            options: [".", "!", "?", ","],
+            correctAnswer: 2,
+            explanation: "Questions always end with a question mark (?) - like 'How are you?'",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Which sentence is written correctly?",
+            options: ["sarah went to the shop", "Sarah went to the shop.", "sarah went to the shop.", "Sarah went to the shop"],
+            correctAnswer: 1,
+            explanation: "Sentences start with a capital letter and end with a full stop!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What type of word is 'beautiful'?",
+            options: ["Noun", "Verb", "Adjective", "Adverb"],
+            correctAnswer: 2,
+            explanation: "'Beautiful' describes something, so it's an adjective - like 'a beautiful flower'!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which word needs an apostrophe?",
+            options: ["The cats fur was soft", "The dogs tail wagged", "The birds flew away", "The cars were red"],
+            correctAnswer: 0,
+            explanation: "It should be 'The cat's fur' - the apostrophe shows the fur belongs to the cat!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What type of word is 'run'?",
+            options: ["Noun", "Verb", "Adjective", "Adverb"],
+            correctAnswer: 1,
+            explanation: "'Run' is an action word, so it's a verb - you can run fast!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which sentence needs a comma?",
+            options: ["I like apples and oranges", "I like apples oranges and bananas", "I like apples", "I like fruit"],
+            correctAnswer: 1,
+            explanation: "'I like apples, oranges, and bananas' - commas separate items in a list!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What makes this sentence wrong: 'The boy run to school'?",
+            options: ["Missing comma", "Wrong verb form", "No capital letter", "No full stop"],
+            correctAnswer: 1,
+            explanation: "It should be 'The boy runs' - the verb must match the subject!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Which word is a noun?",
+            options: ["quickly", "running", "beautiful", "elephant"],
+            correctAnswer: 3,
+            explanation: "'Elephant' is a thing you can see and touch, so it's a noun!",
+            difficulty: 2
+          }
+        ];
+      } else if (topic.name === "Living Things") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What do all living things need to survive?",
+            options: ["Food, water, air", "Toys, games, books", "Cars, houses, phones", "Clothes, shoes, hats"],
+            correctAnswer: 0,
+            explanation: "All living things need food for energy, water to drink, and air to breathe!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "What is the life cycle order for a butterfly?",
+            options: ["Egg, caterpillar, butterfly, chrysalis", "Egg, chrysalis, caterpillar, butterfly", "Egg, caterpillar, chrysalis, butterfly", "Caterpillar, egg, chrysalis, butterfly"],
+            correctAnswer: 2,
+            explanation: "Butterflies start as eggs, hatch into caterpillars, form a chrysalis, then emerge as butterflies!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Which animal is a herbivore (only eats plants)?",
+            options: ["Lion", "Kangaroo", "Eagle", "Shark"],
+            correctAnswer: 1,
+            explanation: "Kangaroos are herbivores - they only eat grass and plants!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What do plants need to make their own food?",
+            options: ["Soil and rain", "Sunlight, water, and carbon dioxide", "Animals and insects", "Wind and cold weather"],
+            correctAnswer: 1,
+            explanation: "Plants use sunlight, water, and carbon dioxide to make food through photosynthesis!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which animal adaptation helps a polar bear survive in the cold?",
+            options: ["Long legs", "Thick fur", "Bright colours", "Small ears"],
+            correctAnswer: 1,
+            explanation: "Polar bears have thick fur to keep them warm in the freezing Arctic!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is the food chain order?",
+            options: ["Carnivore, herbivore, plant", "Plant, carnivore, herbivore", "Plant, herbivore, carnivore", "Herbivore, plant, carnivore"],
+            correctAnswer: 2,
+            explanation: "Energy flows from plants to herbivores (plant-eaters) to carnivores (meat-eaters)!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "How do fish breathe underwater?",
+            options: ["Through their mouth", "Through gills", "They hold their breath", "Through their fins"],
+            correctAnswer: 1,
+            explanation: "Fish have special organs called gills that take oxygen from the water!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What do we call animals that are active at night?",
+            options: ["Diurnal", "Nocturnal", "Hibernating", "Migrating"],
+            correctAnswer: 1,
+            explanation: "Nocturnal animals like owls and bats are active at night and sleep during the day!",
+            difficulty: 3
+          }
+        ];
+      } else if (topic.name === "Earth & Space") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "Why do we have day and night?",
+            options: ["The sun moves around Earth", "Earth spins on its axis", "The moon blocks the sun", "Clouds cover the sun"],
+            correctAnswer: 1,
+            explanation: "Earth spins like a top! When your part faces the sun it's day, when it faces away it's night!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "How many seasons are there in a year?",
+            options: ["2", "3", "4", "5"],
+            correctAnswer: 2,
+            explanation: "There are 4 seasons: summer, autumn, winter, and spring!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "What is the closest star to Earth?",
+            options: ["Polaris", "Alpha Centauri", "The Sun", "Sirius"],
+            correctAnswer: 2,
+            explanation: "The Sun is our closest star! It gives us light and heat every day.",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What causes rain?",
+            options: ["Clouds getting too heavy", "Water evaporating and condensing", "The moon pulling water", "Wind pushing water"],
+            correctAnswer: 1,
+            explanation: "Water evaporates from oceans, rises as clouds, then condenses and falls as rain!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Which planet is known as the 'Red Planet'?",
+            options: ["Venus", "Jupiter", "Mars", "Saturn"],
+            correctAnswer: 2,
+            explanation: "Mars looks red because of iron oxide (rust) on its surface!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What shape is Earth?",
+            options: ["Flat like a plate", "Square like a box", "Round like a ball", "Triangle like a pyramid"],
+            correctAnswer: 2,
+            explanation: "Earth is round like a ball - we call this shape a sphere!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Why is summer warmer than winter?",
+            options: ["Earth is closer to the sun", "The sun is hotter", "Earth tilts toward the sun", "There are more clouds"],
+            correctAnswer: 2,
+            explanation: "Earth tilts! In summer, your part of Earth tilts toward the sun and gets more direct sunlight!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What do we call a scientist who studies space?",
+            options: ["Geologist", "Biologist", "Astronomer", "Meteorologist"],
+            correctAnswer: 2,
+            explanation: "An astronomer studies stars, planets, and everything in space!",
+            difficulty: 2
+          }
+        ];
+      } else if (topic.name === "Physical Science") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "What happens when you push a ball?",
+            options: ["It disappears", "It moves away from you", "It gets heavier", "It changes colour"],
+            correctAnswer: 1,
+            explanation: "When you push something, you apply a force that makes it move in the direction you pushed!",
+            difficulty: 1
+          },
+          {
+            topicId: topic.id,
+            question: "Which material would be best for keeping ice cream cold?",
+            options: ["Metal", "Plastic", "Styrofoam", "Glass"],
+            correctAnswer: 2,
+            explanation: "Styrofoam is a good insulator - it doesn't let heat pass through easily!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What do we call materials that let light pass through them?",
+            options: ["Opaque", "Transparent", "Reflective", "Magnetic"],
+            correctAnswer: 1,
+            explanation: "Transparent materials like clear glass let light pass through so you can see through them!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Sound travels through:",
+            options: ["Only air", "Only water", "Only solid things", "Air, water, and solids"],
+            correctAnswer: 3,
+            explanation: "Sound waves can travel through air, water, and solid materials like wood and metal!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What happens to most materials when they get very cold?",
+            options: ["They expand", "They contract (get smaller)", "They change colour", "They become magnetic"],
+            correctAnswer: 1,
+            explanation: "Most materials contract (shrink) when they get cold and expand when they get hot!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "Which force pulls everything toward the ground?",
+            options: ["Magnetism", "Gravity", "Friction", "Electricity"],
+            correctAnswer: 1,
+            explanation: "Gravity is the force that pulls everything down toward Earth!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What makes a ball bounce?",
+            options: ["Gravity", "The material springs back", "Air pressure", "Magnetism"],
+            correctAnswer: 1,
+            explanation: "When a ball hits the ground, it squashes and then springs back to its original shape!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which of these is magnetic?",
+            options: ["Plastic spoon", "Wooden stick", "Iron nail", "Glass cup"],
+            correctAnswer: 2,
+            explanation: "Iron and steel are magnetic - magnets can attract them!",
+            difficulty: 2
+          }
+        ];
+      } else if (topic.name === "Australian Studies") {
+        questions = [
+          {
+            topicId: topic.id,
+            question: "How many states are there in Australia?",
+            options: ["5", "6", "7", "8"],
+            correctAnswer: 1,
+            explanation: "Australia has 6 states: NSW, Victoria, Queensland, WA, SA, and Tasmania!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is the capital city of Australia?",
+            options: ["Sydney", "Melbourne", "Brisbane", "Canberra"],
+            correctAnswer: 3,
+            explanation: "Canberra is Australia's capital city, even though Sydney and Melbourne are bigger!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which animal appears on the Australian coat of arms with the kangaroo?",
+            options: ["Koala", "Wombat", "Emu", "Platypus"],
+            correctAnswer: 2,
+            explanation: "The emu and kangaroo are on Australia's coat of arms because they can't walk backwards!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What do we call the original people of Australia?",
+            options: ["Aboriginals", "Indigenous Australians", "First Nations people", "All of these"],
+            correctAnswer: 3,
+            explanation: "Aboriginal people, Indigenous Australians, and First Nations people all refer to Australia's original inhabitants!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What is Australia's national flower?",
+            options: ["Rose", "Wattle", "Eucalyptus", "Bottlebrush"],
+            correctAnswer: 1,
+            explanation: "The golden wattle is Australia's national flower - it's bright yellow and beautiful!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "Which ocean surrounds most of Australia?",
+            options: ["Pacific Ocean", "Indian Ocean", "Atlantic Ocean", "Southern Ocean"],
+            correctAnswer: 1,
+            explanation: "The Indian Ocean surrounds most of Australia, especially the west and south!",
+            difficulty: 3
+          },
+          {
+            topicId: topic.id,
+            question: "What important event do we celebrate on January 26th?",
+            options: ["Christmas", "Easter", "Australia Day", "Queen's Birthday"],
+            correctAnswer: 2,
+            explanation: "Australia Day on January 26th celebrates our nation, though it means different things to different people!",
+            difficulty: 2
+          },
+          {
+            topicId: topic.id,
+            question: "What does 'Aussie' mean?",
+            options: ["Australian person", "Australian animal", "Australian food", "Australian weather"],
+            correctAnswer: 0,
+            explanation: "'Aussie' is a friendly nickname for an Australian person!",
+            difficulty: 1
           }
         ];
       }
