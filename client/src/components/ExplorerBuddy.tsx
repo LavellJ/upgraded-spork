@@ -29,9 +29,9 @@ export function ExplorerBuddy({
   studyDuration = 0,
   recentProgress = {}
 }: ExplorerBuddyProps) {
-  const [isVisible, setIsVisible] = useState(false);
   const [currentMessage, setCurrentMessage] = useState<BuddyMessage | null>(null);
   const [lastInteraction, setLastInteraction] = useState<number>(Date.now());
+  const [buddyMood, setBuddyMood] = useState<'neutral' | 'excited' | 'thoughtful' | 'celebrating'>('neutral');
 
   // Get personality traits based on age group
   const getPersonality = useCallback(() => {
@@ -80,8 +80,8 @@ export function ExplorerBuddy({
   const generateMessage = useCallback(async (): Promise<BuddyMessage | null> => {
     const now = Date.now();
     
-    // Don't show messages too frequently (reduced for testing)
-    if (now - lastInteraction < 10000) return null; // 10 seconds minimum
+    // Don't show messages too frequently
+    if (now - lastInteraction < 15000) return null; // 15 seconds minimum
     
     let messageType: BuddyMessage['type'] = 'companionship';
     let duration = 4000;
@@ -150,26 +150,33 @@ export function ExplorerBuddy({
     }
   }, [ageGroup, currentPage, isStudying, studyDuration, recentProgress, lastInteraction, getPersonality]);
 
-  // Show buddy periodically
+  // Update buddy messages periodically (always visible)
   useEffect(() => {
-    const showBuddy = async () => {
+    const updateBuddy = async () => {
       const message = await generateMessage();
       if (message) {
         setCurrentMessage(message);
-        setIsVisible(true);
         setLastInteraction(Date.now());
         
-        // Auto-hide after message duration
+        // Set mood based on message type
+        setBuddyMood(
+          message.type === 'celebration' ? 'celebrating' :
+          message.type === 'curiosity' ? 'excited' :
+          message.type === 'break_suggestion' ? 'thoughtful' :
+          'neutral'
+        );
+        
+        // Clear message after duration, but keep buddy visible
         setTimeout(() => {
-          setIsVisible(false);
           setCurrentMessage(null);
+          setBuddyMood('neutral');
         }, message.duration);
       }
     };
     
-    // Initial delay, then periodic checks (shorter for testing)
-    const initialTimeout = setTimeout(showBuddy, 2000); // Show after 2 seconds
-    const interval = setInterval(showBuddy, 15000); // Check every 15 seconds
+    // Initial message, then periodic updates
+    const initialTimeout = setTimeout(updateBuddy, 2000);
+    const interval = setInterval(updateBuddy, 20000); // Update every 20 seconds
     
     return () => {
       clearTimeout(initialTimeout);
@@ -177,16 +184,28 @@ export function ExplorerBuddy({
     };
   }, [generateMessage]);
 
-  // Explorer character visual design (Alto-inspired)
+  // Explorer character visual design (Alto-inspired) with mood animations
   const ExplorerCharacter = () => (
     <motion.div
-      className="relative"
-      initial={{ scale: 0, rotate: -10 }}
-      animate={{ scale: 1, rotate: 0 }}
-      exit={{ scale: 0, rotate: 10 }}
-      transition={{ type: "spring", stiffness: 200, damping: 15 }}
+      className="relative cursor-pointer"
+      animate={{ 
+        scale: buddyMood === 'celebrating' ? [1, 1.1, 1] : 
+               buddyMood === 'excited' ? [1, 1.05, 1] : 1,
+        rotate: buddyMood === 'celebrating' ? [-2, 2, -2, 0] : 0
+      }}
+      transition={{ 
+        duration: buddyMood === 'celebrating' ? 0.6 : buddyMood === 'excited' ? 1.2 : 2,
+        repeat: buddyMood !== 'neutral' ? Infinity : 0,
+        repeatType: "reverse"
+      }}
+      whileHover={{ scale: 1.05 }}
+      onClick={() => {
+        // Optional: trigger a friendly interaction
+        setBuddyMood('excited');
+        setTimeout(() => setBuddyMood('neutral'), 1000);
+      }}
     >
-      <svg viewBox="0 0 120 120" className="w-16 h-16">
+      <svg viewBox="0 0 120 120" className="w-20 h-20">
         {/* Explorer silhouette */}
         <g className="text-indigo-600">
           {/* Body */}
@@ -219,23 +238,33 @@ export function ExplorerBuddy({
           <circle cx="66" cy="42" r="2" fill="white" className="opacity-80" />
           <ellipse cx="60" cy="48" rx="1" ry="2" fill="white" className="opacity-60" />
           
-          {/* Adventure sparkles */}
+          {/* Adventure sparkles - more active when excited */}
           <motion.circle
             cx="90"
             cy="30"
             r="1.5"
             fill="currentColor"
-            className="text-yellow-400 opacity-70"
-            animate={{ opacity: [0.3, 0.9, 0.3], scale: [0.8, 1.2, 0.8] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 0 }}
+            className="text-yellow-400"
+            animate={{ 
+              opacity: buddyMood === 'celebrating' ? [0.5, 1, 0.5] : [0.3, 0.7, 0.3], 
+              scale: buddyMood === 'celebrating' ? [1, 1.5, 1] : [0.8, 1.2, 0.8] 
+            }}
+            transition={{ 
+              duration: buddyMood === 'celebrating' ? 0.8 : 2, 
+              repeat: Infinity, 
+              delay: 0 
+            }}
           />
           <motion.circle
             cx="95"
             cy="50"
             r="1"
             fill="currentColor"
-            className="text-cyan-400 opacity-70"
-            animate={{ opacity: [0.4, 0.8, 0.4], scale: [0.9, 1.1, 0.9] }}
+            className="text-cyan-400"
+            animate={{ 
+              opacity: buddyMood === 'excited' ? [0.6, 1, 0.6] : [0.4, 0.8, 0.4], 
+              scale: [0.9, 1.1, 0.9] 
+            }}
             transition={{ duration: 2.5, repeat: Infinity, delay: 1 }}
           />
           <motion.circle
@@ -243,8 +272,11 @@ export function ExplorerBuddy({
             cy="65"
             r="1.2"
             fill="currentColor"
-            className="text-pink-400 opacity-70"
-            animate={{ opacity: [0.2, 0.7, 0.2], scale: [0.7, 1.3, 0.7] }}
+            className="text-pink-400"
+            animate={{ 
+              opacity: [0.2, 0.7, 0.2], 
+              scale: buddyMood === 'thoughtful' ? [0.5, 0.9, 0.5] : [0.7, 1.3, 0.7] 
+            }}
             transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
           />
         </g>
@@ -253,43 +285,54 @@ export function ExplorerBuddy({
   );
 
   return (
-    <AnimatePresence>
-      {isVisible && currentMessage && (
-        <motion.div
-          initial={{ x: 100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: 100, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 120, damping: 20 }}
-          className="fixed bottom-6 right-6 z-50 max-w-sm"
-        >
-          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 flex items-start space-x-3">
-            <ExplorerCharacter />
-            
-            <div className="flex-1">
-              <motion.p
+    <motion.div
+      initial={{ x: 100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ type: "spring", stiffness: 120, damping: 20, delay: 1 }}
+      className="fixed bottom-6 right-6 z-50 max-w-sm"
+    >
+      <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 flex items-start space-x-3 min-h-[100px]">
+        <ExplorerCharacter />
+        
+        <div className="flex-1">
+          <AnimatePresence mode="wait">
+            {currentMessage ? (
+              <motion.div
+                key={currentMessage.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-sm text-gray-700 leading-relaxed font-medium"
-                data-testid={`buddy-message-${currentMessage.type}`}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
               >
-                {currentMessage.text}
-              </motion.p>
-              
-              <button
-                onClick={() => {
-                  setIsVisible(false);
-                  setCurrentMessage(null);
-                }}
-                className="mt-2 text-xs text-gray-400 hover:text-gray-600 transition-colors"
-                data-testid="buddy-dismiss-button"
+                <p
+                  className="text-sm text-gray-700 leading-relaxed font-medium mb-2"
+                  data-testid={`buddy-message-${currentMessage.type}`}
+                >
+                  {currentMessage.text}
+                </p>
+                <div className="text-xs text-gray-400">Your explorer buddy</div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="idle"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
               >
-                Thanks, buddy! ✨
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+                <p className="text-sm text-gray-500 leading-relaxed font-medium mb-2">
+                  {buddyMood === 'neutral' ? (
+                    ageGroup === 'pre-primary' ? "Ready to explore together!" :
+                    ageGroup === 'primary' ? "I'm here if you need me!" :
+                    "Standing by, fellow explorer."
+                  ) : "..."}
+                </p>
+                <div className="text-xs text-gray-400">Your explorer buddy</div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </motion.div>
   );
 }
