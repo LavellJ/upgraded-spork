@@ -56,53 +56,35 @@ export function SkillTreeMap({ ageGroup, studentId }: SkillTreeMapProps) {
     queryKey: [`/api/progress/${studentId}`],
   });
 
-  // Create skill tree layout based on age group
+  // Create simplified adventure path layout
   const createSkillTreeLayout = (): TopicNode[] => {
-    const baseTopics = topics.slice(0, 12); // Limit for visual clarity
+    const baseTopics = topics.slice(0, 6); // Reduced for cleaner experience
     
-    // Different layouts for different age groups
+    // Simplified flowing path layout - like a winding adventure trail
     const layouts = {
       "pre-primary": [
-        { x: 50, y: 80, category: "foundation", icon: <NatureIcon size={36} />, animalGuide: <LittleExplorerIcon size={28} /> },
-        { x: 30, y: 60, category: "numbers", icon: <ScienceIcon size={36} />, animalGuide: <LittleExplorerIcon size={28} /> },
-        { x: 70, y: 60, category: "letters", icon: <BooksIcon size={36} />, animalGuide: <YoungAdventurerIcon size={28} /> },
-        { x: 20, y: 40, category: "shapes", icon: <StarIcon size={36} />, animalGuide: <LittleExplorerIcon size={28} /> },
-        { x: 50, y: 40, category: "colors", icon: <ArtIcon size={36} />, animalGuide: <YoungAdventurerIcon size={28} /> },
-        { x: 80, y: 40, category: "sounds", icon: <MusicIcon size={36} />, animalGuide: <LittleExplorerIcon size={28} /> },
-        { x: 35, y: 20, category: "patterns", icon: <SparkleIcon size={36} />, animalGuide: <YoungAdventurerIcon size={28} /> },
-        { x: 65, y: 20, category: "matching", icon: <ScienceIcon size={36} />, animalGuide: <BraveScholarIcon size={28} /> },
+        { x: 20, y: 80, category: "foundation", icon: <NatureIcon size={40} /> },
+        { x: 45, y: 60, category: "numbers", icon: <ScienceIcon size={40} /> },
+        { x: 70, y: 45, category: "letters", icon: <BooksIcon size={40} /> },
+        { x: 40, y: 30, category: "shapes", icon: <StarIcon size={40} /> },
+        { x: 65, y: 15, category: "colors", icon: <ArtIcon size={40} /> },
+        { x: 85, y: 5, category: "sounds", icon: <MusicIcon size={40} /> },
       ],
       "primary": [
-        { x: 50, y: 85, category: "foundation", icon: <NatureIcon size={36} />, animalGuide: <YoungAdventurerIcon size={28} /> },
-        { x: 25, y: 70, category: "arithmetic", icon: <ScienceIcon size={36} />, animalGuide: <LittleExplorerIcon size={28} /> },
-        { x: 75, y: 70, category: "reading", icon: <BooksIcon size={36} />, animalGuide: <BraveScholarIcon size={28} /> },
-        { x: 15, y: 55, category: "geometry", icon: <ScienceIcon size={36} />, animalGuide: <YoungAdventurerIcon size={28} /> },
-        { x: 50, y: 55, category: "science", icon: <ScienceIcon size={36} />, animalGuide: <BraveScholarIcon size={28} /> },
-        { x: 85, y: 55, category: "writing", icon: <BooksIcon size={36} />, animalGuide: <LittleExplorerIcon size={28} /> },
-        { x: 30, y: 40, category: "fractions", icon: <ScienceIcon size={36} />, animalGuide: <LittleExplorerIcon size={28} /> },
-        { x: 70, y: 40, category: "stories", icon: <BooksIcon size={36} />, animalGuide: <YoungAdventurerIcon size={28} /> },
-        { x: 20, y: 25, category: "measurement", icon: <ScienceIcon size={36} />, animalGuide: <LittleExplorerIcon size={28} /> },
-        { x: 50, y: 25, category: "nature", icon: <NatureIcon size={36} />, animalGuide: <YoungAdventurerIcon size={28} /> },
-        { x: 80, y: 25, category: "creative", icon: <ArtIcon size={36} />, animalGuide: <YoungAdventurerIcon size={28} /> },
-        { x: 50, y: 10, category: "logic", icon: <ScienceIcon size={36} />, animalGuide: <BraveScholarIcon size={28} /> },
+        { x: 15, y: 85, category: "foundation", icon: <NatureIcon size={40} /> },
+        { x: 35, y: 65, category: "arithmetic", icon: <ScienceIcon size={40} /> },
+        { x: 60, y: 50, category: "reading", icon: <BooksIcon size={40} /> },
+        { x: 30, y: 35, category: "science", icon: <ScienceIcon size={40} /> },
+        { x: 70, y: 20, category: "writing", icon: <BooksIcon size={40} /> },
+        { x: 90, y: 10, category: "nature", icon: <NatureIcon size={40} /> },
       ],
       "upper-primary": [
-        { x: 50, y: 85, category: "foundation", icon: <NatureIcon size={36} />, animalGuide: <BraveScholarIcon size={28} /> },
-        { x: 20, y: 70, category: "algebra", icon: <ScienceIcon size={36} />, animalGuide: <LittleExplorerIcon size={28} /> },
-        { x: 50, y: 70, category: "science", icon: <ScienceIcon size={36} />, animalGuide: <BraveScholarIcon size={28} /> },
-        { x: 80, y: 70, category: "literature", icon: <BooksIcon size={36} />, animalGuide: <YoungAdventurerIcon size={28} /> },
-        { x: 10, y: 55, category: "equations", icon: <ScienceIcon size={36} />, animalGuide: <YoungAdventurerIcon size={28} /> },
-        { x: 35, y: 55, category: "physics", icon: <ScienceIcon size={36} />, animalGuide: <LittleExplorerIcon size={28} /> },
-        { x: 65, y: 55, category: "chemistry", icon: <ScienceIcon size={36} />, animalGuide: <BraveScholarIcon size={28} /> },
-        { x: 90, y: 55, category: "essays", icon: <BooksIcon size={36} />, animalGuide: <BraveScholarIcon size={28} /> },
-        { x: 25, y: 40, category: "geometry", icon: <ScienceIcon size={36} />, animalGuide: <LittleExplorerIcon size={28} /> },
-        { x: 50, y: 40, category: "biology", icon: <ScienceIcon size={36} />, animalGuide: <YoungAdventurerIcon size={28} /> },
-        { x: 75, y: 40, category: "research", icon: <ScienceIcon size={36} />, animalGuide: <LittleExplorerIcon size={28} /> },
-        { x: 15, y: 25, category: "statistics", icon: <ScienceIcon size={36} />, animalGuide: <YoungAdventurerIcon size={28} /> },
-        { x: 40, y: 25, category: "coding", icon: <SpaceIcon size={36} />, animalGuide: <LittleExplorerIcon size={28} /> },
-        { x: 60, y: 25, category: "ecology", icon: <NatureIcon size={36} />, animalGuide: <YoungAdventurerIcon size={28} /> },
-        { x: 85, y: 25, category: "debate", icon: <BooksIcon size={36} />, animalGuide: <BraveScholarIcon size={28} /> },
-        { x: 50, y: 10, category: "critical", icon: <StarIcon size={36} />, animalGuide: <BraveScholarIcon size={28} /> },
+        { x: 10, y: 85, category: "foundation", icon: <NatureIcon size={40} /> },
+        { x: 30, y: 70, category: "algebra", icon: <ScienceIcon size={40} /> },
+        { x: 55, y: 55, category: "science", icon: <ScienceIcon size={40} /> },
+        { x: 80, y: 40, category: "literature", icon: <BooksIcon size={40} /> },
+        { x: 45, y: 25, category: "coding", icon: <SpaceIcon size={40} /> },
+        { x: 75, y: 10, category: "critical", icon: <StarIcon size={40} /> },
       ]
     };
 
@@ -111,13 +93,13 @@ export function SkillTreeMap({ ageGroup, studentId }: SkillTreeMapProps) {
     return baseTopics.map((topic, index) => ({
       id: topic.id,
       name: topic.name,
-      description: `Learn about ${topic.name.toLowerCase()}`,
+      description: `Explore ${topic.name}`,
       position: layout[index] || { x: 50, y: 50 },
       prerequisites: index > 0 ? [baseTopics[index - 1].id] : [],
-      difficulty: Math.ceil((index + 1) / 2),
+      difficulty: index + 1,
       category: layout[index]?.category || "general",
-      icon: layout[index]?.icon || <BooksIcon size={36} />,
-      animalGuide: layout[index]?.animalGuide || <YoungAdventurerIcon size={28} />
+      icon: layout[index]?.icon || <BooksIcon size={40} />,
+      animalGuide: null // Simplified - no animal guides cluttering the view
     }));
   };
 
@@ -191,21 +173,7 @@ export function SkillTreeMap({ ageGroup, studentId }: SkillTreeMapProps) {
   return (
     <div className="relative w-full h-[600px] overflow-hidden rounded-3xl bg-gradient-to-br from-purple-900/30 via-blue-900/30 to-teal-900/30 backdrop-blur-sm border border-white/20">
       
-      {/* Floating particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white/30 rounded-full animate-float"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 4}s`,
-              animationDuration: `${4 + Math.random() * 4}s`
-            }}
-          />
-        ))}
-      </div>
+      {/* Simplified atmospheric background */}
       
       {/* SVG for connection paths */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none">
@@ -259,87 +227,49 @@ export function SkillTreeMap({ ageGroup, studentId }: SkillTreeMapProps) {
             onMouseLeave={() => setHoveredNode(null)}
             data-testid={`skill-node-${node.id}`}
           >
-            {/* Node glow effect */}
-            <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${getNodeColor(status)} opacity-50 scale-150 blur-lg ${status !== "locked" ? "group-hover:scale-175" : ""} transition-all duration-300`} />
-            
-            {/* Main node */}
-            <div className={`relative w-16 h-16 rounded-full bg-gradient-to-r ${getNodeColor(status)} border-2 border-white/30 flex items-center justify-center transition-all duration-300 ${
-              status !== "locked" ? "hover:scale-110 hover:border-white/60" : "opacity-60"
+            {/* Simplified main node */}
+            <div className={`relative w-20 h-20 rounded-2xl bg-gradient-to-br ${getNodeColor(status)} border border-white/20 flex items-center justify-center transition-all duration-200 ${
+              status !== "locked" ? "hover:scale-105 shadow-lg" : "opacity-50"
             }`}>
               
               {/* Node icon */}
-              <div className="relative z-10">
-                {getNodeIcon(status)}
+              <div className="text-white">
+                {node.icon}
               </div>
               
-              {/* Animal guide */}
-              <div className="absolute -top-2 -right-2 animate-bounce">
-                {node.animalGuide}
-              </div>
-              
-              {/* Sparkle effects for completed nodes */}
+              {/* Simple completion indicator */}
               {status === "completed" && (
-                <>
-                  <Sparkles className="absolute -top-1 -left-1 w-4 h-4 text-yellow-300 animate-pulse" />
-                  <Sparkles className="absolute -bottom-1 -right-1 w-3 h-3 text-yellow-300 animate-pulse delay-1000" />
-                </>
+                <CheckCircle className="absolute -top-1 -right-1 w-6 h-6 text-green-400 bg-white rounded-full" />
+              )}
+              
+              {/* Lock for locked nodes */}
+              {status === "locked" && (
+                <Lock className="absolute inset-0 m-auto w-6 h-6 text-white/60" />
               )}
             </div>
             
-            {/* Progress ring for in-progress nodes */}
-            {status === "in-progress" && completion > 0 && (
-              <div className="absolute inset-0 rounded-full border-4 border-transparent" style={{
-                background: `conic-gradient(from 0deg, #60a5fa ${completion * 3.6}deg, transparent ${completion * 3.6}deg)`
-              }} />
-            )}
-            
-            {/* Node tooltip */}
-            {(hoveredNode === node.id || selectedNode === node.id) && (
-              <Card className="absolute top-20 left-1/2 transform -translate-x-1/2 w-64 bg-white/95 backdrop-blur-sm border-white/30 shadow-xl z-50 animate-fade-in">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="text-2xl">{node.icon}</div>
-                    <h3 className="font-bold text-gray-800">{node.name}</h3>
+            {/* Simplified tooltip */}
+            {hoveredNode === node.id && (
+              <div className="absolute top-24 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm rounded-xl p-3 shadow-lg z-50 min-w-48">
+                <h3 className="font-semibold text-gray-800 text-center">{node.name}</h3>
+                <p className="text-gray-600 text-xs text-center mt-1">{node.description}</p>
+                {status === "in-progress" && completion > 0 && (
+                  <div className="mt-2">
+                    <Progress value={completion} className="h-1" />
+                    <p className="text-xs text-gray-500 text-center mt-1">{Math.round(completion)}% complete</p>
                   </div>
-                  
-                  <p className="text-gray-600 text-sm mb-3">{node.description}</p>
-                  
-                  {status === "in-progress" && (
-                    <div className="mb-3">
-                      <div className="flex justify-between text-xs text-gray-600 mb-1">
-                        <span>Progress</span>
-                        <span>{Math.round(completion)}%</span>
-                      </div>
-                      <Progress value={completion} className="h-2" />
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center justify-between">
-                    <Badge variant="secondary" className="bg-gray-100">
-                      {node.category}
-                    </Badge>
-                    
-                    {status === "locked" ? (
-                      <span className="text-xs text-gray-500">Complete prerequisites</span>
-                    ) : (
-                      <Button size="sm" className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                        {status === "completed" ? "Review" : status === "in-progress" ? "Continue" : "Start"}
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                )}
+              </div>
             )}
           </div>
         );
       })}
       
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-        <h4 className="text-white font-semibold mb-2 text-sm">Learning Path Guide</h4>
-        <div className="space-y-2 text-xs">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-gradient-to-r from-green-400 to-emerald-500" />
+      {/* Simplified legend */}
+      <div className="absolute bottom-4 left-4 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+        <div className="flex items-center gap-4 text-xs text-white/80">
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 rounded bg-green-400" />
             <span className="text-white/80">Mastered</span>
           </div>
           <div className="flex items-center gap-2">

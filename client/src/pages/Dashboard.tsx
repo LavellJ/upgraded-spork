@@ -86,224 +86,61 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {/* Dashboard Content with Tabs */}
-          <Tabs defaultValue="adventure" className="space-y-8">
-            <TabsList className="bg-white/10 backdrop-blur-sm border-white/20 mx-auto">
-              <TabsTrigger value="adventure" className="text-white data-[state=active]:bg-white/20">
-                <Map className="w-4 h-4 mr-2" />
-                Adventure Map
-              </TabsTrigger>
-              <TabsTrigger value="topics" className="text-white data-[state=active]:bg-white/20">
-                <Grid3X3 className="w-4 h-4 mr-2" />
-                Topic Grid
-              </TabsTrigger>
-              <TabsTrigger value="progress" className="text-white data-[state=active]:bg-white/20">
-                <Trophy className="w-4 h-4 mr-2" />
-                Progress
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="adventure" className="space-y-8">
-              {/* Skill Tree Adventure Map */}
-              <div data-testid="skill-tree-section">
-                <div className="floating-ui rounded-3xl p-8">
-                  <h3 className="font-display text-2xl font-semibold text-white mb-6 text-center">
-                    Your Learning Adventure
-                  </h3>
-                  <p className="text-white/70 text-center mb-8">
-                    Explore topics, unlock new areas, and track your progress through the learning world!
-                  </p>
-                  <SkillTreeMap ageGroup={selectedAgeGroup as AgeGroup} studentId="demo-student" />
-                </div>
+          {/* Streamlined Dashboard Content */}
+          <div className="space-y-8">
+            {/* Adventure Map - Main Focus */}
+            <div data-testid="skill-tree-section">
+              <div className="floating-ui rounded-3xl p-6">
+                <h3 className="font-display text-xl font-semibold text-white mb-4 text-center">
+                  Your Learning Journey
+                </h3>
+                <SkillTreeMap ageGroup={selectedAgeGroup as AgeGroup} studentId="demo-student" />
               </div>
-              
-              {/* Pomodoro Timer for Adventure Mode */}
-              <div className="grid lg:grid-cols-2 gap-8">
-                <div data-testid="pomodoro-section">
-                  <PomodoroTimer topicName="Adventure Session" />
-                </div>
-                <div data-testid="badge-section">
-                  <div className="floating-ui rounded-3xl p-8">
-                    <BadgeDisplay 
-                      studentId="demo-student" 
-                      ageGroup={selectedAgeGroup} 
-                      compact={true}
-                    />
-                  </div>
-                </div>
+            </div>
+            
+            {/* Secondary Tools */}
+            <div className="grid lg:grid-cols-2 gap-6">
+              <div data-testid="pomodoro-section">
+                <PomodoroTimer topicName="Learning Session" />
               </div>
-            </TabsContent>
-
-            <TabsContent value="topics" className="space-y-8">
-              {/* Traditional Topic Grid */}
-              <div className="grid lg:grid-cols-3 gap-8">
-                
-                {/* Pomodoro Timer */}
-                <div className="col-span-full lg:col-span-1" data-testid="pomodoro-section">
-                  <PomodoroTimer topicName="Mathematics Session" />
-                </div>
-                
-                {/* Topic Selection */}
-                <div className="col-span-full lg:col-span-2" data-testid="topic-selection">
-                  <div className="floating-ui rounded-3xl p-8">
-                    <h3 className="font-display text-xl font-semibold text-white mb-6">
-                      Available Topics
-                    </h3>
-                
-                {topicsLoading ? (
-                  <div className="space-y-6">
-                    {["Math", "Literacy", "Science"].map((subject) => (
-                      <div key={subject}>
-                        <div className="h-6 bg-white/20 rounded w-24 mb-4"></div>
-                        <div className="space-y-3">
-                          {[1, 2].map((i) => (
-                            <div key={i} className="bg-white/10 rounded-xl p-4 animate-pulse">
-                              <div className="h-4 bg-white/20 rounded w-3/4 mb-2"></div>
-                              <div className="h-3 bg-white/20 rounded w-1/2"></div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-8">
-                    {[
-                      { key: "mathematics", label: "Math" },
-                      { key: "literacy", label: "Literacy" },
-                      { key: "science", label: "Science" }
-                    ].map(({ key, label }) => {
-                      const subjectTopics = topics.filter(topic => topic.subject === key);
-                      if (subjectTopics.length === 0) return null;
-                      
-                      return (
-                        <div key={key}>
-                          <div className="flex items-center mb-4">
-                            <div className="mr-3">
-                              <GeometricIcon 
-                                type="subject" 
-                                variant={key}
-                                size="lg"
-                                animated={true}
-                              />
-                            </div>
-                            <h4 className="font-display text-lg font-semibold text-white">
-                              {label}
-                            </h4>
-                            <div className="ml-3 bg-warm-orange/20 text-warm-orange px-2 py-1 rounded-full text-xs font-medium">
-                              {subjectTopics.length} topics
-                            </div>
-                          </div>
-                          <div className="grid gap-3">
-                            {subjectTopics.map((topic) => (
-                              <Link key={topic.id} href={`/learning?topic=${topic.id}`}>
-                                <div className="bg-white/15 hover:bg-white/25 rounded-xl p-5 cursor-pointer transition-all duration-300 group border border-white/10 hover:border-warm-orange/30" data-testid={`card-topic-${topic.id}`}>
-                                  <div className="flex items-center justify-between">
-                                    <div>
-                                      <h5 className="font-semibold text-white group-hover:text-warm-orange transition-colors" data-testid={`text-topic-name-${topic.id}`}>
-                                        {topic.name}
-                                      </h5>
-                                      <p className="text-white/60 text-sm mt-1" data-testid={`text-topic-level-${topic.id}`}>
-                                        Level {topic.level}
-                                      </p>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                      {topic.isUnlocked === "true" ? (
-                                        <>
-                                          <i className="fas fa-unlock text-success-green"></i>
-                                          <i className="fas fa-arrow-right text-white/60 group-hover:text-warm-orange transition-colors"></i>
-                                        </>
-                                      ) : (
-                                        <i className="fas fa-lock text-white/40"></i>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                    )}
-                  </div>
-                </div>
-                
-                {/* Badge Display */}
-                <div className="col-span-full" data-testid="badge-section">
-                  <div className="floating-ui rounded-3xl p-8">
-                    <BadgeDisplay 
-                      studentId="demo-student" 
-                      ageGroup={selectedAgeGroup} 
-                      compact={true}
-                    />
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="progress" className="space-y-8">
-              {/* Full Badge Collection */}
-              <div className="mb-8" data-testid="badge-collection">
-                <div className="floating-ui rounded-3xl p-8">
+              <div data-testid="badge-section">
+                <div className="floating-ui rounded-3xl p-6">
                   <BadgeDisplay 
                     studentId="demo-student" 
                     ageGroup={selectedAgeGroup} 
+                    compact={true}
                   />
                 </div>
               </div>
-
-              {/* Progress Landscape */}
-              <div data-testid="progress-section">
-                {progressLoading ? (
-                  <div className="floating-ui rounded-3xl p-8">
-                    <div className="animate-pulse">
-                      <div className="h-6 bg-white/20 rounded w-1/4 mb-8"></div>
-                      <div className="h-32 bg-white/10 rounded-2xl mb-8"></div>
-                      <div className="grid grid-cols-4 gap-4">
-                        {[1, 2, 3, 4].map((i) => (
-                          <div key={i} className="text-center">
-                            <div className="h-1 bg-white/20 rounded mb-2"></div>
-                            <div className="h-4 bg-white/20 rounded w-3/4 mx-auto mb-1"></div>
-                            <div className="h-3 bg-white/20 rounded w-1/2 mx-auto"></div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <ProgressLandscape progress={progress} topics={topics} />
-                )}
-              </div>
-            </TabsContent>
-          </Tabs>
-
-          {/* Quick Actions */}
-          <div className="mt-16 text-center" data-testid="quick-actions">
-            <h3 className="font-display text-2xl font-semibold text-white mb-8">
-              Quick Actions
-            </h3>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/learning">
-                <button className="bg-gradient-to-r from-sunset-orange to-warm-orange text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300" data-testid="button-start-learning">
-                  Start Learning
-                  <i className="fas fa-play ml-2"></i>
-                </button>
-              </Link>
-              <button className="bg-white/20 text-white px-6 py-3 rounded-xl font-semibold hover:bg-white/30 transition-colors duration-300" data-testid="button-practice-mode">
-                Practice Mode
-                <i className="fas fa-dumbbell ml-2"></i>
-              </button>
-              <Link href="/progress">
-                <button className="bg-gradient-to-r from-accent-teal to-sky-blue text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300" data-testid="button-review-progress">
-                  Progress Journey
-                  <i className="fas fa-route ml-2"></i>
-                </button>
-              </Link>
             </div>
-          </div>
-
+            
+            {/* Quick Topic Access */}
+            <div className="floating-ui rounded-3xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-display text-lg font-semibold text-white">
+                  Quick Access
+                </h3>
+                <Link href="/learning" className="text-warm-orange hover:text-sunset-orange text-sm transition-colors">
+                  Start Learning →
+                </Link>
+              </div>
+              {!topicsLoading && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {topics.slice(0, 6).map((topic) => (
+                    <Link key={topic.id} href={`/learning?topic=${topic.id}`}>
+                      <div className="bg-white/15 hover:bg-white/25 rounded-xl p-3 cursor-pointer transition-all duration-200 group border border-white/10 hover:border-warm-orange/30" data-testid={`card-topic-${topic.id}`}>
+                        <h5 className="font-medium text-white group-hover:text-warm-orange transition-colors text-sm" data-testid={`text-topic-name-${topic.id}`}>
+                          {topic.name}
+                        </h5>
+                        <p className="text-white/60 text-xs mt-1" data-testid={`text-topic-level-${topic.id}`}>
+                          Level {topic.level}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
         </div>
       </div>
       
@@ -312,15 +149,14 @@ export default function Dashboard() {
         <ExplorerBuddy 
           ageGroup={selectedAgeGroup as AgeGroup}
           currentPage={location}
-          isStudying={studyStartTime !== null}
-          studyDuration={studyStartTime ? Date.now() - studyStartTime : 0}
-          recentProgress={{
-            completedTopics: progress.filter(p => (p.completionPercentage || 0) >= 85).length,
-            questionsAnswered: progress.reduce((sum, p) => sum + (p.questionsAnswered || 0), 0),
-            streakCount: Math.max(...progress.map(p => p.currentStreak || 0), 0)
-          }}
+          isStudying={false}
+          studyDuration={0}
+          recentProgress={null}
         />
       )}
     </>
   );
 }
+                </div>
+                
+                {/* Topic Selection */}
