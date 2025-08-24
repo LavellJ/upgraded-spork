@@ -42,6 +42,7 @@ export default function ChildOnboarding() {
   const [currentStep, setCurrentStep] = useState(0);
   const [childName, setChildName] = useState("");
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<AgeGroup | "">("");
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [learningStyle, setLearningStyle] = useState<string>("");
   const [isComplete, setIsComplete] = useState(false);
   const { toast } = useToast();
@@ -58,6 +59,7 @@ export default function ChildOnboarding() {
         id: data.id,
         name: childName,
         ageGroup: selectedAgeGroup,
+        interests: selectedInterests,
         learningStyle
       }));
       localStorage.setItem("selectedAgeGroup", selectedAgeGroup);
@@ -94,6 +96,17 @@ export default function ChildOnboarding() {
   ];
 
 
+  const interests = [
+    { id: "animals", label: "Animals", icon: <AnimalsIcon size={64} /> },
+    { id: "space", label: "Space", icon: <SpaceIcon size={64} /> },
+    { id: "nature", label: "Nature", icon: <NatureIcon size={64} /> },
+    { id: "art", label: "Art", icon: <ArtIcon size={64} /> },
+    { id: "music", label: "Music", icon: <MusicIcon size={64} /> },
+    { id: "sports", label: "Sports", icon: <SportsIcon size={64} /> },
+    { id: "books", label: "Books", icon: <BooksIcon size={64} /> },
+    { id: "science", label: "Science", icon: <ScienceIcon size={64} /> }
+  ];
+
   const learningStyles = [
     { 
       id: "visual", 
@@ -120,10 +133,18 @@ export default function ChildOnboarding() {
     switch (currentStep) {
       case 0: return true; // Welcome step
       case 1: return childName.trim().length > 0;
-      case 2: return selectedAgeGroup !== "";
-      case 3: return learningStyle !== ""; // Learning style is now step 3
+      case 2: return selectedInterests.length > 0;
+      case 3: return learningStyle !== "";
       default: return false;
     }
+  };
+
+  const toggleInterest = (interestId: string) => {
+    setSelectedInterests(prev => 
+      prev.includes(interestId)
+        ? prev.filter(id => id !== interestId)
+        : [...prev, interestId]
+    );
   };
 
   const handleComplete = () => {
@@ -226,49 +247,54 @@ export default function ChildOnboarding() {
       )
     },
     {
-      id: "age",
-      title: "Choose Your Adventure Level",
+      id: "interests",
+      title: "What Do You Love?",
       component: (
         <div className="space-y-8">
           <div className="text-center space-y-4">
             <div className="mb-6">
-              <SparkleIcon size={72} className="mx-auto text-cyan-300" />
+              <HeartIcon size={72} className="mx-auto text-pink-300" />
             </div>
             <h2 className="font-display text-3xl font-bold text-white">
-              Which adventure is perfect for you?
+              What are you curious about?
             </h2>
             <p className="text-white/80">
-              Pick the one that sounds most exciting!
+              Pick the things that make you excited to learn! (Choose as many as you like)
             </p>
           </div>
           
-          <div className="grid gap-4 max-w-2xl mx-auto">
-            {ageGroups.map((group) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            {interests.map((interest) => (
               <Card
-                key={group.id}
+                key={interest.id}
                 className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
-                  selectedAgeGroup === group.id
-                    ? 'bg-gradient-to-r from-blue-500/30 to-purple-500/30 border-blue-400/50'
-                    : 'bg-white/10 border-white/20'
+                  selectedInterests.includes(interest.id)
+                    ? 'bg-gradient-to-r from-pink-500/30 to-purple-500/30 border-pink-400/50 ring-2 ring-pink-400/30'
+                    : 'bg-white/10 border-white/20 hover:bg-white/20'
                 } backdrop-blur-sm`}
-                onClick={() => setSelectedAgeGroup(group.id)}
-                data-testid={`card-age-${group.id}`}
+                onClick={() => toggleInterest(interest.id)}
+                data-testid={`card-interest-${interest.id}`}
               >
                 <CardContent className="p-6">
-                  <div className="flex items-center space-x-4">
-                    <div>{group.icon}</div>
-                    <div className="flex-1">
-                      <h3 className="text-white font-bold text-lg">{group.label}</h3>
-                      <p className="text-white/70 text-sm">{group.description}</p>
-                    </div>
-                    {selectedAgeGroup === group.id && (
-                      <Zap className="w-6 h-6 text-yellow-400 animate-pulse" />
+                  <div className="flex flex-col items-center space-y-3 text-center">
+                    <div className="mb-2">{interest.icon}</div>
+                    <h3 className="text-white font-semibold text-base">{interest.label}</h3>
+                    {selectedInterests.includes(interest.id) && (
+                      <Heart className="w-5 h-5 text-pink-400 animate-pulse" />
                     )}
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
+          
+          {selectedInterests.length > 0 && (
+            <div className="text-center">
+              <p className="text-white/70 text-sm">
+                Great choices! You've selected {selectedInterests.length} thing{selectedInterests.length !== 1 ? 's' : ''} to explore.
+              </p>
+            </div>
+          )}
         </div>
       )
     },
