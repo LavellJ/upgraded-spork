@@ -110,7 +110,7 @@ export function LearningCycle({ topicId, ageGroup, studentId, onSessionComplete 
       await updateSessionMutation.mutateAsync({
         currentPhase: nextPhase,
         phaseProgress: {
-          ...session?.phaseProgress,
+          ...(session?.phaseProgress || {}),
           [currentPhase]: { completed: true, completedAt: new Date().toISOString(), data: phaseResults }
         }
       });
@@ -118,9 +118,9 @@ export function LearningCycle({ topicId, ageGroup, studentId, onSessionComplete 
       // Complete session
       await updateSessionMutation.mutateAsync({
         isCompleted: true,
-        completedAt: new Date().toISOString(),
+        completedAt: new Date(),
         phaseProgress: {
-          ...session?.phaseProgress,
+          ...(session?.phaseProgress || {}),
           [currentPhase]: { completed: true, completedAt: new Date().toISOString(), data: phaseResults }
         }
       });
@@ -151,7 +151,8 @@ export function LearningCycle({ topicId, ageGroup, studentId, onSessionComplete 
   };
 
   const isPhaseCompleted = (phase: LearningPhase) => {
-    return session?.phaseProgress?.[phase]?.completed || false;
+    const phaseProgress = session?.phaseProgress as Record<string, any> || {};
+    return phaseProgress[phase]?.completed || false;
   };
 
   if (sessionLoading || contentLoading) {
@@ -266,9 +267,8 @@ export function LearningCycle({ topicId, ageGroup, studentId, onSessionComplete 
         isStudying={true}
         studyDuration={Date.now() - (session?.startedAt ? new Date(session.startedAt).getTime() : Date.now())}
         recentProgress={{
-          currentPhase,
           completedPhases: Object.keys(session?.phaseProgress || {}).filter(
-            phase => session?.phaseProgress?.[phase]?.completed
+            phase => (session?.phaseProgress as any)?.[phase]?.completed
           ).length,
           artifactsCreated: sessionArtifacts.length
         }}
