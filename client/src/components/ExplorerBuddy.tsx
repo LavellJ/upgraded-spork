@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { AgeGroup } from "./AgeSelector";
-import explorerAvatar from '@assets/image_1756012340707.png';
+import explorerAvatar from '@assets/image_1756014874313.png';
 
 interface ExplorerBuddyProps {
   ageGroup: AgeGroup;
@@ -223,40 +223,9 @@ export function ExplorerBuddy({
           ease: "easeInOut" 
         }}
       >
-        <canvas
-          ref={(canvas) => {
-            if (canvas) {
-              const ctx = canvas.getContext('2d');
-              const img = new Image();
-              img.onload = () => {
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Draw image
-                ctx.drawImage(img, 0, 0);
-                
-                // Get image data to remove white background
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const data = imageData.data;
-                
-                // Remove white/light backgrounds
-                for (let i = 0; i < data.length; i += 4) {
-                  const r = data[i];
-                  const g = data[i + 1];
-                  const b = data[i + 2];
-                  
-                  // If pixel is close to white, make it transparent
-                  if (r > 240 && g > 240 && b > 240) {
-                    data[i + 3] = 0; // Set alpha to 0 (transparent)
-                  }
-                }
-                
-                ctx.putImageData(imageData, 0, 0);
-              };
-              img.src = explorerAvatar;
-            }
-          }}
+        <img
+          src={explorerAvatar}
+          alt="Explorer Buddy"
           className="w-full h-full object-contain"
           style={{
             filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12))',
