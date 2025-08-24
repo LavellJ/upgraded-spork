@@ -272,7 +272,16 @@ export default function ParentDashboard() {
                   <div className="flex justify-between items-center">
                     <h2 className="text-2xl font-bold text-white">Your Children</h2>
                     <Button 
-                      onClick={() => setLocation("/parent/add-child")}
+                      onClick={() => {
+                        if (!isDemoMode) {
+                          setLocation("/parent/add-child");
+                        } else {
+                          toast({
+                            title: "Demo Mode",
+                            description: "Child management is not available in demo mode. The full version would allow you to add and manage children.",
+                          });
+                        }
+                      }}
                       className="bg-gradient-to-r from-sunset-orange to-warm-orange"
                       data-testid="button-add-child"
                     >
@@ -287,8 +296,17 @@ export default function ParentDashboard() {
                       return (
                         <Card 
                           key={child.id} 
-                          className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/15 transition-colors cursor-pointer"
-                          onClick={() => setLocation(`/parent/child/${child.id}`)}
+                          className={`bg-white/10 backdrop-blur-sm border-white/20 ${!isDemoMode ? 'hover:bg-white/15 transition-colors cursor-pointer' : ''}`}
+                          onClick={() => {
+                            if (!isDemoMode) {
+                              setLocation(`/parent/child/${child.id}`);
+                            } else {
+                              toast({
+                                title: "Demo Mode",
+                                description: "Individual child details are not available in demo mode. The full version would show detailed analytics for this child.",
+                              });
+                            }
+                          }}
                           data-testid={`card-child-${child.id}`}
                         >
                           <CardHeader>
@@ -373,8 +391,8 @@ export default function ParentDashboard() {
                       <div>
                         <p className="text-white/70 text-sm mb-2">Weekly Consistency</p>
                         <div className="grid grid-cols-7 gap-1">
-                          {['M','T','W','T','F','S','S'].map((day, i) => (
-                            <div key={day} className="text-center">
+                          {['M','T','W','Th','F','S','Su'].map((day, i) => (
+                            <div key={`day-${i}-${day}`} className="text-center">
                               <div className={`h-8 w-8 rounded ${i < 5 ? 'bg-green-500' : 'bg-gray-500'} mb-1`}></div>
                               <span className="text-xs text-white/70">{day}</span>
                             </div>
