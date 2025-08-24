@@ -128,6 +128,96 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
 
   const language = getAgeAppropriateLanguage();
 
+  // Simplified for pre-primary - big visual feelings
+  if (ageGroup === "pre-primary") {
+    return (
+      <div className="space-y-8">
+        {/* Simple Visual Header */}
+        <div className="floating-ui rounded-3xl p-8 text-center" data-testid="reflect-phase-header">
+          <div className="text-6xl mb-4">🤔</div>
+          <h2 className="font-display text-3xl font-bold text-white mb-4">
+            How Did That Feel?
+          </h2>
+          <div className="text-4xl">💭</div>
+        </div>
+
+        {!selfAssessmentComplete ? (
+          <div className="floating-ui rounded-3xl p-12 text-center" data-testid="simple-reflect-content">
+            <div className="space-y-8">
+              <div className="text-white text-2xl font-bold mb-8">
+                {currentPrompt?.question || "How was learning today?"}
+              </div>
+              
+              <div className="grid grid-cols-2 gap-6">
+                <button
+                  onClick={() => {
+                    handleResponse(currentPrompt?.id || 'feeling', 'happy');
+                    handleNextPrompt();
+                  }}
+                  className="w-32 h-32 bg-green-400/30 hover:bg-green-400 rounded-full text-6xl hover:scale-110 transition-all"
+                  data-testid="feeling-happy"
+                >
+                  😊
+                </button>
+                
+                <button
+                  onClick={() => {
+                    handleResponse(currentPrompt?.id || 'feeling', 'okay');
+                    handleNextPrompt();
+                  }}
+                  className="w-32 h-32 bg-yellow-400/30 hover:bg-yellow-400 rounded-full text-6xl hover:scale-110 transition-all"
+                  data-testid="feeling-okay"
+                >
+                  🤔
+                </button>
+                
+                <button
+                  onClick={() => {
+                    handleResponse(currentPrompt?.id || 'feeling', 'hard');
+                    handleNextPrompt();
+                  }}
+                  className="w-32 h-32 bg-orange-400/30 hover:bg-orange-400 rounded-full text-6xl hover:scale-110 transition-all"
+                  data-testid="feeling-hard"
+                >
+                  😓
+                </button>
+                
+                <button
+                  onClick={() => {
+                    handleResponse(currentPrompt?.id || 'feeling', 'confused');
+                    handleNextPrompt();
+                  }}
+                  className="w-32 h-32 bg-red-400/30 hover:bg-red-400 rounded-full text-6xl hover:scale-110 transition-all"
+                  data-testid="feeling-confused"
+                >
+                  😕
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="floating-ui rounded-3xl p-12 text-center" data-testid="simple-reflect-complete">
+            <div className="space-y-8">
+              <div className="text-8xl">🌟</div>
+              <div className="text-white text-2xl font-bold">
+                You Did Great!
+              </div>
+              
+              <button
+                onClick={handlePhaseComplete}
+                className="w-48 h-20 bg-gradient-to-r from-purple-400 to-purple-600 text-white text-xl font-bold rounded-2xl hover:scale-105 transition-all"
+                data-testid="button-simple-finish"
+              >
+                <div>✨</div>
+                <div>Make Something!</div>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Phase Header */}

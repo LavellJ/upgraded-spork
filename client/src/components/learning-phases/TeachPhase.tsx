@@ -132,6 +132,116 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
 
   const language = getAgeAppropriateLanguage();
 
+  // Simplified for pre-primary - visual and audio first
+  if (ageGroup === "pre-primary") {
+    return (
+      <div className="space-y-8">
+        {/* Simple Visual Header */}
+        <div className="floating-ui rounded-3xl p-8 text-center" data-testid="teach-phase-header">
+          <div className="text-6xl mb-4">👋</div>
+          <h2 className="font-display text-3xl font-bold text-white mb-4">
+            Let's Learn Together!
+          </h2>
+          <div className="text-4xl">🦉</div>
+        </div>
+
+        {/* Big Simple Watch Button */}
+        <div className="floating-ui rounded-3xl p-12 text-center" data-testid="simple-teach-content">
+          <div className="space-y-6">
+            <div className="text-8xl mb-8">📚</div>
+            
+            {!isPlaying ? (
+              <button
+                onClick={handlePlayPause}
+                className="w-48 h-48 bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold text-2xl hover:scale-105 transition-all duration-300 shadow-2xl"
+                data-testid="button-big-play"
+              >
+                <div className="text-center">
+                  <div className="text-6xl mb-2">▶️</div>
+                  <div>Watch</div>
+                </div>
+              </button>
+            ) : (
+              <div className="space-y-6">
+                <div className="text-6xl animate-bounce">🤔</div>
+                <div className="bg-white/20 rounded-2xl p-8">
+                  <div className="text-white text-3xl font-bold mb-4">
+                    {steps[currentStep]?.visualCue || "💡"}
+                  </div>
+                  <div className="text-white text-xl leading-relaxed">
+                    {steps[currentStep]?.text}
+                  </div>
+                </div>
+                
+                <button
+                  onClick={handlePlayPause}
+                  className="w-32 h-32 bg-red-400 rounded-full flex items-center justify-center text-white text-4xl hover:scale-105 transition-all"
+                  data-testid="button-big-pause"
+                >
+                  ⏸️
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Simple Understanding Check - Visual Only */}
+        {(currentStep >= steps.length - 1 || showWorkedExample) && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="floating-ui rounded-3xl p-8 text-center"
+            data-testid="simple-understanding-check"
+          >
+            <div className="text-4xl mb-6">How do you feel?</div>
+            <div className="flex justify-center gap-6">
+              <button
+                onClick={() => handleUnderstandingCheck("confused")}
+                className={`w-24 h-24 rounded-full text-4xl transition-all ${
+                  understandingLevel === "confused" ? 'bg-orange-400 scale-110' : 'bg-white/20 hover:bg-white/30'
+                }`}
+                data-testid="feeling-confused"
+              >
+                😕
+              </button>
+              <button
+                onClick={() => handleUnderstandingCheck("okay")}
+                className={`w-24 h-24 rounded-full text-4xl transition-all ${
+                  understandingLevel === "okay" ? 'bg-yellow-400 scale-110' : 'bg-white/20 hover:bg-white/30'
+                }`}
+                data-testid="feeling-okay"
+              >
+                🤔
+              </button>
+              <button
+                onClick={() => handleUnderstandingCheck("clear")}
+                className={`w-24 h-24 rounded-full text-4xl transition-all ${
+                  understandingLevel === "clear" ? 'bg-green-400 scale-110' : 'bg-white/20 hover:bg-white/30'
+                }`}
+                data-testid="feeling-good"
+              >
+                😊
+              </button>
+            </div>
+            
+            {understandingLevel && (
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                onClick={handlePhaseComplete}
+                className="mt-8 w-40 h-20 bg-gradient-to-r from-warm-orange to-sunset-orange text-white text-xl font-bold rounded-2xl hover:scale-105 transition-all"
+                data-testid="button-simple-continue"
+              >
+                <div>✨</div>
+                <div>Try It!</div>
+              </motion.button>
+            )}
+          </motion.div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Phase Header */}
