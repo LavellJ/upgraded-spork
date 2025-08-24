@@ -1,7 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { AgeGroup } from "./AgeSelector";
-import explorerAvatar from '@assets/image_1756014874313.png';
+import explorerDefault from '@assets/image_1756014874313.png';
+import explorerHappy from '@assets/generated_images/Happy_excited_explorer_buddy_f9c13ae1.png';
+import explorerThinking from '@assets/generated_images/Thinking_explorer_buddy_31d38867.png';
+import explorerSurprised from '@assets/generated_images/Surprised_explorer_buddy_3aeaa8d8.png';
+import explorerCelebrating from '@assets/generated_images/Celebrating_explorer_buddy_b6cc403f.png';
 
 interface ExplorerBuddyProps {
   ageGroup: AgeGroup;
@@ -32,7 +36,7 @@ export function ExplorerBuddy({
 }: ExplorerBuddyProps) {
   const [currentMessage, setCurrentMessage] = useState<BuddyMessage | null>(null);
   const [lastInteraction, setLastInteraction] = useState<number>(Date.now());
-  const [buddyMood, setBuddyMood] = useState<'neutral' | 'excited' | 'thoughtful' | 'celebrating'>('neutral');
+  const [buddyMood, setBuddyMood] = useState<'neutral' | 'excited' | 'thoughtful' | 'celebrating' | 'thinking' | 'surprised' | 'happy'>('neutral');
 
   // Get personality traits based on age group
   const getPersonality = useCallback(() => {
@@ -159,11 +163,13 @@ export function ExplorerBuddy({
         setCurrentMessage(message);
         setLastInteraction(Date.now());
         
-        // Set mood based on message type
+        // Set mood based on message type and context
         setBuddyMood(
           message.type === 'celebration' ? 'celebrating' :
-          message.type === 'curiosity' ? 'excited' :
-          message.type === 'break_suggestion' ? 'thoughtful' :
+          message.type === 'curiosity' ? 'surprised' :
+          message.type === 'encouragement' ? 'happy' :
+          message.type === 'break_suggestion' ? 'thinking' :
+          recentProgress?.streakCount && recentProgress.streakCount > 3 ? 'excited' :
           'neutral'
         );
         
@@ -185,6 +191,25 @@ export function ExplorerBuddy({
     };
   }, [generateMessage]);
 
+  // Get appropriate expression image based on mood
+  const getExpressionImage = useCallback(() => {
+    switch (buddyMood) {
+      case 'excited':
+      case 'happy':
+        return explorerHappy;
+      case 'thinking':
+      case 'thoughtful':
+        return explorerThinking;
+      case 'surprised':
+        return explorerSurprised;
+      case 'celebrating':
+        return explorerCelebrating;
+      case 'neutral':
+      default:
+        return explorerDefault;
+    }
+  }, [buddyMood]);
+
   // Explorer character visual design (Alto-inspired) with mood animations
   const ExplorerCharacter = () => (
     <motion.div
@@ -201,9 +226,12 @@ export function ExplorerBuddy({
       }}
       whileHover={{ scale: 1.05 }}
       onClick={() => {
-        // Optional: trigger a friendly interaction
-        setBuddyMood('excited');
-        setTimeout(() => setBuddyMood('neutral'), 1000);
+        // Cycle through expressions on click for fun interaction
+        const expressions: Array<'excited' | 'happy' | 'surprised' | 'thinking' | 'celebrating'> = 
+          ['excited', 'happy', 'surprised', 'thinking', 'celebrating'];
+        const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
+        setBuddyMood(randomExpression);
+        setTimeout(() => setBuddyMood('neutral'), 2000);
       }}
     >
       <motion.div
@@ -224,7 +252,7 @@ export function ExplorerBuddy({
         }}
       >
         <img
-          src={explorerAvatar}
+          src={getExpressionImage()}
           alt="Explorer Buddy"
           className="w-full h-full object-contain"
           style={{
