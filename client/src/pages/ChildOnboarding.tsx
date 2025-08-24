@@ -413,13 +413,13 @@ export default function ChildOnboarding() {
               <div className="flex justify-center lg:justify-end">
                 <div className="relative">
                   <div className="animate-bounce">
-                    {selectedAgeGroup && (
-                      <ExplorerBuddy 
-                        ageGroup={selectedAgeGroup as AgeGroup}
-                        currentPage="/onboarding"
-                        isStudying={false}
+                    <div className="w-32 h-32 relative">
+                      <img
+                        src="/attached_assets/image_1756014874313.png"
+                        alt="Scout - Your Explorer Buddy"
+                        className="w-full h-full object-contain drop-shadow-lg"
                       />
-                    )}
+                    </div>
                   </div>
                   <div className="absolute -top-4 -right-4 text-4xl animate-pulse">👋</div>
                 </div>
