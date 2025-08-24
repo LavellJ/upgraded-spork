@@ -10,6 +10,25 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Sparkles, Star, Heart, Zap } from "lucide-react";
+import {
+  LittleExplorerIcon,
+  YoungAdventurerIcon, 
+  BraveScholarIcon,
+  AnimalsIcon,
+  SpaceIcon,
+  NatureIcon,
+  ArtIcon,
+  MusicIcon,
+  SportsIcon,
+  BooksIcon,
+  ScienceIcon,
+  VisualLearningIcon,
+  HandsOnLearningIcon,
+  AudioLearningIcon,
+  SparkleIcon,
+  StarIcon,
+  HeartIcon
+} from "@/components/GeometricIcons";
 import type { AgeGroup } from "@/components/AgeSelector";
 
 interface OnboardingStep {
@@ -55,55 +74,55 @@ export default function ChildOnboarding() {
     },
   });
 
-  const ageGroups: Array<{id: AgeGroup; label: string; description: string; emoji: string}> = [
+  const ageGroups: Array<{id: AgeGroup; label: string; description: string; icon: React.ReactNode}> = [
     { 
       id: "pre-primary", 
       label: "Little Explorer", 
       description: "Ages 4-6 • Fun with letters, numbers & colors",
-      emoji: "🌱"
+      icon: <LittleExplorerIcon size={48} className="mx-auto" />
     },
     { 
       id: "primary", 
       label: "Young Adventurer", 
       description: "Ages 6-9 • Reading, math & discovering the world",
-      emoji: "🌟"
+      icon: <YoungAdventurerIcon size={48} className="mx-auto" />
     },
     { 
       id: "upper-primary", 
       label: "Brave Scholar", 
       description: "Ages 9-12 • Advanced thinking & problem solving",
-      emoji: "🚀"
+      icon: <BraveScholarIcon size={48} className="mx-auto" />
     }
   ];
 
   const interests = [
-    { id: "animals", label: "Animals", emoji: "🐾" },
-    { id: "space", label: "Space", emoji: "🌟" },
-    { id: "nature", label: "Nature", emoji: "🌿" },
-    { id: "art", label: "Art", emoji: "🎨" },
-    { id: "music", label: "Music", emoji: "🎵" },
-    { id: "sports", label: "Sports", emoji: "⚽" },
-    { id: "books", label: "Books", emoji: "📚" },
-    { id: "science", label: "Science", emoji: "🔬" }
+    { id: "animals", label: "Animals", icon: <AnimalsIcon size={32} /> },
+    { id: "space", label: "Space", icon: <SpaceIcon size={32} /> },
+    { id: "nature", label: "Nature", icon: <NatureIcon size={32} /> },
+    { id: "art", label: "Art", icon: <ArtIcon size={32} /> },
+    { id: "music", label: "Music", icon: <MusicIcon size={32} /> },
+    { id: "sports", label: "Sports", icon: <SportsIcon size={32} /> },
+    { id: "books", label: "Books", icon: <BooksIcon size={32} /> },
+    { id: "science", label: "Science", icon: <ScienceIcon size={32} /> }
   ];
 
   const learningStyles = [
     { 
       id: "visual", 
       label: "I love pictures and colors", 
-      emoji: "🎨",
+      icon: <VisualLearningIcon size={32} />,
       description: "Learn best with images, charts, and visual aids"
     },
     { 
       id: "hands-on", 
       label: "I like to touch and build things", 
-      emoji: "🔧",
+      icon: <HandsOnLearningIcon size={32} />,
       description: "Learn best by doing activities and experiments"
     },
     { 
       id: "listening", 
       label: "I enjoy stories and music", 
-      emoji: "🎵",
+      icon: <AudioLearningIcon size={32} />,
       description: "Learn best through sounds, songs, and discussions"
     }
   ];
@@ -133,7 +152,9 @@ export default function ChildOnboarding() {
       ageGroup: selectedAgeGroup,
       interests: selectedInterests,
       learningStyle,
-      isActive: true
+      isActive: true,
+      parentId: null, // For demo purposes, real app would use auth
+      animalBuddy: "explorer" // Set default buddy
     });
   };
 
@@ -144,11 +165,13 @@ export default function ChildOnboarding() {
       component: (
         <div className="text-center space-y-8">
           <div className="relative">
-            <div className="text-8xl mb-6 animate-bounce">🌟</div>
+            <div className="mb-6 animate-bounce">
+              <SparkleIcon size={96} className="mx-auto" />
+            </div>
             <div className="absolute inset-0 animate-pulse">
-              <Sparkles className="w-6 h-6 text-yellow-300 absolute top-2 left-1/3" />
-              <Star className="w-4 h-4 text-blue-300 absolute bottom-4 right-1/3" />
-              <Heart className="w-5 h-5 text-pink-300 absolute top-8 right-1/4" />
+              <SparkleIcon size={24} className="text-yellow-300 absolute top-2 left-1/3" />
+              <StarIcon size={16} className="text-blue-300 absolute bottom-4 right-1/3" />
+              <HeartIcon size={20} className="text-pink-300 absolute top-8 right-1/4" />
             </div>
           </div>
           
@@ -162,12 +185,24 @@ export default function ChildOnboarding() {
           </div>
           
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 max-w-sm mx-auto">
-            <p className="text-white/90 text-sm">
-              🎯 Learn at your own pace<br/>
-              🏆 Earn cool badges<br/>
-              🌟 Discover amazing things<br/>
-              🐾 Your buddy will help you!
-            </p>
+            <div className="space-y-3 text-white/90 text-sm">
+              <div className="flex items-center gap-3">
+                <SparkleIcon size={16} className="text-yellow-300" />
+                <span>Learn at your own pace</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <StarIcon size={16} className="text-blue-300" />
+                <span>Earn cool badges</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <SparkleIcon size={16} className="text-purple-300" />
+                <span>Discover amazing things</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <LittleExplorerIcon size={16} className="text-green-300" />
+                <span>Your buddy will help you!</span>
+              </div>
+            </div>
           </div>
         </div>
       )
@@ -177,7 +212,9 @@ export default function ChildOnboarding() {
       title: "What's Your Name?",
       component: (
         <div className="text-center space-y-8">
-          <div className="text-6xl mb-6">👋</div>
+          <div className="mb-6">
+            <HandsOnLearningIcon size={72} className="mx-auto" />
+          </div>
           
           <div className="space-y-4">
             <h2 className="font-display text-3xl font-bold text-white">
@@ -200,8 +237,9 @@ export default function ChildOnboarding() {
           
           {childName && (
             <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-2xl p-4 max-w-sm mx-auto animate-fade-in">
-              <p className="text-white font-semibold">
-                Nice to meet you, {childName}! 🌟
+              <p className="text-white font-semibold flex items-center justify-center gap-2">
+                Nice to meet you, {childName}!
+                <StarIcon size={20} className="text-yellow-300" />
               </p>
             </div>
           )}
@@ -214,7 +252,9 @@ export default function ChildOnboarding() {
       component: (
         <div className="space-y-8">
           <div className="text-center space-y-4">
-            <div className="text-6xl mb-6">🎯</div>
+            <div className="mb-6">
+              <SparkleIcon size={72} className="mx-auto text-cyan-300" />
+            </div>
             <h2 className="font-display text-3xl font-bold text-white">
               Which adventure is perfect for you?
             </h2>
@@ -237,7 +277,7 @@ export default function ChildOnboarding() {
               >
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4">
-                    <div className="text-4xl">{group.emoji}</div>
+                    <div>{group.icon}</div>
                     <div className="flex-1">
                       <h3 className="text-white font-bold text-lg">{group.label}</h3>
                       <p className="text-white/70 text-sm">{group.description}</p>
@@ -259,7 +299,9 @@ export default function ChildOnboarding() {
       component: (
         <div className="space-y-8">
           <div className="text-center space-y-4">
-            <div className="text-6xl mb-6">❤️</div>
+            <div className="mb-6">
+              <HeartIcon size={72} className="mx-auto text-pink-300" />
+            </div>
             <h2 className="font-display text-3xl font-bold text-white">
               Tell us what makes you excited!
             </h2>
@@ -281,7 +323,7 @@ export default function ChildOnboarding() {
                 data-testid={`card-interest-${interest.id}`}
               >
                 <CardContent className="p-4 text-center">
-                  <div className="text-3xl mb-2">{interest.emoji}</div>
+                  <div className="mb-2">{interest.icon}</div>
                   <p className="text-white font-semibold text-sm">{interest.label}</p>
                   {selectedInterests.includes(interest.id) && (
                     <Star className="w-4 h-4 text-yellow-400 mx-auto mt-2 animate-spin" />
@@ -294,7 +336,10 @@ export default function ChildOnboarding() {
           {selectedInterests.length > 0 && (
             <div className="text-center">
               <Badge className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2">
-                {selectedInterests.length} awesome choice{selectedInterests.length !== 1 ? 's' : ''}! 🎉
+                <div className="flex items-center gap-2">
+                  {selectedInterests.length} awesome choice{selectedInterests.length !== 1 ? 's' : ''}!
+                  <SparkleIcon size={16} className="text-yellow-300" />
+                </div>
               </Badge>
             </div>
           )}
@@ -307,7 +352,9 @@ export default function ChildOnboarding() {
       component: (
         <div className="space-y-8">
           <div className="text-center space-y-4">
-            <div className="text-6xl mb-6">🧠</div>
+            <div className="mb-6">
+              <VisualLearningIcon size={72} className="mx-auto text-purple-300" />
+            </div>
             <h2 className="font-display text-3xl font-bold text-white">
               Everyone learns differently!
             </h2>
@@ -330,7 +377,7 @@ export default function ChildOnboarding() {
               >
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4">
-                    <div className="text-4xl">{style.emoji}</div>
+                    <div>{style.icon}</div>
                     <div className="flex-1">
                       <h3 className="text-white font-bold text-lg">{style.label}</h3>
                       <p className="text-white/70 text-sm">{style.description}</p>
@@ -354,7 +401,9 @@ export default function ChildOnboarding() {
         <AtmosphericBackground />
         <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
           <div className="text-center space-y-8">
-            <div className="text-8xl mb-6 animate-bounce">🎉</div>
+            <div className="mb-6 animate-bounce">
+              <SparkleIcon size={96} className="mx-auto text-yellow-300" />
+            </div>
             <h2 className="font-display text-4xl font-bold text-white">
               Welcome to LearnOz, {childName}!
             </h2>
@@ -433,7 +482,10 @@ export default function ChildOnboarding() {
                   className="bg-gradient-to-r from-sunset-orange to-warm-orange hover:scale-105"
                   data-testid="button-start-adventure"
                 >
-                  {createProfileMutation.isPending ? 'Creating...' : 'Start My Adventure! 🚀'}
+                  <div className="flex items-center gap-2">
+                    {createProfileMutation.isPending ? 'Creating...' : 'Start My Adventure!'}
+                    <SpaceIcon size={20} />
+                  </div>
                 </Button>
               ) : (
                 <Button
