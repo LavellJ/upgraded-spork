@@ -205,43 +205,173 @@ export function ExplorerBuddy({
         setTimeout(() => setBuddyMood('neutral'), 1000);
       }}
     >
-      <svg viewBox="0 0 120 120" className="w-20 h-20">
-        {/* Explorer silhouette */}
-        <g className="text-indigo-600">
-          {/* Body */}
-          <ellipse cx="60" cy="85" rx="18" ry="25" fill="currentColor" className="animate-pulse-soft" />
-          
-          {/* Head */}
-          <circle cx="60" cy="45" r="20" fill="currentColor" />
-          
+      <svg viewBox="0 0 120 140" className="w-20 h-24">
+        <defs>
+          <linearGradient id="hatGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#D2691E" />
+            <stop offset="50%" stopColor="#CD853F" />
+            <stop offset="100%" stopColor="#8B4513" />
+          </linearGradient>
+          <linearGradient id="faceGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#F4E4BC" />
+            <stop offset="100%" stopColor="#DEB887" />
+          </linearGradient>
+          <linearGradient id="shirtGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#D2691E" />
+            <stop offset="100%" stopColor="#A0522D" />
+          </linearGradient>
+          <linearGradient id="backpackGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#8B4513" />
+            <stop offset="100%" stopColor="#654321" />
+          </linearGradient>
+        </defs>
+        
+        {/* Shadow */}
+        <ellipse cx="60" cy="130" rx="18" ry="3" fill="rgba(0,0,0,0.15)" />
+        
+        <motion.g
+          animate={{ 
+            y: buddyMood === 'excited' ? [-0.5, 0.5, -0.5] : 0,
+          }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+        >
           {/* Backpack */}
-          <ellipse cx="75" cy="70" rx="8" ry="15" fill="currentColor" className="opacity-80" />
-          <rect x="72" y="60" width="6" height="8" rx="2" fill="currentColor" className="opacity-60" />
-          
-          {/* Explorer hat/cap */}
-          <ellipse cx="60" cy="30" rx="22" ry="8" fill="currentColor" className="opacity-90" />
-          <ellipse cx="58" cy="28" rx="18" ry="6" fill="currentColor" />
-          
-          {/* Flowing scarf */}
-          <motion.path
-            d="M42,50 Q35,60 30,75 Q28,85 32,90"
-            stroke="currentColor"
-            strokeWidth="4"
-            fill="none"
-            className="opacity-70"
-            animate={{ d: ["M42,50 Q35,60 30,75 Q28,85 32,90", "M42,50 Q38,58 35,72 Q30,82 35,88", "M42,50 Q35,60 30,75 Q28,85 32,90"] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          <path
+            d="M42 50 Q35 45 30 52 L30 70 Q30 75 35 75 L45 75 Q50 75 50 70 L50 55"
+            fill="url(#backpackGradient)"
+            stroke="#654321"
+            strokeWidth="1.5"
           />
           
-          {/* Simple facial features */}
-          <circle cx="54" cy="42" r="2" fill="white" className="opacity-80" />
-          <circle cx="66" cy="42" r="2" fill="white" className="opacity-80" />
-          <ellipse cx="60" cy="48" rx="1" ry="2" fill="white" className="opacity-60" />
+          {/* Backpack strap */}
+          <path
+            d="M48 55 Q52 58 55 62"
+            fill="none"
+            stroke="#654321"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
           
+          {/* Boots */}
+          <ellipse cx="54" cy="122" rx="8" ry="6" fill="#8B4513" />
+          <ellipse cx="66" cy="122" rx="8" ry="6" fill="#8B4513" />
+          
+          {/* Legs */}
+          <rect x="52" y="105" width="6" height="18" fill="#8B4513" rx="3" />
+          <rect x="62" y="105" width="6" height="18" fill="#8B4513" rx="3" />
+          
+          {/* Belt */}
+          <rect x="48" y="85" width="24" height="4" fill="#654321" rx="2" />
+          <rect x="58" y="83" width="4" height="8" fill="#8B4513" rx="1" />
+          
+          {/* Shirt/vest */}
+          <path
+            d="M48 60 L72 60 L72 88 L48 88 Z"
+            fill="url(#shirtGradient)"
+          />
+          
+          {/* Shirt collar */}
+          <path
+            d="M54 58 L60 65 L66 58"
+            fill="#D2691E"
+            stroke="#A0522D"
+            strokeWidth="1"
+          />
+          
+          {/* Arms */}
+          <motion.ellipse
+            cx="42"
+            cy="70"
+            rx="5"
+            ry="12"
+            fill="url(#faceGradient)"
+            animate={{ rotate: buddyMood === 'celebrating' ? [-8, 8, -8] : 0 }}
+            transition={{ duration: 0.8, repeat: Infinity }}
+          />
+          <motion.ellipse
+            cx="78"
+            cy="70"
+            rx="5"
+            ry="12"
+            fill="url(#faceGradient)"
+            animate={{ rotate: buddyMood === 'celebrating' ? [8, -8, 8] : 0 }}
+            transition={{ duration: 0.8, repeat: Infinity }}
+          />
+          
+          {/* Head */}
+          <circle
+            cx="60"
+            cy="45"
+            r="16"
+            fill="url(#faceGradient)"
+            stroke="#DEB887"
+            strokeWidth="1"
+          />
+          
+          {/* Explorer hat crown */}
+          <ellipse
+            cx="60"
+            cy="32"
+            rx="18"
+            ry="10"
+            fill="url(#hatGradient)"
+            stroke="#8B4513"
+            strokeWidth="1"
+          />
+          
+          {/* Hat brim */}
+          <ellipse
+            cx="60"
+            cy="42"
+            rx="22"
+            ry="5"
+            fill="#A0522D"
+            stroke="#8B4513"
+            strokeWidth="1"
+          />
+          
+          {/* Hat band */}
+          <ellipse
+            cx="60"
+            cy="40"
+            rx="18"
+            ry="2"
+            fill="#654321"
+          />
+          
+          {/* Face features */}
+          {/* Eyes */}
+          <circle cx="56" cy="45" r="2" fill="#654321" />
+          <circle cx="64" cy="45" r="2" fill="#654321" />
+          <circle cx="56.5" cy="44.5" r="0.5" fill="white" />
+          <circle cx="64.5" cy="44.5" r="0.5" fill="white" />
+          
+          {/* Rosy cheeks */}
+          <circle cx="50" cy="48" r="3" fill="#FFB6C1" opacity="0.6" />
+          <circle cx="70" cy="48" r="3" fill="#FFB6C1" opacity="0.6" />
+          
+          {/* Smile */}
+          <motion.path
+            d="M56 50 Q60 54 64 50"
+            fill="none"
+            stroke="#654321"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            animate={{ 
+              scaleY: buddyMood === 'celebrating' ? [1, 1.2, 1] : 1
+            }}
+            transition={{ duration: 0.6, repeat: Infinity }}
+          />
+          
+          {/* Ears */}
+          <circle cx="44" cy="45" r="4" fill="url(#faceGradient)" />
+          <circle cx="76" cy="45" r="4" fill="url(#faceGradient)" />
+        </motion.g>
+        
           {/* Adventure sparkles - more active when excited */}
           <motion.circle
-            cx="90"
-            cy="30"
+            cx="95"
+            cy="25"
             r="1.5"
             fill="currentColor"
             className="text-yellow-400"
@@ -256,8 +386,8 @@ export function ExplorerBuddy({
             }}
           />
           <motion.circle
-            cx="95"
-            cy="50"
+            cx="100"
+            cy="45"
             r="1"
             fill="currentColor"
             className="text-cyan-400"
@@ -268,7 +398,7 @@ export function ExplorerBuddy({
             transition={{ duration: 2.5, repeat: Infinity, delay: 1 }}
           />
           <motion.circle
-            cx="85"
+            cx="90"
             cy="65"
             r="1.2"
             fill="currentColor"
@@ -279,7 +409,6 @@ export function ExplorerBuddy({
             }}
             transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
           />
-        </g>
       </svg>
     </motion.div>
   );
