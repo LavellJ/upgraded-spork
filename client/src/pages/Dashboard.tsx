@@ -1,17 +1,20 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { AtmosphericBackground } from "@/components/AtmosphericBackground";
 import { FloatingNavigation } from "@/components/FloatingNavigation";
 import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { ProgressLandscape } from "@/components/ProgressLandscape";
 import { BadgeDisplay } from "@/components/BadgeDisplay";
 import { GeometricIcon } from "@/components/GeometricIcon";
+import { ExplorerBuddy } from "@/components/ExplorerBuddy";
 import type { Topic, Progress } from "@shared/schema";
 import type { AgeGroup } from "@/components/AgeSelector";
 
 export default function Dashboard() {
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>("");
+  const [location] = useLocation();
+  const [studyStartTime, setStudyStartTime] = useState<number | null>(null);
 
   useEffect(() => {
     // Get age group from localStorage
@@ -240,6 +243,21 @@ export default function Dashboard() {
 
         </div>
       </div>
+      
+      {/* Explorer Buddy */}
+      {selectedAgeGroup && (
+        <ExplorerBuddy 
+          ageGroup={selectedAgeGroup as AgeGroup}
+          currentPage={location}
+          isStudying={studyStartTime !== null}
+          studyDuration={studyStartTime ? Date.now() - studyStartTime : 0}
+          recentProgress={{
+            completedTopics: progress.filter(p => (p.completionPercentage || 0) >= 85).length,
+            questionsAnswered: progress.reduce((sum, p) => sum + (p.questionsAnswered || 0), 0),
+            streakCount: Math.max(...progress.map(p => p.currentStreak || 0), 0)
+          }}
+        />
+      )}
     </>
   );
 }

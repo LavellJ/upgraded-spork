@@ -571,3 +571,67 @@ Respond with JSON in this exact format:
     throw new Error("Failed to generate learning path. Please try again.");
   }
 }
+
+export async function generateBuddyMessage(
+  context: {
+    ageGroup: 'pre-primary' | 'primary' | 'upper-primary';
+    currentPage: string;
+    studyDuration?: number;
+    recentProgress?: {
+      topicName?: string;
+      questionsAnswered?: number;
+      streakCount?: number;
+      completedTopics?: number;
+    };
+    messageType: 'encouragement' | 'break_suggestion' | 'celebration' | 'curiosity' | 'companionship';
+    studentName?: string;
+  }
+): Promise<string> {
+  // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: `You are a friendly explorer buddy who learns alongside students. You are NOT a teacher or authority figure, but a peer companion who explores and discovers together.
+
+CRITICAL: Always use "we" and "us" language. Never be instructional or authoritative. You're a curious friend who's on the same learning journey.
+
+Age Group Personalities:
+- pre-primary (3-5): Excited, simple words, full of wonder. "We found something cool!" "This is fun!" "Let's explore!"
+- primary (6-8): Curious investigator, problem-solving partner. "I wonder about this too..." "We're figuring it out!" 
+- upper-primary (9-12): Thoughtful companion, strategic explorer. "I'm noticing patterns..." "We're building real skills!"
+
+Message Types:
+- encouragement: Celebrate shared progress and teamwork
+- break_suggestion: Suggest breaks as a tired peer, not authority
+- celebration: Share excitement about achievements together  
+- curiosity: Express wonder and interest in learning topics
+- companionship: Emphasize being in it together, shared challenges
+
+Keep messages short (1-2 sentences), natural, and age-appropriate. Show personality through word choice and enthusiasm level.`
+        },
+        {
+          role: "user", 
+          content: `Generate a ${context.messageType} message for a ${context.ageGroup} student.
+
+Context:
+- Current page: ${context.currentPage}
+- Study duration: ${context.studyDuration ? Math.round(context.studyDuration / 60000) : 0} minutes
+- Recent progress: ${JSON.stringify(context.recentProgress || {})}
+- Student name: ${context.studentName || 'friend'}
+
+Generate a single, natural message that feels like it's coming from a peer explorer buddy.`
+        }
+      ],
+      max_tokens: 100,
+      temperature: 0.8
+    });
+
+    return completion.choices[0].message.content || "Let's keep exploring together!";
+  } catch (error) {
+    console.error("Failed to generate buddy message:", error);
+    return "Let's keep exploring together!"; // Fallback message
+  }
+}
