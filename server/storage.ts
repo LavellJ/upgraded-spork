@@ -34,6 +34,7 @@ export interface IStorage {
   
   // Progress
   getProgressByStudent(studentId: string): Promise<Progress[]>;
+  getStudentProgress(studentId: string): Promise<Progress[]>;
   getProgressByStudentAndTopic(studentId: string, topicId: string): Promise<Progress | undefined>;
   createProgress(progress: InsertProgress): Promise<Progress>;
   updateProgress(id: string, updates: Partial<Progress>): Promise<Progress>;
@@ -2530,6 +2531,10 @@ export class MemStorage implements IStorage {
 
   // Progress
   async getProgressByStudent(studentId: string): Promise<Progress[]> {
+    return Array.from(this.progress.values()).filter(p => p.studentId === studentId);
+  }
+
+  async getStudentProgress(studentId: string): Promise<Progress[]> {
     return Array.from(this.progress.values()).filter(p => p.studentId === studentId);
   }
 
