@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { SkillTree } from "@/components/SkillTree";
-import { GeometricIcon } from "@/components/GeometricIcon";
+import { AtmosphericBackground } from "@/components/AtmosphericBackground";
+import { FloatingNavigation } from "@/components/FloatingNavigation";
 import { australianCurriculumTopics, type CurriculumTopic } from "@/lib/curriculum";
 import { Link } from "wouter";
 
@@ -110,8 +111,12 @@ export function ProgressShowcase() {
   };
 
   return (
-    <div className="min-h-screen gradient-bg p-6">
-      <div className="max-w-7xl mx-auto">
+    <>
+      <AtmosphericBackground />
+      <FloatingNavigation />
+      
+      <div className="relative z-10 min-h-screen pt-24 p-6">
+        <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
           className="text-center mb-8"
@@ -297,7 +302,8 @@ export function ProgressShowcase() {
             </motion.div>
           )}
         </AnimatePresence>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
