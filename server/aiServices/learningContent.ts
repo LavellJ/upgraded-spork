@@ -100,7 +100,7 @@ Make Scout sound genuinely amazed by the student's learning journey. The badge s
     }
 
     const response = await openai.chat.completions.create({
-      model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+      model: "gpt-4o", // using gpt-4o as it's available and reliable
       messages: [
         {
           role: "system",

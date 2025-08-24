@@ -13,14 +13,16 @@ interface TeachPhaseProps {
 }
 
 interface TeachContent {
-  title: string;
-  scoutThinkAloud: {
+  title?: string;
+  content?: string;
+  // Legacy support for old structure
+  scoutThinkAloud?: {
     steps: Array<{
       id: string;
       text: string;
       reasoning: string;
       visualCue?: string;
-      duration: number; // seconds
+      duration: number;
     }>;
     concept: string;
     example: string;
@@ -33,7 +35,7 @@ interface TeachContent {
       highlight?: string;
     }>;
   };
-  keyTakeaways: string[];
+  keyTakeaways?: string[];
 }
 
 export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }: TeachPhaseProps) {
@@ -44,7 +46,11 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
   const [understandingLevel, setUnderstandingLevel] = useState<"confused" | "okay" | "clear" | null>(null);
   
   const teachContent = content.content as TeachContent;
-  const steps = teachContent.scoutThinkAloud.steps;
+  
+  // Handle both new Scout format (simple string) and legacy format
+  const isScoutFormat = typeof teachContent === 'string';
+  const scoutMessage = isScoutFormat ? teachContent : null;
+  const steps = !isScoutFormat && teachContent.scoutThinkAloud ? teachContent.scoutThinkAloud.steps : [];
 
   // Auto-advance through think-aloud steps
   useEffect(() => {
@@ -174,7 +180,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center">
                   <div className="text-white text-2xl">👀</div>
                 </div>
-                <div className="text-white text-lg font-medium mb-6">Watch this!</div>
+                <div className="text-white text-lg font-medium mb-6">Scout's Discovery</div>
               </div>
               
               {!showVisualDemo ? (
@@ -190,15 +196,15 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
               ) : (
                 <div className="space-y-6">
                   <div className="bg-white/10 rounded-2xl p-8 backdrop-blur-sm">
-                    <div className="text-white text-lg leading-relaxed text-center">
-                      {teachContent.content || "Here's how this works..."}
+                    <div className="text-white text-lg leading-relaxed">
+                      {scoutMessage || (teachContent?.content) || "Here's what I discovered on my adventure!"}
                     </div>
                   </div>
                   
                   {/* Interactive Visual Element */}
                   <div className="bg-gradient-to-b from-white/20 to-white/10 rounded-2xl p-8 border-2 border-white/20">
                     <div className="text-center space-y-4">
-                      <div className="text-white/80 text-base">Try touching this:</div>
+                      <div className="text-white/80 text-base">Try exploring this:</div>
                       <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
                         <div className="aspect-square bg-gradient-to-br from-green-400/40 to-green-500/40 rounded-2xl border-2 border-green-400/60 flex items-center justify-center cursor-pointer hover:scale-105 transition-all">
                           <div className="text-white text-2xl">✨</div>
