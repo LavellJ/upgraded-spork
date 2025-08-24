@@ -1,0 +1,141 @@
+/* Geometric Shape Definitions */
+.triangle-up {
+  width: 0;
+  height: 0;
+  border-left: 50% solid transparent;
+  border-right: 50% solid transparent;
+  border-bottom: 100% solid;
+  border-bottom-color: inherit;
+}
+
+.hexagon {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.hexagon::before {
+  content: '';
+  position: absolute;
+  top: 25%;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: inherit;
+  transform: rotate(60deg);
+}
+
+.hexagon::after {
+  content: '';
+  position: absolute;
+  top: 25%;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: inherit;
+  transform: rotate(-60deg);
+}
+
+.star {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+
+.star::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 35% solid transparent;
+  border-right: 35% solid transparent;
+  border-bottom: 70% solid;
+  border-bottom-color: inherit;
+  transform: translateX(-50%);
+}
+
+.star::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 35% solid transparent;
+  border-right: 35% solid transparent;
+  border-top: 70% solid;
+  border-top-color: inherit;
+  transform: translateX(-50%);
+}
+
+.pentagon {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+
+.arrow-up {
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  clip-path: polygon(50% 0%, 0% 60%, 40% 60%, 40% 100%, 60% 100%, 60% 60%, 100% 60%);
+}
+
+.octagon {
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+}
+
+.wave {
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  clip-path: path("M0,50 Q25,0 50,50 T100,50 L100,100 L0,100 Z");
+}
+
+.crystal {
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  clip-path: polygon(50% 0%, 80% 20%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 20% 20%);
+}
+
+/* Floating Animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(90deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(180deg);
+  }
+  75% {
+    transform: translateY(-15px) rotate(270deg);
+  }
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* 3D Perspective */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.rotate-x-12 {
+  transform: rotateX(12deg);
+}
+
+.rotate-y-12 {
+  transform: rotateY(12deg);
+}
