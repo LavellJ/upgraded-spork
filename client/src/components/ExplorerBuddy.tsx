@@ -206,10 +206,12 @@ export function ExplorerBuddy({
         setTimeout(() => setBuddyMood('neutral'), 1000);
       }}
     >
-      <motion.img
-        src={explorerAvatar}
-        alt="Explorer Buddy"
-        className="w-50 h-60 drop-shadow-lg"
+      <motion.div
+        className="relative w-50 h-60"
+        style={{
+          background: 'transparent',
+          backdropFilter: 'none'
+        }}
         animate={{ 
           y: buddyMood === 'excited' ? [-2, 2, -2] : 0,
           rotate: buddyMood === 'celebrating' ? [-2, 2, -2] : 0,
@@ -220,7 +222,17 @@ export function ExplorerBuddy({
           repeat: Infinity, 
           ease: "easeInOut" 
         }}
-      />
+      >
+        <img
+          src={explorerAvatar}
+          alt="Explorer Buddy"
+          className="w-full h-full object-contain"
+          style={{
+            filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12))',
+            background: 'transparent'
+          }}
+        />
+      </motion.div>
       
       {/* Adventure sparkles - more active when excited */}
       <div className="absolute inset-0 pointer-events-none">
