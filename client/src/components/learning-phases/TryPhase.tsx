@@ -213,10 +213,72 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
     return <div>Loading examples...</div>;
   }
 
-  // Simplified for pre-primary - big visual interactions
+  // Ultra-simplified for pre-primary - just tap choices, no typing
   if (ageGroup === "pre-primary") {
-    const currentStep = currentExample.steps[currentStepIndex];
-    const stepKey = getStepKey();
+    const [currentQuestion, setCurrentQuestion] = useState(0);
+    const [answers, setAnswers] = useState<string[]>([]);
+    const [showSuccess, setShowSuccess] = useState(false);
+    
+    // Simple questions with visual choices
+    const simpleQuestions = [
+      {
+        question: "What comes next?",
+        emoji: "🔢",
+        choices: [
+          { emoji: "1️⃣", text: "1", correct: false },
+          { emoji: "2️⃣", text: "2", correct: true },
+          { emoji: "3️⃣", text: "3", correct: false }
+        ]
+      },
+      {
+        question: "Which is bigger?",
+        emoji: "📏", 
+        choices: [
+          { emoji: "🐭", text: "Mouse", correct: false },
+          { emoji: "🐘", text: "Elephant", correct: true },
+          { emoji: "🐱", text: "Cat", correct: false }
+        ]
+      },
+      {
+        question: "What color?",
+        emoji: "🎨",
+        choices: [
+          { emoji: "🔴", text: "Red", correct: true },
+          { emoji: "🟢", text: "Green", correct: false },
+          { emoji: "🔵", text: "Blue", correct: false }
+        ]
+      }
+    ];
+    
+    const currentQ = simpleQuestions[currentQuestion] || simpleQuestions[0];
+    
+    const handleChoiceSelect = (choice: any) => {
+      setAnswers(prev => [...prev, choice.text]);
+      
+      if (choice.correct) {
+        // Correct answer - celebrate!
+        setShowSuccess(true);
+        setTimeout(() => {
+          if (currentQuestion < simpleQuestions.length - 1) {
+            setCurrentQuestion(prev => prev + 1);
+            setShowSuccess(false);
+          } else {
+            // All done!
+            handlePhaseComplete();
+          }
+        }, 2000);
+      } else {
+        // Wrong answer - gentle try again
+        setTimeout(() => {
+          // Just continue, no punishment for wrong answers
+          if (currentQuestion < simpleQuestions.length - 1) {
+            setCurrentQuestion(prev => prev + 1);
+          } else {
+            handlePhaseComplete();
+          }
+        }, 1500);
+      }
+    };
     
     return (
       <div className="space-y-8">
@@ -229,84 +291,55 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
           <div className="text-4xl">⭐</div>
         </div>
 
-        {/* Big Simple Problem */}
-        <div className="floating-ui rounded-3xl p-12 text-center" data-testid="simple-try-content">
-          <div className="space-y-8">
-            <div className="text-6xl">🧩</div>
-            
-            <div className="text-white text-2xl font-bold leading-relaxed">
-              {currentExample.problem}
-            </div>
-            
-            {currentStep && (
-              <div className="bg-white/20 rounded-2xl p-8">
-                <div className="text-white text-xl mb-6">
-                  {currentStep.stepText}
-                </div>
-                
-                {currentStep.support === "blank" && (
-                  <div className="space-y-6">
-                    <input
-                      type="text"
-                      value={stepAnswers[stepKey] || ""}
-                      onChange={(e) => handleAnswerChange(e.target.value)}
-                      className="w-full h-16 bg-white text-black text-2xl text-center rounded-2xl border-4 border-blue-400 focus:border-green-400 focus:outline-none"
-                      data-testid="big-answer-input"
-                    />
-                    
-                    <div className="flex justify-center gap-4">
-                      <button
-                        onClick={handleSubmitStep}
-                        disabled={!stepAnswers[stepKey]?.trim()}
-                        className="w-24 h-24 bg-green-400 disabled:bg-gray-400 rounded-full text-4xl hover:scale-105 transition-all"
-                        data-testid="button-big-check"
-                      >
-                        ✓
-                      </button>
-                      
-                      <button
-                        onClick={handleHintRequest}
-                        className="w-24 h-24 bg-yellow-400 rounded-full text-4xl hover:scale-105 transition-all"
-                        data-testid="button-big-help"
-                      >
-                        💡
-                      </button>
-                    </div>
-                  </div>
-                )}
-                
-                {currentStep.support === "filled" && currentStep.answer && (
-                  <div className="text-3xl font-bold text-green-400">
-                    ✨ {currentStep.answer} ✨
-                  </div>
-                )}
+        {!showSuccess ? (
+          /* Simple Question with Big Visual Choices */
+          <div className="floating-ui rounded-3xl p-12 text-center" data-testid="simple-question">
+            <div className="space-y-8">
+              <div className="text-8xl mb-4">{currentQ.emoji}</div>
+              
+              <div className="text-white text-3xl font-bold mb-8">
+                {currentQ.question}
               </div>
-            )}
-            
-            {/* Big Progress Dots */}
-            <div className="flex justify-center gap-3">
-              {currentExample.steps.map((_, index) => (
-                <div 
-                  key={index}
-                  className={`w-6 h-6 rounded-full ${
-                    index === currentStepIndex ? 'bg-blue-400' :
-                    index < currentStepIndex ? 'bg-green-400' : 'bg-white/30'
-                  }`}
-                />
-              ))}
+              
+              <div className="grid grid-cols-1 gap-6 max-w-md mx-auto">
+                {currentQ.choices.map((choice, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleChoiceSelect(choice)}
+                    className="p-6 bg-white/20 hover:bg-white/30 rounded-3xl border-4 border-white/30 hover:border-blue-400 transition-all hover:scale-105"
+                    data-testid={`choice-${index}`}
+                  >
+                    <div className="text-6xl mb-2">{choice.emoji}</div>
+                    <div className="text-white text-xl font-bold">{choice.text}</div>
+                  </button>
+                ))}
+              </div>
+              
+              {/* Simple Progress Dots */}
+              <div className="flex justify-center gap-3 mt-8">
+                {simpleQuestions.map((_, index) => (
+                  <div 
+                    key={index}
+                    className={`w-4 h-4 rounded-full ${
+                      index === currentQuestion ? 'bg-blue-400' :
+                      index < currentQuestion ? 'bg-green-400' : 'bg-white/30'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-        
-        {/* Simple Success Message */}
-        {Object.keys(completed).length > 0 && (
+        ) : (
+          /* Big Success Celebration */
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="floating-ui rounded-3xl p-8 text-center bg-green-400/20"
+            className="floating-ui rounded-3xl p-16 text-center bg-green-400/20"
+            data-testid="success-celebration"
           >
-            <div className="text-6xl mb-4">🎉</div>
-            <div className="text-white text-2xl font-bold">Great Job!</div>
+            <div className="text-9xl mb-6 animate-bounce">🎉</div>
+            <div className="text-white text-4xl font-bold mb-4">Amazing!</div>
+            <div className="text-6xl">⭐✨🌟</div>
           </motion.div>
         )}
       </div>
