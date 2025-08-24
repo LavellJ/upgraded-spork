@@ -302,11 +302,12 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
         </p>
       </div>
 
-      {/* Scout Think-Aloud Section */}
+      {/* Scout Think-Aloud Section - only show for legacy format */}
+      {!isScoutFormat && (
       <div className="floating-ui rounded-2xl p-8" data-testid="scout-think-aloud">
         <div className="flex justify-between items-center mb-6">
           <h3 className="font-display text-xl font-semibold text-white">
-            Scout's Think-Aloud: {teachContent.scoutThinkAloud.concept}
+            Scout's Think-Aloud: {teachContent.scoutThinkAloud?.concept || "Learning Together"}
           </h3>
           
           {/* Playback Controls */}
@@ -389,6 +390,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
           />
         </div>
       </div>
+      )}
 
       {/* Worked Example */}
       {showWorkedExample && teachContent.workedExample && (
@@ -429,7 +431,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
       )}
 
       {/* Key Takeaways */}
-      {(currentStep >= steps.length - 1 || showWorkedExample) && (
+      {(currentStep >= steps.length - 1 || showWorkedExample) && teachContent.keyTakeaways && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -441,7 +443,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
           </h3>
           
           <div className="space-y-3 mb-6">
-            {teachContent.keyTakeaways.map((takeaway, index) => (
+            {teachContent.keyTakeaways?.map((takeaway, index) => (
               <div key={index} className="flex items-start gap-3">
                 <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-white text-sm">✓</span>
