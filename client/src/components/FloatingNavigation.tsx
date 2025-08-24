@@ -47,6 +47,13 @@ export function FloatingNavigation() {
           >
             Learning
           </Link>
+          <Link 
+            href="/progress" 
+            className={`transition-colors duration-300 ${location === "/progress" ? "text-white" : "text-white/80 hover:text-white"}`}
+            data-testid="link-progress"
+          >
+            Progress
+          </Link>
           <button className="text-white/80 hover:text-white transition-colors duration-300" data-testid="button-settings">
             Settings
           </button>
