@@ -13,8 +13,10 @@ interface CreatePhaseProps {
 }
 
 interface CreateContent {
-  title: string;
-  projectMissions: Array<{
+  title?: string;
+  content?: string;
+  // Legacy support for old structure
+  projectMissions?: Array<{
     id: string;
     title: string;
     description: string;
@@ -27,7 +29,7 @@ interface CreateContent {
     successCriteria: string[];
     scaffolds: string[];
   }>;
-  teachBackMode: {
+  teachBackMode?: {
     enabled: boolean;
     scenario: string;
     rubric: {
@@ -56,8 +58,13 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
   const [showTeachBack, setShowTeachBack] = useState(false);
   const [teachBackResponse, setTeachBackResponse] = useState("");
 
-  const createContent = content.content as CreateContent;
-  const currentMission = createContent.projectMissions.find(m => m.id === selectedMission);
+  const createContent = content.content;
+  
+  // Handle both new Scout format (simple string) and legacy format
+  const isScoutFormat = typeof createContent === 'string';
+  const scoutMessage = isScoutFormat ? createContent : null;
+  const legacyContent = !isScoutFormat ? createContent as CreateContent : null;
+  const currentMission = legacyContent?.projectMissions?.find(m => m.id === selectedMission);
 
   const handleMissionSelect = (missionId: string) => {
     setSelectedMission(missionId);
@@ -76,7 +83,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
     setArtifacts(prev => [...prev, artifact]);
     
     // Move to next deliverable
-    if (currentMission && currentDeliverable < currentMission.deliverables.length - 1) {
+    if (currentMission && currentMission.deliverables && currentDeliverable < currentMission.deliverables.length - 1) {
       setCurrentDeliverable(prev => prev + 1);
     } else {
       // All deliverables completed, check if teach-back is enabled
@@ -144,7 +151,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
         prompt: a.prompt,
         timestamp: a.timestamp
       })),
-      missionCompleted: currentMission ? artifacts.length >= currentMission.deliverables.filter(d => !d.optional).length : false,
+      missionCompleted: currentMission && currentMission.deliverables ? artifacts.length >= currentMission.deliverables.filter(d => !d.optional).length : false,
       teachBackCompleted: showTeachBack && teachBackResponse.trim().length > 0,
       creativity: calculateCreativityScore(),
       timeSpent: Date.now() - (previousData?.startTime || Date.now())
@@ -159,7 +166,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
     const avgContentLength = artifacts.reduce((sum, a) => {
       if (typeof a.content === "string") return sum + a.content.length;
       return sum + 50; // Base score for non-text content
-    }, 0) / artifacts.length;
+    }, 0) / (artifacts.length || 1);
     
     return Math.min((typeVariety * 20) + (avgContentLength / 10), 100);
   };
@@ -198,6 +205,36 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
   };
 
   const language = getAgeAppropriateLanguage();
+
+  // For Scout format, show simplified creation experience
+  if (isScoutFormat) {
+    return (
+      <div className="space-y-8 max-w-2xl mx-auto">
+        <div className="floating-ui rounded-3xl p-8" data-testid="scout-create-phase">
+          <div className="text-center space-y-6">
+            <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-orange-400 to-yellow-400 flex items-center justify-center">
+              <div className="text-white text-3xl">🎨</div>
+            </div>
+            <div className="text-white text-xl font-bold">
+              Amazing! Let's celebrate our adventure!
+            </div>
+            <div className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm">
+              <div className="text-white text-lg leading-relaxed">
+                {scoutMessage}
+              </div>
+            </div>
+            <button
+              onClick={() => handlePhaseComplete()}
+              className="px-6 py-3 bg-gradient-to-r from-orange-400 to-yellow-400 text-white font-medium rounded-2xl hover:scale-105 transition-all"
+              data-testid="complete-adventure"
+            >
+              🌟 Adventure Complete! 🌟
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Reward & Progression phase for pre-primary - completing Scout's Teaching Cycle
   if (ageGroup === "pre-primary") {
