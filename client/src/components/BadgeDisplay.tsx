@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { Achievement } from "@shared/schema";
+import { GeometricIcon } from "./GeometricIcon";
 
 interface BadgeDefinition {
   id: string;
@@ -80,7 +81,14 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
                          backdrop-blur-sm rounded-xl p-3 border transition-transform hover:scale-105`}
               data-testid={`badge-compact-${achievement.badge.id}`}
             >
-              <div className="text-2xl mb-1">{achievement.badge.icon}</div>
+              <div className="w-8 h-8 mb-1 mx-auto">
+                <GeometricIcon 
+                  type="badge" 
+                  variant={achievement.badge.id}
+                  size="lg"
+                  animated={true}
+                />
+              </div>
               <div className="text-xs font-medium text-white/90">{achievement.badge.name}</div>
             </div>
           ))}
@@ -110,7 +118,14 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
               data-testid={`badge-earned-${achievement.badge.id}`}
             >
               <div className="text-center">
-                <div className="text-4xl mb-2">{achievement.badge.icon}</div>
+                <div className="w-12 h-12 mb-2 mx-auto">
+                  <GeometricIcon 
+                    type="badge" 
+                    variant={achievement.badge.id}
+                    size="xl"
+                    animated={true}
+                  />
+                </div>
                 <h4 className="font-semibold text-white mb-1">{achievement.badge.name}</h4>
                 <p className="text-xs text-white/70 mb-2">{achievement.badge.description}</p>
                 <div className="flex items-center justify-center gap-1">
@@ -143,7 +158,14 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
                 data-testid={`badge-available-${badge.id}`}
               >
                 <div className="text-center">
-                  <div className="text-4xl mb-2 grayscale">{badge.icon}</div>
+                  <div className="w-12 h-12 mb-2 mx-auto opacity-50 grayscale">
+                    <GeometricIcon 
+                      type="badge" 
+                      variant={badge.id}
+                      size="xl"
+                      animated={false}
+                    />
+                  </div>
                   <h4 className="font-semibold text-white/70 mb-1">{badge.name}</h4>
                   <p className="text-xs text-white/50 mb-2">{badge.description}</p>
                   <div className="flex items-center justify-center gap-1">
