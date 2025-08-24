@@ -40,34 +40,80 @@ export default function ParentDashboard() {
     return token ? { "Authorization": `Bearer ${token}` } : {};
   };
 
-  // Fetch parent's children
+  // Check if in demo mode
+  const isDemoMode = localStorage.getItem("parentDemoMode") === "true";
+  
+  // Sample demo data
+  const demoChildren = [
+    {
+      id: "demo-child-1",
+      name: "Emma",
+      ageGroup: "primary",
+      currentLevel: 3,
+      totalPoints: 450,
+      isActive: true,
+      parentId: "demo-parent",
+      createdAt: new Date()
+    },
+    {
+      id: "demo-child-2", 
+      name: "Lucas",
+      ageGroup: "upper-primary",
+      currentLevel: 5,
+      totalPoints: 780,
+      isActive: true,
+      parentId: "demo-parent",
+      createdAt: new Date()
+    }
+  ];
+
+  // Fetch parent's children (or use demo data)
   const { data: children = [], isLoading: childrenLoading } = useQuery<Student[]>({
     queryKey: ["/api/parents/children"],
-    queryFn: () => apiRequest("/api/parents/children", { headers: getAuthHeader() }),
+    queryFn: () => isDemoMode ? Promise.resolve(demoChildren) : apiRequest("/api/parents/children", { headers: getAuthHeader() }),
     enabled: !!parentInfo,
   });
 
-  // Fetch progress for each child
+  // Demo progress data
+  const demoProgressData = {
+    "demo-child-1": [
+      { studentId: "demo-child-1", topicId: "addition", completionPercentage: 85, questionsAnswered: 20, correctAnswers: 17 },
+      { studentId: "demo-child-1", topicId: "subtraction", completionPercentage: 72, questionsAnswered: 15, correctAnswers: 11 },
+      { studentId: "demo-child-1", topicId: "reading", completionPercentage: 90, questionsAnswered: 25, correctAnswers: 23 }
+    ],
+    "demo-child-2": [
+      { studentId: "demo-child-2", topicId: "multiplication", completionPercentage: 95, questionsAnswered: 30, correctAnswers: 29 },
+      { studentId: "demo-child-2", topicId: "fractions", completionPercentage: 78, questionsAnswered: 18, correctAnswers: 14 },
+      { studentId: "demo-child-2", topicId: "science", completionPercentage: 88, questionsAnswered: 22, correctAnswers: 19 }
+    ]
+  };
+
+  // Fetch progress for each child (or use demo data)
   const childProgressQueries = children.map(child => 
     useQuery<StudentProgress[]>({
       queryKey: [`/api/progress/${child.id}`],
-      queryFn: () => apiRequest(`/api/progress/${child.id}`, { headers: getAuthHeader() }),
+      queryFn: () => isDemoMode 
+        ? Promise.resolve(demoProgressData[child.id as keyof typeof demoProgressData] || [])
+        : apiRequest(`/api/progress/${child.id}`, { headers: getAuthHeader() }),
       enabled: !!child.id,
     })
   );
 
   // Logout mutation
   const logoutMutation = useMutation({
-    mutationFn: () => apiRequest("/api/parents/logout", {
-      method: "POST",
-      headers: getAuthHeader(),
-    }),
+    mutationFn: () => isDemoMode 
+      ? Promise.resolve() 
+      : apiRequest("/api/parents/logout", {
+          method: "POST",
+          headers: getAuthHeader(),
+        }),
     onSuccess: () => {
       localStorage.removeItem("parentSessionToken");
       localStorage.removeItem("parentInfo");
+      localStorage.removeItem("parentDemoMode");
       toast({
-        title: "Logged out successfully",
-        description: "See you next time!",
+        title: isDemoMode ? "Demo session ended" : "Logged out successfully",
+        description: isDemoMode ? "Thanks for exploring!" : "See you next time!",
       });
       setLocation("/parent/auth");
     },
@@ -117,9 +163,10 @@ export default function ParentDashboard() {
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">
               Welcome back, {parentInfo.name}
+              {isDemoMode && <span className="text-sm bg-blue-500/20 text-blue-300 px-2 py-1 rounded ml-3">DEMO MODE</span>}
             </h1>
             <p className="text-white/70">
-              Monitor and guide your child's learning journey
+              {isDemoMode ? "Exploring the parent dashboard with sample data" : "Monitor and guide your child's learning journey"}
             </p>
           </div>
           
