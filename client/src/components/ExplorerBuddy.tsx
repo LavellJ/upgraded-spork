@@ -80,8 +80,8 @@ export function ExplorerBuddy({
   const generateMessage = useCallback(async (): Promise<BuddyMessage | null> => {
     const now = Date.now();
     
-    // Don't show messages too frequently
-    if (now - lastInteraction < 30000) return null; // 30 seconds minimum
+    // Don't show messages too frequently (reduced for testing)
+    if (now - lastInteraction < 10000) return null; // 10 seconds minimum
     
     let messageType: BuddyMessage['type'] = 'companionship';
     let duration = 4000;
@@ -135,9 +135,9 @@ export function ExplorerBuddy({
         duration
       };
     } catch (error) {
-      console.error('Failed to generate AI buddy message:', error);
+      console.log('Using fallback buddy message (AI unavailable)');
       
-      // Fallback to personality examples
+      // Fallback to personality examples (always works)
       const personality = getPersonality();
       const fallbackText = personality.examples[messageType][Math.floor(Math.random() * personality.examples[messageType].length)];
       
@@ -167,9 +167,9 @@ export function ExplorerBuddy({
       }
     };
     
-    // Initial delay, then periodic checks
-    const initialTimeout = setTimeout(showBuddy, 5000);
-    const interval = setInterval(showBuddy, 60000); // Check every minute
+    // Initial delay, then periodic checks (shorter for testing)
+    const initialTimeout = setTimeout(showBuddy, 2000); // Show after 2 seconds
+    const interval = setInterval(showBuddy, 15000); // Check every 15 seconds
     
     return () => {
       clearTimeout(initialTimeout);
