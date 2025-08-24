@@ -223,177 +223,46 @@ export function ExplorerBuddy({
           ease: "easeInOut" 
         }}
       >
-        <svg viewBox="0 0 100 130" className="w-full h-full drop-shadow-lg">
-          <defs>
-            <linearGradient id="skinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#F5DEB3" />
-              <stop offset="100%" stopColor="#DEB887" />
-            </linearGradient>
-            <linearGradient id="hatGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#CD853F" />
-              <stop offset="100%" stopColor="#8B4513" />
-            </linearGradient>
-            <linearGradient id="vestGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#FF8C42" />
-              <stop offset="100%" stopColor="#D2691E" />
-            </linearGradient>
-            <linearGradient id="pantsGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#8B4513" />
-              <stop offset="100%" stopColor="#654321" />
-            </linearGradient>
-          </defs>
-          
-          {/* Shadow */}
-          <ellipse cx="50" cy="125" rx="15" ry="2" fill="rgba(0,0,0,0.15)" />
-          
-          <motion.g
-            animate={{ 
-              y: buddyMood === 'excited' ? [-1, 1, -1] : 0,
-            }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          >
-            {/* Backpack */}
-            <rect
-              x="28"
-              y="58"
-              width="10"
-              height="16"
-              rx="5"
-              fill="#8B4513"
-              stroke="#654321"
-              strokeWidth="1.5"
-            />
-            <rect x="30" y="55" width="6" height="6" rx="3" fill="#654321" />
-            <path d="M33 60 Q36 62 38 65" stroke="#654321" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-            
-            {/* Boots */}
-            <ellipse cx="45" cy="115" rx="5" ry="3" fill="#654321" stroke="#4A2C17" strokeWidth="1" />
-            <ellipse cx="55" cy="115" rx="5" ry="3" fill="#654321" stroke="#4A2C17" strokeWidth="1" />
-            
-            {/* Legs - brown shorts */}
-            <rect x="44" y="90" width="4" height="25" fill="url(#pantsGradient)" stroke="#4A2C17" strokeWidth="1" rx="2" />
-            <rect x="52" y="90" width="4" height="25" fill="url(#pantsGradient)" stroke="#4A2C17" strokeWidth="1" rx="2" />
-            
-            {/* Belt */}
-            <rect x="42" y="88" width="16" height="2" fill="#654321" rx="1" />
-            <rect x="48.5" y="87" width="3" height="4" fill="#8B4513" rx="1.5" />
-            
-            {/* Vest/shirt */}
-            <rect
-              x="44"
-              y="60"
-              width="12"
-              height="28"
-              rx="6"
-              fill="url(#vestGradient)"
-              stroke="#B8860B"
-              strokeWidth="1.5"
-            />
-            
-            {/* V-neck collar */}
-            <path
-              d="M47 60 L53 60 L50 68 Z"
-              fill="#CD853F"
-              stroke="#B8860B"
-              strokeWidth="1"
-            />
-            
-            {/* Arms */}
-            <motion.ellipse
-              cx="40"
-              cy="70"
-              rx="3.5"
-              ry="10"
-              fill="url(#skinGradient)"
-              stroke="#CD853F"
-              strokeWidth="1.2"
-              animate={{ rotate: buddyMood === 'celebrating' ? [-5, 5, -5] : 0 }}
-              transition={{ duration: 0.8, repeat: Infinity }}
-            />
-            <motion.ellipse
-              cx="60"
-              cy="70"
-              rx="3.5"
-              ry="10"
-              fill="url(#skinGradient)"
-              stroke="#CD853F"
-              strokeWidth="1.2"
-              animate={{ rotate: buddyMood === 'celebrating' ? [5, -5, 5] : 0 }}
-              transition={{ duration: 0.8, repeat: Infinity }}
-            />
-            
-            {/* Head - perfectly round */}
-            <circle
-              cx="50"
-              cy="45"
-              r="18"
-              fill="url(#skinGradient)"
-              stroke="#CD853F"
-              strokeWidth="2"
-            />
-            
-            {/* Hat - safari explorer style */}
-            {/* Hat crown */}
-            <path
-              d="M34 38 Q34 28 50 28 Q66 28 66 38 Q66 42 50 42 Q34 42 34 38 Z"
-              fill="url(#hatGradient)"
-              stroke="#654321"
-              strokeWidth="2"
-            />
-            
-            {/* Hat brim - wide and characteristic */}
-            <ellipse
-              cx="50"
-              cy="40"
-              rx="22"
-              ry="5"
-              fill="#A0522D"
-              stroke="#654321"
-              strokeWidth="2"
-            />
-            
-            {/* Hat band */}
-            <ellipse
-              cx="50"
-              cy="38"
-              rx="16"
-              ry="1.5"
-              fill="#654321"
-            />
-            
-            {/* Face features exactly like your reference */}
-            {/* Eyes - simple dark ovals */}
-            <ellipse cx="45" cy="45" rx="1.2" ry="1.8" fill="#2F1B14" />
-            <ellipse cx="55" cy="45" rx="1.2" ry="1.8" fill="#2F1B14" />
-            <circle cx="45.3" cy="44.2" r="0.4" fill="white" opacity="0.8" />
-            <circle cx="55.3" cy="44.2" r="0.4" fill="white" opacity="0.8" />
-            
-            {/* Nose - tiny */}
-            <ellipse cx="50" cy="48" rx="0.6" ry="0.8" fill="#D2691E" opacity="0.6" />
-            
-            {/* Rosy cheeks - perfect circles like reference */}
-            <circle cx="42" cy="50" r="2.5" fill="#FFB6C1" opacity="0.6" />
-            <circle cx="58" cy="50" r="2.5" fill="#FFB6C1" opacity="0.6" />
-            
-            {/* Smile - gentle curve */}
-            <motion.path
-              d="M46 52 Q50 56 54 52"
-              fill="none"
-              stroke="#2F1B14"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              animate={{ 
-                scaleY: buddyMood === 'celebrating' ? [1, 1.2, 1] : 1
-              }}
-              transition={{ duration: 0.6, repeat: Infinity }}
-            />
-            
-            {/* Small round ears */}
-            <circle cx="32" cy="45" r="3" fill="url(#skinGradient)" stroke="#CD853F" strokeWidth="1.2" />
-            <circle cx="68" cy="45" r="3" fill="url(#skinGradient)" stroke="#CD853F" strokeWidth="1.2" />
-            
-          </motion.g>
-        </svg>
+        <canvas
+          ref={(canvas) => {
+            if (canvas) {
+              const ctx = canvas.getContext('2d');
+              const img = new Image();
+              img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw image
+                ctx.drawImage(img, 0, 0);
+                
+                // Get image data to remove white background
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                
+                // Remove white/light backgrounds
+                for (let i = 0; i < data.length; i += 4) {
+                  const r = data[i];
+                  const g = data[i + 1];
+                  const b = data[i + 2];
+                  
+                  // If pixel is close to white, make it transparent
+                  if (r > 240 && g > 240 && b > 240) {
+                    data[i + 3] = 0; // Set alpha to 0 (transparent)
+                  }
+                }
+                
+                ctx.putImageData(imageData, 0, 0);
+              };
+              img.src = explorerAvatar;
+            }
+          }}
+          className="w-full h-full object-contain"
+          style={{
+            filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12))',
+            background: 'transparent'
+          }}
+        />
       </motion.div>
       
       {/* Adventure sparkles - more active when excited */}
