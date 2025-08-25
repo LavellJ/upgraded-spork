@@ -77,7 +77,7 @@ export function useSpeech() {
         await audio.play();
         
       } catch (error) {
-        console.error('ElevenLabs speech error, falling back to browser speech:', error);
+        console.warn('ElevenLabs unavailable (likely out of credits), using browser speech:', error.message);
         setIsSpeaking(false);
         setIsPaused(false);
         // Fall back to browser speech synthesis
