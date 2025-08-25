@@ -144,12 +144,350 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
 
   const language = getAgeAppropriateLanguage();
 
+  // Interactive Activity Components for engaging 3-5 year olds
+  const CountingActivity = ({ data, onComplete }: { data: any; onComplete: (success: boolean) => void }) => {
+    const [userCount, setUserCount] = useState(0);
+    const [showFeedback, setShowFeedback] = useState(false);
+    const [isCorrect, setIsCorrect] = useState(false);
+
+    const handleAnswer = (count: number) => {
+      setUserCount(count);
+      const correct = count === data.targetCount;
+      setIsCorrect(correct);
+      setShowFeedback(true);
+      onComplete(correct);
+    };
+
+    return (
+      <div className="text-center space-y-4">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="text-2xl text-white font-bold"
+        >
+          🔢 Count with Scout!
+        </motion.div>
+        
+        <div className="text-white/90 text-sm">How many do you see?</div>
+        
+        <motion.div 
+          className="text-4xl space-x-2 bg-white/10 rounded-2xl p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {Array(data.targetCount).fill(data.item).map((item, i) => (
+            <motion.span
+              key={i}
+              initial={{ scale: 0, rotate: 0 }}
+              animate={{ scale: 1, rotate: 360 }}
+              transition={{ delay: i * 0.2, type: "spring" }}
+            >
+              {item}
+            </motion.span>
+          ))}
+        </motion.div>
+
+        {!showFeedback ? (
+          <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
+            {[1, 2, 3, 4, 5, 6].map((num) => (
+              <motion.button
+                key={num}
+                onClick={() => handleAnswer(num)}
+                className="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-400 hover:from-blue-300 hover:to-purple-300 rounded-xl text-white font-bold text-lg"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                {num}
+              </motion.button>
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className={`p-4 rounded-2xl ${isCorrect ? 'bg-green-500/20 border border-green-400' : 'bg-orange-500/20 border border-orange-400'}`}
+          >
+            <div className="text-white text-lg font-bold">
+              {isCorrect ? "🎉 Amazing! You counted perfectly!" : `Good try! I count ${data.targetCount}. Let's practice more! 🌟`}
+            </div>
+          </motion.div>
+        )}
+      </div>
+    );
+  };
+
+  const ShapeActivity = ({ data, onComplete }: { data: any; onComplete: (success: boolean) => void }) => {
+    const [selectedShape, setSelectedShape] = useState<string | null>(null);
+    const [showFeedback, setShowFeedback] = useState(false);
+    const [isCorrect, setIsCorrect] = useState(false);
+
+    const handleAnswer = (shape: string) => {
+      setSelectedShape(shape);
+      const correct = shape === data.shape;
+      setIsCorrect(correct);
+      setShowFeedback(true);
+      onComplete(correct);
+    };
+
+    return (
+      <div className="text-center space-y-4">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="text-2xl text-white font-bold"
+        >
+          🔍 Find the Shape!
+        </motion.div>
+        
+        <div className="text-white/90 text-sm">What shape is this?</div>
+        
+        <motion.div 
+          className="text-6xl bg-white/10 rounded-2xl p-6 inline-block"
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", damping: 15 }}
+        >
+          {data.shape}
+        </motion.div>
+
+        {!showFeedback ? (
+          <div className="grid grid-cols-3 gap-3 max-w-xs mx-auto">
+            {data.options.map((shape: string, i: number) => (
+              <motion.button
+                key={i}
+                onClick={() => handleAnswer(shape)}
+                className="w-16 h-16 bg-gradient-to-r from-pink-400 to-red-400 hover:from-pink-300 hover:to-red-300 rounded-2xl text-4xl flex items-center justify-center"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileTap={{ scale: 0.9 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+              >
+                {shape}
+              </motion.button>
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className={`p-4 rounded-2xl ${isCorrect ? 'bg-green-500/20 border border-green-400' : 'bg-orange-500/20 border border-orange-400'}`}
+          >
+            <div className="text-white text-lg font-bold">
+              {isCorrect ? "🎉 Perfect! You know your shapes!" : `That's a ${data.name}! Great try - shapes are tricky! 🌟`}
+            </div>
+          </motion.div>
+        )}
+      </div>
+    );
+  };
+
+  const AnimalSoundsActivity = ({ data, onComplete }: { data: any; onComplete: (success: boolean) => void }) => {
+    const [userInput, setUserInput] = useState('');
+    const [showFeedback, setShowFeedback] = useState(false);
+    const [isCorrect, setIsCorrect] = useState(false);
+    
+    const soundOptions = ['moo', 'baa', 'ribbit', 'tweet', 'woof', 'meow'];
+
+    const handleAnswer = (sound: string) => {
+      setUserInput(sound);
+      const correct = sound.toLowerCase() === data.sound.toLowerCase();
+      setIsCorrect(correct);
+      setShowFeedback(true);
+      onComplete(correct);
+    };
+
+    return (
+      <div className="text-center space-y-4">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="text-2xl text-white font-bold"
+        >
+          🔊 Animal Sounds!
+        </motion.div>
+        
+        <div className="text-white/90 text-sm">What sound does this animal make?</div>
+        
+        <motion.div 
+          className="text-6xl bg-white/10 rounded-2xl p-6 inline-block"
+          initial={{ scale: 0 }}
+          animate={{ scale: [0, 1.2, 1] }}
+          transition={{ type: "spring", damping: 10 }}
+        >
+          {data.animal}
+        </motion.div>
+
+        {!showFeedback ? (
+          <div className="grid grid-cols-2 gap-3 max-w-xs mx-auto">
+            {soundOptions.slice(0, 4).map((sound, i) => (
+              <motion.button
+                key={sound}
+                onClick={() => handleAnswer(sound)}
+                className="px-4 py-2 bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 rounded-xl text-white font-medium text-sm"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+              >
+                {sound}
+              </motion.button>
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className={`p-4 rounded-2xl ${isCorrect ? 'bg-green-500/20 border border-green-400' : 'bg-orange-500/20 border border-orange-400'}`}
+          >
+            <div className="text-white text-lg font-bold">
+              {isCorrect ? "🎉 Yes! You know animal sounds!" : `It goes "${data.sound}"! Animals make such fun sounds! 🌟`}
+            </div>
+          </motion.div>
+        )}
+      </div>
+    );
+  };
+
+  const LetterActivity = ({ data, onComplete }: { data: any; onComplete: (success: boolean) => void }) => {
+    const [completed, setCompleted] = useState(false);
+
+    const handleComplete = () => {
+      setCompleted(true);
+      onComplete(true);
+    };
+
+    return (
+      <div className="text-center space-y-4">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="text-2xl text-white font-bold"
+        >
+          🔤 Letter Detective!
+        </motion.div>
+        
+        <div className="text-white/90 text-sm">Can you find this letter around you?</div>
+        
+        <motion.div 
+          className="text-8xl bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent font-bold bg-white/10 rounded-2xl p-6 inline-block"
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", damping: 12 }}
+        >
+          {data.letter}
+        </motion.div>
+
+        <div className="text-white/80 text-sm">Look around you - on signs, books, or screens!</div>
+
+        {!completed ? (
+          <div className="space-y-3">
+            <motion.button
+              onClick={handleComplete}
+              className="px-6 py-3 bg-gradient-to-r from-green-400 to-emerald-400 hover:from-green-300 hover:to-emerald-300 rounded-2xl text-white font-bold"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              I found it! ✨
+            </motion.button>
+            <motion.button
+              onClick={handleComplete}
+              className="block mx-auto px-6 py-2 bg-gradient-to-r from-blue-400 to-purple-400 hover:from-blue-300 hover:to-purple-300 rounded-xl text-white font-medium"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              I'll keep looking 🔍
+            </motion.button>
+          </div>
+        ) : (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="p-4 rounded-2xl bg-green-500/20 border border-green-400"
+          >
+            <div className="text-white text-lg font-bold">
+              🎉 Great exploring! Letters are everywhere - you're becoming a reading detective! 🔍
+            </div>
+          </motion.div>
+        )}
+      </div>
+    );
+  };
+
+  const DiscoveryActivity = ({ data, onComplete }: { data: any; onComplete: () => void }) => {
+    const [showInteraction, setShowInteraction] = useState(false);
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setShowInteraction(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }, []);
+
+    return (
+      <div className="text-center space-y-4">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="text-2xl text-white font-bold"
+        >
+          🎒 Scout's Discovery!
+        </motion.div>
+        
+        <motion.div 
+          className="text-4xl bg-white/10 rounded-2xl p-4 inline-block"
+          initial={{ scale: 0 }}
+          animate={{ scale: [0, 1.1, 1] }}
+          transition={{ type: "spring", damping: 15 }}
+        >
+          {data.emoji}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-white/90 text-sm bg-white/10 rounded-xl p-4"
+        >
+          {data.text}
+        </motion.div>
+
+        <AnimatePresence>
+          {showInteraction && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="space-y-3"
+            >
+              <div className="text-white/80 text-sm italic">
+                Scout wonders: "{data.interaction}"
+              </div>
+              <motion.button
+                onClick={onComplete}
+                className="px-6 py-3 bg-gradient-to-r from-warm-orange to-sunset-orange hover:from-orange-300 hover:to-red-300 rounded-2xl text-white font-bold"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Let's explore more! 🌟
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
   // Adventure-based teaching for pre-primary following Scout's Universal Teaching Cycle
   if (ageGroup === "pre-primary") {
     const [teachingStep, setTeachingStep] = useState<'hook' | 'experience' | 'ready'>('hook');
     const [showVisualDemo, setShowVisualDemo] = useState(false);
     const [particleCount, setParticleCount] = useState(0);
     const [isInteracting, setIsInteracting] = useState(false);
+    const [currentActivity, setCurrentActivity] = useState<{
+      type: string;
+      data: any;
+      isActive: boolean;
+    } | null>(null);
     
     return (
       <div className="space-y-8 max-w-2xl mx-auto">
@@ -627,9 +965,6 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                               <button
                                 key={index}
                                 onClick={() => {
-                                  setIsInteracting(true);
-                                  
-                                  // Create meaningful interactive experience based on the option
                                   const activityType = option.label.toLowerCase();
                                   
                                   if (activityType.includes('count')) {
@@ -637,81 +972,61 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                                     const items = ['🐸', '🦋', '🐢', '🌸', '🍄'];
                                     const randomItem = items[Math.floor(Math.random() * items.length)];
                                     const count = Math.floor(Math.random() * 5) + 2;
-                                    const itemDisplay = Array(count).fill(randomItem).join(' ');
-                                    
-                                    setTimeout(() => {
-                                      const userAnswer = prompt(`Scout says: "Help me count! How many do you see?\n\n${itemDisplay}\n\nEnter your answer:`);
-                                      if (userAnswer === count.toString()) {
-                                        alert("🎉 Amazing! You counted perfectly! Scout is so proud!");
-                                      } else {
-                                        alert(`Good try! Scout counted ${count}. Let's practice more together! 🌟`);
-                                      }
-                                      setIsInteracting(false);
-                                    }, 500);
+                                    setCurrentActivity({
+                                      type: 'counting',
+                                      data: { item: randomItem, count, targetCount: count },
+                                      isActive: true
+                                    });
                                   } else if (activityType.includes('shape')) {
                                     // Shape matching mini-game
                                     const shapes = [
-                                      { shape: '🔴', name: 'circle' },
-                                      { shape: '🔺', name: 'triangle' },
-                                      { shape: '🟩', name: 'square' }
+                                      { shape: '🔴', name: 'circle', options: ['🔴', '🔺', '🟩'] },
+                                      { shape: '🔺', name: 'triangle', options: ['🔺', '🔴', '🟩'] },
+                                      { shape: '🟩', name: 'square', options: ['🟩', '🔴', '🔺'] }
                                     ];
                                     const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
-                                    
-                                    setTimeout(() => {
-                                      const userAnswer = prompt(`Scout says: "What shape is this? ${randomShape.shape}"\n\nType: circle, triangle, or square`);
-                                      if (userAnswer?.toLowerCase() === randomShape.name) {
-                                        alert("🎉 Perfect! You know your shapes! Scout is amazed!");
-                                      } else {
-                                        alert(`That's a ${randomShape.name}! Great try - shapes are tricky! 🌟`);
-                                      }
-                                      setIsInteracting(false);
-                                    }, 500);
+                                    setCurrentActivity({
+                                      type: 'shapes',
+                                      data: randomShape,
+                                      isActive: true
+                                    });
                                   } else if (activityType.includes('animal')) {
                                     // Animal sound mini-game
                                     const animals = [
-                                      { animal: '🐄', sound: 'moo' },
-                                      { animal: '🐑', sound: 'baa' },
-                                      { animal: '🐸', sound: 'ribbit' },
-                                      { animal: '🐦', sound: 'tweet' }
+                                      { animal: '🐄', sound: 'moo', name: 'cow' },
+                                      { animal: '🐑', sound: 'baa', name: 'sheep' },
+                                      { animal: '🐸', sound: 'ribbit', name: 'frog' },
+                                      { animal: '🐦', sound: 'tweet', name: 'bird' }
                                     ];
                                     const randomAnimal = animals[Math.floor(Math.random() * animals.length)];
-                                    
-                                    setTimeout(() => {
-                                      const userAnswer = prompt(`Scout says: "What sound does this animal make? ${randomAnimal.animal}"\n\nType the sound:`);
-                                      if (userAnswer?.toLowerCase().includes(randomAnimal.sound)) {
-                                        alert("🎉 Yes! You know animal sounds! Scout loves exploring with you!");
-                                      } else {
-                                        alert(`It goes "${randomAnimal.sound}"! Animals make such fun sounds! 🌟`);
-                                      }
-                                      setIsInteracting(false);
-                                    }, 500);
+                                    setCurrentActivity({
+                                      type: 'animal-sounds',
+                                      data: randomAnimal,
+                                      isActive: true
+                                    });
                                   } else if (activityType.includes('letter')) {
                                     // Letter recognition mini-game
                                     const letters = ['A', 'B', 'C', 'D', 'E'];
                                     const randomLetter = letters[Math.floor(Math.random() * letters.length)];
-                                    
-                                    setTimeout(() => {
-                                      const userAnswer = prompt(`Scout says: "Can you find this letter in your name or around you? ${randomLetter}"\n\nType YES if you found it, or NO if you didn't:`);
-                                      if (userAnswer?.toLowerCase().includes('yes') || userAnswer?.toLowerCase().includes('no')) {
-                                        alert("🎉 Great exploring! Letters are everywhere - you're becoming a reading detective! 🔍");
-                                      } else {
-                                        alert("Keep looking around - letters are amazing discoveries! 🌟");
-                                      }
-                                      setIsInteracting(false);
-                                    }, 500);
+                                    setCurrentActivity({
+                                      type: 'letters',
+                                      data: { letter: randomLetter },
+                                      isActive: true
+                                    });
                                   } else {
                                     // Default exploration activity
-                                    setTimeout(() => {
-                                      const discoveries = [
-                                        "Scout found a shiny rock that changes colors in the sunlight! ✨",
-                                        "Look! A butterfly landed on Scout's backpack! 🦋", 
-                                        "Scout discovered footprints leading to a secret garden! 🐾",
-                                        "Amazing! Scout found a tree that whispers when the wind blows! 🌳"
-                                      ];
-                                      const discovery = discoveries[Math.floor(Math.random() * discoveries.length)];
-                                      alert(`${discovery}\n\nScout says: "Want to explore more together? There's always something amazing to discover!"`);
-                                      setIsInteracting(false);
-                                    }, 500);
+                                    const discoveries = [
+                                      { text: "Scout found a shiny rock that changes colors in the sunlight!", emoji: "✨", interaction: "What color do you see?" },
+                                      { text: "Look! A butterfly landed on Scout's backpack!", emoji: "🦋", interaction: "How many wings does it have?" }, 
+                                      { text: "Scout discovered footprints leading to a secret garden!", emoji: "🐾", interaction: "What animal made these?" },
+                                      { text: "Amazing! Scout found a tree that whispers when the wind blows!", emoji: "🌳", interaction: "What is it saying?" }
+                                    ];
+                                    const discovery = discoveries[Math.floor(Math.random() * discoveries.length)];
+                                    setCurrentActivity({
+                                      type: 'discovery',
+                                      data: discovery,
+                                      isActive: true
+                                    });
                                   }
                                 }}
                                 className={`aspect-square bg-gradient-to-br ${option.color} rounded-2xl border-2 ${option.border} flex flex-col items-center justify-center cursor-pointer hover:scale-105 transition-all p-2`}
@@ -744,6 +1059,89 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
           )}
         </AnimatePresence>
         
+        {/* Interactive Activity Modal */}
+        <AnimatePresence>
+          {currentActivity?.isActive && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+              onClick={() => setCurrentActivity(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ type: "spring", damping: 20 }}
+                className="bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-md rounded-3xl p-8 max-w-md mx-4 border border-white/20"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Counting Activity */}
+                {currentActivity.type === 'counting' && (
+                  <CountingActivity 
+                    data={currentActivity.data}
+                    onComplete={(success) => {
+                      // Show success feedback then close
+                      setTimeout(() => setCurrentActivity(null), 2000);
+                    }}
+                  />
+                )}
+
+                {/* Shape Activity */}
+                {currentActivity.type === 'shapes' && (
+                  <ShapeActivity 
+                    data={currentActivity.data}
+                    onComplete={(success) => {
+                      setTimeout(() => setCurrentActivity(null), 2000);
+                    }}
+                  />
+                )}
+
+                {/* Animal Sounds Activity */}
+                {currentActivity.type === 'animal-sounds' && (
+                  <AnimalSoundsActivity 
+                    data={currentActivity.data}
+                    onComplete={(success) => {
+                      setTimeout(() => setCurrentActivity(null), 2000);
+                    }}
+                  />
+                )}
+
+                {/* Letter Activity */}
+                {currentActivity.type === 'letters' && (
+                  <LetterActivity 
+                    data={currentActivity.data}
+                    onComplete={(success) => {
+                      setTimeout(() => setCurrentActivity(null), 2000);
+                    }}
+                  />
+                )}
+
+                {/* Discovery Activity */}
+                {currentActivity.type === 'discovery' && (
+                  <DiscoveryActivity 
+                    data={currentActivity.data}
+                    onComplete={() => {
+                      setTimeout(() => setCurrentActivity(null), 3000);
+                    }}
+                  />
+                )}
+
+                {/* Close Button */}
+                <motion.button
+                  className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white"
+                  onClick={() => setCurrentActivity(null)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  ✕
+                </motion.button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Ready Check */}
         {teachingStep === 'ready' && (
           <motion.div
