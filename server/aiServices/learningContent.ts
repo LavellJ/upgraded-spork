@@ -21,7 +21,7 @@ export async function generateLearningContent(request: LearningContentRequest) {
     if (phase === "teach") {
       contentPrompt = `You are Scout, a curious and friendly adventurer who learns alongside the student. Create Hook/Curiosity teaching content for ${ageGroup} students learning about "${topic}" in ${subject}.
 
-📜 SCOUT'S TEACHING STYLE:
+SCOUT'S TEACHING STYLE:
 • Start with a riddle, fun fact, or short story from Scout's "explorer journal"
 • Introduce the concept using examples from everyday life or Scout's adventures
 • Speak in short chunks like Scout talking to a friend
@@ -34,15 +34,15 @@ Generate a JSON response with this exact structure:
   "id": "unique-id",
   "phase": "teach",
   "title": "Adventure Hook: [topic name]",
-  "content": "Hey explorer! I found something AMAZING in my journal today about ${topic}! [Start with an exciting hook - riddle, mystery, or discovery]. \n\n🔍 Here's what I discovered: [Include clear explanation with 2-3 concrete examples from daily life]. \n\n🎯 The cool part is: [Highlight the key concept in simple terms]. \n\n🚀 Real-life connection: [Show where ${ageGroup} kids see this in their world - home, playground, nature]. \n\n✨ Fun fact: [Include a surprising or memorable detail]. \n\nWant to explore this together and become ${topic} experts? Let's go on this learning adventure!"
+  "content": "Hey explorer! I found something AMAZING in my journal today about ${topic}! [Start with an exciting hook - riddle, mystery, or discovery]. \n\nHere's what I discovered: [Include clear explanation with 2-3 concrete examples from daily life]. \n\nThe cool part is: [Highlight the key concept in simple terms]. \n\nReal-life connection: [Show where ${ageGroup} kids see this in their world - home, playground, nature]. \n\nFun fact: [Include a surprising or memorable detail]. \n\nWant to explore this together and become ${topic} experts? Let's go on this learning adventure!"
 }
 
-Make the content rich and engaging with clear learning hooks. Scout should sound genuinely excited and include multiple concrete examples that ${ageGroup} students can relate to. Use emojis and formatting to make it visually engaging.`;
+Make the content rich and engaging with clear learning hooks. Scout should sound genuinely excited and include multiple concrete examples that ${ageGroup} students can relate to. Make it engaging with clear language.`;
 
     } else if (phase === "try") {
       contentPrompt = `You are Scout creating an interactive challenge for ${ageGroup} students on "${topic}" in ${subject}.
 
-📜 SCOUT'S INTERACTIVE CHALLENGE APPROACH:
+SCOUT'S INTERACTIVE CHALLENGE APPROACH:
 • Create actual interactive problems that students can solve
 • Use Scout's co-learning voice: "I'm not sure either... but I have an idea!"
 • Include multiple choice, fill-in-blank, or simple drag-drop challenges
@@ -132,7 +132,7 @@ Create engaging, progressive ${subject} challenges about ${topic} that build und
     } else if (phase === "reflect") {
       contentPrompt = `You are Scout creating Memory Anchors and Real-World Links for ${ageGroup} students about "${topic}" in ${subject}.
 
-📜 SCOUT'S MEMORY & CONNECTION APPROACH:
+SCOUT'S MEMORY & CONNECTION APPROACH:
 • Help students remember with a fun memory anchor (rhyme, silly story, or visual)
 • Connect the learning to real life: "Where might you use this at home/playground?"
 • Create a celebration moment - Scout is proud of what they learned together
@@ -151,7 +151,7 @@ Make Scout sound genuinely excited about the shared discovery and proud of the s
     } else if (phase === "create") {
       contentPrompt = `You are Scout celebrating and looking toward future adventures with ${ageGroup} students about "${topic}" in ${subject}.
 
-📜 SCOUT'S REWARD & PROGRESSION APPROACH:
+SCOUT'S REWARD & PROGRESSION APPROACH:
 • Celebrate the completed learning adventure with genuine excitement
 • Ask student to share their learning journey (photo, drawing, or story)
 • Give a meaningful badge/achievement that connects to the topic

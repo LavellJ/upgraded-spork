@@ -131,7 +131,7 @@ export function SkillTreeNode({
           <ThemeAssetImage 
             assetId={getSubjectAssetId()}
             size={20}
-            fallbackEmoji={topic.subject === "mathematics" ? "📊" : topic.subject === "literacy" ? "📚" : "🔬"}
+            fallbackEmoji=""
             animate={false}
           />
         </div>

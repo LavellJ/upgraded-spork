@@ -86,7 +86,7 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
                 <ThemeAssetImage 
                   assetId={getCategoryAssetId(achievement.badge.category)}
                   size={32}
-                  fallbackEmoji="⭐"
+                  fallbackEmoji=""
                   animate={true}
                 />
               </div>
@@ -111,7 +111,7 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
           <ThemeAssetImage 
             assetId="achievement-general" 
             size={24}
-            fallbackEmoji="🏆"
+            fallbackEmoji=""
             animate={false}
           />
           Your Badges ({achievements.length})
@@ -129,7 +129,7 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
                   <ThemeAssetImage 
                     assetId={getCategoryAssetId(achievement.badge.category)}
                     size={48}
-                    fallbackEmoji="⭐"
+                    fallbackEmoji=""
                     animate={true}
                   />
                 </div>
@@ -139,7 +139,7 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
                   <ThemeAssetImage 
                     assetId={getCategoryAssetId(achievement.badge.category)}
                     size={16}
-                    fallbackEmoji="⭐"
+                    fallbackEmoji=""
                     animate={false}
                   />
                   <span className="text-xs text-white/60 capitalize">{achievement.badge.rarity}</span>
@@ -159,7 +159,7 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
           <ThemeAssetImage 
             assetId="exploration-general" 
             size={24}
-            fallbackEmoji="✨"
+            fallbackEmoji=""
             animate={false}
           />
           Available Badges
@@ -180,7 +180,7 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
                     <ThemeAssetImage 
                       assetId={getCategoryAssetId(badge.category)}
                       size={48}
-                      fallbackEmoji="⭐"
+                      fallbackEmoji=""
                       animate={false}
                     />
                   </div>
@@ -190,7 +190,7 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
                     <ThemeAssetImage 
                       assetId={getCategoryAssetId(badge.category)}
                       size={16}
-                      fallbackEmoji="⭐"
+                      fallbackEmoji=""
                       animate={false}
                     />
                     <span className="text-xs text-white/40 capitalize">{badge.rarity}</span>
