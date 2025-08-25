@@ -6,6 +6,11 @@ import { ScoutSpeechButton } from "@/components/ScoutSpeechButton";
 import type { LearningContent } from "@shared/schema";
 import type { AgeGroup } from "../AgeSelector";
 
+// Import educational images
+import countingAnimalsImg from "@assets/generated_images/Counting_animals_educational_illustration_c431f929.png";
+import shapesImg from "@assets/generated_images/Basic_shapes_educational_illustration_db521999.png";
+import natureAnimalsImg from "@assets/generated_images/Nature_animals_educational_scene_9f3bd27f.png";
+
 interface TeachPhaseProps {
   content: LearningContent;
   ageGroup: AgeGroup;
@@ -448,16 +453,111 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                     </motion.div>
                   ) : (
                 <div className="space-y-6">
-                  <div className="bg-white/10 rounded-2xl p-8 backdrop-blur-sm">
-                    <div className="flex items-start gap-4 mb-4">
-                      <ScoutSpeechButton 
-                        text={scoutMessage || (teachContent?.content) || "Here's what I discovered on my adventure!"}
-                        autoSpeak={true}
-                      />
-                    </div>
-                    <div className="text-white text-lg leading-relaxed">
-                      {scoutMessage || (teachContent?.content) || "Here's what I discovered on my adventure!"}
-                    </div>
+                  {/* Visual Learning Cards with Real Pictures - Perfect for 3-5 year olds */}
+                  <div className="space-y-4">
+                    {(() => {
+                      const fullMessage = scoutMessage || (teachContent?.content) || "Here's what I discovered on my adventure!";
+                      const topicName = content.title || "";
+                      
+                      // Select appropriate educational image based on content
+                      const getEducationalImage = () => {
+                        const lowerMessage = fullMessage.toLowerCase();
+                        const lowerTopic = topicName.toLowerCase();
+                        
+                        if (lowerMessage.includes('count') || lowerTopic.includes('count') || lowerMessage.includes('number')) {
+                          return countingAnimalsImg;
+                        } else if (lowerMessage.includes('shape') || lowerTopic.includes('shape') || lowerMessage.includes('color')) {
+                          return shapesImg;
+                        } else if (lowerMessage.includes('animal') || lowerTopic.includes('animal') || lowerMessage.includes('nature')) {
+                          return natureAnimalsImg;
+                        } else {
+                          // Default to counting for math, shapes for general topics
+                          return Math.random() > 0.5 ? countingAnimalsImg : shapesImg;
+                        }
+                      };
+                      
+                      const educationalImage = getEducationalImage();
+                      
+                      // Break content into visual learning chunks
+                      const chunks = fullMessage.split('\n\n').filter(chunk => chunk.trim().length > 0);
+                      
+                      return (
+                        <div className="space-y-4">
+                          {/* Main Educational Image */}
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ type: "spring", damping: 20 }}
+                            className="bg-white/10 rounded-3xl p-4 backdrop-blur-sm border border-white/20 overflow-hidden"
+                          >
+                            <img 
+                              src={educationalImage} 
+                              alt="Educational illustration for learning"
+                              className="w-full h-32 object-cover rounded-2xl"
+                            />
+                            <div className="p-4 text-center">
+                              <motion.div
+                                className="text-white/80 text-sm"
+                                animate={{ opacity: [0.7, 1, 0.7] }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                              >
+                                Scout's discovery picture! 📸
+                              </motion.div>
+                            </div>
+                          </motion.div>
+                          
+                          {/* Learning Text Cards */}
+                          {chunks.slice(0, 2).map((chunk, index) => {
+                            // Extract emoji or create visual indicator
+                            const emojiMatch = chunk.match(/[🔍🎯🚀✨👀🌟⭐]/);
+                            const emoji = emojiMatch ? emojiMatch[0] : ['🗺️', '👀'][index] || '💫';
+                            
+                            // Clean text - remove emojis and formatting for readability
+                            const cleanText = chunk.replace(/[🔍🎯🚀✨👀🌟⭐]/g, '').replace(/\n/g, ' ').trim();
+                            const shortText = cleanText.length > 50 ? cleanText.substring(0, 50) + '...' : cleanText;
+                            
+                            return (
+                              <motion.div
+                                key={index}
+                                initial={{ opacity: 0, x: -50 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: (index + 1) * 0.3 }}
+                                className="bg-white/10 rounded-2xl p-4 backdrop-blur-sm border border-white/20"
+                              >
+                                <div className="flex items-start gap-3">
+                                  <motion.div
+                                    className="text-2xl flex-shrink-0"
+                                    animate={{
+                                      scale: [1, 1.1, 1],
+                                      rotate: [0, 3, 0]
+                                    }}
+                                    transition={{
+                                      duration: 2,
+                                      repeat: Infinity,
+                                      delay: index * 0.5
+                                    }}
+                                  >
+                                    {emoji}
+                                  </motion.div>
+                                  <div className="flex-1">
+                                    <div className="text-white text-sm leading-relaxed">
+                                      {shortText}
+                                    </div>
+                                    {index === 0 && (
+                                      <ScoutSpeechButton 
+                                        text={fullMessage}
+                                        autoSpeak={true}
+                                        className="mt-2"
+                                      />
+                                    )}
+                                  </div>
+                                </div>
+                              </motion.div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
                   </div>
                   
                   {/* Interactive Visual Element */}
@@ -516,9 +616,92 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                               <button
                                 key={index}
                                 onClick={() => {
-                                  // Show encouraging feedback when exploration option is clicked
-                                  const feedback = ["Great exploring!", "Nice discovery!", "You're so curious!", "Keep investigating!"];
-                                  alert(feedback[Math.floor(Math.random() * feedback.length)]);
+                                  setIsInteracting(true);
+                                  
+                                  // Create meaningful interactive experience based on the option
+                                  const activityType = option.label.toLowerCase();
+                                  
+                                  if (activityType.includes('count')) {
+                                    // Counting mini-game
+                                    const items = ['🐸', '🦋', '🐢', '🌸', '🍄'];
+                                    const randomItem = items[Math.floor(Math.random() * items.length)];
+                                    const count = Math.floor(Math.random() * 5) + 2;
+                                    const itemDisplay = Array(count).fill(randomItem).join(' ');
+                                    
+                                    setTimeout(() => {
+                                      const userAnswer = prompt(`Scout says: "Help me count! How many do you see?\n\n${itemDisplay}\n\nEnter your answer:`);
+                                      if (userAnswer === count.toString()) {
+                                        alert("🎉 Amazing! You counted perfectly! Scout is so proud!");
+                                      } else {
+                                        alert(`Good try! Scout counted ${count}. Let's practice more together! 🌟`);
+                                      }
+                                      setIsInteracting(false);
+                                    }, 500);
+                                  } else if (activityType.includes('shape')) {
+                                    // Shape matching mini-game
+                                    const shapes = [
+                                      { shape: '🔴', name: 'circle' },
+                                      { shape: '🔺', name: 'triangle' },
+                                      { shape: '🟩', name: 'square' }
+                                    ];
+                                    const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+                                    
+                                    setTimeout(() => {
+                                      const userAnswer = prompt(`Scout says: "What shape is this? ${randomShape.shape}"\n\nType: circle, triangle, or square`);
+                                      if (userAnswer?.toLowerCase() === randomShape.name) {
+                                        alert("🎉 Perfect! You know your shapes! Scout is amazed!");
+                                      } else {
+                                        alert(`That's a ${randomShape.name}! Great try - shapes are tricky! 🌟`);
+                                      }
+                                      setIsInteracting(false);
+                                    }, 500);
+                                  } else if (activityType.includes('animal')) {
+                                    // Animal sound mini-game
+                                    const animals = [
+                                      { animal: '🐄', sound: 'moo' },
+                                      { animal: '🐑', sound: 'baa' },
+                                      { animal: '🐸', sound: 'ribbit' },
+                                      { animal: '🐦', sound: 'tweet' }
+                                    ];
+                                    const randomAnimal = animals[Math.floor(Math.random() * animals.length)];
+                                    
+                                    setTimeout(() => {
+                                      const userAnswer = prompt(`Scout says: "What sound does this animal make? ${randomAnimal.animal}"\n\nType the sound:`);
+                                      if (userAnswer?.toLowerCase().includes(randomAnimal.sound)) {
+                                        alert("🎉 Yes! You know animal sounds! Scout loves exploring with you!");
+                                      } else {
+                                        alert(`It goes "${randomAnimal.sound}"! Animals make such fun sounds! 🌟`);
+                                      }
+                                      setIsInteracting(false);
+                                    }, 500);
+                                  } else if (activityType.includes('letter')) {
+                                    // Letter recognition mini-game
+                                    const letters = ['A', 'B', 'C', 'D', 'E'];
+                                    const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+                                    
+                                    setTimeout(() => {
+                                      const userAnswer = prompt(`Scout says: "Can you find this letter in your name or around you? ${randomLetter}"\n\nType YES if you found it, or NO if you didn't:`);
+                                      if (userAnswer?.toLowerCase().includes('yes') || userAnswer?.toLowerCase().includes('no')) {
+                                        alert("🎉 Great exploring! Letters are everywhere - you're becoming a reading detective! 🔍");
+                                      } else {
+                                        alert("Keep looking around - letters are amazing discoveries! 🌟");
+                                      }
+                                      setIsInteracting(false);
+                                    }, 500);
+                                  } else {
+                                    // Default exploration activity
+                                    setTimeout(() => {
+                                      const discoveries = [
+                                        "Scout found a shiny rock that changes colors in the sunlight! ✨",
+                                        "Look! A butterfly landed on Scout's backpack! 🦋", 
+                                        "Scout discovered footprints leading to a secret garden! 🐾",
+                                        "Amazing! Scout found a tree that whispers when the wind blows! 🌳"
+                                      ];
+                                      const discovery = discoveries[Math.floor(Math.random() * discoveries.length)];
+                                      alert(`${discovery}\n\nScout says: "Want to explore more together? There's always something amazing to discover!"`);
+                                      setIsInteracting(false);
+                                    }, 500);
+                                  }
                                 }}
                                 className={`aspect-square bg-gradient-to-br ${option.color} rounded-2xl border-2 ${option.border} flex flex-col items-center justify-center cursor-pointer hover:scale-105 transition-all p-2`}
                                 data-testid={`exploration-${index}`}
