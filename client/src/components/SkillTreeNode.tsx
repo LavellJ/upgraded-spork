@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { ThemeAssetImage } from "@/components/ThemeAssetImage";
 import type { CurriculumTopic } from "@/lib/curriculum";
 
 interface SkillTreeNodeProps {
@@ -73,18 +74,16 @@ export function SkillTreeNode({
     }
   };
 
-  const getSubjectIcon = () => {
+  const getSubjectAssetId = () => {
     switch (topic.subject) {
       case "mathematics":
-        return "📊";
+        return "subject-mathematics";
       case "literacy":
-        return "📚";
+        return "subject-literacy";
       case "science":
-        return "🔬";
-      case "social-studies":
-        return "🌏";
+        return "subject-science";
       default:
-        return "📖";
+        return "subject-literacy";
     }
   };
 
@@ -128,8 +127,13 @@ export function SkillTreeNode({
         )}
 
         {/* Subject icon */}
-        <div className="absolute top-1 left-1 text-lg">
-          {getSubjectIcon()}
+        <div className="absolute top-1 left-1">
+          <ThemeAssetImage 
+            assetId={getSubjectAssetId()}
+            size={20}
+            fallbackEmoji={topic.subject === "mathematics" ? "📊" : topic.subject === "literacy" ? "📚" : "🔬"}
+            animate={false}
+          />
         </div>
 
         {/* Level indicator */}
