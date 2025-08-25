@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Play, Pause, RotateCcw, Eye, ArrowRight, Sparkles, Star, Heart } from "lucide-react";
 import { ExplorerBuddy } from "../ExplorerBuddy";
 import { ScoutSpeechButton } from "@/components/ScoutSpeechButton";
+import { ThemeAssetImage } from "@/components/ThemeAssetImage";
 import type { LearningContent } from "@shared/schema";
 import type { AgeGroup } from "../AgeSelector";
 
@@ -163,9 +164,15 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="text-2xl text-white font-bold"
+          className="flex items-center justify-center gap-3 text-2xl text-white font-bold"
         >
-          🔢 Count with Scout!
+          <ThemeAssetImage 
+            assetId="math-counting" 
+            size={48}
+            fallbackEmoji="🔢"
+            animate={true}
+          />
+          Count with Scout!
         </motion.div>
         
         <div className="text-white/90 text-sm">How many do you see?</div>
@@ -207,8 +214,14 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
             animate={{ scale: 1 }}
             className={`p-4 rounded-2xl ${isCorrect ? 'bg-green-500/20 border border-green-400' : 'bg-orange-500/20 border border-orange-400'}`}
           >
-            <div className="text-white text-lg font-bold">
-              {isCorrect ? "🎉 Amazing! You counted perfectly!" : `Good try! I count ${data.targetCount}. Let's practice more! 🌟`}
+            <div className="flex items-center justify-center gap-3 text-white text-lg font-bold">
+              <ThemeAssetImage 
+                assetId={isCorrect ? "feedback-success" : "feedback-encouragement"} 
+                size={32}
+                fallbackEmoji={isCorrect ? "🎉" : "🌟"}
+                animate={true}
+              />
+              {isCorrect ? "Amazing! You counted perfectly!" : `Good try! I count ${data.targetCount}. Let's practice more together!`}
             </div>
           </motion.div>
         )}
@@ -234,9 +247,15 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="text-2xl text-white font-bold"
+          className="flex items-center justify-center gap-3 text-2xl text-white font-bold"
         >
-          🔍 Find the Shape!
+          <ThemeAssetImage 
+            assetId="math-shapes" 
+            size={48}
+            fallbackEmoji="🔍"
+            animate={true}
+          />
+          Find the Shape!
         </motion.div>
         
         <div className="text-white/90 text-sm">What shape is this?</div>
@@ -273,8 +292,14 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
             animate={{ scale: 1 }}
             className={`p-4 rounded-2xl ${isCorrect ? 'bg-green-500/20 border border-green-400' : 'bg-orange-500/20 border border-orange-400'}`}
           >
-            <div className="text-white text-lg font-bold">
-              {isCorrect ? "🎉 Perfect! You know your shapes!" : `That's a ${data.name}! Great try - shapes are tricky! 🌟`}
+            <div className="flex items-center justify-center gap-3 text-white text-lg font-bold">
+              <ThemeAssetImage 
+                assetId={isCorrect ? "feedback-success" : "feedback-encouragement"} 
+                size={32}
+                fallbackEmoji={isCorrect ? "🎉" : "🌟"}
+                animate={true}
+              />
+              {isCorrect ? "Perfect! You know your shapes!" : `That's a ${data.name}! Great try - shapes are tricky!`}
             </div>
           </motion.div>
         )}
@@ -302,9 +327,15 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="text-2xl text-white font-bold"
+          className="flex items-center justify-center gap-3 text-2xl text-white font-bold"
         >
-          🔊 Animal Sounds!
+          <ThemeAssetImage 
+            assetId="science-animals" 
+            size={48}
+            fallbackEmoji="🔊"
+            animate={true}
+          />
+          Animal Sounds!
         </motion.div>
         
         <div className="text-white/90 text-sm">What sound does this animal make?</div>
@@ -341,8 +372,14 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
             animate={{ scale: 1 }}
             className={`p-4 rounded-2xl ${isCorrect ? 'bg-green-500/20 border border-green-400' : 'bg-orange-500/20 border border-orange-400'}`}
           >
-            <div className="text-white text-lg font-bold">
-              {isCorrect ? "🎉 Yes! You know animal sounds!" : `It goes "${data.sound}"! Animals make such fun sounds! 🌟`}
+            <div className="flex items-center justify-center gap-3 text-white text-lg font-bold">
+              <ThemeAssetImage 
+                assetId={isCorrect ? "feedback-success" : "feedback-encouragement"} 
+                size={32}
+                fallbackEmoji={isCorrect ? "🎉" : "🌟"}
+                animate={true}
+              />
+              {isCorrect ? "Yes! You know animal sounds!" : `It goes "${data.sound}"! Animals make such fun sounds!`}
             </div>
           </motion.div>
         )}
@@ -363,9 +400,15 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="text-2xl text-white font-bold"
+          className="flex items-center justify-center gap-3 text-2xl text-white font-bold"
         >
-          🔤 Letter Detective!
+          <ThemeAssetImage 
+            assetId="literacy-letters" 
+            size={48}
+            fallbackEmoji="🔤"
+            animate={true}
+          />
+          Letter Detective!
         </motion.div>
         
         <div className="text-white/90 text-sm">Can you find this letter around you?</div>
@@ -922,38 +965,38 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                           // Mathematics exploration options
                           if (topicName.toLowerCase().includes('count') || topicName.toLowerCase().includes('number') || message.toLowerCase().includes('count')) {
                             return [
-                              { icon: '🔢', label: 'Count Objects', color: 'from-green-400/40 to-green-500/40', border: 'border-green-400/60' },
-                              { icon: '👆', label: 'Point & Count', color: 'from-blue-400/40 to-blue-500/40', border: 'border-blue-400/60' }
+                              { assetId: 'exploration-counting', label: 'Count Objects', color: 'from-green-400/40 to-green-500/40', border: 'border-green-400/60' },
+                              { assetId: 'math-counting', label: 'Point & Count', color: 'from-blue-400/40 to-blue-500/40', border: 'border-blue-400/60' }
                             ];
                           }
                           
                           if (topicName.toLowerCase().includes('shape') || topicName.toLowerCase().includes('color') || message.toLowerCase().includes('shape')) {
                             return [
-                              { icon: '🔴', label: 'Find Shapes', color: 'from-red-400/40 to-red-500/40', border: 'border-red-400/60' },
-                              { icon: '🎨', label: 'Match Colors', color: 'from-purple-400/40 to-purple-500/40', border: 'border-purple-400/60' }
+                              { assetId: 'exploration-shapes', label: 'Find Shapes', color: 'from-red-400/40 to-red-500/40', border: 'border-red-400/60' },
+                              { assetId: 'exploration-colors', label: 'Match Colors', color: 'from-purple-400/40 to-purple-500/40', border: 'border-purple-400/60' }
                             ];
                           }
                           
                           // Science exploration options
                           if (message.toLowerCase().includes('animal') || message.toLowerCase().includes('nature') || topicName.toLowerCase().includes('animal')) {
                             return [
-                              { icon: '🐾', label: 'Animal Sounds', color: 'from-green-400/40 to-green-500/40', border: 'border-green-400/60' },
-                              { icon: '🌿', label: 'Where They Live', color: 'from-emerald-400/40 to-emerald-500/40', border: 'border-emerald-400/60' }
+                              { assetId: 'exploration-animals', label: 'Animal Sounds', color: 'from-green-400/40 to-green-500/40', border: 'border-green-400/60' },
+                              { assetId: 'exploration-habitats', label: 'Where They Live', color: 'from-emerald-400/40 to-emerald-500/40', border: 'border-emerald-400/60' }
                             ];
                           }
                           
                           // Literacy exploration options  
                           if (message.toLowerCase().includes('letter') || message.toLowerCase().includes('read') || topicName.toLowerCase().includes('letter')) {
                             return [
-                              { icon: '🔤', label: 'Letter Hunt', color: 'from-blue-400/40 to-blue-500/40', border: 'border-blue-400/60' },
-                              { icon: '📖', label: 'Sound It Out', color: 'from-indigo-400/40 to-indigo-500/40', border: 'border-indigo-400/60' }
+                              { assetId: 'exploration-letters', label: 'Letter Hunt', color: 'from-blue-400/40 to-blue-500/40', border: 'border-blue-400/60' },
+                              { assetId: 'exploration-sounds', label: 'Sound It Out', color: 'from-indigo-400/40 to-indigo-500/40', border: 'border-indigo-400/60' }
                             ];
                           }
                           
                           // Default exploration options
                           return [
-                            { icon: '🔍', label: 'Explore More', color: 'from-orange-400/40 to-orange-500/40', border: 'border-orange-400/60' },
-                            { icon: '🤔', label: 'Think About It', color: 'from-purple-400/40 to-purple-500/40', border: 'border-purple-400/60' }
+                            { assetId: 'exploration-general', label: 'Explore More', color: 'from-orange-400/40 to-orange-500/40', border: 'border-orange-400/60' },
+                            { assetId: 'exploration-thinking', label: 'Think About It', color: 'from-purple-400/40 to-purple-500/40', border: 'border-purple-400/60' }
                           ];
                         };
                         
@@ -1032,7 +1075,14 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                                 className={`aspect-square bg-gradient-to-br ${option.color} rounded-2xl border-2 ${option.border} flex flex-col items-center justify-center cursor-pointer hover:scale-105 transition-all p-2`}
                                 data-testid={`exploration-${index}`}
                               >
-                                <div className="text-white text-2xl mb-1">{option.icon}</div>
+                                <div className="mb-1">
+                                  <ThemeAssetImage 
+                                    assetId={option.assetId} 
+                                    size={40}
+                                    fallbackEmoji="🎯"
+                                    animate={false}
+                                  />
+                                </div>
                                 <div className="text-white text-xs font-medium text-center leading-tight">{option.label}</div>
                               </button>
                             ))}
