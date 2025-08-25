@@ -20,7 +20,9 @@ import {
   type Achievement,
   type InsertAchievement,
   type LessonCompletion,
-  type InsertLessonCompletion
+  type InsertLessonCompletion,
+  type Asset,
+  type InsertAsset
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { databaseStorage } from "./databaseStorage";
@@ -92,6 +94,15 @@ export interface IStorage {
   
   // Student Artifacts
   createStudentArtifact(data: any): Promise<any>;
+  
+  // Assets
+  getAllAssets(): Promise<Asset[]>;
+  getAssetByAssetId(assetId: string): Promise<Asset | undefined>;
+  getAssetsByCategory(category: string): Promise<Asset[]>;
+  getAssetsBySubject(subject: string): Promise<Asset[]>;
+  createAsset(asset: InsertAsset): Promise<Asset>;
+  createAssets(assets: InsertAsset[]): Promise<Asset[]>;
+  updateAsset(id: string, updates: Partial<Asset>): Promise<Asset>;
 }
 
 export class MemStorage implements IStorage {
@@ -108,6 +119,7 @@ export class MemStorage implements IStorage {
   private lessonCompletions: Map<string, LessonCompletion>;
   private learningSessions: Map<string, any>;
   private studentArtifacts: Map<string, any>;
+  private assets: Map<string, Asset>;
 
   constructor() {
     this.parents = new Map();
@@ -123,6 +135,7 @@ export class MemStorage implements IStorage {
     this.lessonCompletions = new Map();
     this.learningSessions = new Map();
     this.studentArtifacts = new Map();
+    this.assets = new Map();
     
     // Initialize with sample topics and questions
     this.initializeSampleTopics();
@@ -3006,6 +3019,86 @@ export class MemStorage implements IStorage {
       };
       this.lessonCompletions.set(id, newCompletion);
       return newCompletion;
+    }
+  }
+
+  // Assets
+  async getAllAssets(): Promise<Asset[]> {
+    try {
+      return await databaseStorage.getAllAssets();
+    } catch (error) {
+      return Array.from(this.assets.values());
+    }
+  }
+
+  async getAssetByAssetId(assetId: string): Promise<Asset | undefined> {
+    try {
+      return await databaseStorage.getAssetByAssetId(assetId);
+    } catch (error) {
+      return Array.from(this.assets.values()).find(asset => asset.assetId === assetId);
+    }
+  }
+
+  async getAssetsByCategory(category: string): Promise<Asset[]> {
+    try {
+      return await databaseStorage.getAssetsByCategory(category);
+    } catch (error) {
+      return Array.from(this.assets.values()).filter(asset => asset.category === category);
+    }
+  }
+
+  async getAssetsBySubject(subject: string): Promise<Asset[]> {
+    try {
+      return await databaseStorage.getAssetsBySubject(subject);
+    } catch (error) {
+      return Array.from(this.assets.values()).filter(asset => asset.subject === subject);
+    }
+  }
+
+  async createAsset(asset: InsertAsset): Promise<Asset> {
+    try {
+      return await databaseStorage.createAsset(asset);
+    } catch (error) {
+      const id = randomUUID();
+      const newAsset: Asset = {
+        ...asset,
+        id,
+        createdAt: new Date()
+      };
+      this.assets.set(id, newAsset);
+      return newAsset;
+    }
+  }
+
+  async createAssets(assetList: InsertAsset[]): Promise<Asset[]> {
+    try {
+      return await databaseStorage.createAssets(assetList);
+    } catch (error) {
+      const newAssets: Asset[] = assetList.map(asset => {
+        const id = randomUUID();
+        const newAsset: Asset = {
+          ...asset,
+          id,
+          createdAt: new Date()
+        };
+        this.assets.set(id, newAsset);
+        return newAsset;
+      });
+      return newAssets;
+    }
+  }
+
+  async updateAsset(id: string, updates: Partial<Asset>): Promise<Asset> {
+    try {
+      return await databaseStorage.updateAsset(id, updates);
+    } catch (error) {
+      const existingAsset = this.assets.get(id);
+      if (!existingAsset) {
+        throw new Error('Asset not found');
+      }
+      const updatedAsset = { ...existingAsset, ...updates };
+      this.assets.set(id, updatedAsset);
+      return updatedAsset;
     }
   }
 }
