@@ -2,32 +2,32 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { getThemeAsset, type ThemeAsset } from '@/assets/themeAssets';
 
-// Import geometric animal icons that match bunny/fox/owl style
-import geometricBearImg from '@assets/generated_images/Geometric_bear_counting_icon_26aa61b2.png';
-import geometricDeerImg from '@assets/generated_images/Geometric_deer_science_icon_2f456b14.png';
-import geometricCatImg from '@assets/generated_images/Geometric_cat_literacy_icon_fb1352b8.png';
-import geometricButterflyImg from '@assets/generated_images/Geometric_butterfly_success_icon_a8de3737.png';
-import geometricSquirrelImg from '@assets/generated_images/Geometric_squirrel_thinking_icon_1f8094b0.png';
+// Import ultra-minimal geometric animal icons matching exact bunny/fox/owl style
+import minimalBearImg from '@assets/generated_images/Minimal_geometric_bear_shapes_11a702b1.png';
+import minimalDeerImg from '@assets/generated_images/Minimal_geometric_deer_shapes_7440e0a8.png';
+import minimalCatImg from '@assets/generated_images/Minimal_geometric_cat_shapes_87d086b3.png';
+import minimalButterflyImg from '@assets/generated_images/Minimal_geometric_butterfly_shapes_ef2934a5.png';
+import minimalSquirrelImg from '@assets/generated_images/Minimal_geometric_squirrel_shapes_9e7f4586.png';
 
-// Map asset IDs to geometric animal icons matching bunny/fox/owl style
+// Map asset IDs to ultra-minimal geometric animals matching exact bunny/fox/owl style
 const VITE_ASSET_MAP: Record<string, string> = {
-  'math-counting': geometricBearImg,
-  'math-shapes': geometricBearImg,
-  'science-animals': geometricDeerImg,
-  'feedback-success': geometricButterflyImg,
-  'feedback-encouragement': geometricSquirrelImg,
-  'feedback-thinking': geometricSquirrelImg,
-  'exploration-general': geometricSquirrelImg,
-  'discovery-exploration': geometricSquirrelImg,
-  'achievement-general': geometricButterflyImg,
-  'exploration-counting': geometricBearImg,
-  'exploration-shapes': geometricBearImg,
-  'exploration-animals': geometricDeerImg,
-  'exploration-habitats': geometricDeerImg,
-  'literacy-letters': geometricCatImg,
-  'exploration-letters': geometricCatImg,
-  'ui-scout-speech': geometricCatImg,
-  'ui-camera-discovery': geometricSquirrelImg
+  'math-counting': minimalBearImg,
+  'math-shapes': minimalBearImg,
+  'science-animals': minimalDeerImg,
+  'feedback-success': minimalButterflyImg,
+  'feedback-encouragement': minimalSquirrelImg,
+  'feedback-thinking': minimalSquirrelImg,
+  'exploration-general': minimalSquirrelImg,
+  'discovery-exploration': minimalSquirrelImg,
+  'achievement-general': minimalButterflyImg,
+  'exploration-counting': minimalBearImg,
+  'exploration-shapes': minimalBearImg,
+  'exploration-animals': minimalDeerImg,
+  'exploration-habitats': minimalDeerImg,
+  'literacy-letters': minimalCatImg,
+  'exploration-letters': minimalCatImg,
+  'ui-scout-speech': minimalCatImg,
+  'ui-camera-discovery': minimalSquirrelImg
 };
 
 interface ThemeAssetImageProps {
