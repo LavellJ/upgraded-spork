@@ -62,7 +62,8 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
   const [misconceptionTriggered, setMisconceptionTriggered] = useState<string | null>(null);
 
-  const tryContent = content.content;
+  // The API returns the interactive structure directly, not nested under content.content
+  const tryContent = content;
   
   // Handle different content formats
   const isScoutFormat = typeof tryContent === 'string';
@@ -74,15 +75,17 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
   const currentStep = currentExample?.steps?.[currentStepIndex];
   
   // Debug: Log content analysis
-  if (process.env.NODE_ENV === 'development') {
-    console.log('TryPhase Content Analysis:', {
-      isScoutFormat,
-      hasInteractiveFormat,
-      currentExample: !!currentExample,
-      currentStep: !!currentStep,
-      exampleCount: legacyContent?.fadedExamples?.length || 0
-    });
-  }
+  console.log('TryPhase Content Analysis:', {
+    isScoutFormat,
+    hasInteractiveFormat,
+    tryContentType: typeof tryContent,
+    tryContentKeys: tryContent && typeof tryContent === 'object' ? Object.keys(tryContent) : [],
+    hasFadedExamples: !!(tryContent as any)?.fadedExamples,
+    currentExample: !!currentExample,
+    currentStep: !!currentStep,
+    exampleCount: legacyContent?.fadedExamples?.length || 0,
+    actualContent: tryContent
+  });
 
   const getStepKey = () => `${currentExampleIndex}-${currentStepIndex}`;
 
