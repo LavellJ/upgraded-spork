@@ -212,14 +212,72 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                   <div className="bg-gradient-to-b from-white/20 to-white/10 rounded-2xl p-8 border-2 border-white/20">
                     <div className="text-center space-y-4">
                       <div className="text-white/80 text-base">Try exploring this:</div>
-                      <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
-                        <div className="aspect-square bg-gradient-to-br from-green-400/40 to-green-500/40 rounded-2xl border-2 border-green-400/60 flex items-center justify-center cursor-pointer hover:scale-105 transition-all">
-                          <div className="text-white text-2xl">✨</div>
-                        </div>
-                        <div className="aspect-square bg-gradient-to-br from-blue-400/40 to-blue-500/40 rounded-2xl border-2 border-blue-400/60 flex items-center justify-center cursor-pointer hover:scale-105 transition-all">
-                          <div className="text-white text-2xl">🌟</div>
-                        </div>
-                      </div>
+                      {/* Generate exploration options based on content */}
+                      {(() => {
+                        const getExplorationOptions = () => {
+                          const message = scoutMessage || (teachContent?.content) || "";
+                          const topicName = content.topicName || "";
+                          
+                          // Mathematics exploration options
+                          if (topicName.toLowerCase().includes('count') || topicName.toLowerCase().includes('number') || message.toLowerCase().includes('count')) {
+                            return [
+                              { icon: '🔢', label: 'Count Objects', color: 'from-green-400/40 to-green-500/40', border: 'border-green-400/60' },
+                              { icon: '👆', label: 'Point & Count', color: 'from-blue-400/40 to-blue-500/40', border: 'border-blue-400/60' }
+                            ];
+                          }
+                          
+                          if (topicName.toLowerCase().includes('shape') || topicName.toLowerCase().includes('color') || message.toLowerCase().includes('shape')) {
+                            return [
+                              { icon: '🔴', label: 'Find Shapes', color: 'from-red-400/40 to-red-500/40', border: 'border-red-400/60' },
+                              { icon: '🎨', label: 'Match Colors', color: 'from-purple-400/40 to-purple-500/40', border: 'border-purple-400/60' }
+                            ];
+                          }
+                          
+                          // Science exploration options
+                          if (message.toLowerCase().includes('animal') || message.toLowerCase().includes('nature') || topicName.toLowerCase().includes('animal')) {
+                            return [
+                              { icon: '🐾', label: 'Animal Sounds', color: 'from-green-400/40 to-green-500/40', border: 'border-green-400/60' },
+                              { icon: '🌿', label: 'Where They Live', color: 'from-emerald-400/40 to-emerald-500/40', border: 'border-emerald-400/60' }
+                            ];
+                          }
+                          
+                          // Literacy exploration options  
+                          if (message.toLowerCase().includes('letter') || message.toLowerCase().includes('read') || topicName.toLowerCase().includes('letter')) {
+                            return [
+                              { icon: '🔤', label: 'Letter Hunt', color: 'from-blue-400/40 to-blue-500/40', border: 'border-blue-400/60' },
+                              { icon: '📖', label: 'Sound It Out', color: 'from-indigo-400/40 to-indigo-500/40', border: 'border-indigo-400/60' }
+                            ];
+                          }
+                          
+                          // Default exploration options
+                          return [
+                            { icon: '🔍', label: 'Explore More', color: 'from-orange-400/40 to-orange-500/40', border: 'border-orange-400/60' },
+                            { icon: '🤔', label: 'Think About It', color: 'from-purple-400/40 to-purple-500/40', border: 'border-purple-400/60' }
+                          ];
+                        };
+                        
+                        const options = getExplorationOptions();
+                        
+                        return (
+                          <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+                            {options.map((option, index) => (
+                              <button
+                                key={index}
+                                onClick={() => {
+                                  // Show encouraging feedback when exploration option is clicked
+                                  const feedback = ["Great exploring!", "Nice discovery!", "You're so curious!", "Keep investigating!"];
+                                  alert(feedback[Math.floor(Math.random() * feedback.length)]);
+                                }}
+                                className={`aspect-square bg-gradient-to-br ${option.color} rounded-2xl border-2 ${option.border} flex flex-col items-center justify-center cursor-pointer hover:scale-105 transition-all p-2`}
+                                data-testid={`exploration-${index}`}
+                              >
+                                <div className="text-white text-2xl mb-1">{option.icon}</div>
+                                <div className="text-white text-xs font-medium text-center leading-tight">{option.label}</div>
+                              </button>
+                            ))}
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                   
