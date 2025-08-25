@@ -11,6 +11,7 @@ import { ProgressShowcase } from "@/pages/ProgressShowcase";
 import ParentAuth from "@/pages/ParentAuth";
 import ParentDashboard from "@/pages/ParentDashboard";
 import AddChild from "@/pages/AddChild";
+import { VoiceSetup } from "@/pages/VoiceSetup";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/parent/auth" component={ParentAuth} />
       <Route path="/parent/dashboard" component={ParentDashboard} />
       <Route path="/parent/add-child" component={AddChild} />
+      <Route path="/voice-setup" component={VoiceSetup} />
       <Route component={NotFound} />
     </Switch>
   );

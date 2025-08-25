@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { generateQuestions, generateSmartHint, generatePersonalizedExplanation, calculateAdaptiveDifficulty, generateLearningPathRecommendations, generateBuddyMessage } from "./services/openai";
 import { generateLearningContent } from "./aiServices/learningContent";
 import { badgeSystem, BADGE_DEFINITIONS } from "./badgeSystem";
+import { ElevenLabsService } from "./services/elevenlabs";
 import { 
   insertStudentSchema, 
   insertProgressSchema, 
@@ -890,6 +891,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
         `Hey ${studentName}! Ready for our next adventure? 🚀`;
       
       res.json({ message: fallbackMessage });
+    }
+  });
+
+  // ElevenLabs Speech Generation
+  app.post("/api/speech/generate", async (req, res) => {
+    try {
+      const { text, voiceId } = req.body;
+      
+      if (!text) {
+        return res.status(400).json({ error: "Text is required" });
+      }
+
+      if (!voiceId) {
+        return res.status(400).json({ error: "Voice ID is required" });
+      }
+
+      const elevenLabs = new ElevenLabsService();
+      const audioBuffer = await elevenLabs.generateSpeech(text, voiceId, {
+        stability: 0.6,
+        similarity_boost: 0.8,
+        style: 0.3,
+        use_speaker_boost: true
+      });
+
+      res.set({
+        'Content-Type': 'audio/mpeg',
+        'Content-Length': audioBuffer.byteLength.toString()
+      });
+
+      res.send(Buffer.from(audioBuffer));
+    } catch (error) {
+      console.error("Error generating speech:", error);
+      res.status(500).json({ error: "Failed to generate speech" });
+    }
+  });
+
+  // Get available voices from ElevenLabs
+  app.get("/api/speech/voices", async (req, res) => {
+    try {
+      const elevenLabs = new ElevenLabsService();
+      const voices = await elevenLabs.getVoices();
+      res.json(voices);
+    } catch (error) {
+      console.error("Error fetching voices:", error);
+      res.status(500).json({ error: "Failed to fetch voices" });
     }
   });
 
