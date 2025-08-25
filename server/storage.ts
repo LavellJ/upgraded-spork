@@ -23,6 +23,7 @@ import {
   type InsertLessonCompletion
 } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { databaseStorage } from "./databaseStorage";
 
 export interface IStorage {
   // Parents
@@ -2787,19 +2788,11 @@ export class MemStorage implements IStorage {
 
   // Achievements
   async getAchievementsByStudent(studentId: string): Promise<Achievement[]> {
-    return Array.from(this.achievements.values()).filter(a => a.studentId === studentId);
+    return await databaseStorage.getAchievementsByStudent(studentId);
   }
 
   async createAchievement(insertAchievement: InsertAchievement): Promise<Achievement> {
-    const id = randomUUID();
-    const achievement: Achievement = { 
-      ...insertAchievement, 
-      id,
-      earnedAt: new Date(),
-      metadata: insertAchievement.metadata || null
-    };
-    this.achievements.set(id, achievement);
-    return achievement;
+    return await databaseStorage.createAchievement(insertAchievement);
   }
 
   async hasAchievement(studentId: string, badgeId: string): Promise<boolean> {
@@ -2970,20 +2963,11 @@ export class MemStorage implements IStorage {
 
   // Lesson Completion Methods
   async getCompletedLessons(studentId: string): Promise<LessonCompletion[]> {
-    return Array.from(this.lessonCompletions.values()).filter(
-      completion => completion.studentId === studentId
-    );
+    return await databaseStorage.getCompletedLessons(studentId);
   }
 
   async createLessonCompletion(completion: InsertLessonCompletion): Promise<LessonCompletion> {
-    const id = randomUUID();
-    const newCompletion: LessonCompletion = {
-      ...completion,
-      id,
-      completedAt: new Date()
-    };
-    this.lessonCompletions.set(id, newCompletion);
-    return newCompletion;
+    return await databaseStorage.createLessonCompletion(completion);
   }
 }
 
