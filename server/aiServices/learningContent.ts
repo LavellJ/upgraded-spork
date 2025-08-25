@@ -34,10 +34,10 @@ Generate a JSON response with this exact structure:
   "id": "unique-id",
   "phase": "teach",
   "title": "Adventure Hook: [topic name]",
-  "content": "Hey explorer! I found something amazing in my journal today about ${topic}! [Include Scout's riddle/story/fun fact, then simple explanation with adventure examples, ending with 'Want to explore this together?']"
+  "content": "Hey explorer! I found something AMAZING in my journal today about ${topic}! [Start with an exciting hook - riddle, mystery, or discovery]. \n\n🔍 Here's what I discovered: [Include clear explanation with 2-3 concrete examples from daily life]. \n\n🎯 The cool part is: [Highlight the key concept in simple terms]. \n\n🚀 Real-life connection: [Show where ${ageGroup} kids see this in their world - home, playground, nature]. \n\n✨ Fun fact: [Include a surprising or memorable detail]. \n\nWant to explore this together and become ${topic} experts? Let's go on this learning adventure!"
 }
 
-Make Scout sound like a curious 8-year-old explorer who's genuinely excited about learning WITH the student, not teaching AT them. Use concrete examples from nature, adventures, or daily life for ${ageGroup}.`;
+Make the content rich and engaging with clear learning hooks. Scout should sound genuinely excited and include multiple concrete examples that ${ageGroup} students can relate to. Use emojis and formatting to make it visually engaging.`;
 
     } else if (phase === "try") {
       contentPrompt = `You are Scout creating an interactive challenge for ${ageGroup} students on "${topic}" in ${subject}.
@@ -48,7 +48,9 @@ Make Scout sound like a curious 8-year-old explorer who's genuinely excited abou
 • Include multiple choice, fill-in-blank, or simple drag-drop challenges
 • Make it age-appropriate for ${ageGroup}
 
-CRITICAL: You MUST generate the fadedExamples structure below, NOT simple content text. Generate a JSON response with this EXACT structure for interactive challenges:
+CRITICAL: You MUST generate the fadedExamples structure below, NOT simple content text. Create 2-3 progressive challenges that build understanding step by step.
+
+Generate a JSON response with this EXACT structure for interactive challenges:
 {
   "id": "unique-id",
   "phase": "try",
@@ -56,38 +58,76 @@ CRITICAL: You MUST generate the fadedExamples structure below, NOT simple conten
   "fadedExamples": [
     {
       "id": "challenge-1",
-      "problem": "Scout says: 'I found this tricky problem about ${topic}! Can you help me solve it?' [Include specific problem/question]",
+      "problem": "Scout says: 'I found this tricky problem about ${topic}! Can you help me solve it?' [Include specific problem/question with real-world context]",
       "steps": [
         {
-          "stepText": "[Question or challenge related to ${topic}]",
+          "stepText": "[Step 1: Simple warm-up question]",
+          "support": "multiple choice",
+          "answer": "[correct answer]",
+          "choices": ["[option 1]", "[option 2]", "[option 3]", "[correct answer]"],
+          "hintLadder": {
+            "nudge": "Scout whispers: 'Think about what we just learned about ${topic}...'",
+            "strategy": "Scout suggests: 'Let's remember the example from my story...'",
+            "workedStep": "Scout demonstrates: 'When I think about it this way...'",
+            "reveal": "Scout reveals: 'The answer is [correct answer] because [detailed explanation with connection to teaching phase]'"
+          }
+        },
+        {
+          "stepText": "[Step 2: Application question that builds on step 1]",
           "support": "blank",
           "answer": "[correct answer]",
           "hintLadder": {
-            "nudge": "Scout whispers: 'Hmm, what do you think about...'",
-            "strategy": "Scout suggests: 'Maybe we could try thinking about it this way...'",
-            "workedStep": "Scout shows: 'Oh! I think the answer might be...'",
-            "reveal": "Scout reveals: 'The answer is [correct answer] because...'"
+            "nudge": "Scout wonders: 'How does this connect to what we just figured out?'",
+            "strategy": "Scout suggests: 'Let's use the same thinking pattern...'",
+            "workedStep": "Scout works through: 'Based on step 1, I think...'",
+            "reveal": "Scout explains: 'The answer is [correct answer] because it follows the same pattern we discovered!'"
           }
         }
       ],
       "feedback": {
-        "success": "Scout cheers: 'Wow! We figured it out together! You're amazing!'",
-        "encouragement": "Scout encourages: 'We're getting closer! Let's try again together!'"
+        "success": "Scout celebrates: 'Incredible! You're really understanding ${topic} now! Your thinking is getting stronger!'",
+        "encouragement": "Scout encourages: 'We're building great understanding together! Let's keep exploring!'"
+      }
+    },
+    {
+      "id": "challenge-2", 
+      "problem": "Scout says: 'Now let's try a trickier adventure with ${topic}!' [Include more complex scenario]",
+      "steps": [
+        {
+          "stepText": "[Challenging application that requires deeper thinking]",
+          "support": "blank",
+          "answer": "[correct answer]",
+          "hintLadder": {
+            "nudge": "Scout thinks: 'This reminds me of something we solved before...'",
+            "strategy": "Scout suggests: 'What if we break this into smaller pieces like we did earlier?'",
+            "workedStep": "Scout demonstrates: 'Let me show you my thinking process...'",
+            "reveal": "Scout explains: 'The answer is [correct answer] because [comprehensive explanation connecting all learning]'"
+          }
+        }
+      ],
+      "feedback": {
+        "success": "Scout is amazed: 'WOW! You've really mastered ${topic}! I'm so proud of how we've grown together!'",
+        "encouragement": "Scout motivates: 'You're thinking like a real ${subject} explorer now! Keep going!'"
       }
     }
   ],
   "misconceptionDetector": {
     "commonErrors": [
       {
-        "pattern": "[common wrong answer pattern]",
-        "explanation": "Scout notices: 'Oh, I see what happened! Let me help explain...'",
-        "redirect": "Scout redirects: 'Let's try thinking about it this way instead...'"
+        "pattern": "[specific common error for ${topic}]",
+        "explanation": "Scout observes: 'I notice you might be thinking about [specific misconception]. That's actually a really common way to think about it!'",
+        "redirect": "Scout guides: 'Let's try looking at it from this angle instead - remember when we talked about [connection to teaching phase]?'"
+      },
+      {
+        "pattern": "[another common error]",
+        "explanation": "Scout notices: 'Ah, I see the confusion! Many explorers mix up [specific concept explanation].'",
+        "redirect": "Scout redirects: 'Let me show you a trick to remember: [memory device or pattern]'"
       }
     ]
   }
 }
 
-Create a simple, age-appropriate ${subject} challenge about ${topic} that ${ageGroup} students can actually interact with and solve.`;
+Create engaging, progressive ${subject} challenges about ${topic} that build understanding step-by-step for ${ageGroup} students. Include real-world contexts and clear connections between teaching and practice.`;
 
     } else if (phase === "reflect") {
       contentPrompt = `You are Scout creating Memory Anchors and Real-World Links for ${ageGroup} students about "${topic}" in ${subject}.

@@ -74,18 +74,10 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
   const currentExample = legacyContent?.fadedExamples?.[currentExampleIndex];
   const currentStep = currentExample?.steps?.[currentStepIndex];
   
-  // Debug: Log content analysis
-  console.log('TryPhase Content Analysis:', {
-    isScoutFormat,
-    hasInteractiveFormat,
-    tryContentType: typeof tryContent,
-    tryContentKeys: tryContent && typeof tryContent === 'object' ? Object.keys(tryContent) : [],
-    hasFadedExamples: !!(tryContent as any)?.fadedExamples,
-    currentExample: !!currentExample,
-    currentStep: !!currentStep,
-    exampleCount: legacyContent?.fadedExamples?.length || 0,
-    actualContent: tryContent
-  });
+  // Debug: Log content analysis (development only)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('TryPhase: Format detected -', hasInteractiveFormat ? 'Interactive' : 'Scout');
+  }
 
   const getStepKey = () => `${currentExampleIndex}-${currentStepIndex}`;
 
