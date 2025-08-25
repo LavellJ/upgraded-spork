@@ -9,9 +9,8 @@ interface SpeechOptions {
   voiceId?: string;
 }
 
-// Scout's Voice ID - replace this with your actual Scout voice ID from ElevenLabs
-// Visit /voice-setup to find your voice ID, then paste it here:
-const SCOUT_VOICE_ID = 'SCOUT_VOICE_ID_PLACEHOLDER';
+// Scout's Voice ID - Your custom Australian Scout voice from ElevenLabs
+const SCOUT_VOICE_ID = 'Pvq8a5ZuCdSHTAiFkvPI';
 
 export function useSpeech() {
   const [isSpeaking, setIsSpeaking] = useState(false);
