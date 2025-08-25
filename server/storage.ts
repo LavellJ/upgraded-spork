@@ -2788,11 +2788,30 @@ export class MemStorage implements IStorage {
 
   // Achievements
   async getAchievementsByStudent(studentId: string): Promise<Achievement[]> {
-    return await databaseStorage.getAchievementsByStudent(studentId);
+    try {
+      return await databaseStorage.getAchievementsByStudent(studentId);
+    } catch (error) {
+      // Fallback to in-memory storage
+      return Array.from(this.achievements.values()).filter(a => a.studentId === studentId);
+    }
   }
 
   async createAchievement(insertAchievement: InsertAchievement): Promise<Achievement> {
-    return await databaseStorage.createAchievement(insertAchievement);
+    try {
+      return await databaseStorage.createAchievement(insertAchievement);
+    } catch (error) {
+      console.log('Database unavailable, using in-memory storage for achievements');
+      // Fallback to in-memory storage
+      const id = randomUUID();
+      const achievement: Achievement = { 
+        ...insertAchievement, 
+        id,
+        earnedAt: new Date(),
+        metadata: insertAchievement.metadata || null
+      };
+      this.achievements.set(id, achievement);
+      return achievement;
+    }
   }
 
   async hasAchievement(studentId: string, badgeId: string): Promise<boolean> {
@@ -2963,11 +2982,31 @@ export class MemStorage implements IStorage {
 
   // Lesson Completion Methods
   async getCompletedLessons(studentId: string): Promise<LessonCompletion[]> {
-    return await databaseStorage.getCompletedLessons(studentId);
+    try {
+      return await databaseStorage.getCompletedLessons(studentId);
+    } catch (error) {
+      // Fallback to in-memory storage
+      return Array.from(this.lessonCompletions.values()).filter(
+        completion => completion.studentId === studentId
+      );
+    }
   }
 
   async createLessonCompletion(completion: InsertLessonCompletion): Promise<LessonCompletion> {
-    return await databaseStorage.createLessonCompletion(completion);
+    try {
+      return await databaseStorage.createLessonCompletion(completion);
+    } catch (error) {
+      console.log('Database unavailable, using in-memory storage for lesson completion');
+      // Fallback to in-memory storage
+      const id = randomUUID();
+      const newCompletion: LessonCompletion = {
+        ...completion,
+        id,
+        completedAt: new Date()
+      };
+      this.lessonCompletions.set(id, newCompletion);
+      return newCompletion;
+    }
   }
 }
 

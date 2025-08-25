@@ -10,29 +10,31 @@ export interface BadgeDefinition {
   rarity: "common" | "rare" | "epic";
   ageGroups: ("pre-primary" | "primary" | "upper-primary")[];
   requirements: {
-    type: "questions_answered" | "correct_answers" | "topics_completed" | 
-          "daily_streak" | "pomodoro_sessions" | "perfect_score" | "study_time" | "lessons_completed";
+    type: "lessons_completed" | "subject_lessons" | "challenge_type_mastery" | 
+          "daily_streak" | "pomodoro_sessions" | "perfect_score" | "study_time" | "correct_lessons";
     value: number;
+    subject?: "Math" | "English" | "Science";
+    challengeType?: "multipleChoice" | "fillBlank" | "dragDrop";
     timeframe?: "daily" | "weekly" | "total";
   };
 }
 
 export const BADGE_DEFINITIONS: BadgeDefinition[] = [
-  // Common badges (weekly achievable)
+  // Milestone badges - lesson completion focused
   {
     id: "first_steps",
     name: "First Steps",
-    description: "Answered your first 10 questions",
+    description: "Completed your first 3 lessons with Scout!",
     icon: "🐰",
     category: "milestone",
     rarity: "common",
     ageGroups: ["pre-primary", "primary", "upper-primary"],
-    requirements: { type: "questions_answered", value: 10, timeframe: "total" }
+    requirements: { type: "lessons_completed", value: 3, timeframe: "total" }
   },
   {
     id: "daily_learner",
     name: "Daily Learner", 
-    description: "Completed a learning session for 3 days in a row",
+    description: "Completed lessons for 3 days in a row",
     icon: "🐿️",
     category: "streak",
     rarity: "common",
@@ -50,26 +52,80 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     requirements: { type: "pomodoro_sessions", value: 5, timeframe: "weekly" }
   },
 
-  // Rare badges (bi-weekly achievable)
+  // Subject-specific badges
   {
-    id: "knowledge_seeker",
-    name: "Knowledge Seeker",
-    description: "Answered 50 questions correctly",
-    icon: "🐨",
+    id: "math_master",
+    name: "Math Master",
+    description: "Completed 5 Math lessons with Scout",
+    icon: "🔢",
     category: "mastery",
     rarity: "rare",
     ageGroups: ["pre-primary", "primary", "upper-primary"],
-    requirements: { type: "correct_answers", value: 50, timeframe: "total" }
+    requirements: { type: "subject_lessons", value: 5, subject: "Math", timeframe: "total" }
   },
   {
-    id: "topic_champion",
-    name: "Topic Champion",
-    description: "Completed 3 topics with 80% accuracy",
-    icon: "🦘",
+    id: "english_expert",
+    name: "English Expert",
+    description: "Completed 5 English lessons with Scout",
+    icon: "📚",
     category: "mastery",
     rarity: "rare",
     ageGroups: ["pre-primary", "primary", "upper-primary"],
-    requirements: { type: "topics_completed", value: 3, timeframe: "total" }
+    requirements: { type: "subject_lessons", value: 5, subject: "English", timeframe: "total" }
+  },
+  {
+    id: "science_explorer",
+    name: "Science Explorer",
+    description: "Completed 5 Science lessons with Scout",
+    icon: "🔬",
+    category: "mastery",
+    rarity: "rare",
+    ageGroups: ["pre-primary", "primary", "upper-primary"],
+    requirements: { type: "subject_lessons", value: 5, subject: "Science", timeframe: "total" }
+  },
+
+  // Challenge type mastery badges
+  {
+    id: "choice_champion",
+    name: "Choice Champion",
+    description: "Mastered 10 multiple choice challenges",
+    icon: "✅",
+    category: "mastery",
+    rarity: "rare",
+    ageGroups: ["pre-primary", "primary", "upper-primary"],
+    requirements: { type: "challenge_type_mastery", value: 10, challengeType: "multipleChoice", timeframe: "total" }
+  },
+  {
+    id: "word_wizard",
+    name: "Word Wizard",
+    description: "Mastered 10 fill-in-the-blank challenges",
+    icon: "✏️",
+    category: "mastery",
+    rarity: "rare",
+    ageGroups: ["pre-primary", "primary", "upper-primary"],
+    requirements: { type: "challenge_type_mastery", value: 10, challengeType: "fillBlank", timeframe: "total" }
+  },
+  {
+    id: "drag_master",
+    name: "Drag & Drop Master",
+    description: "Mastered 10 drag & drop challenges",
+    icon: "🎯",
+    category: "mastery",
+    rarity: "rare",
+    ageGroups: ["pre-primary", "primary", "upper-primary"],
+    requirements: { type: "challenge_type_mastery", value: 10, challengeType: "dragDrop", timeframe: "total" }
+  },
+
+  // Accuracy-based badges
+  {
+    id: "accuracy_ace",
+    name: "Accuracy Ace",
+    description: "Completed 10 lessons correctly in a row",
+    icon: "🎯",
+    category: "mastery",
+    rarity: "epic",
+    ageGroups: ["pre-primary", "primary", "upper-primary"],
+    requirements: { type: "correct_lessons", value: 10, timeframe: "total" }
   },
   {
     id: "perfect_week",
@@ -82,17 +138,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     requirements: { type: "daily_streak", value: 7, timeframe: "daily" }
   },
 
-  // Epic badges (monthly achievable)
-  {
-    id: "genius_streak",
-    name: "Genius Streak",
-    description: "Answered 15 questions correctly in a row",
-    icon: "🦅",
-    category: "mastery", 
-    rarity: "epic",
-    ageGroups: ["primary", "upper-primary"],
-    requirements: { type: "perfect_score", value: 15, timeframe: "total" }
-  },
+  // Epic achievement badges
   {
     id: "dedication_master",
     name: "Dedication Master",
@@ -178,28 +224,82 @@ export class BadgeSystem {
     const { requirements } = badge;
     
     switch (requirements.type) {
-      case "questions_answered": {
-        const progress = await storage.getProgressByStudent(studentId);
-        const totalQuestions = progress.reduce((sum, p) => sum + (p.questionsAnswered || 0), 0);
-        return totalQuestions >= requirements.value;
+      case "lessons_completed": {
+        const completedLessons = await storage.getCompletedLessons(studentId);
+        return completedLessons.length >= requirements.value;
       }
 
-      case "correct_answers": {
-        const progress = await storage.getProgressByStudent(studentId);
-        const totalCorrect = progress.reduce((sum, p) => sum + (p.correctAnswers || 0), 0);
-        return totalCorrect >= requirements.value;
+      case "subject_lessons": {
+        const completedLessons = await storage.getCompletedLessons(studentId);
+        if (!requirements.subject) return false;
+        const subjectLessons = completedLessons.filter(lesson => lesson.subject === requirements.subject);
+        return subjectLessons.length >= requirements.value;
       }
 
-      case "topics_completed": {
-        const progress = await storage.getProgressByStudent(studentId);
-        const completedTopics = progress.filter(p => (p.completionPercentage || 0) >= 80).length;
-        return completedTopics >= requirements.value;
+      case "challenge_type_mastery": {
+        const completedLessons = await storage.getCompletedLessons(studentId);
+        if (!requirements.challengeType) return false;
+        const challengeTypeLessons = completedLessons.filter(lesson => 
+          lesson.challengeType === requirements.challengeType && lesson.isCorrect
+        );
+        return challengeTypeLessons.length >= requirements.value;
+      }
+
+      case "correct_lessons": {
+        const completedLessons = await storage.getCompletedLessons(studentId);
+        const correctLessons = completedLessons.filter(lesson => lesson.isCorrect);
+        // Check for consecutive correct lessons
+        let consecutiveCount = 0;
+        let maxConsecutive = 0;
+        
+        // Sort by completion date to check sequence
+        const sortedLessons = [...completedLessons].sort((a, b) => 
+          new Date(a.completedAt || 0).getTime() - new Date(b.completedAt || 0).getTime()
+        );
+        
+        for (const lesson of sortedLessons) {
+          if (lesson.isCorrect) {
+            consecutiveCount++;
+            maxConsecutive = Math.max(maxConsecutive, consecutiveCount);
+          } else {
+            consecutiveCount = 0;
+          }
+        }
+        
+        return maxConsecutive >= requirements.value;
       }
 
       case "daily_streak": {
-        const progress = await storage.getProgressByStudent(studentId);
-        const streaks = progress.map(p => p.currentStreak || 0).filter(s => s > 0);
-        const maxStreak = streaks.length > 0 ? Math.max(...streaks) : 0;
+        const completedLessons = await storage.getCompletedLessons(studentId);
+        if (completedLessons.length === 0) return false;
+        
+        // Group lessons by date
+        const lessonsByDate = new Map<string, boolean>();
+        completedLessons.forEach(lesson => {
+          if (lesson.completedAt) {
+            const date = new Date(lesson.completedAt).toDateString();
+            lessonsByDate.set(date, true);
+          }
+        });
+        
+        // Check for consecutive days
+        const dates = Array.from(lessonsByDate.keys()).sort();
+        let currentStreak = 0;
+        let maxStreak = 0;
+        let lastDate: Date | null = null;
+        
+        for (const dateStr of dates) {
+          const currentDate = new Date(dateStr);
+          if (lastDate && 
+              currentDate.getTime() - lastDate.getTime() === 24 * 60 * 60 * 1000) {
+            currentStreak++;
+          } else {
+            currentStreak = 1;
+          }
+          maxStreak = Math.max(maxStreak, currentStreak);
+          lastDate = currentDate;
+        }
+        
         return maxStreak >= requirements.value;
       }
 
@@ -221,15 +321,15 @@ export class BadgeSystem {
       }
 
       case "perfect_score": {
-        const progress = await storage.getProgressByStudent(studentId);
-        const streaks = progress.map(p => p.bestStreak || 0).filter(s => s > 0);
-        const maxStreak = streaks.length > 0 ? Math.max(...streaks) : 0;
-        return maxStreak >= requirements.value;
+        // This is now handled by correct_lessons for consecutive correct answers
+        const completedLessons = await storage.getCompletedLessons(studentId);
+        const correctLessons = completedLessons.filter(lesson => lesson.isCorrect);
+        return correctLessons.length >= requirements.value;
       }
 
-      case "lessons_completed": {
-        const completedLessons = await storage.getCompletedLessons(studentId);
-        return completedLessons.length >= requirements.value;
+      case "study_time": {
+        // Keep this for any future time-based requirements
+        return false; // Not implemented yet
       }
 
       default:
