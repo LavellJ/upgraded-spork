@@ -684,11 +684,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check for new badges after lesson completion
       const student = await storage.getStudent(completionData.studentId);
       if (student) {
-        const newBadges = await badgeSystem.checkAndAwardBadges(completionData.studentId, student.ageGroup);
-        res.json({
-          completion,
-          newBadges
-        });
+        try {
+          const newBadges = await badgeSystem.checkAndAwardBadges(completionData.studentId, student.ageGroup);
+          console.log(`Badge check result for ${completionData.studentId}:`, newBadges.length, 'new badges');
+          res.json({
+            completion,
+            newBadges
+          });
+        } catch (error) {
+          console.error('Badge system error, falling back to manual check:', error);
+          // Fallback: manually check for first lesson badge
+          const existingCompletions = await storage.getCompletedLessons(completionData.studentId);
+          const firstLessonBadge = existingCompletions.length === 1 ? [{
+            id: 'manual-scout-apprentice',
+            studentId: completionData.studentId,
+            badgeId: 'scout_apprentice',
+            metadata: {
+              badgeName: 'Scout Apprentice',
+              category: 'milestone',
+              rarity: 'common'
+            },
+            earnedAt: new Date().toISOString()
+          }] : [];
+          
+          res.json({
+            completion,
+            newBadges: firstLessonBadge
+          });
+        }
       } else {
         res.json({ completion, newBadges: [] });
       }
