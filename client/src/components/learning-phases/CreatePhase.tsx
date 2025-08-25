@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Camera, Mic, FileText, ArrowRight, Upload, Download } from "lucide-react";
 import { ScoutSpeechButton } from "@/components/ScoutSpeechButton";
+import { ThemeAssetImage } from "@/components/ThemeAssetImage";
 import type { LearningContent } from "@shared/schema";
 import type { AgeGroup } from "../AgeSelector";
 
@@ -255,7 +256,12 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
           <div className="floating-ui rounded-3xl p-8" data-testid="share-adventure">
             <div className="text-center space-y-6">
               <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-purple-400 to-blue-400 flex items-center justify-center">
-                <div className="text-white text-3xl">🎨</div>
+                <ThemeAssetImage 
+                  assetId="exploration-general" 
+                  size={48}
+                  fallbackEmoji="🎨"
+                  animate={true}
+                />
               </div>
               
               <div className="text-white text-xl font-bold">
@@ -284,7 +290,12 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
                 >
                   <div className="text-center">
                     <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gradient-to-r from-warm-orange to-sunset-orange flex items-center justify-center">
-                      <div className="text-white text-xl">📷</div>
+                      <ThemeAssetImage 
+                        assetId="ui-camera-discovery" 
+                        size={32}
+                        fallbackEmoji="📷"
+                        animate={false}
+                      />
                     </div>
                     <div className="text-white text-base font-medium">Take a Photo</div>
                     <div className="text-white/60 text-sm mt-1">Of your work or yourself!</div>
@@ -303,7 +314,12 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
                 >
                   <div className="text-center">
                     <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gradient-to-r from-green-400 to-blue-400 flex items-center justify-center">
-                      <div className="text-white text-xl">💬</div>
+                      <ThemeAssetImage 
+                        assetId="ui-scout-speech" 
+                        size={32}
+                        fallbackEmoji="💬"
+                        animate={false}
+                      />
                     </div>
                     <div className="text-white text-base font-medium">Tell the Story</div>
                     <div className="text-white/60 text-sm mt-1">Share what you learned</div>
