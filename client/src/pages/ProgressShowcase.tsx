@@ -94,11 +94,11 @@ export function ProgressShowcase() {
 
   const getSubjectIcon = (subject: string) => {
     switch (subject) {
-      case "mathematics": return "📊";
-      case "literacy": return "📚";
-      case "science": return "🔬";
-      case "social-studies": return "🌏";
-      default: return "📖";
+      case "mathematics": return "";
+      case "literacy": return "";
+      case "science": return "";
+      case "social-studies": return "";
+      default: return "";
     }
   };
 
