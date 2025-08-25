@@ -1,6 +1,17 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ScoutSpeechButton } from './ScoutSpeechButton';
+import { apiRequest } from '@/lib/queryClient';
+import { Badge, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface LessonData {
   lessonId: string;
@@ -29,14 +40,49 @@ interface LessonRendererProps {
   lesson: LessonData;
   onComplete?: () => void;
   progress?: number;
+  studentId?: string;
 }
 
-export default function LessonRenderer({ lesson, onComplete, progress = 0 }: LessonRendererProps) {
+interface BadgeNotification {
+  id: string;
+  badgeId: string;
+  metadata: {
+    badgeName: string;
+    category: string;
+    rarity: string;
+  };
+}
+
+export default function LessonRenderer({ lesson, onComplete, progress = 0, studentId = "demo-student" }: LessonRendererProps) {
   const [userAnswer, setUserAnswer] = useState<any>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showReward, setShowReward] = useState(false);
   const [hintShown, setHintShown] = useState(false);
   const [fillBlankInputs, setFillBlankInputs] = useState<string[]>([]);
+  const [newBadges, setNewBadges] = useState<BadgeNotification[]>([]);
+  const [showBadgeModal, setShowBadgeModal] = useState(false);
+  
+  const queryClient = useQueryClient();
+  
+  const lessonCompletionMutation = useMutation({
+    mutationFn: async (completionData: {
+      studentId: string;
+      lessonId: string;
+      subject: string;
+      challengeType: string;
+      isCorrect: boolean;
+    }) => {
+      const response = await apiRequest('POST', '/api/lesson-completion', completionData);
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data.newBadges && data.newBadges.length > 0) {
+        setNewBadges(data.newBadges);
+        setShowBadgeModal(true);
+      }
+      queryClient.invalidateQueries({ queryKey: ['/api/lesson-completions', studentId] });
+    },
+  });
 
   const checkAnswer = (answer: any) => {
     let correct = false;
@@ -57,6 +103,15 @@ export default function LessonRenderer({ lesson, onComplete, progress = 0 }: Les
 
     setUserAnswer(answer);
     setIsCorrect(correct);
+    
+    // Track lesson completion for badge system
+    lessonCompletionMutation.mutate({
+      studentId,
+      lessonId: lesson.lessonId,
+      subject: lesson.subject,
+      challengeType: lesson.challengeType,
+      isCorrect: correct
+    });
     
     if (correct) {
       setTimeout(() => setShowReward(true), 800);
@@ -185,7 +240,8 @@ export default function LessonRenderer({ lesson, onComplete, progress = 0 }: Les
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-blue-50 to-indigo-100">
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-sky-100 via-blue-50 to-indigo-100">
       {/* Progress Bar Header */}
       <div className="w-full bg-white shadow-sm p-4">
         <div className="max-w-6xl mx-auto">
@@ -377,5 +433,50 @@ export default function LessonRenderer({ lesson, onComplete, progress = 0 }: Les
         </div>
       </div>
     </div>
+
+    {/* Badge Award Modal */}
+    <Dialog open={showBadgeModal} onOpenChange={setShowBadgeModal}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Sparkles className="w-6 h-6 text-yellow-500" />
+            New Badge Earned!
+          </DialogTitle>
+          <DialogDescription>
+            Congratulations! You've earned {newBadges.length} new badge{newBadges.length !== 1 ? 's' : ''}!
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          {newBadges.map((badge, index) => (
+            <motion.div
+              key={badge.id}
+              className="flex items-center gap-3 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border-2 border-yellow-200"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.2 }}
+            >
+              <div className="flex-shrink-0">
+                <Badge className="w-8 h-8 text-yellow-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-800">{badge.metadata.badgeName}</h3>
+                <p className="text-sm text-gray-600 capitalize">
+                  {badge.metadata.rarity} • {badge.metadata.category}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        <div className="flex justify-center">
+          <Button 
+            onClick={() => setShowBadgeModal(false)}
+            className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+          >
+            Awesome! Keep Learning 🌟
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }

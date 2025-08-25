@@ -11,6 +11,7 @@ import {
   insertPomodoroSessionSchema,
   insertParentSchema,
   insertParentControlsSchema,
+  insertLessonCompletionSchema,
   type Question,
   type Progress
 } from "@shared/schema";
@@ -671,6 +672,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       console.error("Error updating progress:", error);
       res.status(500).json({ message: "Failed to update progress" });
+    }
+  });
+
+  // Lesson completion tracking with badge awarding
+  app.post("/api/lesson-completion", async (req, res) => {
+    try {
+      const completionData = insertLessonCompletionSchema.parse(req.body);
+      const completion = await storage.createLessonCompletion(completionData);
+      
+      // Check for new badges after lesson completion
+      const student = await storage.getStudent(completionData.studentId);
+      if (student) {
+        const newBadges = await badgeSystem.checkAndAwardBadges(completionData.studentId, student.ageGroup);
+        res.json({
+          completion,
+          newBadges
+        });
+      } else {
+        res.json({ completion, newBadges: [] });
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid lesson completion data", errors: error.errors });
+      }
+      console.error("Error recording lesson completion:", error);
+      res.status(500).json({ message: "Failed to record lesson completion" });
+    }
+  });
+
+  // Get lesson completions for a student
+  app.get("/api/lesson-completions/:studentId", async (req, res) => {
+    try {
+      const completions = await storage.getCompletedLessons(req.params.studentId);
+      res.json(completions);
+    } catch (error) {
+      console.error("Error fetching lesson completions:", error);
+      res.status(500).json({ message: "Failed to fetch lesson completions" });
     }
   });
 
