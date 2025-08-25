@@ -68,19 +68,21 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
   const isScoutFormat = typeof tryContent === 'string';
   const hasInteractiveFormat = !isScoutFormat && (tryContent as any)?.fadedExamples;
   
-  const scoutMessage = isScoutFormat ? tryContent : null;
+  const scoutMessage = isScoutFormat ? tryContent as string : null;
   const legacyContent = hasInteractiveFormat ? tryContent as TryContent : null;
   const currentExample = legacyContent?.fadedExamples?.[currentExampleIndex];
   const currentStep = currentExample?.steps?.[currentStepIndex];
   
-  console.log('TryPhase Content Analysis:', {
-    isScoutFormat,
-    hasInteractiveFormat,
-    tryContentType: typeof tryContent,
-    hasExamples: !!(tryContent as any)?.fadedExamples,
-    currentExample: !!currentExample,
-    currentStep: !!currentStep
-  });
+  // Debug: Log content analysis
+  if (process.env.NODE_ENV === 'development') {
+    console.log('TryPhase Content Analysis:', {
+      isScoutFormat,
+      hasInteractiveFormat,
+      currentExample: !!currentExample,
+      currentStep: !!currentStep,
+      exampleCount: legacyContent?.fadedExamples?.length || 0
+    });
+  }
 
   const getStepKey = () => `${currentExampleIndex}-${currentStepIndex}`;
 
@@ -295,12 +297,10 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
     );
   }
 
-  // Co-Learning phase for pre-primary following Scout's Teaching Cycle
-  if (ageGroup === "pre-primary") {
+  // Co-Learning phase for pre-primary following Scout's Teaching Cycle  
+  if (ageGroup === "pre-primary" && hasInteractiveFormat && currentExample) {
     const [coLearningStep, setCoLearningStep] = useState<'buddy' | 'guided' | 'success'>('buddy');
     const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
-    
-    const tryContent = content.content;
   
   const handleCoSolve = (choice: string) => {
       setSelectedChoice(choice);
