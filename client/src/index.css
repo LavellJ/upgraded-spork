@@ -197,6 +197,26 @@
   animation: parallax 20s linear infinite;
 }
 
+/* Magical feedback animation for TeachPhase exploration */
+@keyframes fadeInOut {
+  0% { 
+    opacity: 0; 
+    transform: translate(-50%, -50%) scale(0.8) rotate(-5deg); 
+  }
+  10% { 
+    opacity: 1; 
+    transform: translate(-50%, -50%) scale(1.1) rotate(2deg); 
+  }
+  90% { 
+    opacity: 1; 
+    transform: translate(-50%, -50%) scale(1) rotate(0deg); 
+  }
+  100% { 
+    opacity: 0; 
+    transform: translate(-50%, -50%) scale(0.8) rotate(5deg); 
+  }
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
