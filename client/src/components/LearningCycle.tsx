@@ -124,6 +124,20 @@ export function LearningCycle({ topicId, ageGroup, studentId, onSessionComplete 
           [currentPhase]: { completed: true, completedAt: new Date().toISOString(), data: phaseResults }
         }
       });
+      
+      // Record lesson completion for badge tracking
+      try {
+        await apiRequest('POST', '/api/lesson-completion', {
+          studentId: session?.studentId || studentId,
+          lessonId: session?.topicId || topicId,
+          subject: 'General', // TODO: get actual subject from topic
+          challengeType: 'scout-lesson',
+          isCorrect: true
+        });
+        console.log('✅ Lesson completion recorded for learning cycle');
+      } catch (error) {
+        console.log('❌ Failed to record lesson completion:', error);
+      }
 
       // Notify parent component
       onSessionComplete?.(sessionArtifacts);

@@ -40,24 +40,54 @@ Generate a JSON response with this exact structure:
 Make Scout sound like a curious 8-year-old explorer who's genuinely excited about learning WITH the student, not teaching AT them. Use concrete examples from nature, adventures, or daily life for ${ageGroup}.`;
 
     } else if (phase === "try") {
-      contentPrompt = `You are Scout doing co-learning with ${ageGroup} students on "${topic}" in ${subject}.
+      contentPrompt = `You are Scout creating an interactive challenge for ${ageGroup} students on "${topic}" in ${subject}.
 
-📜 SCOUT'S CO-LEARNING APPROACH:
-• Scout says "I'm not sure either... but I have an idea!"
-• Present the problem as something Scout needs help figuring out
-• Use guided practice where Scout works alongside the student
-• Have Scout make a small "mistake" and ask student to help correct it
-• Make it playful - Scout is genuinely curious about the answer
+📜 SCOUT'S INTERACTIVE CHALLENGE APPROACH:
+• Create actual interactive problems that students can solve
+• Use Scout's co-learning voice: "I'm not sure either... but I have an idea!"
+• Include multiple choice, fill-in-blank, or simple drag-drop challenges
+• Make it age-appropriate for ${ageGroup}
 
-Generate a JSON response with this exact structure:
+CRITICAL: You MUST generate the fadedExamples structure below, NOT simple content text. Generate a JSON response with this EXACT structure for interactive challenges:
 {
   "id": "unique-id",
   "phase": "try",
   "title": "Let's Figure This Out Together!",
-  "content": "Hmm, I found this tricky problem in my explorer pack about ${topic}. I'm not quite sure how to solve it... want to figure it out with me? [Include the problem, Scout's wondering process, asking for student help, and Scout's 'mistake' for student to catch]"
+  "fadedExamples": [
+    {
+      "id": "challenge-1",
+      "problem": "Scout says: 'I found this tricky problem about ${topic}! Can you help me solve it?' [Include specific problem/question]",
+      "steps": [
+        {
+          "stepText": "[Question or challenge related to ${topic}]",
+          "support": "blank",
+          "answer": "[correct answer]",
+          "hintLadder": {
+            "nudge": "Scout whispers: 'Hmm, what do you think about...'",
+            "strategy": "Scout suggests: 'Maybe we could try thinking about it this way...'",
+            "workedStep": "Scout shows: 'Oh! I think the answer might be...'",
+            "reveal": "Scout reveals: 'The answer is [correct answer] because...'"
+          }
+        }
+      ],
+      "feedback": {
+        "success": "Scout cheers: 'Wow! We figured it out together! You're amazing!'",
+        "encouragement": "Scout encourages: 'We're getting closer! Let's try again together!'"
+      }
+    }
+  ],
+  "misconceptionDetector": {
+    "commonErrors": [
+      {
+        "pattern": "[common wrong answer pattern]",
+        "explanation": "Scout notices: 'Oh, I see what happened! Let me help explain...'",
+        "redirect": "Scout redirects: 'Let's try thinking about it this way instead...'"
+      }
+    ]
+  }
 }
 
-Make Scout sound genuinely puzzled but excited to solve the problem WITH the student. Include a simple mistake Scout makes that the student can easily spot and correct.`;
+Create a simple, age-appropriate ${subject} challenge about ${topic} that ${ageGroup} students can actually interact with and solve.`;
 
     } else if (phase === "reflect") {
       contentPrompt = `You are Scout creating Memory Anchors and Real-World Links for ${ageGroup} students about "${topic}" in ${subject}.
