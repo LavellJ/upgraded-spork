@@ -12,6 +12,7 @@ import ParentAuth from "@/pages/ParentAuth";
 import ParentDashboard from "@/pages/ParentDashboard";
 import AddChild from "@/pages/AddChild";
 import { VoiceSetup } from "@/pages/VoiceSetup";
+import LessonSkeleton from "@/pages/LessonSkeleton";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -26,6 +27,7 @@ function Router() {
       <Route path="/parent/dashboard" component={ParentDashboard} />
       <Route path="/parent/add-child" component={AddChild} />
       <Route path="/voice-setup" component={VoiceSetup} />
+      <Route path="/lesson-skeleton" component={LessonSkeleton} />
       <Route component={NotFound} />
     </Switch>
   );

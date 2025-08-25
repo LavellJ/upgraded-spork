@@ -1,0 +1,282 @@
+ Lesson Skeleton Blueprint Prompt
+Instruction to Replit AI:
+Build a React + Tailwind lesson template for my learning app. The theme is an adventure world guided by Scout, a playful young Australian companion (think Bluey energy).
+Layout
+•	Header: Progress bar across the top showing lesson completion.
+•	Main Area:
+o	Left side: Background scene (forest, desert, ocean — placeholder for now) with Scout visible. Scout should have space for simple idle animations (bounce, blink).
+o	Right side: Lesson content area inside a card (soft rounded edges, shadow, padding).
+•	Footer: Buttons for “Check Answer,” “Hint,” and “Next.”
+Lesson Flow
+Each lesson should follow this repeatable structure:
+1.	Scout’s Greeting → Animated text bubble + ElevenLabs speech output.
+2.	Challenge → One of the following interactive types:
+o	Multiple choice
+o	Fill-in-the-blank
+o	Drag-and-drop / match pairs
+3.	Feedback
+o	Correct: Scout cheers (small animation, celebratory sound effect, upbeat voice line).
+o	Incorrect: Scout encourages and offers a hint.
+4.	Mini-Reward
+o	Progress bar advances.
+o	Small visual change in background (e.g., star lights up, path unlocks).
+Visual & Motion
+•	Use Framer Motion for smooth transitions (Scout hopping in, cards sliding in/out).
+•	Use Lottie or lightweight animations for Scout reactions.
+•	Make the style playful, colorful, and immersive (large rounded corners, soft shadows, vibrant but not overwhelming colors).
+Reusability
+•	All text content (Scout lines, questions, answers) should come from a JSON object so lessons can be swapped without rewriting the skeleton.
+•	The template should include a clear structure for plugging in:
+o	scoutIntro (string)
+o	challengeType (mcq / fill / dragdrop)
+o	challengeContent (JSON with question + options/answer)
+o	feedback (correct / incorrect messages)
+o	reward (description of visual change or badge)
+________________________________________
+🔑 With a setup like this, you’re no longer asking “make me a multiple-choice screen.” You’re asking: “Build me a playground that can accept any challenge and Scout lines, and make it look/feel fun every single time.”
+________________________________________
+👉 Do you want me to draft out the actual JSON lesson structure as an example (e.g., what a single math or reading lesson would look like inside this skeleton)? That way you’ll have something to feed Replit so it knows what the content format looks like too.
+________________________________________
+📦 Example JSON Lesson Structure
+{
+  "lessonId": "math_01_addition",
+  "scoutIntro": "G'day mate! Ready to help me collect some treasure? To open the chest, we need to solve a puzzle!",
+  "challengeType": "multipleChoice",
+  "challengeContent": {
+    "question": "What is 7 + 5?",
+    "options": ["10", "11", "12", "13"],
+    "answer": "12"
+  },
+  "feedback": {
+    "correct": "Woohoo! You got it! The treasure chest is open! 🎉",
+    "incorrect": "Almost! Try again — here’s a hint: 7 plus 3 makes 10, so what’s 7 plus 5?"
+  },
+  "reward": {
+    "type": "visualChange",
+    "description": "A golden star lights up in the sky above Scout."
+  }
+}
+________________________________________
+📦 Another Example (Fill-in-the-blank)
+{
+  "lessonId": "english_02_vowels",
+  "scoutIntro": "Hey friend, I found a secret word but some letters are missing. Can you help me finish it?",
+  "challengeType": "fillBlank",
+  "challengeContent": {
+    "sentence": "The c_t sat on the m_t.",
+    "answer": ["a", "a"]
+  },
+  "feedback": {
+    "correct": "Nice job! The cat sat on the mat! 🐱",
+    "incorrect": "Not quite! Remember, it’s a little animal that says ‘meow’."
+  },
+  "reward": {
+    "type": "badge",
+    "description": "You earned the ‘Word Builder’ badge!"
+  }
+}
+________________________________________
+📦 Another Example (Drag-and-drop)
+{
+  "lessonId": "science_03_animals",
+  "scoutIntro": "Let’s help the animals find their homes! Drag each animal to where it belongs.",
+  "challengeType": "dragDrop",
+  "challengeContent": {
+    "pairs": [
+      { "item": "Fish", "match": "Ocean" },
+      { "item": "Kangaroo", "match": "Grassland" },
+      { "item": "Penguin", "match": "Ice" }
+    ]
+  },
+  "feedback": {
+    "correct": "Perfect! All the animals are happy at home. 🦘🐧🐟",
+    "incorrect": "Hmm, one of the animals looks lost. Want to try again?"
+  },
+  "reward": {
+    "type": "visualChange",
+    "description": "Scout builds a little bridge across the map."
+  }
+}
+________________________________________
+🧩 Why this works
+•	Every lesson uses the same fields (scoutIntro, challengeType, challengeContent, feedback, reward), so the skeleton can “read” them and render the right UI.
+•	You can grow this endlessly — just keep adding JSON.
+•	Replit can be told:
+“Make my React app render different interactive lesson types depending on challengeType in the JSON.”
+________________________________________
+________________________________________
+🧩 React Component (LessonRenderer)
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+
+// Example: import ScoutAvatar from "./ScoutAvatar";
+// Example: import { playScoutVoice } from "./scoutVoice"; // hook into ElevenLabs
+
+export default function LessonRenderer({ lesson }) {
+  const [userAnswer, setUserAnswer] = useState(null);
+  const [isCorrect, setIsCorrect] = useState(null);
+
+  const checkAnswer = (answer) => {
+    let correct = false;
+
+    if (lesson.challengeType === "multipleChoice") {
+      correct = answer === lesson.challengeContent.answer;
+    }
+
+    if (lesson.challengeType === "fillBlank") {
+      correct = Array.isArray(answer)
+        ? JSON.stringify(answer) === JSON.stringify(lesson.challengeContent.answer)
+        : answer === lesson.challengeContent.answer[0];
+    }
+
+    if (lesson.challengeType === "dragDrop") {
+      // for simplicity: check if pairs match
+      correct =
+        JSON.stringify(answer) === JSON.stringify(lesson.challengeContent.pairs);
+    }
+
+    setUserAnswer(answer);
+    setIsCorrect(correct);
+  };
+
+  const renderChallenge = () => {
+    switch (lesson.challengeType) {
+      case "multipleChoice":
+        return (
+          <div className="space-y-2">
+            <p className="text-lg">{lesson.challengeContent.question}</p>
+            {lesson.challengeContent.options.map((opt, i) => (
+              <button
+                key={i}
+                onClick={() => checkAnswer(opt)}
+                className="block w-full p-3 rounded-2xl bg-blue-100 hover:bg-blue-200 shadow"
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        );
+
+      case "fillBlank":
+        return (
+          <div>
+            <p className="text-lg mb-2">{lesson.challengeContent.sentence}</p>
+            <input
+              type="text"
+              className="border rounded p-2 w-full"
+              onChange={(e) => setUserAnswer(e.target.value)}
+            />
+            <button
+              onClick={() => checkAnswer(userAnswer)}
+              className="mt-2 px-4 py-2 rounded bg-green-500 text-white"
+            >
+              Submit
+            </button>
+          </div>
+        );
+
+      case "dragDrop":
+        return (
+          <div>
+            <p className="text-lg mb-2">Match each animal with its home:</p>
+            <p className="text-gray-500">🔧 Drag-drop UI placeholder</p>
+            {/* Here you’d plug in a drag-drop library like react-beautiful-dnd */}
+            <button
+              onClick={() => checkAnswer(lesson.challengeContent.pairs)}
+              className="mt-2 px-4 py-2 rounded bg-purple-500 text-white"
+            >
+              Check Matches
+            </button>
+          </div>
+        );
+
+      default:
+        return <p>Unsupported challenge type.</p>;
+    }
+  };
+
+  return (
+    <motion.div
+      className="p-6 bg-white rounded-2xl shadow-lg max-w-md mx-auto"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      {/* Scout introduction */}
+      <div className="mb-4">
+        {/* <ScoutAvatar /> */}
+        <p className="font-semibold text-blue-600">{lesson.scoutIntro}</p>
+      </div>
+
+      {/* Challenge */}
+      {renderChallenge()}
+
+      {/* Feedback */}
+      {isCorrect !== null && (
+        <motion.div
+          className="mt-4 p-3 rounded-xl"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          style={{
+            backgroundColor: isCorrect ? "#D1FAE5" : "#FEE2E2",
+          }}
+        >
+          <p>{isCorrect ? lesson.feedback.correct : lesson.feedback.incorrect}</p>
+        </motion.div>
+      )}
+
+      {/* Reward */}
+      {isCorrect && (
+        <motion.div
+          className="mt-4 text-center text-yellow-500"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          🌟 {lesson.reward.description}
+        </motion.div>
+      )}
+    </motion.div>
+  );
+}
+________________________________________
+🔑 Key Features
+•	lesson prop: Takes any JSON in the format we built (math, English, science, etc.).
+•	Dynamic rendering: Switches UI depending on challengeType.
+•	Feedback system: Handles correct/incorrect with animations.
+•	Reward slot: Adds visual excitement (stars, badges, Scout animations).
+•	Speech ready: You can call ElevenLabs API inside ScoutAvatar or playScoutVoice() whenever lesson.scoutIntro or feedback updates.
+________________________________________
+________________________________________
+🧩 App.js
+import React from "react";
+import LessonRenderer from "./LessonRenderer";
+
+// Example lesson JSON (you can swap this out with any lesson you write)
+const sampleLesson = {
+  subject: "Math",
+  level: "Beginner",
+  scoutIntro: "Hey explorer! Today we’re learning to add numbers together. Let’s give it a try!",
+  challengeType: "multipleChoice",
+  challengeContent: {
+    question: "What is 3 + 2?",
+    options: ["4", "5", "6"],
+    answer: "5",
+  },
+  feedback: {
+    correct: "Great job! 3 + 2 equals 5. You’re on fire! 🔥",
+    incorrect: "Oops, not quite. Try counting on your fingers: 3, then 4, then 5.",
+  },
+  reward: {
+    type: "star",
+    description: "You earned a shiny math star! 🌟",
+  },
+};
+
+function App() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-blue-200 flex items-center justify-center">
+      <LessonRenderer lesson={sampleLesson} />
+    </div>
+  );
+}
+
+export default App;
