@@ -99,6 +99,17 @@ export const achievements = pgTable("achievements", {
   metadata: jsonb("metadata"), // optional data like streak length, topic completed, etc
 });
 
+// Lesson completions - track Scout lesson skeleton completions
+export const lessonCompletions = pgTable("lesson_completions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  studentId: varchar("student_id").notNull(),
+  lessonId: text("lesson_id").notNull(), // from lesson skeleton system
+  subject: text("subject").notNull(),
+  challengeType: text("challenge_type").notNull(), // "multipleChoice", "fillBlank", "dragDrop"
+  isCorrect: boolean("is_correct").notNull(),
+  completedAt: timestamp("completed_at").defaultNow(),
+});
+
 // Learning Sessions - Teach → Try → Reflect → Create cycles
 export const learningSessions = pgTable("learning_sessions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -183,6 +194,11 @@ export const insertAchievementSchema = createInsertSchema(achievements).omit({
   earnedAt: true,
 });
 
+export const insertLessonCompletionSchema = createInsertSchema(lessonCompletions).omit({
+  id: true,
+  completedAt: true,
+});
+
 export const insertParentSchema = createInsertSchema(parents).omit({
   id: true,
   createdAt: true,
@@ -249,6 +265,9 @@ export type InsertPomodoroSession = z.infer<typeof insertPomodoroSessionSchema>;
 
 export type Achievement = typeof achievements.$inferSelect;
 export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
+
+export type LessonCompletion = typeof lessonCompletions.$inferSelect;
+export type InsertLessonCompletion = z.infer<typeof insertLessonCompletionSchema>;
 
 export type LearningSession = typeof learningSessions.$inferSelect;
 export type InsertLearningSession = z.infer<typeof insertLearningSessionSchema>;

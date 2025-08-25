@@ -18,7 +18,9 @@ import {
   type PomodoroSession,
   type InsertPomodoroSession,
   type Achievement,
-  type InsertAchievement
+  type InsertAchievement,
+  type LessonCompletion,
+  type InsertLessonCompletion
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -78,6 +80,10 @@ export interface IStorage {
   createAchievement(achievement: InsertAchievement): Promise<Achievement>;
   hasAchievement(studentId: string, badgeId: string): Promise<boolean>;
   
+  // Lesson Completions
+  getCompletedLessons(studentId: string): Promise<LessonCompletion[]>;
+  createLessonCompletion(completion: InsertLessonCompletion): Promise<LessonCompletion>;
+  
   // Learning Sessions
   createLearningSession(data: any): Promise<any>;
   getLearningSession(topicId: string, studentId: string): Promise<any>;
@@ -98,6 +104,7 @@ export class MemStorage implements IStorage {
   private progress: Map<string, Progress>;
   private pomodoroSessions: Map<string, PomodoroSession>;
   private achievements: Map<string, Achievement>;
+  private lessonCompletions: Map<string, LessonCompletion>;
   private learningSessions: Map<string, any>;
   private studentArtifacts: Map<string, any>;
 
@@ -112,6 +119,7 @@ export class MemStorage implements IStorage {
     this.progress = new Map();
     this.pomodoroSessions = new Map();
     this.achievements = new Map();
+    this.lessonCompletions = new Map();
     this.learningSessions = new Map();
     this.studentArtifacts = new Map();
     
@@ -2958,6 +2966,24 @@ export class MemStorage implements IStorage {
     };
     this.studentArtifacts.set(id, artifact);
     return artifact;
+  }
+
+  // Lesson Completion Methods
+  async getCompletedLessons(studentId: string): Promise<LessonCompletion[]> {
+    return Array.from(this.lessonCompletions.values()).filter(
+      completion => completion.studentId === studentId
+    );
+  }
+
+  async createLessonCompletion(completion: InsertLessonCompletion): Promise<LessonCompletion> {
+    const id = randomUUID();
+    const newCompletion: LessonCompletion = {
+      ...completion,
+      id,
+      completedAt: new Date()
+    };
+    this.lessonCompletions.set(id, newCompletion);
+    return newCompletion;
   }
 }
 

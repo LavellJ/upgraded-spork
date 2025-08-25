@@ -1,4 +1,4 @@
-import { type Achievement, type InsertAchievement } from "@shared/schema";
+import { type Achievement, type InsertAchievement, type LessonCompletion, type InsertLessonCompletion } from "@shared/schema";
 import { storage } from "./storage.js";
 
 export interface BadgeDefinition {
@@ -11,7 +11,7 @@ export interface BadgeDefinition {
   ageGroups: ("pre-primary" | "primary" | "upper-primary")[];
   requirements: {
     type: "questions_answered" | "correct_answers" | "topics_completed" | 
-          "daily_streak" | "pomodoro_sessions" | "perfect_score" | "study_time";
+          "daily_streak" | "pomodoro_sessions" | "perfect_score" | "study_time" | "lessons_completed";
     value: number;
     timeframe?: "daily" | "weekly" | "total";
   };
@@ -103,6 +103,48 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     ageGroups: ["pre-primary", "primary", "upper-primary"],
     requirements: { type: "daily_streak", value: 21, timeframe: "daily" }
   },
+
+  // Lesson-specific badges
+  {
+    id: "scout_apprentice",
+    name: "Scout Apprentice",
+    description: "Completed your first lesson with Scout!",
+    icon: "🏴‍☠️",
+    category: "milestone",
+    rarity: "common",
+    ageGroups: ["pre-primary", "primary", "upper-primary"],
+    requirements: { type: "lessons_completed", value: 1, timeframe: "total" }
+  },
+  {
+    id: "lesson_explorer",
+    name: "Lesson Explorer",
+    description: "Completed 5 Scout adventure lessons",
+    icon: "🗺️",
+    category: "milestone",
+    rarity: "common",
+    ageGroups: ["pre-primary", "primary", "upper-primary"],
+    requirements: { type: "lessons_completed", value: 5, timeframe: "total" }
+  },
+  {
+    id: "adventure_veteran",
+    name: "Adventure Veteran",
+    description: "Completed 10 Scout adventure lessons",
+    icon: "⚔️",
+    category: "milestone",
+    rarity: "rare",
+    ageGroups: ["pre-primary", "primary", "upper-primary"],
+    requirements: { type: "lessons_completed", value: 10, timeframe: "total" }
+  },
+  {
+    id: "master_adventurer",
+    name: "Master Adventurer",
+    description: "Completed all 15 Scout adventure lessons!",
+    icon: "👑",
+    category: "milestone",
+    rarity: "epic",
+    ageGroups: ["pre-primary", "primary", "upper-primary"],
+    requirements: { type: "lessons_completed", value: 15, timeframe: "total" }
+  },
 ];
 
 export class BadgeSystem {
@@ -183,6 +225,11 @@ export class BadgeSystem {
         const streaks = progress.map(p => p.bestStreak || 0).filter(s => s > 0);
         const maxStreak = streaks.length > 0 ? Math.max(...streaks) : 0;
         return maxStreak >= requirements.value;
+      }
+
+      case "lessons_completed": {
+        const completedLessons = await storage.getCompletedLessons(studentId);
+        return completedLessons.length >= requirements.value;
       }
 
       default:
