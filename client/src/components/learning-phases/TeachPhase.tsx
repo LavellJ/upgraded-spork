@@ -117,7 +117,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
           title: "Let's Learn Together!",
           instruction: "Watch Scout show you how to do this:",
           comprehensionPrompt: "How do you feel about this?",
-          options: ["I'm confused 😕", "I think I get it 🤔", "That makes sense! 😊"]
+          options: ["I'm confused", "I think I get it", "That makes sense!"]
         };
       case "primary":
         return {
@@ -169,7 +169,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
           <ThemeAssetImage 
             assetId="math-counting" 
             size={48}
-            fallbackEmoji="🔢"
+            fallbackEmoji=""
             animate={true}
           />
           Count with Scout!
@@ -192,7 +192,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
               <ThemeAssetImage 
                 assetId="math-counting" 
                 size={40}
-                fallbackEmoji={item}
+                fallbackEmoji=""
                 animate={false}
               />
             </motion.div>
@@ -223,7 +223,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
               <ThemeAssetImage 
                 assetId={isCorrect ? "feedback-success" : "feedback-encouragement"} 
                 size={32}
-                fallbackEmoji={isCorrect ? "🎉" : "🌟"}
+                fallbackEmoji=""
                 animate={true}
               />
               {isCorrect ? "Amazing! You counted perfectly!" : `Good try! I count ${data.targetCount}. Let's practice more together!`}
@@ -257,7 +257,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
           <ThemeAssetImage 
             assetId="math-shapes" 
             size={48}
-            fallbackEmoji="🔍"
+            fallbackEmoji=""
             animate={true}
           />
           Find the Shape!
@@ -301,7 +301,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
               <ThemeAssetImage 
                 assetId={isCorrect ? "feedback-success" : "feedback-encouragement"} 
                 size={32}
-                fallbackEmoji={isCorrect ? "🎉" : "🌟"}
+                fallbackEmoji=""
                 animate={true}
               />
               {isCorrect ? "Perfect! You know your shapes!" : `That's a ${data.name}! Great try - shapes are tricky!`}
@@ -337,7 +337,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
           <ThemeAssetImage 
             assetId="science-animals" 
             size={48}
-            fallbackEmoji="🔊"
+            fallbackEmoji=""
             animate={true}
           />
           Animal Sounds!
@@ -381,7 +381,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
               <ThemeAssetImage 
                 assetId={isCorrect ? "feedback-success" : "feedback-encouragement"} 
                 size={32}
-                fallbackEmoji={isCorrect ? "🎉" : "🌟"}
+                fallbackEmoji=""
                 animate={true}
               />
               {isCorrect ? "Yes! You know animal sounds!" : `It goes "${data.sound}"! Animals make such fun sounds!`}
@@ -410,7 +410,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
           <ThemeAssetImage 
             assetId="literacy-letters" 
             size={48}
-            fallbackEmoji="🔤"
+            fallbackEmoji=""
             animate={true}
           />
           Letter Detective!
@@ -437,7 +437,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              I found it! ✨
+              I found it!
             </motion.button>
             <motion.button
               onClick={handleComplete}
@@ -445,7 +445,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              I'll keep looking 🔍
+              I'll keep looking
             </motion.button>
           </div>
         ) : (
@@ -455,7 +455,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
             className="p-4 rounded-2xl bg-green-500/20 border border-green-400"
           >
             <div className="text-white text-lg font-bold">
-              🎉 Great exploring! Letters are everywhere - you're becoming a reading detective! 🔍
+              Great exploring! Letters are everywhere - you're becoming a reading detective!
             </div>
           </motion.div>
         )}
@@ -480,7 +480,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
           animate={{ scale: 1 }}
           className="text-2xl text-white font-bold"
         >
-          🎒 Scout's Discovery!
+          Scout's Discovery!
         </motion.div>
         
         <motion.div 
@@ -516,7 +516,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Let's explore more! 🌟
+                Let's explore more!
               </motion.button>
             </motion.div>
           )}
@@ -597,7 +597,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                       scale: { duration: 2, repeat: Infinity }
                     }}
                   >
-                    <div className="text-white text-3xl">🗺️</div>
+                    <div className="text-white text-3xl"></div>
                     
                     {/* Orbiting sparkles */}
                     {Array.from({ length: 3 }).map((_, i) => (
@@ -1084,7 +1084,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                                   <ThemeAssetImage 
                                     assetId={option.assetId} 
                                     size={40}
-                                    fallbackEmoji="🎯"
+                                    fallbackEmoji=""
                                     animate={false}
                                   />
                                 </div>

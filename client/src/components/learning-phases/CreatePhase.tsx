@@ -259,7 +259,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
                 <ThemeAssetImage 
                   assetId="exploration-general" 
                   size={48}
-                  fallbackEmoji="🎨"
+                  fallbackEmoji=""
                   animate={true}
                 />
               </div>
@@ -293,7 +293,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
                       <ThemeAssetImage 
                         assetId="ui-camera-discovery" 
                         size={32}
-                        fallbackEmoji="📷"
+                        fallbackEmoji=""
                         animate={false}
                       />
                     </div>
@@ -317,7 +317,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
                       <ThemeAssetImage 
                         assetId="ui-scout-speech" 
                         size={32}
-                        fallbackEmoji="💬"
+                        fallbackEmoji=""
                         animate={false}
                       />
                     </div>
