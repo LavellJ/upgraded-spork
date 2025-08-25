@@ -235,6 +235,7 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'exploration-counting',
     name: 'Counting Exploration',
     category: 'activity',
+    imagePath: '/attached_assets/generated_images/Scout_math_counting_activity_6b76e197.png',
     fallbackDescription: 'Mathematical counting theme with Scout holding numbered objects, abacus visible, soft pastel gradients, Alto adventure style',
     altText: 'Counting exploration',
     subject: 'mathematics'
@@ -244,6 +245,7 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'exploration-shapes', 
     name: 'Shape Exploration',
     category: 'activity',
+    imagePath: '/attached_assets/generated_images/Scout_shapes_exploration_activity_db037fae.png',
     fallbackDescription: 'Geometric shapes floating around Scout character, magnifying glass examining circle/triangle/square, Alto adventure art style',
     altText: 'Shape exploration',
     subject: 'mathematics'
@@ -252,7 +254,8 @@ export const themeAssets: Record<string, ThemeAsset> = {
   'exploration-colors': {
     id: 'exploration-colors',
     name: 'Color Matching',
-    category: 'activity', 
+    category: 'activity',
+    imagePath: '/attached_assets/generated_images/Scout_general_exploration_5819cb00.png',
     fallbackDescription: 'Scout character with paint palette, mixing beautiful colors, rainbow in background, Alto adventure illustration style',
     altText: 'Color matching activity',
     subject: 'art'
@@ -262,6 +265,7 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'exploration-animals',
     name: 'Animal Exploration',
     category: 'activity',
+    imagePath: '/attached_assets/generated_images/Scout_animal_science_activity_ecc5c7ed.png',
     fallbackDescription: 'Scout character observing forest animals with nature journal, peaceful meadow setting, Alto adventure cartoon style',
     altText: 'Animal exploration',
     subject: 'science'
@@ -271,6 +275,7 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'exploration-habitats',
     name: 'Animal Habitats',
     category: 'activity',
+    imagePath: '/attached_assets/generated_images/Nature_animals_educational_scene_9f3bd27f.png',
     fallbackDescription: 'Scout discovering different animal homes, tree hollow, pond, mountains visible, nature exploration theme, Alto style',
     altText: 'Animal habitats',
     subject: 'science'
@@ -280,6 +285,7 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'exploration-letters',
     name: 'Letter Hunt',
     category: 'activity',
+    imagePath: '/attached_assets/generated_images/Scout_letter_detective_activity_66ed878a.png',
     fallbackDescription: 'Scout as detective with magnifying glass hunting for letters, alphabet butterflies floating around, Alto adventure style',
     altText: 'Letter hunting',
     subject: 'literacy'
