@@ -95,14 +95,8 @@ export function ThemeAssetImage({
           src={imageSrc}
           alt={asset?.altText || 'Scout illustration'}
           className="w-full h-full object-cover rounded-lg"
-          onLoad={() => {
-            setImageLoaded(true);
-            console.log(`✅ Scout image loaded successfully: ${assetId}`);
-          }}
-          onError={() => {
-            setImageError(true);
-            console.log(`❌ Scout image failed to load: ${assetId} - ${imageSrc}`);
-          }}
+          onLoad={() => setImageLoaded(true)}
+          onError={() => setImageError(true)}
           style={{ 
             opacity: imageLoaded ? 1 : 0,
             transition: 'opacity 0.3s ease-in-out'
