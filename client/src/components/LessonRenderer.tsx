@@ -104,15 +104,6 @@ export default function LessonRenderer({ lesson, onComplete, progress = 0, stude
     setUserAnswer(answer);
     setIsCorrect(correct);
     
-    // Track lesson completion for badge system
-    lessonCompletionMutation.mutate({
-      studentId,
-      lessonId: lesson.lessonId,
-      subject: lesson.subject,
-      challengeType: lesson.challengeType,
-      isCorrect: correct
-    });
-    
     if (correct) {
       setTimeout(() => setShowReward(true), 800);
     }
@@ -123,6 +114,17 @@ export default function LessonRenderer({ lesson, onComplete, progress = 0, stude
   };
 
   const handleNext = () => {
+    // Only record lesson completion when advancing to next lesson after correct answer
+    if (isCorrect) {
+      lessonCompletionMutation.mutate({
+        studentId,
+        lessonId: lesson.lessonId,
+        subject: lesson.subject,
+        challengeType: lesson.challengeType,
+        isCorrect: true
+      });
+    }
+    
     if (onComplete) {
       onComplete();
     }
