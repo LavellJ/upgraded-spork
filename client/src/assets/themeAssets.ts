@@ -21,7 +21,7 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'math-counting',
     name: 'Math Counting Activity',
     category: 'activity',
-    imagePath: '/attached_assets/generated_images/Scout_math_counting_activity_6b76e197.png',
+    imagePath: '/attached_assets/generated_images/Counting_animals_educational_illustration_c431f929.png',
     fallbackDescription: 'A cheerful cartoon Scout character in Alto adventure style holding an abacus with colorful beads, surrounded by floating numbers in soft gradients, mountains in background, clean illustration style',
     altText: 'Scout with counting tools',
     subject: 'mathematics'
@@ -31,7 +31,7 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'math-shapes',
     name: 'Shape Recognition Activity', 
     category: 'activity',
-    imagePath: '/attached_assets/generated_images/Scout_shapes_exploration_activity_db037fae.png',
+    imagePath: '/attached_assets/generated_images/Basic_shapes_educational_illustration_db521999.png',
     fallbackDescription: 'Scout character examining geometric shapes (circles, triangles, squares) with a magnifying glass, shapes have soft glowing effects, Alto adventure mountain landscape, clean cartoon style',
     altText: 'Scout exploring shapes',
     subject: 'mathematics'
@@ -41,7 +41,7 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'science-animals',
     name: 'Animal Science Activity',
     category: 'activity', 
-    imagePath: '/attached_assets/generated_images/Scout_animal_science_activity_ecc5c7ed.png',
+    imagePath: '/attached_assets/generated_images/Nature_animals_educational_scene_9f3bd27f.png',
     fallbackDescription: 'Scout character with a nature journal observing cute cartoon animals in a meadow, binoculars around neck, soft atmospheric lighting, Alto adventure art style',
     altText: 'Scout studying animals',
     subject: 'science'
@@ -72,7 +72,7 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'feedback-success',
     name: 'Success Celebration',
     category: 'feedback',
-    imagePath: '/attached_assets/generated_images/Scout_success_celebration_5349bae9.png',
+    imagePath: '/attached_assets/generated_images/Celebrating_explorer_buddy_b6cc403f.png',
     fallbackDescription: 'Scout character jumping with joy, arms raised in celebration, confetti or sparkles around, bright cheerful expression, Alto adventure style',
     altText: 'Scout celebrating success',
     subject: 'general'
