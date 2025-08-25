@@ -20,46 +20,63 @@ export function useSpeech() {
       const utterance = new SpeechSynthesisUtterance(text);
       
       // Scout's Australian voice settings - like Bluey!
-      utterance.rate = options.rate || 1.2; // Faster, more energetic like Bluey
+      utterance.rate = options.rate || 1.0; // Natural Australian pace
       utterance.pitch = options.pitch || 1.3; // Higher pitch for youthful, excited Scout
       utterance.volume = options.volume || 0.9; // Confident and clear
       
       // Try to find Australian voice for Scout (like Bluey)
       const voices = window.speechSynthesis.getVoices();
       
-      // First priority: Australian English voices
-      let australianVoices = voices.filter(voice => 
-        voice.lang.includes('en-AU') || 
-        voice.name.toLowerCase().includes('australian') ||
-        voice.name.toLowerCase().includes('australia')
-      );
+      // Aggressively search for Australian voices
+      let australianVoices = voices.filter(voice => {
+        const name = voice.name.toLowerCase();
+        const lang = voice.lang.toLowerCase();
+        return lang.includes('en-au') || 
+               lang.includes('australia') ||
+               name.includes('australian') ||
+               name.includes('australia') ||
+               name.includes('karen') ||  // Often Australian on Windows
+               name.includes('catherine') || // Often Australian 
+               name.includes('hayley') ||    // Australian voice name
+               name.includes('zoe')          // Australian voice name
+      });
       
-      // Second priority: British English (closer to Australian than American)
-      let britishVoices = voices.filter(voice => 
-        voice.lang.includes('en-GB') ||
-        voice.name.toLowerCase().includes('british') ||
-        voice.name.toLowerCase().includes('uk')
-      );
+      // Enhanced British voices (closer to Australian accent)
+      let britishVoices = voices.filter(voice => {
+        const name = voice.name.toLowerCase();
+        const lang = voice.lang.toLowerCase();
+        return (lang.includes('en-gb') || 
+                lang.includes('british') ||
+                name.includes('british') ||
+                name.includes('uk') ||
+                name.includes('hazel') ||
+                name.includes('serena')) &&
+               !name.includes('american') &&
+               !name.includes('us');
+      });
       
-      // Third priority: Any female English voice
-      let femaleVoices = voices.filter(voice => 
+      // High-quality female voices that might sound more Australian
+      let qualityFemaleVoices = voices.filter(voice => {
+        const name = voice.name.toLowerCase();
+        return voice.lang.startsWith('en') && 
+               (name.includes('google female') ||
+                name.includes('microsoft zira') ||
+                name.includes('samantha') ||
+                name.includes('fiona') ||
+                name.includes('moira')) &&
+               !name.includes('american') &&
+               !name.includes('us');
+      });
+      
+      // Any decent English voice as final fallback
+      let fallbackVoices = voices.filter(voice => 
         voice.lang.startsWith('en') && 
-        (voice.name.toLowerCase().includes('female') || 
-         voice.name.toLowerCase().includes('woman') ||
-         voice.name.toLowerCase().includes('zira') ||
-         voice.name.toLowerCase().includes('samantha'))
+        !voice.name.toLowerCase().includes('american') &&
+        !voice.name.toLowerCase().includes('us')
       );
       
-      // Fourth priority: Any English voice that sounds young/energetic
-      let energeticVoices = voices.filter(voice => 
-        voice.lang.startsWith('en') && 
-        (voice.name.toLowerCase().includes('google') || 
-         voice.name.toLowerCase().includes('alex') ||
-         voice.name.toLowerCase().includes('karen'))
-      );
-      
-      // Select the best available voice
-      const preferredVoice = australianVoices[0] || britishVoices[0] || femaleVoices[0] || energeticVoices[0];
+      // Select the most Australian voice available
+      const preferredVoice = australianVoices[0] || britishVoices[0] || qualityFemaleVoices[0] || fallbackVoices[0];
       
       if (preferredVoice) {
         utterance.voice = preferredVoice;
