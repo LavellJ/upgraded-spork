@@ -260,7 +260,10 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                     transition={{ delay: 1.1 }}
                     onClick={() => {
                       setParticleCount(prev => prev + 5);
-                      setTimeout(() => setTeachingStep('experience'), 300);
+                      setTimeout(() => {
+                        setTeachingStep('experience');
+                        setShowVisualDemo(true); // Skip the play button, go straight to content
+                      }, 300);
                     }}
                     whileHover={{ 
                       scale: 1.05,
@@ -392,66 +395,8 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                     </motion.div>
                   </motion.div>
                   
-                  {!showVisualDemo ? (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.8, type: "spring" }}
-                      className="text-center"
-                    >
-                      <motion.button
-                        onClick={() => {
-                          setIsInteracting(true);
-                          setTimeout(() => setShowVisualDemo(true), 600);
-                        }}
-                        whileHover={{ 
-                          scale: 1.1,
-                          rotateY: 5,
-                          boxShadow: "0 20px 40px rgba(255, 255, 255, 0.2)"
-                        }}
-                        whileTap={{ scale: 0.9 }}
-                        className="w-40 h-40 bg-gradient-to-b from-white/30 to-white/20 hover:from-white/40 hover:to-white/30 rounded-full flex items-center justify-center border-2 border-white/30 hover:border-white/50 transition-all duration-300 relative overflow-hidden group"
-                        data-testid="show-demo"
-                      >
-                        {/* Animated play button */}
-                        <motion.div
-                          className="text-white text-4xl relative z-10"
-                          animate={{
-                            scale: isInteracting ? [1, 1.5, 0] : [1, 1.1, 1]
-                          }}
-                          transition={{
-                            duration: isInteracting ? 0.6 : 2,
-                            repeat: isInteracting ? 0 : Infinity
-                          }}
-                        >
-                          ▶
-                        </motion.div>
-                        
-                        {/* Ripple effect */}
-                        <motion.div
-                          className="absolute inset-0 rounded-full border-4 border-white/50"
-                          animate={{
-                            scale: [1, 1.5],
-                            opacity: [0.5, 0]
-                          }}
-                          transition={{
-                            duration: 1.5,
-                            repeat: Infinity,
-                            ease: "easeOut"
-                          }}
-                        />
-                        
-                        {/* Inner glow */}
-                        <motion.div
-                          className="absolute inset-4 rounded-full bg-gradient-to-br from-yellow-400/20 to-orange-400/20"
-                          animate={{
-                            opacity: [0.3, 0.7, 0.3]
-                          }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        />
-                      </motion.button>
-                    </motion.div>
-                  ) : (
+                  {/* Content loads directly now - no play button needed */}
+                  {showVisualDemo && (
                 <div className="space-y-6">
                   {/* Visual Learning Cards with Real Pictures - Perfect for 3-5 year olds */}
                   <div className="space-y-4">
