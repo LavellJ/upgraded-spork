@@ -83,11 +83,11 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
               data-testid={`badge-compact-${achievement.badge.id}`}
             >
               <div className="w-8 h-8 mb-1 mx-auto">
-                <GeometricIcon 
-                  type="badge" 
-                  variant={achievement.badge.id}
-                  size="lg"
-                  animated={true}
+                <ThemeAssetImage 
+                  assetId={getCategoryAssetId(achievement.badge.category)}
+                  size={32}
+                  fallbackEmoji="⭐"
+                  animate={true}
                 />
               </div>
               <div className="text-xs font-medium text-white/90">{achievement.badge.name}</div>
@@ -108,7 +108,13 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
       {/* Earned Badges */}
       <div>
         <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2" data-testid="text-earned-badges">
-          🏆 Your Badges ({achievements.length})
+          <ThemeAssetImage 
+            assetId="achievement-general" 
+            size={24}
+            fallbackEmoji="🏆"
+            animate={false}
+          />
+          Your Badges ({achievements.length})
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {achievements.map((achievement) => (
@@ -120,17 +126,22 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
             >
               <div className="text-center">
                 <div className="w-12 h-12 mb-2 mx-auto">
-                  <GeometricIcon 
-                    type="badge" 
-                    variant={achievement.badge.id}
-                    size="xl"
-                    animated={true}
+                  <ThemeAssetImage 
+                    assetId={getCategoryAssetId(achievement.badge.category)}
+                    size={48}
+                    fallbackEmoji="⭐"
+                    animate={true}
                   />
                 </div>
                 <h4 className="font-semibold text-white mb-1">{achievement.badge.name}</h4>
                 <p className="text-xs text-white/70 mb-2">{achievement.badge.description}</p>
                 <div className="flex items-center justify-center gap-1">
-                  <span className="text-xs">{getCategoryIcon(achievement.badge.category)}</span>
+                  <ThemeAssetImage 
+                    assetId={getCategoryAssetId(achievement.badge.category)}
+                    size={16}
+                    fallbackEmoji="⭐"
+                    animate={false}
+                  />
                   <span className="text-xs text-white/60 capitalize">{achievement.badge.rarity}</span>
                 </div>
                 <div className="text-xs text-white/50 mt-1">
@@ -145,7 +156,13 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
       {/* Available Badges */}
       <div>
         <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2" data-testid="text-available-badges">
-          ✨ Available Badges
+          <ThemeAssetImage 
+            assetId="exploration-general" 
+            size={24}
+            fallbackEmoji="✨"
+            animate={false}
+          />
+          Available Badges
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {availableBadges
@@ -160,17 +177,22 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
               >
                 <div className="text-center">
                   <div className="w-12 h-12 mb-2 mx-auto opacity-50 grayscale">
-                    <GeometricIcon 
-                      type="badge" 
-                      variant={badge.id}
-                      size="xl"
-                      animated={false}
+                    <ThemeAssetImage 
+                      assetId={getCategoryAssetId(badge.category)}
+                      size={48}
+                      fallbackEmoji="⭐"
+                      animate={false}
                     />
                   </div>
                   <h4 className="font-semibold text-white/70 mb-1">{badge.name}</h4>
                   <p className="text-xs text-white/50 mb-2">{badge.description}</p>
                   <div className="flex items-center justify-center gap-1">
-                    <span className="text-xs">{getCategoryIcon(badge.category)}</span>
+                    <ThemeAssetImage 
+                      assetId={getCategoryAssetId(badge.category)}
+                      size={16}
+                      fallbackEmoji="⭐"
+                      animate={false}
+                    />
                     <span className="text-xs text-white/40 capitalize">{badge.rarity}</span>
                   </div>
                 </div>

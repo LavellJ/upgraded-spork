@@ -178,19 +178,24 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
         <div className="text-white/90 text-sm">How many do you see?</div>
         
         <motion.div 
-          className="text-4xl space-x-2 bg-white/10 rounded-2xl p-4"
+          className="flex flex-wrap justify-center gap-2 bg-white/10 rounded-2xl p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
           {Array(data.targetCount).fill(data.item).map((item, i) => (
-            <motion.span
+            <motion.div
               key={i}
               initial={{ scale: 0, rotate: 0 }}
               animate={{ scale: 1, rotate: 360 }}
               transition={{ delay: i * 0.2, type: "spring" }}
             >
-              {item}
-            </motion.span>
+              <ThemeAssetImage 
+                assetId="math-counting" 
+                size={40}
+                fallbackEmoji={item}
+                animate={false}
+              />
+            </motion.div>
           ))}
         </motion.div>
 
