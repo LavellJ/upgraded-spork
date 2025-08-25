@@ -30,8 +30,12 @@ export function ThemeAssetImage({
   
   const asset = getThemeAsset(assetId);
   
+  // Debug logging
+  console.log(`ThemeAssetImage: Looking for asset "${assetId}"`, asset);
+  
   // If no asset found, use fallback emoji
   if (!asset) {
+    console.log(`ThemeAssetImage: No asset found for "${assetId}", using fallback emoji`);
     return (
       <motion.div 
         className={`flex items-center justify-center ${className}`}
@@ -48,6 +52,7 @@ export function ThemeAssetImage({
 
   // If image path exists and no error, show image
   if (asset.imagePath && !imageError) {
+    console.log(`ThemeAssetImage: Loading image from "${asset.imagePath}"`);
     return (
       <motion.div
         className={`relative ${className}`}
@@ -61,8 +66,14 @@ export function ThemeAssetImage({
           src={asset.imagePath}
           alt={asset.altText}
           className="w-full h-full object-cover rounded-lg"
-          onLoad={() => setImageLoaded(true)}
-          onError={() => setImageError(true)}
+          onLoad={() => {
+            console.log(`ThemeAssetImage: Successfully loaded "${asset.imagePath}"`);
+            setImageLoaded(true);
+          }}
+          onError={(e) => {
+            console.error(`ThemeAssetImage: Failed to load "${asset.imagePath}"`, e);
+            setImageError(true);
+          }}
           style={{ 
             opacity: imageLoaded ? 1 : 0,
             transition: 'opacity 0.3s ease-in-out'
@@ -84,6 +95,7 @@ export function ThemeAssetImage({
   }
 
   // Fallback to emoji if image fails or doesn't exist
+  console.log(`ThemeAssetImage: Using fallback emoji for "${assetId}". ImageError: ${imageError}, ImagePath: ${asset.imagePath}`);
   return (
     <motion.div 
       className={`flex items-center justify-center ${className}`}
