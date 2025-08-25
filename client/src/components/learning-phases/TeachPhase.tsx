@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Play, Pause, RotateCcw, Eye, ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Play, Pause, RotateCcw, Eye, ArrowRight, Sparkles, Star, Heart } from "lucide-react";
 import { ExplorerBuddy } from "../ExplorerBuddy";
 import { ScoutSpeechButton } from "@/components/ScoutSpeechButton";
 import type { LearningContent } from "@shared/schema";
@@ -143,58 +143,310 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
   if (ageGroup === "pre-primary") {
     const [teachingStep, setTeachingStep] = useState<'hook' | 'experience' | 'ready'>('hook');
     const [showVisualDemo, setShowVisualDemo] = useState(false);
+    const [particleCount, setParticleCount] = useState(0);
+    const [isInteracting, setIsInteracting] = useState(false);
     
     return (
       <div className="space-y-8 max-w-2xl mx-auto">
         {/* Adventure Hook */}
-        {teachingStep === 'hook' && (
-          <div className="floating-ui rounded-3xl p-8" data-testid="adventure-hook">
-            <div className="text-center space-y-6">
-              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-dawn-pink to-warm-orange flex items-center justify-center">
-                <div className="text-white text-3xl">🗺️</div>
+        <AnimatePresence mode="wait">
+          {teachingStep === 'hook' && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 50 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: -50 }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
+              className="relative"
+            >
+              {/* Floating particles background */}
+              <div className="absolute inset-0 pointer-events-none">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-2 h-2 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                    }}
+                    animate={{
+                      y: [-20, 20, -20],
+                      x: [-10, 10, -10],
+                      opacity: [0.3, 0.8, 0.3],
+                      scale: [0.8, 1.2, 0.8]
+                    }}
+                    transition={{
+                      duration: 4 + Math.random() * 2,
+                      repeat: Infinity,
+                      delay: i * 0.5
+                    }}
+                  />
+                ))}
               </div>
               
-              <div className="text-white text-xl font-bold">
-                Hey explorer!
+              <div className="floating-ui rounded-3xl p-8 relative overflow-hidden" data-testid="adventure-hook">
+                {/* Animated background gradient */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-blue-500/20 to-teal-500/20"
+                  animate={{
+                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                  }}
+                  transition={{ duration: 8, repeat: Infinity }}
+                  style={{ backgroundSize: '200% 200%' }}
+                />
+                
+                <div className="text-center space-y-6 relative z-10">
+                  <motion.div
+                    className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-dawn-pink to-warm-orange flex items-center justify-center relative"
+                    animate={{
+                      rotate: [0, 360],
+                      scale: [1, 1.1, 1]
+                    }}
+                    transition={{
+                      rotate: { duration: 8, repeat: Infinity, ease: "linear" },
+                      scale: { duration: 2, repeat: Infinity }
+                    }}
+                  >
+                    <div className="text-white text-3xl">🗺️</div>
+                    
+                    {/* Orbiting sparkles */}
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="absolute w-3 h-3 bg-yellow-400 rounded-full"
+                        animate={{
+                          rotate: [0, 360]
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          delay: i * 1,
+                          ease: "linear"
+                        }}
+                        style={{
+                          transformOrigin: '40px',
+                          top: '50%',
+                          left: '50%'
+                        }}
+                      />
+                    ))}
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="text-white text-xl font-bold"
+                  >
+                    Hey explorer!
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 }}
+                    className="text-white/80 text-lg leading-relaxed"
+                  >
+                    I've got something amazing to show you. Want to go on an adventure together?
+                  </motion.div>
+                  
+                  <motion.button
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.1 }}
+                    onClick={() => {
+                      setParticleCount(prev => prev + 5);
+                      setTimeout(() => setTeachingStep('experience'), 300);
+                    }}
+                    whileHover={{ 
+                      scale: 1.05,
+                      boxShadow: "0 10px 25px rgba(255, 165, 0, 0.3)"
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-8 py-4 bg-gradient-to-r from-warm-orange to-sunset-orange text-white text-lg font-medium rounded-2xl relative overflow-hidden group"
+                    data-testid="start-adventure"
+                  >
+                    <motion.span
+                      className="relative z-10 flex items-center gap-2"
+                    >
+                      <Sparkles className="w-5 h-5" />
+                      Let's explore!
+                      <Sparkles className="w-5 h-5" />
+                    </motion.span>
+                    
+                    {/* Button shine effect */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                      initial={{ x: '-100%' }}
+                      whileHover={{ x: '100%' }}
+                      transition={{ duration: 0.6 }}
+                    />
+                  </motion.button>
+                </div>
               </div>
-              
-              <div className="text-white/80 text-lg leading-relaxed">
-                I've got something amazing to show you. Want to go on an adventure together?
-              </div>
-              
-              <button
-                onClick={() => setTeachingStep('experience')}
-                className="px-8 py-4 bg-gradient-to-r from-warm-orange to-sunset-orange text-white text-lg font-medium rounded-2xl hover:scale-105 transition-all"
-                data-testid="start-adventure"
-              >
-                Let's explore!
-              </button>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         {/* Teaching Through Experience */}
-        {teachingStep === 'experience' && (
-          <div className="floating-ui rounded-3xl p-8" data-testid="visual-teaching">
-            <div className="space-y-6">
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center">
-                  <div className="text-white text-2xl">👀</div>
-                </div>
-                <div className="text-white text-lg font-medium mb-6">Scout's Discovery</div>
+        <AnimatePresence mode="wait">
+          {teachingStep === 'experience' && (
+            <motion.div
+              initial={{ opacity: 0, x: 100, rotateY: -15 }}
+              animate={{ opacity: 1, x: 0, rotateY: 0 }}
+              exit={{ opacity: 0, x: -100, rotateY: 15 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="relative"
+            >
+              {/* Magical aura background */}
+              <div className="absolute inset-0 pointer-events-none">
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-3xl"
+                  animate={{
+                    scale: [1, 1.02, 1],
+                    opacity: [0.5, 0.8, 0.5]
+                  }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                />
+                
+                {/* Floating magical elements */}
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                    }}
+                    animate={{
+                      y: [-30, 30, -30],
+                      x: [-20, 20, -20],
+                      rotate: [0, 360],
+                      opacity: [0.2, 0.7, 0.2]
+                    }}
+                    transition={{
+                      duration: 6 + Math.random() * 4,
+                      repeat: Infinity,
+                      delay: i * 0.3
+                    }}
+                  >
+                    {i % 3 === 0 ? (
+                      <Star className="w-3 h-3 text-yellow-400" />
+                    ) : i % 3 === 1 ? (
+                      <Sparkles className="w-2 h-2 text-blue-400" />
+                    ) : (
+                      <Heart className="w-2 h-2 text-pink-400" />
+                    )}
+                  </motion.div>
+                ))}
               </div>
               
-              {!showVisualDemo ? (
-                <div className="text-center">
-                  <button
-                    onClick={() => setShowVisualDemo(true)}
-                    className="w-40 h-40 bg-gradient-to-b from-white/30 to-white/20 hover:from-white/40 hover:to-white/30 rounded-full flex items-center justify-center border-2 border-white/30 hover:border-white/50 transition-all duration-300 hover:scale-105"
-                    data-testid="show-demo"
+              <div className="floating-ui rounded-3xl p-8 relative overflow-hidden" data-testid="visual-teaching">
+                <div className="space-y-6 relative z-10">
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-center"
                   >
-                    <div className="text-white text-4xl">▶</div>
-                  </button>
-                </div>
-              ) : (
+                    <motion.div
+                      className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center relative"
+                      animate={{
+                        boxShadow: [
+                          "0 0 20px rgba(59, 130, 246, 0.5)",
+                          "0 0 40px rgba(147, 51, 234, 0.7)",
+                          "0 0 20px rgba(59, 130, 246, 0.5)"
+                        ]
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <motion.div
+                        className="text-white text-2xl"
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        👀
+                      </motion.div>
+                      
+                      {/* Pulsing ring */}
+                      <motion.div
+                        className="absolute inset-0 rounded-full border-2 border-blue-400"
+                        animate={{
+                          scale: [1, 1.5, 1],
+                          opacity: [0.8, 0, 0.8]
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      />
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.6 }}
+                      className="text-white text-lg font-medium mb-6"
+                    >
+                      Scout's Discovery
+                    </motion.div>
+                  </motion.div>
+                  
+                  {!showVisualDemo ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.8, type: "spring" }}
+                      className="text-center"
+                    >
+                      <motion.button
+                        onClick={() => {
+                          setIsInteracting(true);
+                          setTimeout(() => setShowVisualDemo(true), 600);
+                        }}
+                        whileHover={{ 
+                          scale: 1.1,
+                          rotateY: 5,
+                          boxShadow: "0 20px 40px rgba(255, 255, 255, 0.2)"
+                        }}
+                        whileTap={{ scale: 0.9 }}
+                        className="w-40 h-40 bg-gradient-to-b from-white/30 to-white/20 hover:from-white/40 hover:to-white/30 rounded-full flex items-center justify-center border-2 border-white/30 hover:border-white/50 transition-all duration-300 relative overflow-hidden group"
+                        data-testid="show-demo"
+                      >
+                        {/* Animated play button */}
+                        <motion.div
+                          className="text-white text-4xl relative z-10"
+                          animate={{
+                            scale: isInteracting ? [1, 1.5, 0] : [1, 1.1, 1]
+                          }}
+                          transition={{
+                            duration: isInteracting ? 0.6 : 2,
+                            repeat: isInteracting ? 0 : Infinity
+                          }}
+                        >
+                          ▶
+                        </motion.div>
+                        
+                        {/* Ripple effect */}
+                        <motion.div
+                          className="absolute inset-0 rounded-full border-4 border-white/50"
+                          animate={{
+                            scale: [1, 1.5],
+                            opacity: [0.5, 0]
+                          }}
+                          transition={{
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: "easeOut"
+                          }}
+                        />
+                        
+                        {/* Inner glow */}
+                        <motion.div
+                          className="absolute inset-4 rounded-full bg-gradient-to-br from-yellow-400/20 to-orange-400/20"
+                          animate={{
+                            opacity: [0.3, 0.7, 0.3]
+                          }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        />
+                      </motion.button>
+                    </motion.div>
+                  ) : (
                 <div className="space-y-6">
                   <div className="bg-white/10 rounded-2xl p-8 backdrop-blur-sm">
                     <div className="flex items-start gap-4 mb-4">
@@ -216,7 +468,7 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                       {(() => {
                         const getExplorationOptions = () => {
                           const message = scoutMessage || (teachContent?.content) || "";
-                          const topicName = content.topicName || "";
+                          const topicName = content.title || "";
                           
                           // Mathematics exploration options
                           if (topicName.toLowerCase().includes('count') || topicName.toLowerCase().includes('number') || message.toLowerCase().includes('count')) {
@@ -294,7 +546,9 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
               )}
             </div>
           </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         {/* Ready Check */}
         {teachingStep === 'ready' && (
