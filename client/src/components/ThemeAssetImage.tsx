@@ -58,7 +58,7 @@ export function ThemeAssetImage({
         onClick={onClick}
       >
         <img
-          src={asset.imagePath.replace('@assets/', '/attached_assets/')}
+          src={asset.imagePath}
           alt={asset.altText}
           className="w-full h-full object-cover rounded-lg"
           onLoad={() => setImageLoaded(true)}

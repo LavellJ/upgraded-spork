@@ -21,7 +21,7 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'math-counting',
     name: 'Math Counting Activity',
     category: 'activity',
-    imagePath: '@assets/generated_images/Scout_math_counting_activity_6b76e197.png',
+    imagePath: '/attached_assets/generated_images/Scout_math_counting_activity_6b76e197.png',
     fallbackDescription: 'A cheerful cartoon Scout character in Alto adventure style holding an abacus with colorful beads, surrounded by floating numbers in soft gradients, mountains in background, clean illustration style',
     altText: 'Scout with counting tools',
     subject: 'mathematics'
@@ -31,7 +31,7 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'math-shapes',
     name: 'Shape Recognition Activity', 
     category: 'activity',
-    imagePath: '@assets/generated_images/Scout_shapes_exploration_activity_db037fae.png',
+    imagePath: '/attached_assets/generated_images/Scout_shapes_exploration_activity_db037fae.png',
     fallbackDescription: 'Scout character examining geometric shapes (circles, triangles, squares) with a magnifying glass, shapes have soft glowing effects, Alto adventure mountain landscape, clean cartoon style',
     altText: 'Scout exploring shapes',
     subject: 'mathematics'
@@ -41,7 +41,7 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'science-animals',
     name: 'Animal Science Activity',
     category: 'activity', 
-    imagePath: '@assets/generated_images/Scout_animal_science_activity_ecc5c7ed.png',
+    imagePath: '/attached_assets/generated_images/Scout_animal_science_activity_ecc5c7ed.png',
     fallbackDescription: 'Scout character with a nature journal observing cute cartoon animals in a meadow, binoculars around neck, soft atmospheric lighting, Alto adventure art style',
     altText: 'Scout studying animals',
     subject: 'science'
@@ -51,7 +51,7 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'literacy-letters',
     name: 'Letter Recognition Activity',
     category: 'activity',
-    imagePath: '@assets/generated_images/Scout_letter_detective_activity_66ed878a.png',
+    imagePath: '/attached_assets/generated_images/Scout_letter_detective_activity_66ed878a.png',
     fallbackDescription: 'Scout character as detective with magnifying glass searching for letters floating in the air like butterflies, soft mountain backdrop, whimsical Alto adventure style',
     altText: 'Scout as letter detective',
     subject: 'literacy'
@@ -61,8 +61,67 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'discovery-exploration',
     name: 'General Discovery Activity',
     category: 'activity',
+    imagePath: '/attached_assets/generated_images/Scout_general_exploration_5819cb00.png',
     fallbackDescription: 'Scout character with backpack standing on a hill looking through a telescope at floating islands and magical discoveries, soft sunset lighting, Alto adventure aesthetic',
     altText: 'Scout exploring discoveries',
+    subject: 'general'
+  },
+
+  // Feedback and UI Icons
+  'feedback-success': {
+    id: 'feedback-success',
+    name: 'Success Celebration',
+    category: 'feedback',
+    imagePath: '/attached_assets/generated_images/Scout_success_celebration_5349bae9.png',
+    fallbackDescription: 'Scout character jumping with joy, arms raised in celebration, confetti or sparkles around, bright cheerful expression, Alto adventure style',
+    altText: 'Scout celebrating success',
+    subject: 'general'
+  },
+
+  'feedback-encouragement': {
+    id: 'feedback-encouragement',
+    name: 'Encouragement Gesture',
+    category: 'feedback',
+    imagePath: '/attached_assets/generated_images/Scout_encouragement_gesture_3e7ef8a2.png',
+    fallbackDescription: 'Scout character with encouraging thumbs up gesture, friendly smile, gentle reassuring expression, Alto adventure style',
+    altText: 'Scout giving encouragement',
+    subject: 'general'
+  },
+
+  'exploration-general': {
+    id: 'exploration-general',
+    name: 'General Exploration',
+    category: 'activity',
+    imagePath: '/attached_assets/generated_images/Scout_thinking_exploration_f0cbbecc.png',
+    fallbackDescription: 'Scout character in thoughtful pose looking at discoveries, hand on chin, curious expression, Alto adventure mountain backdrop',
+    altText: 'Scout in exploration mode',
+    subject: 'general'
+  },
+
+  'ui-camera-discovery': {
+    id: 'ui-camera-discovery',
+    name: 'Camera Discovery Icon',
+    category: 'ui',
+    fallbackDescription: 'Scout character holding a vintage camera with a friendly smile, ready to capture memories, Alto adventure style, soft lighting',
+    altText: 'Scout with camera',
+    subject: 'general'
+  },
+
+  'ui-scout-speech': {
+    id: 'ui-scout-speech',
+    name: 'Scout Speech Icon',
+    category: 'ui',
+    fallbackDescription: 'Scout character with a speech bubble or megaphone, friendly communicative pose, Alto adventure style',
+    altText: 'Scout speaking',
+    subject: 'general'
+  },
+
+  'achievement-general': {
+    id: 'achievement-general',
+    name: 'General Achievement',
+    category: 'badge',
+    fallbackDescription: 'Scout character holding a glowing trophy or medal, proud stance, golden light effects, Alto adventure style',
+    altText: 'Scout with achievement',
     subject: 'general'
   },
 
