@@ -30,12 +30,8 @@ export function ThemeAssetImage({
   
   const asset = getThemeAsset(assetId);
   
-  // Debug logging
-  console.log(`🖼️ SCOUT IMAGE DEBUG: Looking for asset "${assetId}"`, asset);
-  
   // If no asset found, use fallback emoji
   if (!asset) {
-    console.log(`🚨 SCOUT IMAGE DEBUG: No asset found for "${assetId}", using fallback emoji`);
     return (
       <motion.div 
         className={`flex items-center justify-center ${className}`}
@@ -52,7 +48,6 @@ export function ThemeAssetImage({
 
   // If image path exists and no error, show image
   if (asset.imagePath && !imageError) {
-    console.log(`🎯 SCOUT IMAGE DEBUG: Loading image from "${asset.imagePath}"`);
     return (
       <motion.div
         className={`relative ${className}`}
@@ -66,14 +61,8 @@ export function ThemeAssetImage({
           src={asset.imagePath}
           alt={asset.altText}
           className="w-full h-full object-cover rounded-lg"
-          onLoad={() => {
-            console.log(`✅ SCOUT IMAGE DEBUG: Successfully loaded "${asset.imagePath}"`);
-            setImageLoaded(true);
-          }}
-          onError={(e) => {
-            console.error(`❌ SCOUT IMAGE DEBUG: Failed to load "${asset.imagePath}"`, e);
-            setImageError(true);
-          }}
+          onLoad={() => setImageLoaded(true)}
+          onError={() => setImageError(true)}
           style={{ 
             opacity: imageLoaded ? 1 : 0,
             transition: 'opacity 0.3s ease-in-out'
@@ -95,7 +84,6 @@ export function ThemeAssetImage({
   }
 
   // Fallback to emoji if image fails or doesn't exist
-  console.log(`😢 SCOUT IMAGE DEBUG: Using fallback emoji for "${assetId}". ImageError: ${imageError}, ImagePath: ${asset.imagePath}`);
   return (
     <motion.div 
       className={`flex items-center justify-center ${className}`}
