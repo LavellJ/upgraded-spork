@@ -161,16 +161,16 @@ export function QuestionInterface({ question, onAnswered, studentId, ageGroup = 
     switch (ageGroup) {
       case "pre-primary":
         return isCorrect ? 
-          ["🌟 Amazing work!", "🎉 You're so smart!", "🦋 Beautiful job!"][Math.floor(Math.random() * 3)] :
-          ["🌈 Good try!", "🌻 Let's try again!", "⭐ You're learning!"][Math.floor(Math.random() * 3)];
+          ["Amazing work!", "You're so smart!", "Beautiful job!"][Math.floor(Math.random() * 3)] :
+          ["Good try!", "Let's try again!", "You're learning!"][Math.floor(Math.random() * 3)];
       case "primary":
         return isCorrect ?
-          ["🚀 Excellent!", "🏆 Well done!", "⚡ Fantastic!"][Math.floor(Math.random() * 3)] :
-          ["🎯 Keep going!", "🌟 Good effort!", "💪 You've got this!"][Math.floor(Math.random() * 3)];
+          ["Excellent!", "Well done!", "Fantastic!"][Math.floor(Math.random() * 3)] :
+          ["Keep going!", "Good effort!", "You've got this!"][Math.floor(Math.random() * 3)];
       case "upper-primary":
         return isCorrect ?
-          ["🧠 Outstanding thinking!", "🎯 Perfect reasoning!", "🔥 Brilliant work!"][Math.floor(Math.random() * 3)] :
-          ["💡 Interesting approach!", "🤔 Let's explore this!", "📚 Great learning moment!"][Math.floor(Math.random() * 3)];
+          ["Outstanding thinking!", "Perfect reasoning!", "Brilliant work!"][Math.floor(Math.random() * 3)] :
+          ["Interesting approach!", "Let's explore this!", "Great learning moment!"][Math.floor(Math.random() * 3)];
       default:
         return isCorrect ? "Correct!" : "Not quite right";
     }
