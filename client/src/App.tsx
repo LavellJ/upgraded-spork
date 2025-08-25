@@ -13,7 +13,6 @@ import ParentDashboard from "@/pages/ParentDashboard";
 import AddChild from "@/pages/AddChild";
 import { VoiceSetup } from "@/pages/VoiceSetup";
 import LessonSkeleton from "@/pages/LessonSkeleton";
-import AssetsGallery from "@/pages/AssetsGallery";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -29,7 +28,6 @@ function Router() {
       <Route path="/parent/add-child" component={AddChild} />
       <Route path="/voice-setup" component={VoiceSetup} />
       <Route path="/lesson-skeleton" component={LessonSkeleton} />
-      <Route path="/assets" component={AssetsGallery} />
       <Route component={NotFound} />
     </Switch>
   );
