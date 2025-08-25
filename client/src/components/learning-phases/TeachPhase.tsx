@@ -427,79 +427,145 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
                       const chunks = fullMessage.split('\n\n').filter(chunk => chunk.trim().length > 0);
                       
                       return (
-                        <div className="space-y-4">
-                          {/* Main Educational Image */}
+                        <div className="space-y-6">
+                          {/* Main Discovery Card with Integrated Layout */}
                           <motion.div
-                            initial={{ opacity: 0, scale: 0.8 }}
+                            initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ type: "spring", damping: 20 }}
-                            className="bg-white/10 rounded-3xl p-4 backdrop-blur-sm border border-white/20 overflow-hidden"
+                            className="bg-gradient-to-br from-white/15 to-white/5 rounded-3xl p-6 backdrop-blur-sm border border-white/20 overflow-hidden"
                           >
-                            <img 
-                              src={educationalImage} 
-                              alt="Educational illustration for learning"
-                              className="w-full h-32 object-cover rounded-2xl"
-                            />
-                            <div className="p-4 text-center">
+                            {/* Scout's Introduction */}
+                            <motion.div
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.2 }}
+                              className="text-center mb-4"
+                            >
+                              <div className="flex items-center justify-center gap-2 text-white/90 text-lg font-medium">
+                                <motion.div
+                                  animate={{ rotate: [0, 10, -10, 0] }}
+                                  transition={{ duration: 2, repeat: Infinity }}
+                                >
+                                  🔍
+                                </motion.div>
+                                Scout's Amazing Discovery!
+                                <motion.div
+                                  animate={{ scale: [1, 1.2, 1] }}
+                                  transition={{ duration: 1.5, repeat: Infinity }}
+                                >
+                                  ✨
+                                </motion.div>
+                              </div>
+                            </motion.div>
+
+                            {/* Picture and Text Side by Side Layout */}
+                            <div className="grid md:grid-cols-2 gap-4 items-start">
+                              {/* Educational Image */}
                               <motion.div
-                                className="text-white/80 text-sm"
-                                animate={{ opacity: [0.7, 1, 0.7] }}
-                                transition={{ duration: 2, repeat: Infinity }}
+                                initial={{ opacity: 0, x: -30 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.4 }}
+                                className="relative"
                               >
-                                Scout's discovery picture! 📸
+                                <img 
+                                  src={educationalImage} 
+                                  alt="Educational illustration for learning"
+                                  className="w-full h-40 object-cover rounded-2xl shadow-lg"
+                                />
+                                <motion.div
+                                  className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg"
+                                  animate={{ 
+                                    rotate: [0, 360],
+                                    scale: [1, 1.1, 1]
+                                  }}
+                                  transition={{ 
+                                    duration: 3, 
+                                    repeat: Infinity,
+                                    ease: "linear"
+                                  }}
+                                >
+                                  📸
+                                </motion.div>
+                              </motion.div>
+
+                              {/* Learning Content */}
+                              <motion.div
+                                initial={{ opacity: 0, x: 30 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.6 }}
+                                className="space-y-3"
+                              >
+                                {chunks.slice(0, 2).map((chunk, index) => {
+                                  // Extract emoji or create visual indicator
+                                  const emojiMatch = chunk.match(/[🔍🎯🚀✨👀🌟⭐]/);
+                                  const emoji = emojiMatch ? emojiMatch[0] : ['🌟', '🎯'][index] || '💫';
+                                  
+                                  // Clean text - make it more readable for 3-5 year olds
+                                  const cleanText = chunk.replace(/[🔍🎯🚀✨👀🌟⭐]/g, '').replace(/\n/g, ' ').trim();
+                                  const shortText = cleanText.length > 60 ? cleanText.substring(0, 60) + '...' : cleanText;
+                                  
+                                  return (
+                                    <motion.div
+                                      key={index}
+                                      initial={{ opacity: 0, y: 20 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      transition={{ delay: 0.8 + (index * 0.2) }}
+                                      className="bg-white/10 rounded-xl p-3 backdrop-blur-sm border border-white/10"
+                                    >
+                                      <div className="flex items-start gap-3">
+                                        <motion.div
+                                          className="text-xl flex-shrink-0"
+                                          animate={{
+                                            scale: [1, 1.15, 1],
+                                            rotate: [0, 5, 0]
+                                          }}
+                                          transition={{
+                                            duration: 2,
+                                            repeat: Infinity,
+                                            delay: index * 0.5
+                                          }}
+                                        >
+                                          {emoji}
+                                        </motion.div>
+                                        <div className="flex-1">
+                                          <div className="text-white text-sm leading-relaxed font-medium">
+                                            {shortText}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </motion.div>
+                                  );
+                                })}
+                                
+                                {/* Scout Speech Button */}
+                                <motion.div
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ delay: 1.2 }}
+                                  className="pt-2"
+                                >
+                                  <ScoutSpeechButton 
+                                    text={fullMessage}
+                                    autoSpeak={true}
+                                    className="w-full"
+                                  />
+                                </motion.div>
                               </motion.div>
                             </div>
+
+                            {/* Fun Discovery Quote */}
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 1.4 }}
+                              className="mt-4 p-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl border border-blue-400/30"
+                            >
+                              <div className="text-white/90 text-center text-sm italic">
+                                "Every discovery is a new adventure waiting to happen!" - Scout 🎒
+                              </div>
+                            </motion.div>
                           </motion.div>
-                          
-                          {/* Learning Text Cards */}
-                          {chunks.slice(0, 2).map((chunk, index) => {
-                            // Extract emoji or create visual indicator
-                            const emojiMatch = chunk.match(/[🔍🎯🚀✨👀🌟⭐]/);
-                            const emoji = emojiMatch ? emojiMatch[0] : ['🗺️', '👀'][index] || '💫';
-                            
-                            // Clean text - remove emojis and formatting for readability
-                            const cleanText = chunk.replace(/[🔍🎯🚀✨👀🌟⭐]/g, '').replace(/\n/g, ' ').trim();
-                            const shortText = cleanText.length > 50 ? cleanText.substring(0, 50) + '...' : cleanText;
-                            
-                            return (
-                              <motion.div
-                                key={index}
-                                initial={{ opacity: 0, x: -50 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: (index + 1) * 0.3 }}
-                                className="bg-white/10 rounded-2xl p-4 backdrop-blur-sm border border-white/20"
-                              >
-                                <div className="flex items-start gap-3">
-                                  <motion.div
-                                    className="text-2xl flex-shrink-0"
-                                    animate={{
-                                      scale: [1, 1.1, 1],
-                                      rotate: [0, 3, 0]
-                                    }}
-                                    transition={{
-                                      duration: 2,
-                                      repeat: Infinity,
-                                      delay: index * 0.5
-                                    }}
-                                  >
-                                    {emoji}
-                                  </motion.div>
-                                  <div className="flex-1">
-                                    <div className="text-white text-sm leading-relaxed">
-                                      {shortText}
-                                    </div>
-                                    {index === 0 && (
-                                      <ScoutSpeechButton 
-                                        text={fullMessage}
-                                        autoSpeak={true}
-                                        className="mt-2"
-                                      />
-                                    )}
-                                  </div>
-                                </div>
-                              </motion.div>
-                            );
-                          })}
                         </div>
                       );
                     })()}
