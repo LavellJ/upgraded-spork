@@ -64,12 +64,23 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
 
   const tryContent = content.content;
   
-  // Handle both new Scout format (simple string) and legacy format
+  // Handle different content formats
   const isScoutFormat = typeof tryContent === 'string';
+  const hasInteractiveFormat = !isScoutFormat && (tryContent as any)?.fadedExamples;
+  
   const scoutMessage = isScoutFormat ? tryContent : null;
-  const legacyContent = !isScoutFormat ? tryContent as TryContent : null;
+  const legacyContent = hasInteractiveFormat ? tryContent as TryContent : null;
   const currentExample = legacyContent?.fadedExamples?.[currentExampleIndex];
   const currentStep = currentExample?.steps?.[currentStepIndex];
+  
+  console.log('TryPhase Content Analysis:', {
+    isScoutFormat,
+    hasInteractiveFormat,
+    tryContentType: typeof tryContent,
+    hasExamples: !!(tryContent as any)?.fadedExamples,
+    currentExample: !!currentExample,
+    currentStep: !!currentStep
+  });
 
   const getStepKey = () => `${currentExampleIndex}-${currentStepIndex}`;
 
@@ -264,8 +275,24 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
     );
   }
 
-  if (!currentExample || !legacyContent) {
-    return <div>Loading examples...</div>;
+  // Check if we have the content we need for interactive format
+  if (hasInteractiveFormat && (!currentExample || !currentStep)) {
+    return (
+      <div className="floating-ui rounded-2xl p-8 text-center">
+        <div className="text-white/80">Loading interactive challenge...</div>
+        <div className="text-white/60 text-sm mt-2">Preparing your adventure with Scout!</div>
+      </div>
+    );
+  }
+  
+  // If no interactive format and no Scout format, something's wrong
+  if (!hasInteractiveFormat && !isScoutFormat) {
+    return (
+      <div className="floating-ui rounded-2xl p-8 text-center">
+        <div className="text-white/80">Content not available</div>
+        <div className="text-white/60 text-sm mt-2">Please try refreshing the lesson.</div>
+      </div>
+    );
   }
 
   // Co-Learning phase for pre-primary following Scout's Teaching Cycle
