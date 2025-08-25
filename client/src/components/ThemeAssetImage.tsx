@@ -31,11 +31,11 @@ export function ThemeAssetImage({
   const asset = getThemeAsset(assetId);
   
   // Debug logging
-  console.log(`ThemeAssetImage: Looking for asset "${assetId}"`, asset);
+  console.log(`🖼️ SCOUT IMAGE DEBUG: Looking for asset "${assetId}"`, asset);
   
   // If no asset found, use fallback emoji
   if (!asset) {
-    console.log(`ThemeAssetImage: No asset found for "${assetId}", using fallback emoji`);
+    console.log(`🚨 SCOUT IMAGE DEBUG: No asset found for "${assetId}", using fallback emoji`);
     return (
       <motion.div 
         className={`flex items-center justify-center ${className}`}
@@ -52,7 +52,7 @@ export function ThemeAssetImage({
 
   // If image path exists and no error, show image
   if (asset.imagePath && !imageError) {
-    console.log(`ThemeAssetImage: Loading image from "${asset.imagePath}"`);
+    console.log(`🎯 SCOUT IMAGE DEBUG: Loading image from "${asset.imagePath}"`);
     return (
       <motion.div
         className={`relative ${className}`}
@@ -67,11 +67,11 @@ export function ThemeAssetImage({
           alt={asset.altText}
           className="w-full h-full object-cover rounded-lg"
           onLoad={() => {
-            console.log(`ThemeAssetImage: Successfully loaded "${asset.imagePath}"`);
+            console.log(`✅ SCOUT IMAGE DEBUG: Successfully loaded "${asset.imagePath}"`);
             setImageLoaded(true);
           }}
           onError={(e) => {
-            console.error(`ThemeAssetImage: Failed to load "${asset.imagePath}"`, e);
+            console.error(`❌ SCOUT IMAGE DEBUG: Failed to load "${asset.imagePath}"`, e);
             setImageError(true);
           }}
           style={{ 
@@ -95,7 +95,7 @@ export function ThemeAssetImage({
   }
 
   // Fallback to emoji if image fails or doesn't exist
-  console.log(`ThemeAssetImage: Using fallback emoji for "${assetId}". ImageError: ${imageError}, ImagePath: ${asset.imagePath}`);
+  console.log(`😢 SCOUT IMAGE DEBUG: Using fallback emoji for "${assetId}". ImageError: ${imageError}, ImagePath: ${asset.imagePath}`);
   return (
     <motion.div 
       className={`flex items-center justify-center ${className}`}
