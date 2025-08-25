@@ -162,6 +162,22 @@ export const parentActivityLog = pgTable("parent_activity_log", {
   timestamp: timestamp("timestamp").defaultNow(),
 });
 
+// Assets table for storing generated images and icons
+export const assets = pgTable("assets", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  assetId: text("asset_id").notNull().unique(), // readable identifier like "geometric-bear-counting"
+  name: text("name").notNull(),
+  description: text("description"),
+  filePath: text("file_path").notNull(), // relative path to asset file
+  assetType: text("asset_type").notNull(), // "icon", "illustration", "background", "avatar"
+  category: text("category").notNull(), // "geometric-animal", "scout", "educational", "ui"
+  subject: text("subject"), // "mathematics", "literacy", "science", null for general
+  ageGroup: text("age_group"), // "pre-primary", "primary", "upper-primary", null for all ages
+  tags: jsonb("tags").default([]), // array of descriptive tags
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertStudentSchema = createInsertSchema(students).omit({
   id: true,
@@ -235,6 +251,11 @@ export const insertStudentArtifactSchema = createInsertSchema(studentArtifacts).
   createdAt: true,
 });
 
+export const insertAssetSchema = createInsertSchema(assets).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type Parent = typeof parents.$inferSelect;
 export type InsertParent = z.infer<typeof insertParentSchema>;
@@ -277,3 +298,6 @@ export type InsertLearningContent = z.infer<typeof insertLearningContentSchema>;
 
 export type StudentArtifact = typeof studentArtifacts.$inferSelect;
 export type InsertStudentArtifact = z.infer<typeof insertStudentArtifactSchema>;
+
+export type Asset = typeof assets.$inferSelect;
+export type InsertAsset = z.infer<typeof insertAssetSchema>;

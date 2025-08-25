@@ -889,6 +889,181 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Assets endpoints
+  app.get('/api/assets', async (req, res) => {
+    try {
+      const assets = await storage.getAllAssets();
+      res.json(assets);
+    } catch (error) {
+      console.error('Error fetching assets:', error);
+      res.status(500).json({ error: 'Failed to fetch assets' });
+    }
+  });
+
+  app.post('/api/assets/populate', async (req, res) => {
+    try {
+      const generatedAssets = [
+        // Minimal Geometric Animal Icons (matching bunny/fox/owl style)
+        {
+          assetId: "geometric-bear",
+          name: "Geometric Bear",
+          description: "Minimal geometric bear with simple shapes",
+          filePath: "attached_assets/generated_images/Minimal_geometric_bear_shapes_11a702b1.png",
+          assetType: "icon",
+          category: "geometric-animal",
+          subject: "mathematics",
+          ageGroup: "pre-primary",
+          tags: ["bear", "counting", "shapes", "geometry"]
+        },
+        {
+          assetId: "geometric-butterfly",
+          name: "Geometric Butterfly",
+          description: "Minimal geometric butterfly with simple shapes",
+          filePath: "attached_assets/generated_images/Minimal_geometric_butterfly_shapes_ef2934a5.png",
+          assetType: "icon",
+          category: "geometric-animal",
+          subject: "science",
+          ageGroup: "pre-primary",
+          tags: ["butterfly", "nature", "shapes", "geometry"]
+        },
+        {
+          assetId: "geometric-cat",
+          name: "Geometric Cat",
+          description: "Minimal geometric cat with simple shapes",
+          filePath: "attached_assets/generated_images/Minimal_geometric_cat_shapes_87d086b3.png",
+          assetType: "icon",
+          category: "geometric-animal",
+          subject: "literacy",
+          ageGroup: "pre-primary",
+          tags: ["cat", "phonics", "shapes", "geometry"]
+        },
+        {
+          assetId: "geometric-deer",
+          name: "Geometric Deer",
+          description: "Minimal geometric deer with simple shapes",
+          filePath: "attached_assets/generated_images/Minimal_geometric_deer_shapes_7440e0a8.png",
+          assetType: "icon",
+          category: "geometric-animal",
+          subject: "science",
+          ageGroup: "pre-primary",
+          tags: ["deer", "nature", "shapes", "geometry"]
+        },
+        {
+          assetId: "geometric-squirrel",
+          name: "Geometric Squirrel",
+          description: "Minimal geometric squirrel with simple shapes",
+          filePath: "attached_assets/generated_images/Minimal_geometric_squirrel_shapes_9e7f4586.png",
+          assetType: "icon",
+          category: "geometric-animal",
+          subject: "mathematics",
+          ageGroup: "pre-primary",
+          tags: ["squirrel", "counting", "shapes", "geometry"]
+        },
+        // Themed Activity Icons
+        {
+          assetId: "bear-counting-icon",
+          name: "Bear Counting Icon",
+          description: "Geometric bear icon for counting activities",
+          filePath: "attached_assets/generated_images/Geometric_bear_counting_icon_26aa61b2.png",
+          assetType: "icon",
+          category: "activity",
+          subject: "mathematics",
+          ageGroup: "pre-primary",
+          tags: ["bear", "counting", "numbers", "math"]
+        },
+        {
+          assetId: "butterfly-success-icon",
+          name: "Butterfly Success Icon",
+          description: "Geometric butterfly for success celebrations",
+          filePath: "attached_assets/generated_images/Geometric_butterfly_success_icon_a8de3737.png",
+          assetType: "icon",
+          category: "feedback",
+          subject: null,
+          ageGroup: null,
+          tags: ["butterfly", "success", "celebration", "achievement"]
+        },
+        {
+          assetId: "cat-literacy-icon",
+          name: "Cat Literacy Icon",
+          description: "Geometric cat icon for literacy activities",
+          filePath: "attached_assets/generated_images/Geometric_cat_literacy_icon_fb1352b8.png",
+          assetType: "icon",
+          category: "activity",
+          subject: "literacy",
+          ageGroup: "pre-primary",
+          tags: ["cat", "reading", "phonics", "letters"]
+        },
+        {
+          assetId: "deer-science-icon",
+          name: "Deer Science Icon",
+          description: "Geometric deer icon for science exploration",
+          filePath: "attached_assets/generated_images/Geometric_deer_science_icon_2f456b14.png",
+          assetType: "icon",
+          category: "activity",
+          subject: "science",
+          ageGroup: "pre-primary",
+          tags: ["deer", "nature", "animals", "science"]
+        },
+        {
+          assetId: "squirrel-thinking-icon",
+          name: "Squirrel Thinking Icon",
+          description: "Geometric squirrel for thinking activities",
+          filePath: "attached_assets/generated_images/Geometric_squirrel_thinking_icon_1f8094b0.png",
+          assetType: "icon",
+          category: "feedback",
+          subject: null,
+          ageGroup: null,
+          tags: ["squirrel", "thinking", "problem-solving", "reflection"]
+        },
+        // Educational Illustrations
+        {
+          assetId: "basic-shapes-illustration",
+          name: "Basic Shapes Educational Illustration",
+          description: "Educational illustration featuring basic geometric shapes",
+          filePath: "attached_assets/generated_images/Basic_shapes_educational_illustration_db521999.png",
+          assetType: "illustration",
+          category: "educational",
+          subject: "mathematics",
+          ageGroup: "pre-primary",
+          tags: ["shapes", "geometry", "learning", "education"]
+        },
+        {
+          assetId: "counting-animals-illustration",
+          name: "Counting Animals Illustration",
+          description: "Educational illustration for counting with animals",
+          filePath: "attached_assets/generated_images/Counting_animals_educational_illustration_c431f929.png",
+          assetType: "illustration",
+          category: "educational",
+          subject: "mathematics",
+          ageGroup: "pre-primary",
+          tags: ["counting", "animals", "numbers", "math"]
+        },
+        {
+          assetId: "nature-animals-scene",
+          name: "Nature Animals Educational Scene",
+          description: "Educational scene with nature and animals",
+          filePath: "attached_assets/generated_images/Nature_animals_educational_scene_9f3bd27f.png",
+          assetType: "illustration",
+          category: "educational",
+          subject: "science",
+          ageGroup: "pre-primary",
+          tags: ["nature", "animals", "environment", "science"]
+        }
+      ];
+
+      const createdAssets = await storage.createAssets(generatedAssets);
+      console.log(`Successfully populated ${createdAssets.length} assets into database`);
+      
+      res.json({ 
+        message: `Successfully populated ${createdAssets.length} assets`, 
+        assets: createdAssets 
+      });
+    } catch (error) {
+      console.error('Error populating assets:', error);
+      res.status(500).json({ error: 'Failed to populate assets' });
+    }
+  });
+
   // Explorer Buddy Messages
   app.post("/api/buddy/message", async (req, res) => {
     try {
