@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { HelpCircle, Lightbulb, CheckCircle, ArrowRight, RotateCcw } from "lucide-react";
+import { HelpCircle, Lightbulb, CheckCircle, ArrowRight, RotateCcw, Sparkles } from "lucide-react";
+import { ScoutSpeechButton } from "@/components/ScoutSpeechButton";
 import type { LearningContent } from "@shared/schema";
 import type { AgeGroup } from "../AgeSelector";
 
@@ -240,6 +241,12 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
               Let's try this together!
             </div>
             <div className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm">
+              <div className="flex items-start gap-4 mb-4">
+                <ScoutSpeechButton 
+                  text={scoutMessage || "Let's try this together! I'll help you explore and learn."}
+                  autoSpeak={true}
+                />
+              </div>
               <div className="text-white text-lg leading-relaxed">
                 {scoutMessage}
               </div>
@@ -295,9 +302,15 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
                 Let's figure this out together!
               </div>
               
-              <div className="text-white/80 text-lg leading-relaxed">
+              <div className="text-white/80 text-lg leading-relaxed mb-4">
                 I'm not sure either... but I have an idea. Want to try it with me?
               </div>
+              
+              <ScoutSpeechButton 
+                text="I'm not sure either... but I have an idea. Want to try it with me? Which one do you think we should choose?"
+                autoSpeak={true}
+                className="justify-center"
+              />
               
               {/* Interactive Problem Solving */}
               <div className="bg-white/10 rounded-2xl p-8 backdrop-blur-sm">
@@ -308,24 +321,42 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
                   }
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
-                  <button
+                <div className="grid grid-cols-2 gap-6 max-w-md mx-auto">
+                  <motion.button
                     onClick={() => handleCoSolve('first')}
-                    className="p-6 bg-gradient-to-b from-green-400/30 to-green-400/20 hover:from-green-400/40 hover:to-green-400/30 rounded-2xl border-2 border-green-400/40 hover:border-green-400/60 transition-all hover:scale-105 flex flex-col items-center justify-center"
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-8 bg-gradient-to-b from-emerald-400/40 to-emerald-500/30 hover:from-emerald-400/50 hover:to-emerald-500/40 rounded-3xl border-2 border-emerald-400/50 hover:border-emerald-400/70 transition-all backdrop-blur-sm flex flex-col items-center justify-center group shadow-lg"
                     data-testid="choice-first"
                   >
-                    <div className="text-3xl mb-2 text-white">✨</div>
-                    <div className="text-white text-base font-medium">This one</div>
-                  </button>
+                    <motion.div 
+                      className="text-4xl mb-3 text-white"
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      ✨
+                    </motion.div>
+                    <div className="text-white text-lg font-bold mb-1">Adventure Path</div>
+                    <div className="text-emerald-200 text-sm">Let's explore this way!</div>
+                  </motion.button>
                   
-                  <button
+                  <motion.button
                     onClick={() => handleCoSolve('second')}
-                    className="p-6 bg-gradient-to-b from-blue-400/30 to-blue-400/20 hover:from-blue-400/40 hover:to-blue-400/30 rounded-2xl border-2 border-blue-400/40 hover:border-blue-400/60 transition-all hover:scale-105 flex flex-col items-center justify-center"
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-8 bg-gradient-to-b from-sky-400/40 to-blue-500/30 hover:from-sky-400/50 hover:to-blue-500/40 rounded-3xl border-2 border-sky-400/50 hover:border-sky-400/70 transition-all backdrop-blur-sm flex flex-col items-center justify-center group shadow-lg"
                     data-testid="choice-second"
                   >
-                    <div className="text-3xl mb-2 text-white">🌟</div>
-                    <div className="text-white text-base font-medium">That one</div>
-                  </button>
+                    <motion.div 
+                      className="text-4xl mb-3 text-white"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      🌟
+                    </motion.div>
+                    <div className="text-white text-lg font-bold mb-1">Discovery Trail</div>
+                    <div className="text-sky-200 text-sm">Let's try this route!</div>
+                  </motion.button>
                 </div>
               </div>
             </div>

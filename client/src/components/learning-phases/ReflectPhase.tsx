@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Brain, Heart, Target, ArrowRight, Star } from "lucide-react";
+import { ScoutSpeechButton } from "@/components/ScoutSpeechButton";
 import type { LearningContent } from "@shared/schema";
 import type { AgeGroup } from "../AgeSelector";
 
@@ -159,6 +160,12 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
               What did we discover together?
             </div>
             <div className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm">
+              <div className="flex items-start gap-4 mb-4">
+                <ScoutSpeechButton 
+                  text={scoutMessage || "What did we discover together? Let's think about our amazing adventure!"}
+                  autoSpeak={true}
+                />
+              </div>
               <div className="text-white text-lg leading-relaxed">
                 {scoutMessage}
               </div>

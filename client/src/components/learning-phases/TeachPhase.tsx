@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Play, Pause, RotateCcw, Eye, ArrowRight } from "lucide-react";
 import { ExplorerBuddy } from "../ExplorerBuddy";
+import { ScoutSpeechButton } from "@/components/ScoutSpeechButton";
 import type { LearningContent } from "@shared/schema";
 import type { AgeGroup } from "../AgeSelector";
 
@@ -196,6 +197,12 @@ export function TeachPhase({ content, ageGroup, onPhaseComplete, previousData }:
               ) : (
                 <div className="space-y-6">
                   <div className="bg-white/10 rounded-2xl p-8 backdrop-blur-sm">
+                    <div className="flex items-start gap-4 mb-4">
+                      <ScoutSpeechButton 
+                        text={scoutMessage || (teachContent?.content) || "Here's what I discovered on my adventure!"}
+                        autoSpeak={true}
+                      />
+                    </div>
                     <div className="text-white text-lg leading-relaxed">
                       {scoutMessage || (teachContent?.content) || "Here's what I discovered on my adventure!"}
                     </div>

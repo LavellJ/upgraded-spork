@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Camera, Mic, FileText, ArrowRight, Upload, Download } from "lucide-react";
+import { ScoutSpeechButton } from "@/components/ScoutSpeechButton";
 import type { LearningContent } from "@shared/schema";
 import type { AgeGroup } from "../AgeSelector";
 
@@ -219,6 +220,12 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
               Amazing! Let's celebrate our adventure!
             </div>
             <div className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm">
+              <div className="flex items-start gap-4 mb-4">
+                <ScoutSpeechButton 
+                  text={scoutMessage || "Amazing! Let's celebrate our adventure! We learned so much together!"}
+                  autoSpeak={true}
+                />
+              </div>
               <div className="text-white text-lg leading-relaxed">
                 {scoutMessage}
               </div>
