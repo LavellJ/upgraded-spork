@@ -77,7 +77,7 @@ export function useSpeech() {
         await audio.play();
         
       } catch (error) {
-        console.warn('ElevenLabs unavailable (likely out of credits), using browser speech:', error.message);
+        console.warn('ElevenLabs unavailable (likely out of credits), using browser speech:', error instanceof Error ? error.message : 'Unknown error');
         setIsSpeaking(false);
         setIsPaused(false);
         // Fall back to browser speech synthesis
@@ -91,64 +91,31 @@ export function useSpeech() {
 
         const utterance = new SpeechSynthesisUtterance(text);
         
-        // Scout's Australian voice settings - like Bluey!
-        utterance.rate = options.rate || 1.0; // Natural Australian pace
-        utterance.pitch = options.pitch || 1.3; // Higher pitch for youthful, excited Scout
-        utterance.volume = options.volume || 0.9; // Confident and clear
+        // Generic childlike voice settings with normal cadence
+        utterance.rate = options.rate || 1.0; // Normal speaking pace
+        utterance.pitch = options.pitch || 1.2; // Slightly higher pitch for childlike quality
+        utterance.volume = options.volume || 0.9; // Clear and audible
         
-        // Try to find Australian voice for Scout (like Bluey)
+        // Try to find a suitable voice
         const voices = window.speechSynthesis.getVoices();
         
-        // Aggressively search for Australian voices
-        let australianVoices = voices.filter(voice => {
-          const name = voice.name.toLowerCase();
-          const lang = voice.lang.toLowerCase();
-          return lang.includes('en-au') || 
-                 lang.includes('australia') ||
-                 name.includes('australian') ||
-                 name.includes('australia') ||
-                 name.includes('karen') ||  // Often Australian on Windows
-                 name.includes('catherine') || // Often Australian 
-                 name.includes('hayley') ||    // Australian voice name
-                 name.includes('zoe')          // Australian voice name
-        });
-        
-        // Enhanced British voices (closer to Australian accent)
-        let britishVoices = voices.filter(voice => {
-          const name = voice.name.toLowerCase();
-          const lang = voice.lang.toLowerCase();
-          return (lang.includes('en-gb') || 
-                  lang.includes('british') ||
-                  name.includes('british') ||
-                  name.includes('uk') ||
-                  name.includes('hazel') ||
-                  name.includes('serena')) &&
-                 !name.includes('american') &&
-                 !name.includes('us');
-        });
-        
-        // High-quality female voices that might sound more Australian
-        let qualityFemaleVoices = voices.filter(voice => {
-          const name = voice.name.toLowerCase();
-          return voice.lang.startsWith('en') && 
-                 (name.includes('google female') ||
-                  name.includes('microsoft zira') ||
-                  name.includes('samantha') ||
-                  name.includes('fiona') ||
-                  name.includes('moira')) &&
-                 !name.includes('american') &&
-                 !name.includes('us');
-        });
-        
-        // Any decent English voice as final fallback
-        let fallbackVoices = voices.filter(voice => 
-          voice.lang.startsWith('en') && 
-          !voice.name.toLowerCase().includes('american') &&
-          !voice.name.toLowerCase().includes('us')
+        // Look for a generic childlike voice - prioritize female/higher voices
+        const childlikeVoice = voices.find(voice => 
+          voice.lang.startsWith('en') && (
+            voice.name.toLowerCase().includes('female') ||
+            voice.name.toLowerCase().includes('woman') ||
+            voice.name.toLowerCase().includes('girl') ||
+            voice.name.toLowerCase().includes('zira') ||
+            voice.name.toLowerCase().includes('hazel') ||
+            voice.name.toLowerCase().includes('samantha')
+          )
         );
         
-        // Select the most Australian voice available
-        const preferredVoice = australianVoices[0] || britishVoices[0] || qualityFemaleVoices[0] || fallbackVoices[0];
+        // Fallback to any English voice
+        const englishVoice = voices.find(voice => voice.lang.startsWith('en'));
+        
+        // Select the best available voice
+        const preferredVoice = childlikeVoice || englishVoice;
         
         if (preferredVoice) {
           utterance.voice = preferredVoice;
