@@ -12,6 +12,18 @@ interface SpeechOptions {
 // Scout's Voice ID - Your custom Australian Scout voice from ElevenLabs
 const SCOUT_VOICE_ID = 'Pvq8a5ZuCdSHTAiFkvPI';
 
+// Helper function to clean text for speech
+function cleanTextForSpeech(text: string): string {
+  return text
+    // Remove common emojis and symbols that shouldn't be spoken
+    .replace(/[⭐✨🎯🎉🇦🇺🎙️🎈🌟✅🚨🔥💡🎵🎶]/g, '')
+    // Remove other emoji-like symbols (broad approach)
+    .replace(/[\u{1F000}-\u{1F999}]/gu, '')
+    // Clean up extra spaces
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export function useSpeech() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -19,6 +31,14 @@ export function useSpeech() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const speak = useCallback(async (text: string, options: SpeechOptions = {}) => {
+    // Clean text to remove emojis and other symbols that shouldn't be spoken
+    const cleanText = cleanTextForSpeech(text);
+    
+    // Don't speak if there's no text left after cleaning
+    if (!cleanText.trim()) {
+      return;
+    }
+    
     // Use ElevenLabs by default for Scout's voice
     const useElevenLabs = options.useElevenLabs !== false; // Default to true
     const voiceId = options.voiceId || SCOUT_VOICE_ID;
@@ -41,7 +61,7 @@ export function useSpeech() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            text,
+            text: cleanText,
             voiceId
           })
         });
@@ -89,7 +109,7 @@ export function useSpeech() {
         // Stop any current speech
         window.speechSynthesis.cancel();
 
-        const utterance = new SpeechSynthesisUtterance(text);
+        const utterance = new SpeechSynthesisUtterance(cleanText);
         
         // Generic childlike voice settings with normal cadence
         utterance.rate = options.rate || 1.0; // Normal speaking pace
