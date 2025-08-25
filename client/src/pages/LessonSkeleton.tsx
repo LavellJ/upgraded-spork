@@ -1,18 +1,39 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import LessonRenderer from '../components/LessonRenderer';
 import { sampleLessons } from '../data/sampleLessons';
+
+const DEMO_STUDENT_ID = 'demo-student';
 
 export default function LessonSkeleton() {
   const [selectedLessonIndex, setSelectedLessonIndex] = useState(0);
   const [showSelector, setShowSelector] = useState(true);
-  const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
+  const queryClient = useQueryClient();
+  
+  // Fetch lesson completions from API
+  const { data: lessonCompletions = [] } = useQuery({
+    queryKey: [`/api/lesson-completions/${DEMO_STUDENT_ID}`],
+  });
+  
+  // Convert lesson completions to a set of completed lesson indices
+  const completedLessons = new Set(
+    (lessonCompletions as any[])
+      .filter((completion: any) => completion.isCorrect)
+      .map((completion: any) => {
+        const lessonIndex = sampleLessons.findIndex(lesson => lesson.lessonId === completion.lessonId);
+        return lessonIndex >= 0 ? lessonIndex : null;
+      })
+      .filter((index: number | null) => index !== null)
+  );
 
   const currentLesson = sampleLessons[selectedLessonIndex];
   const progress = ((selectedLessonIndex + 1) / sampleLessons.length) * 100;
 
   const handleLessonComplete = () => {
-    setCompletedLessons(prev => new Set(Array.from(prev).concat([selectedLessonIndex])));
+    // Invalidate queries to refetch updated data
+    queryClient.invalidateQueries({ queryKey: [`/api/lesson-completions/${DEMO_STUDENT_ID}`] });
+    queryClient.invalidateQueries({ queryKey: [`/api/achievements/${DEMO_STUDENT_ID}`] });
     
     // Move to next lesson if available
     if (selectedLessonIndex < sampleLessons.length - 1) {
@@ -153,6 +174,7 @@ export default function LessonSkeleton() {
         lesson={currentLesson}
         onComplete={handleLessonComplete}
         progress={progress}
+        studentId={DEMO_STUDENT_ID}
       />
     </div>
   );
