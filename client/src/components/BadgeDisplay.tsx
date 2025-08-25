@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { Achievement } from "@shared/schema";
 import { GeometricIcon } from "./GeometricIcon";
+import { ThemeAssetImage } from "@/components/ThemeAssetImage";
 
 interface BadgeDefinition {
   id: string;
@@ -57,13 +58,13 @@ export function BadgeDisplay({ studentId, ageGroup, compact = false }: BadgeDisp
     }
   };
 
-  const getCategoryIcon = (category: string) => {
+  const getCategoryAssetId = (category: string) => {
     switch (category) {
-      case "milestone": return "🎯";
-      case "streak": return "🔥";
-      case "time": return "⏰";
-      case "mastery": return "⚡";
-      default: return "⭐";
+      case "milestone": return "achievement-milestone";
+      case "streak": return "achievement-streak";
+      case "time": return "achievement-time";
+      case "mastery": return "achievement-mastery";
+      default: return "achievement-general";
     }
   };
 

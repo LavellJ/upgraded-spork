@@ -239,6 +239,7 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'exploration-general',
     name: 'General Exploration',
     category: 'activity',
+    imagePath: '@assets/generated_images/Scout_general_exploration_5819cb00.png',
     fallbackDescription: 'Scout character on adventure with backpack, looking through telescope at floating question marks and discoveries, Alto adventure style',
     altText: 'General exploration',
     subject: 'general'
@@ -248,8 +249,83 @@ export const themeAssets: Record<string, ThemeAsset> = {
     id: 'exploration-thinking',
     name: 'Thinking Activity',
     category: 'activity',
+    imagePath: '@assets/generated_images/Scout_thinking_exploration_f0cbbecc.png',
     fallbackDescription: 'Scout sitting thoughtfully with chin in hand, lightbulb and gears floating above head, contemplative mood, Alto adventure style',
     altText: 'Thinking exploration',
+    subject: 'general'
+  },
+
+  // Subject Icons (small format for skill tree nodes)
+  'subject-mathematics': {
+    id: 'subject-mathematics',
+    name: 'Mathematics Subject',
+    category: 'subject',
+    fallbackDescription: 'Small mathematical symbol with calculator or number elements, Alto adventure style, clean and minimal',
+    altText: 'Mathematics icon',
+    subject: 'mathematics'
+  },
+
+  'subject-literacy': {
+    id: 'subject-literacy',
+    name: 'Literacy Subject',
+    category: 'subject',
+    fallbackDescription: 'Small book or letter icon, Alto adventure style, clean and minimal design for skill tree',
+    altText: 'Literacy icon',
+    subject: 'literacy'
+  },
+
+  'subject-science': {
+    id: 'subject-science',
+    name: 'Science Subject',
+    category: 'subject',
+    fallbackDescription: 'Small microscope or atom symbol, Alto adventure style, clean and minimal for skill tree display',
+    altText: 'Science icon',
+    subject: 'science'
+  },
+
+  // Achievement Badge Categories
+  'achievement-milestone': {
+    id: 'achievement-milestone',
+    name: 'Milestone Achievement',
+    category: 'achievement',
+    fallbackDescription: 'Scout reaching a mountain peak with flag, celebration pose, Alto adventure style badge design',
+    altText: 'Milestone achievement',
+    subject: 'general'
+  },
+
+  'achievement-streak': {
+    id: 'achievement-streak',
+    name: 'Streak Achievement',
+    category: 'achievement', 
+    fallbackDescription: 'Scout with flame or lightning symbol, energy and persistence theme, Alto adventure badge style',
+    altText: 'Streak achievement',
+    subject: 'general'
+  },
+
+  'achievement-time': {
+    id: 'achievement-time',
+    name: 'Time Achievement',
+    category: 'achievement',
+    fallbackDescription: 'Scout with clock or hourglass, time management theme, Alto adventure badge design',
+    altText: 'Time achievement',
+    subject: 'general'
+  },
+
+  'achievement-mastery': {
+    id: 'achievement-mastery',
+    name: 'Mastery Achievement',
+    category: 'achievement',
+    fallbackDescription: 'Scout with star or lightning bolt of mastery, expertise theme, Alto adventure badge style',
+    altText: 'Mastery achievement',
+    subject: 'general'
+  },
+
+  'achievement-general': {
+    id: 'achievement-general',
+    name: 'General Achievement',
+    category: 'achievement',
+    fallbackDescription: 'Scout with star or medal, general accomplishment theme, Alto adventure badge design',
+    altText: 'General achievement',
     subject: 'general'
   }
 };
