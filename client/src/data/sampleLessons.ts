@@ -11,7 +11,7 @@ export const sampleLessons = [
       answer: "5"
     },
     feedback: {
-      correct: "Woohoo! You got it! The treasure chest is open! 🎉",
+      correct: "Woohoo! You got it! The treasure chest is open!",
       incorrect: "Almost! Try again — here's a hint: 3 plus 2 is like counting 3, then 4, then 5!"
     },
     reward: {
@@ -30,7 +30,7 @@ export const sampleLessons = [
       answer: ["a", "a"]
     },
     feedback: {
-      correct: "Nice job! The cat sat on the mat! 🐱",
+      correct: "Nice job! The cat sat on the mat!",
       incorrect: "Not quite! Remember, it's a little animal that says 'meow'."
     },
     reward: {
@@ -52,7 +52,7 @@ export const sampleLessons = [
       ]
     },
     feedback: {
-      correct: "Perfect! All the animals are happy at home. 🦘🐧🐟",
+      correct: "Perfect! All the animals are happy at home.",
       incorrect: "Hmm, one of the animals looks lost. Want to try again?"
     },
     reward: {
@@ -67,12 +67,12 @@ export const sampleLessons = [
     scoutIntro: "I see some colorful balloons! Let's count them together. How many balloons do you see?",
     challengeType: "multipleChoice" as const,
     challengeContent: {
-      question: "Count the balloons: 🎈🎈🎈🎈🎈",
+      question: "Count the balloons: There are 5 balloons in a row.",
       options: ["3", "4", "5", "6"],
       answer: "5"
     },
     feedback: {
-      correct: "Fantastic counting! There are 5 balloons! 🎈",
+      correct: "Fantastic counting! There are 5 balloons!",
       incorrect: "Let's try counting again. Point to each balloon: 1, 2, 3, 4, 5!"
     },
     reward: {
@@ -92,7 +92,7 @@ export const sampleLessons = [
       answer: "Buh"
     },
     feedback: {
-      correct: "Brilliant! B makes the 'Buh' sound, like in 'Ball'! ⚽",
+      correct: "Brilliant! B makes the 'Buh' sound, like in 'Ball'!",
       incorrect: "Not quite! Think about words like 'Ball' or 'Bear'. What sound do they start with?"
     },
     reward: {

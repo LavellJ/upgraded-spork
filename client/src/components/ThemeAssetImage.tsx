@@ -9,26 +9,8 @@ import minimalCatImg from '@assets/generated_images/Minimal_geometric_cat_shapes
 import minimalButterflyImg from '@assets/generated_images/Minimal_geometric_butterfly_shapes_ef2934a5.png';
 import minimalSquirrelImg from '@assets/generated_images/Minimal_geometric_squirrel_shapes_9e7f4586.png';
 
-// Map asset IDs to ultra-minimal geometric animals matching exact bunny/fox/owl style
-const VITE_ASSET_MAP: Record<string, string> = {
-  'math-counting': minimalBearImg,
-  'math-shapes': minimalBearImg,
-  'science-animals': minimalDeerImg,
-  'feedback-success': minimalButterflyImg,
-  'feedback-encouragement': minimalSquirrelImg,
-  'feedback-thinking': minimalSquirrelImg,
-  'exploration-general': minimalSquirrelImg,
-  'discovery-exploration': minimalSquirrelImg,
-  'achievement-general': minimalButterflyImg,
-  'exploration-counting': minimalBearImg,
-  'exploration-shapes': minimalBearImg,
-  'exploration-animals': minimalDeerImg,
-  'exploration-habitats': minimalDeerImg,
-  'literacy-letters': minimalCatImg,
-  'exploration-letters': minimalCatImg,
-  'ui-scout-speech': minimalCatImg,
-  'ui-camera-discovery': minimalSquirrelImg
-};
+// Disable all asset mapping - clean slate with no images
+const VITE_ASSET_MAP: Record<string, string> = {};
 
 interface ThemeAssetImageProps {
   assetId: string;

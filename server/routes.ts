@@ -941,15 +941,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Enhanced fallback messages
       const fallbackMessages = {
-        celebration: `Amazing work, ${studentName}! You're doing fantastic! 🌟`,
-        encouragement: `Keep going, ${studentName}! I believe in you! 💪`,
-        break_suggestion: `How about a quick break, ${studentName}? Even explorers need rest! 🌿`,
-        curiosity: `I wonder what we'll discover next, ${studentName}! 🔍`,
-        companionship: `I'm here with you, ${studentName}! Let's learn together! 🤝`
+        celebration: `Amazing work, ${studentName}! You're doing fantastic!`,
+        encouragement: `Keep going, ${studentName}! I believe in you!`,
+        break_suggestion: `How about a quick break, ${studentName}? Even explorers need rest!`,
+        curiosity: `I wonder what we'll discover next, ${studentName}!`,
+        companionship: `I'm here with you, ${studentName}! Let's learn together!`
       };
       
       const fallbackMessage = fallbackMessages[messageType] || 
-        `Hey ${studentName}! Ready for our next adventure? 🚀`;
+        `Hey ${studentName}! Ready for our next adventure?`;
       
       res.json({ message: fallbackMessage });
     }

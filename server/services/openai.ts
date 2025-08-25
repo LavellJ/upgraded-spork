@@ -302,7 +302,7 @@ export async function calculateAdaptiveDifficulty(request: AdaptiveDifficultyReq
   const encouragementPrompts = {
     "pre-primary": {
       increasing: [
-        "You're such a clever little learner! Let's try something a bit trickier! 🌟",
+        "You're such a clever little learner! Let's try something a bit trickier!",
         "Wow! You're getting so good at this! Ready for a bigger challenge?",
         "Your brain is growing stronger! Let's see what else you can do!"
       ],
