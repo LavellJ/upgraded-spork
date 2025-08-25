@@ -395,14 +395,26 @@ export default function LessonRenderer({ lesson, onComplete, progress = 0, stude
             <AnimatePresence>
               {showReward && (
                 <motion.div
-                  className="text-center p-4 bg-yellow-50 border-2 border-yellow-200 rounded-2xl"
+                  className="text-center p-6 bg-gradient-to-br from-yellow-50 to-green-50 border-2 border-yellow-200 rounded-2xl"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 0.6 }}
                   data-testid="reward"
                 >
-                  <div className="text-3xl mb-2">🌟</div>
-                  <p className="font-medium text-yellow-800">{lesson.reward.description}</p>
+                  <div className="text-4xl mb-3">🌟</div>
+                  <p className="font-medium text-yellow-800 mb-4">{lesson.reward.description}</p>
+                  <motion.button
+                    onClick={handleNext}
+                    className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-2xl transition-all shadow-lg"
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 1, duration: 0.3 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    data-testid="next-button-inline"
+                  >
+                    Continue Adventure! 🚀
+                  </motion.button>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -423,7 +435,7 @@ export default function LessonRenderer({ lesson, onComplete, progress = 0, stude
             </button>
           )}
           
-          {isCorrect && (
+          {isCorrect && !showReward && (
             <button
               onClick={handleNext}
               className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-2xl transition-all"
