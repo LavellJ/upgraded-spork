@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import type { Collectible } from "./QuestIsland";
 import explorerDefault from '@assets/image_1756014874313.png';
+import { getLearnerName } from "@/utils/learnerName";
 
 interface JourneyJournalProps {
   collectibles: Collectible[];
@@ -32,6 +33,7 @@ const getCollectibleGlow = (biome: string) => {
 
 export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
   const collectedCount = collectibles.filter(c => c.collected).length;
+  const learnerName = getLearnerName();
   
   return (
     <motion.div
@@ -65,7 +67,7 @@ export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
             <img 
               src={explorerDefault} 
               alt="Scout"
-              className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
+              className="w-72 h-72 rounded-full border-4 border-white shadow-lg"
             />
           </motion.div>
           
@@ -77,9 +79,9 @@ export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
             transition={{ delay: 0.8, type: "spring", stiffness: 200, damping: 15 }}
           >
             <p className="text-blue-800 text-sm leading-relaxed font-medium">
-              {collectedCount === 0 && "G'day, mate! Ready to start our adventure? Each biome has special treasures waiting for you to discover!"}
-              {collectedCount > 0 && collectedCount < 10 && "You're doing brilliant, friend! Keep exploring to find more amazing collectibles on our island adventure!"}
-              {collectedCount >= 10 && "Crikey! You're becoming a real treasure hunter, legend! What an amazing collection!"}
+              {collectedCount === 0 && `G'day, ${learnerName}! Ready to start our adventure? Each biome has special treasures waiting for you to discover!`}
+              {collectedCount > 0 && collectedCount < 10 && `You're doing brilliant, ${learnerName}! Keep exploring to find more amazing collectibles on our island adventure!`}
+              {collectedCount >= 10 && `Crikey! You're becoming a real treasure hunter, ${learnerName}! What an amazing collection!`}
             </p>
             {/* Speech bubble arrow */}
             <div className="absolute -top-2 left-8">
