@@ -61,10 +61,11 @@ export default function Learning() {
       description: `Completed the full Teach → Try → Reflect → Create cycle for ${topic?.name}!`
     });
 
-    // Show recommendations after completion
+    // Navigate back to Quest Island after celebrating the completion
     setTimeout(() => {
-      setShowRecommendations(true);
-    }, 2000);
+      // Return to Quest Island to see progress and continue adventure
+      window.location.href = '/quest-island';
+    }, 4000); // Give time for achievement celebration
   };
 
   // Progress tracking mutation
