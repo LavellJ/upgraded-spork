@@ -55,25 +55,19 @@ export function ProgressLandscape({ progress, topics }: ProgressLandscapeProps) 
   // Get the current path environment based on progress (Alto's Odyssey inspired)
   const getCurrentPath = () => {
     const overallProgress = getOverallProgress();
-    if (overallProgress >= 80) return { 
+    if (overallProgress >= 75) return { 
       name: 'Eagle Heights', 
       description: 'Soaring high with wisdom and grace',
       color: 'from-purple-400 to-blue-500',
       character: 'eagle'
     };
-    if (overallProgress >= 60) return { 
-      name: 'Owl Valley', 
-      description: 'Thoughtful paths through misty wisdom',
-      color: 'from-cyan-400 to-blue-400',
-      character: 'owl'
-    };
-    if (overallProgress >= 40) return { 
+    if (overallProgress >= 50) return { 
       name: 'Squirrel Forest', 
       description: 'Busy trails through learning trees',
       color: 'from-green-400 to-emerald-500',
       character: 'squirrel'
     };
-    if (overallProgress >= 20) return { 
+    if (overallProgress >= 25) return { 
       name: 'Fox Meadows', 
       description: 'Clever paths across sunny fields',
       color: 'from-yellow-400 to-green-400',
