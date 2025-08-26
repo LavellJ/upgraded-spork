@@ -6,6 +6,7 @@ import { Scout } from "./Scout";
 import { Biome } from "./Biome";
 import { JourneyJournal } from "./JourneyJournal";
 import { LessonNode } from "./LessonNode";
+import { getLearnerName } from "@/utils/learnerName";
 import explorerDefault from '@assets/image_1756014874313.png';
 import explorerThinking from '@assets/scout-thinking.png';
 
@@ -123,7 +124,8 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   // Show initial guidance when Quest Island loads
   useEffect(() => {
     const timer = setTimeout(() => {
-      setScoutMessage("Welcome to Quest Island! Click on me anytime for guidance, or try your first lesson: Counting Shells!");
+      const learnerName = getLearnerName();
+      setScoutMessage(`Welcome to Quest Island, ${learnerName}! Click on me anytime for guidance, or try your first lesson: Counting Shells!`);
       setShowScoutMessage(true);
       setTimeout(() => setShowScoutMessage(false), 6000);
     }, 2000);
@@ -136,7 +138,8 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     const urlParams = new URLSearchParams(window.location.search);
     const returnedFromLesson = urlParams.get('completed');
     if (returnedFromLesson) {
-      setScoutMessage(`Amazing work on ${returnedFromLesson}! You're becoming a true explorer! 🎉`);
+      const learnerName = getLearnerName();
+      setScoutMessage(`Amazing work on ${returnedFromLesson}, ${learnerName}! You're becoming a true explorer! 🎉`);
       setShowScoutMessage(true);
       setTimeout(() => setShowScoutMessage(false), 5000);
       

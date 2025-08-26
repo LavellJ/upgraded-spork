@@ -1,6 +1,7 @@
 import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState, useCallback } from "react";
 import type { AgeGroup } from "@/components/AgeSelector";
+import { getLearnerName } from "@/utils/learnerName";
 
 // Import Scout character images - 3 versions used throughout entire app
 import explorerDefault from '@assets/image_1756014874313.png';
@@ -36,32 +37,33 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
 
   // Get personality-based messages for Quest Island
   const getPersonalityMessage = useCallback(() => {
+    const learnerName = getLearnerName();
     const personalities = {
       "pre-primary": {
         biomeMessages: {
-          beach: ["Ooh, shells! Let's count them!", "The waves are so pretty!", "I found something sparkly!"],
-          jungle: ["So many animals to meet!", "What sounds do they make?", "Look at all these leaves!"],
-          volcano: ["Wow, it's warm here!", "Pretty orange colors!", "Let's explore safely!"],
-          lagoon: ["The water is so blue!", "Look at the fish!", "This is magical!"],
-          general: ["G'day, mate! Ready to explore?", "This is so exciting!", "We're going on an adventure!"]
+          beach: [`Ooh, shells! Let's count them, ${learnerName}!`, `The waves are so pretty, ${learnerName}!`, `I found something sparkly, ${learnerName}!`],
+          jungle: [`So many animals to meet, ${learnerName}!`, `What sounds do they make, ${learnerName}?`, `Look at all these leaves, ${learnerName}!`],
+          volcano: [`Wow, it's warm here, ${learnerName}!`, `Pretty orange colors, ${learnerName}!`, `Let's explore safely, ${learnerName}!`],
+          lagoon: [`The water is so blue, ${learnerName}!`, `Look at the fish, ${learnerName}!`, `This is magical, ${learnerName}!`],
+          general: [`G'day, ${learnerName}! Ready to explore?`, `This is so exciting, ${learnerName}!`, `We're going on an adventure, ${learnerName}!`]
         }
       },
       "primary": {
         biomeMessages: {
-          beach: ["I wonder how many shells we can find?", "The waves follow patterns!", "Let's investigate this treasure!"],
-          jungle: ["There's so much to discover here!", "I hear different bird calls!", "Each leaf is unique!"],
-          volcano: ["The rocks tell a story!", "I can feel the warmth!", "Science happens here!"],
-          lagoon: ["This ecosystem is amazing!", "The water connects everything!", "Perfect for reflection!"],
-          general: ["Ready for our next discovery?", "We make a great exploring team!", "What should we learn today?"]
+          beach: [`I wonder how many shells we can find, ${learnerName}?`, `The waves follow patterns, ${learnerName}!`, `Let's investigate this treasure, ${learnerName}!`],
+          jungle: [`There's so much to discover here, ${learnerName}!`, `I hear different bird calls, ${learnerName}!`, `Each leaf is unique, ${learnerName}!`],
+          volcano: [`The rocks tell a story, ${learnerName}!`, `I can feel the warmth, ${learnerName}!`, `Science happens here, ${learnerName}!`],
+          lagoon: [`This ecosystem is amazing, ${learnerName}!`, `The water connects everything, ${learnerName}!`, `Perfect for reflection, ${learnerName}!`],
+          general: [`Ready for our next discovery, ${learnerName}?`, `We make a great exploring team, ${learnerName}!`, `What should we learn today, ${learnerName}?`]
         }
       },
       "upper-primary": {
         biomeMessages: {
-          beach: ["Each tide brings new mathematical patterns", "Coastal ecosystems are fascinating", "Let's study these formations"],
-          jungle: ["Biodiversity creates complex systems", "Every sound has meaning here", "The relationships are intricate"],
-          volcano: ["Geological processes shape our world", "Heat creates transformation", "Science in action!"],
-          lagoon: ["Interconnected waterways support life", "Clear thinking comes from still waters", "Perfect for deep learning"],
-          general: ["Our learning journey continues", "Each challenge builds our skills", "Ready to explore systematically?"]
+          beach: [`Each tide brings new mathematical patterns, ${learnerName}`, `Coastal ecosystems are fascinating, ${learnerName}`, `Let's study these formations, ${learnerName}`],
+          jungle: [`Biodiversity creates complex systems, ${learnerName}`, `Every sound has meaning here, ${learnerName}`, `The relationships are intricate, ${learnerName}`],
+          volcano: [`Geological processes shape our world, ${learnerName}`, `Heat creates transformation, ${learnerName}`, `Science in action, ${learnerName}!`],
+          lagoon: [`Interconnected waterways support life, ${learnerName}`, `Clear thinking comes from still waters, ${learnerName}`, `Perfect for deep learning, ${learnerName}`],
+          general: [`Our learning journey continues, ${learnerName}`, `Each challenge builds our skills, ${learnerName}`, `Ready to explore systematically, ${learnerName}?`]
         }
       }
     };

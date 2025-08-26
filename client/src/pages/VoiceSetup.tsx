@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Volume2 } from 'lucide-react';
 import { Link } from 'wouter';
+import { getLearnerName } from '@/utils/learnerName';
 
 interface Voice {
   voice_id: string;
@@ -41,7 +42,7 @@ export function VoiceSetup() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          text: `G'day mate! I'm Scout, your Aussie learning buddy! Ready for an adventure?`,
+          text: `G'day ${getLearnerName()}! I'm Scout, your Aussie learning buddy! Ready for an adventure?`,
           voiceId
         })
       });

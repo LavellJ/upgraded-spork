@@ -236,7 +236,7 @@ export default function ChildOnboarding() {
           
           <div className="space-y-4">
             <h2 className="font-display text-3xl font-bold text-white">
-              Hello there, explorer!
+              Hello there, future explorer!
             </h2>
             <p className="text-white/80 text-lg">
               What would you like us to call you?
