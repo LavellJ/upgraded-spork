@@ -55,9 +55,10 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   const { data: completedLessons = [], refetch: refetchLessons } = useQuery<any[]>({
     queryKey: [`/api/lesson-completions/demo-student`],
     enabled: true,
-    refetchInterval: 1000, // Refresh every 1 second to catch new completions faster
+    refetchInterval: 5000, // Reduce aggressive polling to 5 seconds
     refetchOnWindowFocus: true,
     refetchOnMount: true,
+    staleTime: 2000, // Consider data fresh for 2 seconds
   });
 
   // Add temporary local state to track completions until backend issues are resolved

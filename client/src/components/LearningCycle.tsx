@@ -135,8 +135,26 @@ export function LearningCycle({ topicId, ageGroup, studentId, onSessionComplete 
           isCorrect: true
         });
         console.log('✅ Lesson completion recorded for learning cycle');
+        
+        // CRITICAL: Also save to localStorage as fallback for Quest Island progress
+        const currentCompletions = JSON.parse(localStorage.getItem('quest-island-completions') || '[]');
+        const lessonId = session?.topicId || topicId;
+        if (lessonId && !currentCompletions.includes(lessonId)) {
+          currentCompletions.push(lessonId);
+          localStorage.setItem('quest-island-completions', JSON.stringify(currentCompletions));
+          console.log('✅ Lesson completion saved to localStorage:', lessonId);
+        }
       } catch (error) {
         console.log('❌ Failed to record lesson completion:', error);
+        
+        // FALLBACK: Always save to localStorage even if API fails
+        const currentCompletions = JSON.parse(localStorage.getItem('quest-island-completions') || '[]');
+        const lessonId = session?.topicId || topicId;
+        if (lessonId && !currentCompletions.includes(lessonId)) {
+          currentCompletions.push(lessonId);
+          localStorage.setItem('quest-island-completions', JSON.stringify(currentCompletions));
+          console.log('✅ Lesson completion saved to localStorage (fallback):', lessonId);
+        }
       }
 
       // Notify parent component
