@@ -541,6 +541,14 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       position: { x: 70, y: 80 }, // Southeast waters
       color: "from-cyan-200 to-blue-300", 
       description: "Learn about our world together"
+    },
+    {
+      id: "meadow",
+      name: "Gentle Meadow",
+      subject: "Creativity & Art",
+      position: { x: 55, y: 58 }, // Central area
+      color: "from-green-200 to-yellow-200",
+      description: "Express yourself through art and music"
     }
   ];
 
