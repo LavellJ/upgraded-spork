@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { AgeGroup } from "./AgeSelector";
-// Import Scout character images - Only 2 versions used throughout entire app
+// Import Scout character images - 3 versions used throughout entire app
 import explorerDefault from '@assets/image_1756014874313.png';
 import explorerExcited from '@assets/scout-excited.png';
+import explorerThinking from '@assets/scout-thinking.png';
 
 interface ExplorerBuddyProps {
   ageGroup: AgeGroup;
@@ -34,7 +35,7 @@ export function ExplorerBuddy({
 }: ExplorerBuddyProps) {
   const [currentMessage, setCurrentMessage] = useState<BuddyMessage | null>(null);
   const [lastInteraction, setLastInteraction] = useState<number>(Date.now());
-  const [buddyMood, setBuddyMood] = useState<'neutral' | 'excited'>('neutral');
+  const [buddyMood, setBuddyMood] = useState<'neutral' | 'excited' | 'thinking'>('neutral');
 
   // Get personality traits based on age group
   const getPersonality = useCallback(() => {
@@ -161,12 +162,13 @@ export function ExplorerBuddy({
         setCurrentMessage(message);
         setLastInteraction(Date.now());
         
-        // Set mood based on message type and context - Only 2 versions used
+        // Set mood based on message type and context - 3 versions used
         setBuddyMood(
           message.type === 'celebration' ||
-          message.type === 'curiosity' ||
           message.type === 'encouragement' ||
           (recentProgress?.streakCount && recentProgress.streakCount > 3) ? 'excited' :
+          message.type === 'break_suggestion' ? 'thinking' :
+          message.type === 'curiosity' ? 'thinking' :
           'neutral'
         );
         
@@ -188,9 +190,13 @@ export function ExplorerBuddy({
     };
   }, [generateMessage]);
 
-  // Get Scout image based on mood - Only 2 versions used throughout entire app
+  // Get Scout image based on mood - 3 versions used throughout entire app
   const getExpressionImage = useCallback(() => {
-    return buddyMood === 'excited' ? explorerExcited : explorerDefault;
+    switch (buddyMood) {
+      case 'excited': return explorerExcited;
+      case 'thinking': return explorerThinking;
+      default: return explorerDefault;
+    }
   }, [buddyMood]);
 
   // Explorer character visual design (Alto-inspired) with mood animations
@@ -199,17 +205,20 @@ export function ExplorerBuddy({
       className="relative cursor-pointer"
       animate={{ 
         scale: buddyMood === 'excited' ? [1, 1.05, 1] : 1,
-        rotate: buddyMood === 'excited' ? [-1, 1, -1, 0] : 0
+        rotate: buddyMood === 'excited' ? [-1, 1, -1, 0] : 
+                buddyMood === 'thinking' ? [-0.5, 0.5, -0.5, 0] : 0
       }}
       transition={{ 
-        duration: buddyMood === 'excited' ? 1.2 : 2,
+        duration: buddyMood === 'excited' ? 1.2 : buddyMood === 'thinking' ? 2.5 : 2,
         repeat: buddyMood !== 'neutral' ? Infinity : 0,
         repeatType: "reverse"
       }}
       whileHover={{ scale: 1.05 }}
       onClick={() => {
-        // Toggle between excited and neutral on click
-        setBuddyMood(buddyMood === 'excited' ? 'neutral' : 'excited');
+        // Cycle through Scout expressions on click
+        const nextMood = buddyMood === 'neutral' ? 'excited' : 
+                        buddyMood === 'excited' ? 'thinking' : 'neutral';
+        setBuddyMood(nextMood);
         setTimeout(() => setBuddyMood('neutral'), 2000);
       }}
     >

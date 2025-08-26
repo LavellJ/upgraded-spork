@@ -2,9 +2,10 @@ import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState, useCallback } from "react";
 import type { AgeGroup } from "@/components/AgeSelector";
 
-// Import Scout character images - Only 2 versions used throughout entire app
+// Import Scout character images - 3 versions used throughout entire app
 import explorerDefault from '@assets/image_1756014874313.png';
 import explorerExcited from '@assets/scout-excited.png';
+import explorerThinking from '@assets/scout-thinking.png';
 
 interface ScoutProps {
   position: { x: number; y: number };
@@ -14,7 +15,7 @@ interface ScoutProps {
   currentBiome?: string;
 }
 
-type ScoutMood = 'neutral' | 'excited';
+type ScoutMood = 'neutral' | 'excited' | 'thinking';
 
 export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary", currentBiome }: ScoutProps) {
   const controls = useAnimation();
@@ -22,10 +23,11 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
   const [currentMessage, setCurrentMessage] = useState<string>("");
   const [showMessage, setShowMessage] = useState(false);
 
-  // Get Scout image based on mood - Only 2 versions used throughout entire app
+  // Get Scout image based on mood - 3 versions used throughout entire app
   const getScoutImage = () => {
     switch (scoutMood) {
       case 'excited': return explorerExcited;
+      case 'thinking': return explorerThinking;
       default: return explorerDefault;
     }
   };

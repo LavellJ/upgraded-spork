@@ -6,6 +6,7 @@ import { Biome } from "./Biome";
 import { JourneyJournal } from "./JourneyJournal";
 import { LessonNode } from "./LessonNode";
 import explorerDefault from '@assets/image_1756014874313.png';
+import explorerThinking from '@assets/scout-thinking.png';
 
 export interface Collectible {
   id: string;
@@ -317,10 +318,10 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 transition={{ type: "spring", damping: 15 }}
               >
                 <div className="flex items-start space-x-4 p-6">
-                  {/* Scout Image */}
+                  {/* Scout Image - Use thinking image for guidance */}
                   <div className="flex-shrink-0">
                     <img
-                      src={explorerDefault}
+                      src={explorerThinking}
                       alt="Scout"
                       className="w-16 h-16 object-contain drop-shadow-lg"
                     />
