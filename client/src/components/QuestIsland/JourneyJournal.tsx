@@ -6,6 +6,18 @@ interface JourneyJournalProps {
   onClose: () => void;
 }
 
+// Helper functions for collectible styling to match Quest Island
+const getCollectibleStyle = (biome: string) => {
+  switch(biome) {
+    case 'beach': return 'bg-gradient-to-br from-blue-300 to-cyan-400';
+    case 'jungle': return 'bg-gradient-to-br from-green-300 to-emerald-400';
+    case 'volcano': return 'bg-gradient-to-br from-red-300 to-orange-400';
+    case 'meadow': return 'bg-gradient-to-br from-pink-300 to-purple-400';
+    case 'lagoon': return 'bg-gradient-to-br from-indigo-300 to-blue-400';
+    default: return 'bg-gradient-to-br from-yellow-300 to-amber-400';
+  }
+};
+
 export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
   const collectedCount = collectibles.filter(c => c.collected).length;
   
@@ -30,7 +42,7 @@ export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="font-display text-3xl font-bold text-amber-900 mb-2">
-              Journey Journal
+              Scout's Backpack
             </h2>
             <p className="text-amber-700">
               Collectibles Found: {collectedCount} / {collectibles.length}
@@ -73,21 +85,12 @@ export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
               data-testid={`collectible-${collectible.id}`}
             >
               <div className="flex items-center space-x-4">
-                {/* Collectible Image */}
-                <div className={`relative w-16 h-16 rounded-full flex items-center justify-center overflow-hidden ${
+                {/* Collectible Orb - Match Quest Island styling */}
+                <div className={`relative w-16 h-16 rounded-full flex items-center justify-center ${
                   collectible.collected ? "opacity-100" : "opacity-30"
                 }`}>
-                  {collectible.image ? (
-                    <img 
-                      src={collectible.image} 
-                      alt={collectible.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 rounded-full flex items-center justify-center text-white font-bold">
-                      ?
-                    </div>
-                  )}
+                  {/* Main collectible orb */}
+                  <div className={`w-full h-full rounded-full ${getCollectibleStyle(collectible.biome)} border-3 border-white shadow-lg`} />
                   
                   {/* Lock Overlay */}
                   {!collectible.collected && (

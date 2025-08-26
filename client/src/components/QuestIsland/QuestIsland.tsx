@@ -579,20 +579,19 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         </div>
       </motion.div>
 
-      {/* Scout's Backpack Button */}
+      {/* Scout's Backpack Button - Just the backpack image */}
       <motion.button
-        className="fixed bottom-8 right-8 bg-gradient-to-br from-amber-400 to-orange-500 text-white px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center"
+        className="fixed bottom-8 right-8 p-2 hover:shadow-xl transition-all duration-300"
         onClick={() => setShowJournal(true)}
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         data-testid="button-scout-backpack"
       >
         <img 
           src="/attached_assets/fd4dc3d1-ed79-4c91-a0b1-e71382387485_1756182003955.png"
           alt="Scout's Backpack"
-          className="w-6 h-6 mr-2 object-contain"
+          className="w-16 h-16 object-contain drop-shadow-lg"
         />
-        Scout's Backpack
       </motion.button>
 
       {/* Journey Journal Modal */}
