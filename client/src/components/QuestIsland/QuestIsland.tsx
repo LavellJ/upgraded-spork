@@ -5,6 +5,7 @@ import { Scout } from "./Scout";
 import { Biome } from "./Biome";
 import { JourneyJournal } from "./JourneyJournal";
 import { LessonNode } from "./LessonNode";
+import explorerDefault from '@assets/image_1756014874313.png';
 
 export interface Collectible {
   id: string;
@@ -309,14 +310,28 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             {/* Scout Guidance Message */}
             {showScoutMessage && scoutMessage && (
               <motion.div
-                className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-white/95 text-gray-800 px-6 py-4 rounded-2xl shadow-lg backdrop-blur-sm border border-white/20 max-w-md text-center z-50"
+                className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-white/95 text-gray-800 rounded-2xl shadow-lg backdrop-blur-sm border border-white/20 max-w-md z-50"
                 initial={{ opacity: 0, scale: 0.8, y: -20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.8, y: -20 }}
                 transition={{ type: "spring", damping: 15 }}
               >
-                <p className="font-medium leading-tight text-lg">{scoutMessage}</p>
-                <div className="text-sm text-gray-500 mt-2">Click me for guidance!</div>
+                <div className="flex items-start space-x-4 p-6">
+                  {/* Scout Image */}
+                  <div className="flex-shrink-0">
+                    <img
+                      src={explorerDefault}
+                      alt="Scout"
+                      className="w-16 h-16 object-contain drop-shadow-lg"
+                    />
+                  </div>
+                  
+                  {/* Message Content */}
+                  <div className="flex-1 text-left">
+                    <p className="font-medium leading-tight text-lg">{scoutMessage}</p>
+                    <div className="text-sm text-gray-500 mt-2">Click me for guidance!</div>
+                  </div>
+                </div>
                 
                 {/* Speech bubble arrow */}
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2">
