@@ -151,67 +151,216 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     }
   }, [refetchLessons]);
   
-  // Interactive collectibles state with collection tracking - Simple Alto's style
-  const [collectibles, setCollectibles] = useState<Collectible[]>([
-    {
-      id: "beach-orb",
-      name: "Ocean Orb",
-      description: "A crystal sphere that captures the essence of ocean waves.",
-      image: "", // Using CSS styling instead
-      biome: "beach",
-      collected: false,
-      position: { x: 15, y: 82 },
-      story: "A crystal blue orb that holds the rhythm of ocean waves. When you hold it close, you can hear the gentle counting of each wave as it reaches the shore.",
-      reward: "Math Focus +1"
-    },
-    {
-      id: "jungle-gem",
-      name: "Forest Gem", 
-      description: "A green gem that pulses with forest life.",
-      image: "", // Using CSS styling instead
-      biome: "jungle",
-      collected: false,
-      position: { x: 38, y: 48 },
-      story: "This emerald gem glows softly with the wisdom of ancient trees. It whispers the stories that leaves tell when they dance in the wind.",
-      reward: "Reading Flow +1"
-    },
-    {
-      id: "volcano-crystal",
-      name: "Fire Crystal",
-      description: "A warm crystal that burns with curiosity.",
-      image: "", // Using CSS styling instead
-      biome: "volcano",
-      collected: false,
-      position: { x: 85, y: 25 },
-      story: "Warm to the touch, this amber crystal burns with endless curiosity. It helps brave explorers ask the right questions about how our world works.",
-      reward: "Wonder Spark +1"
-    },
-    {
-      id: "meadow-stone",
-      name: "Harmony Stone",
-      description: "A gentle stone that radiates peaceful energy.",
-      image: "", // Using CSS styling instead
-      biome: "meadow",
-      collected: false,
-      position: { x: 55, y: 65 },
-      story: "Smooth and calming, this lavender stone brings peace to all who find it. It teaches us that wisdom grows slowly, like flowers in a garden.",
-      reward: "Calm Wisdom +1"
-    },
-    {
-      id: "lagoon-pearl",
-      name: "Friendship Pearl",
-      description: "A pearl that shimmers with connection.",
-      image: "", // Using CSS styling instead
-      biome: "lagoon",
-      collected: false,
-      position: { x: 70, y: 88 },
-      story: "This pearl shimmers with all the colors of friendship. Found in the deepest part of the lagoon, it reminds us that learning together makes everything more beautiful.",
-      reward: "Social Bond +1"
-    }
-  ]);
+  // Dynamic collectibles database - organized by biome categories
+  const collectiblesDatabase: Record<string, Collectible[]> = {
+    beach: [
+      {
+        id: "beach-shell",
+        name: "Golden Shell",
+        description: "A perfect spiral shell with golden shimmer.",
+        image: "", biome: "beach", collected: false,
+        position: { x: 15, y: 82 },
+        story: "This golden shell once held the whispers of counting waves. Each spiral teaches us about patterns in nature and numbers.",
+        reward: "Math Focus +1"
+      },
+      {
+        id: "beach-coral",
+        name: "Rainbow Coral",
+        description: "A piece of coral that glows with rainbow colors.",
+        image: "", biome: "beach", collected: false,
+        position: { x: 18, y: 85 },
+        story: "Found in the shallow waters, this coral piece shows how life builds amazing structures through patience and time.",
+        reward: "Pattern Recognition +1"
+      },
+      {
+        id: "beach-glass",
+        name: "Sea Glass",
+        description: "Smooth glass polished by endless ocean waves.",
+        image: "", biome: "beach", collected: false,
+        position: { x: 12, y: 79 },
+        story: "The ocean turned something sharp into something beautiful. It reminds us that challenges can shape us into something wonderful.",
+        reward: "Resilience +1"
+      }
+    ],
+    jungle: [
+      {
+        id: "jungle-leaf",
+        name: "Whispering Leaf",
+        description: "A leaf that rustles with ancient stories.",
+        image: "", biome: "jungle", collected: false,
+        position: { x: 38, y: 48 },
+        story: "This magical leaf holds the stories that trees tell each other. When you listen closely, it teaches new words and their meanings.",
+        reward: "Vocabulary +1"
+      },
+      {
+        id: "jungle-seed",
+        name: "Story Seed",
+        description: "A seed that contains entire adventures.",
+        image: "", biome: "jungle", collected: false,
+        position: { x: 42, y: 45 },
+        story: "Small but mighty, this seed holds complete stories waiting to grow. It teaches us that every great tale starts with a tiny idea.",
+        reward: "Imagination +1"
+      },
+      {
+        id: "jungle-flower",
+        name: "Melody Flower",
+        description: "A flower that hums with gentle sounds.",
+        image: "", biome: "jungle", collected: false,
+        position: { x: 35, y: 52 },
+        story: "This flower sings the sounds of letters and words. Its petals dance to the rhythm of language and poetry.",
+        reward: "Phonics +1"
+      }
+    ],
+    volcano: [
+      {
+        id: "volcano-ember",
+        name: "Curious Ember",
+        description: "A warm ember that sparks with questions.",
+        image: "", biome: "volcano", collected: false,
+        position: { x: 85, y: 25 },
+        story: "This glowing ember burns with endless curiosity. It encourages us to ask 'why?' and 'how?' about the world around us.",
+        reward: "Wonder Spark +1"
+      },
+      {
+        id: "volcano-crystal",
+        name: "Wisdom Crystal",
+        description: "A crystal that forms from deep earth pressure.",
+        image: "", biome: "volcano", collected: false,
+        position: { x: 88, y: 22 },
+        story: "Formed deep underground through heat and pressure, this crystal teaches us how amazing things happen through natural processes.",
+        reward: "Discovery +1"
+      },
+      {
+        id: "volcano-stone",
+        name: "Explorer Stone",
+        description: "A volcanic stone with interesting textures.",
+        image: "", biome: "volcano", collected: false,
+        position: { x: 82, y: 28 },
+        story: "This textured stone tells the story of Earth's power. Each bump and groove is a lesson about how our planet changes and grows.",
+        reward: "Observation +1"
+      }
+    ],
+    meadow: [
+      {
+        id: "meadow-butterfly",
+        name: "Gentle Butterfly",
+        description: "A delicate butterfly wing that shimmers softly.",
+        image: "", biome: "meadow", collected: false,
+        position: { x: 55, y: 65 },
+        story: "This butterfly wing reminds us of transformation and growth. Like learning, it shows us that change can be beautiful and peaceful.",
+        reward: "Growth Mindset +1"
+      },
+      {
+        id: "meadow-dewdrop",
+        name: "Morning Dewdrop",
+        description: "A dewdrop that captures the morning light.",
+        image: "", biome: "meadow", collected: false,
+        position: { x: 58, y: 68 },
+        story: "Each morning, this dewdrop reflects the whole world in its tiny sphere. It teaches us to see beauty in small, quiet moments.",
+        reward: "Mindfulness +1"
+      },
+      {
+        id: "meadow-pebble",
+        name: "Harmony Pebble",
+        description: "A smooth pebble that brings inner calm.",
+        image: "", biome: "meadow", collected: false,
+        position: { x: 52, y: 62 },
+        story: "Worn smooth by wind and rain, this pebble holds peaceful energy. It reminds us that patience and kindness make everything better.",
+        reward: "Calm Wisdom +1"
+      }
+    ],
+    lagoon: [
+      {
+        id: "lagoon-pearl",
+        name: "Friendship Pearl",
+        description: "A pearl that glows with warm connection.",
+        image: "", biome: "lagoon", collected: false,
+        position: { x: 70, y: 88 },
+        story: "This special pearl formed through layers of kindness and care. It teaches us that friendships grow stronger when we help each other learn.",
+        reward: "Social Bond +1"
+      },
+      {
+        id: "lagoon-scale",
+        name: "Unity Scale",
+        description: "A fish scale that sparkles with togetherness.",
+        image: "", biome: "lagoon", collected: false,
+        position: { x: 73, y: 85 },
+        story: "Like fish swimming together, this scale reminds us that we're stronger when we work as a team and celebrate each other's success.",
+        reward: "Cooperation +1"
+      },
+      {
+        id: "lagoon-lily",
+        name: "Sharing Lily",
+        description: "A water lily petal soft as kindness.",
+        image: "", biome: "lagoon", collected: false,
+        position: { x: 68, y: 91 },
+        story: "This lily pad petal floats gently on the water, supporting tiny creatures. It teaches us the joy of sharing and helping others.",
+        reward: "Empathy +1"
+      }
+    ]
+  };
+
+  // Active collectibles state - only visible/discoverable collectibles
+  const [discoveredCollectibles, setDiscoveredCollectibles] = useState<string[]>(() => {
+    // Start with one collectible from first biome visible
+    return ["beach-shell"];
+  });
+
+  const [collectibles, setCollectibles] = useState<Collectible[]>(() => {
+    // Initialize with only the starting collectible
+    return [collectiblesDatabase.beach[0]];
+  });
   
   const [showCollectibleStory, setShowCollectibleStory] = useState(false);
   const [currentCollectible, setCurrentCollectible] = useState<Collectible | null>(null);
+  const [newDiscovery, setNewDiscovery] = useState<string | null>(null);
+
+  // Dynamic collectible discovery system
+  const discoverNewCollectible = useCallback((completedLessonId: string) => {
+    // 40% chance of discovering a new collectible after lesson completion
+    if (Math.random() > 0.4) return null;
+    
+    // Get biome from completed lesson
+    const completedBiome = completedLessonId.split('-')[0];
+    const availableBiomes = ['beach', 'jungle', 'volcano', 'meadow', 'lagoon'];
+    
+    // 60% chance to find collectible from same biome, 40% chance from any biome
+    const searchBiomes = Math.random() < 0.6 ? [completedBiome] : availableBiomes;
+    
+    // Find undiscovered collectibles from selected biomes
+    const undiscoveredOptions: Collectible[] = [];
+    searchBiomes.forEach(biome => {
+      if (collectiblesDatabase[biome]) {
+        collectiblesDatabase[biome].forEach(collectible => {
+          if (!discoveredCollectibles.includes(collectible.id)) {
+            undiscoveredOptions.push(collectible);
+          }
+        });
+      }
+    });
+    
+    if (undiscoveredOptions.length === 0) return null;
+    
+    // Randomly select one to discover
+    const newCollectible = undiscoveredOptions[Math.floor(Math.random() * undiscoveredOptions.length)];
+    
+    // Add to discovered list and active collectibles
+    setDiscoveredCollectibles(prev => [...prev, newCollectible.id]);
+    setCollectibles(prev => [...prev, newCollectible]);
+    
+    // Store for discovery animation
+    setNewDiscovery(newCollectible.id);
+    
+    return newCollectible;
+  }, [discoveredCollectibles, collectiblesDatabase]);
+
+  // Clear discovery animation after showing
+  useEffect(() => {
+    if (newDiscovery) {
+      const timer = setTimeout(() => setNewDiscovery(null), 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [newDiscovery]);
 
   // Generate lesson nodes with current progress
   const lessonNodes: LessonNodeData[] = [
@@ -252,11 +401,19 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       return newProgress;
     });
     
-    // Scout celebrates!
-    setScoutMessage("Amazing work! You're becoming a real explorer!");
+    // Try to discover new collectible
+    const newCollectible = discoverNewCollectible(lessonId);
+    
+    // Scout celebrates with special message if new collectible discovered
+    if (newCollectible) {
+      const learnerName = getLearnerName();
+      setScoutMessage(`Crikey! Amazing lesson, ${learnerName}! 🎉 Something magical appeared - I can see a ${newCollectible.name} sparkling nearby! Have a look around!`);
+    } else {
+      setScoutMessage("Amazing work! You're becoming a real explorer!");
+    }
     setShowScoutMessage(true);
-    setTimeout(() => setShowScoutMessage(false), 4000);
-  }, []);
+    setTimeout(() => setShowScoutMessage(false), 6000);
+  }, [discoverNewCollectible]);
   
   const handleLessonClick = useCallback((lessonId: string) => {
     const lesson = lessonProgress[lessonId];
@@ -729,47 +886,116 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             )}
 
             {/* Interactive Collectibles - Only show uncollected ones */}
-            {collectibles.filter(c => !c.collected).map((collectible) => (
-              <motion.div
-                key={collectible.id}
-                className="absolute w-6 h-6 cursor-pointer transform transition-all duration-300 hover:scale-110"
-                style={{
-                  left: `${collectible.position.x}%`,
-                  top: `${collectible.position.y}%`,
-                }}
-                onClick={() => handleCollectibleClick(collectible)}
-                data-testid={`collectible-${collectible.id}`}
-                whileHover={{ scale: 1.3 }}
-                whileTap={{ scale: 0.9 }}
-                animate={{
-                  y: [0, -6, 0],
-                  scale: [1, 1.05, 1]
-                }}
-                transition={{
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: Math.random() * 2
-                }}
-              >
-                {/* Simple geometric collectibles matching Alto's style */}
-                <div className={`w-full h-full rounded-full ${getCollectibleStyle(collectible.biome)} border-2 border-white/50 shadow-lg`} />
-                
-                {/* Subtle glow effect */}
+            {collectibles.filter(c => !c.collected).map((collectible) => {
+              const isNewDiscovery = newDiscovery === collectible.id;
+              
+              return (
                 <motion.div
-                  className={`absolute inset-0 rounded-full ${getCollectibleGlow(collectible.biome)} opacity-60`}
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.4, 0.8, 0.4]
+                  key={collectible.id}
+                  className={`absolute cursor-pointer transform transition-all duration-300 hover:scale-110 ${
+                    isNewDiscovery ? 'w-10 h-10' : 'w-6 h-6'
+                  }`}
+                  style={{
+                    left: `${collectible.position.x}%`,
+                    top: `${collectible.position.y}%`,
                   }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
+                  onClick={() => handleCollectibleClick(collectible)}
+                  data-testid={`collectible-${collectible.id}`}
+                  whileHover={{ scale: 1.3 }}
+                  whileTap={{ scale: 0.9 }}
+                  animate={isNewDiscovery ? {
+                    y: [0, -12, 0],
+                    scale: [1, 1.3, 1.1, 1],
+                    rotate: [0, 5, -5, 0]
+                  } : {
+                    y: [0, -6, 0],
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={isNewDiscovery ? {
+                    duration: 1.5,
+                    repeat: 3,
                     ease: "easeInOut"
+                  } : {
+                    duration: 2.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: Math.random() * 2
                   }}
-                />
-              </motion.div>
-            ))}
+                  initial={isNewDiscovery ? { scale: 0, rotate: -180 } : undefined}
+                >
+                  {/* Simple geometric collectibles matching Alto's style */}
+                  <div className={`w-full h-full rounded-full ${getCollectibleStyle(collectible.biome)} border-2 border-white/50 shadow-lg`} />
+                  
+                  {/* Enhanced glow effect for discoveries */}
+                  <motion.div
+                    className={`absolute inset-0 rounded-full ${getCollectibleGlow(collectible.biome)} ${
+                      isNewDiscovery ? 'opacity-90' : 'opacity-60'
+                    }`}
+                    animate={isNewDiscovery ? {
+                      scale: [1, 1.8, 1.3, 1],
+                      opacity: [0.9, 0.3, 0.8, 0.6]
+                    } : {
+                      scale: [1, 1.2, 1],
+                      opacity: [0.4, 0.8, 0.4]
+                    }}
+                    transition={isNewDiscovery ? {
+                      duration: 2,
+                      repeat: 2,
+                      ease: "easeInOut"
+                    } : {
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                  
+                  {/* Special sparkle effects for new discoveries */}
+                  {isNewDiscovery && (
+                    <>
+                      <motion.div
+                        className="absolute -top-2 -right-2 w-3 h-3 bg-yellow-300 rounded-full"
+                        animate={{
+                          scale: [0, 1.5, 0],
+                          rotate: [0, 180, 360],
+                          opacity: [1, 0.5, 1]
+                        }}
+                        transition={{
+                          duration: 1,
+                          repeat: 4,
+                          ease: "easeInOut"
+                        }}
+                      />
+                      <motion.div
+                        className="absolute -bottom-2 -left-2 w-2 h-2 bg-white rounded-full"
+                        animate={{
+                          scale: [0, 1.2, 0],
+                          opacity: [1, 0.3, 1]
+                        }}
+                        transition={{
+                          duration: 0.8,
+                          repeat: 5,
+                          ease: "easeInOut",
+                          delay: 0.3
+                        }}
+                      />
+                      <motion.div
+                        className="absolute -top-3 left-1/2 w-1 h-1 bg-pink-300 rounded-full"
+                        animate={{
+                          scale: [0, 1.8, 0],
+                          y: [0, -10, 0]
+                        }}
+                        transition={{
+                          duration: 1.2,
+                          repeat: 3,
+                          ease: "easeInOut",
+                          delay: 0.6
+                        }}
+                      />
+                    </>
+                  )}
+                </motion.div>
+              );
+            })}
 
             {/* Ambient Elements - Spread across the epic journey */}
             <motion.div

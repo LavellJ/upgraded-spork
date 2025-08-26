@@ -80,105 +80,142 @@ export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
           </div>
         </div>
 
-        {/* Collectibles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {collectibles.map((collectible, index) => (
-            <motion.div
-              key={collectible.id}
-              className={`bg-white/70 rounded-2xl p-6 shadow-lg border-2 transition-all duration-300 ${
-                collectible.collected 
-                  ? "border-green-300 bg-green-50/80" 
-                  : "border-gray-200 bg-gray-50/80"
-              }`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              data-testid={`collectible-${collectible.id}`}
-            >
-              <div className="flex items-center space-x-4">
-                {/* Collectible Orb - Match Quest Island styling with animations */}
-                <motion.div 
-                  className={`relative w-16 h-16 rounded-full flex items-center justify-center ${
-                    collectible.collected ? "opacity-100" : "opacity-30"
-                  }`}
-                  animate={collectible.collected ? {
-                    y: [0, -6, 0],
-                    scale: [1, 1.05, 1]
-                  } : {}}
-                  transition={collectible.collected ? {
-                    duration: 2.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: index * 0.3
-                  } : {}}
-                >
-                  {/* Main collectible orb */}
-                  <div className={`w-full h-full rounded-full ${getCollectibleStyle(collectible.biome)} border-3 border-white shadow-lg`} />
-                  
-                  {/* Subtle glow effect for collected items */}
-                  {collectible.collected && (
-                    <motion.div
-                      className={`absolute inset-0 rounded-full ${getCollectibleGlow(collectible.biome)} opacity-60`}
-                      animate={{
-                        scale: [1, 1.2, 1],
-                        opacity: [0.4, 0.8, 0.4]
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: index * 0.2
-                      }}
-                    />
-                  )}
-                  
-                  {/* Lock Overlay */}
-                  {!collectible.collected && (
-                    <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
-                      <i className="fas fa-lock text-white text-lg"></i>
-                    </div>
-                  )}
-                </motion.div>
-
-                {/* Collectible Info */}
-                <div className="flex-1">
-                  <h3 className={`font-semibold text-lg mb-1 ${
-                    collectible.collected ? "text-green-800" : "text-gray-600"
-                  }`}>
-                    {collectible.name}
+        {/* Collectibles by Biome Categories */}
+        <div className="space-y-8">
+          {['beach', 'jungle', 'volcano', 'meadow', 'lagoon'].map((biome, biomeIndex) => {
+            const biomeCollectibles = collectibles.filter(c => c.biome === biome);
+            if (biomeCollectibles.length === 0) return null;
+            
+            const collectedInBiome = biomeCollectibles.filter(c => c.collected).length;
+            
+            return (
+              <motion.div
+                key={biome}
+                className="space-y-4"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: biomeIndex * 0.15 }}
+              >
+                {/* Biome Header */}
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-amber-800 capitalize flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-full ${getCollectibleStyle(biome)}`} />
+                    {biome === 'beach' && '🏖️'} {biome === 'jungle' && '🌿'} {biome === 'volcano' && '🌋'} 
+                    {biome === 'meadow' && '🌸'} {biome === 'lagoon' && '🏞️'} {biome.charAt(0).toUpperCase() + biome.slice(1)} Collection
                   </h3>
-                  <p className={`text-sm ${
-                    collectible.collected ? "text-green-700" : "text-gray-500"
-                  }`}>
-                    {collectible.description}
-                  </p>
-                  <div className={`text-xs mt-2 px-2 py-1 rounded-full inline-block ${
-                    collectible.collected 
-                      ? "bg-green-200 text-green-800" 
-                      : "bg-gray-200 text-gray-600"
-                  }`}>
-                    {collectible.biome.charAt(0).toUpperCase() + collectible.biome.slice(1)}
+                  <div className="text-sm text-amber-700 font-medium">
+                    {collectedInBiome}/{biomeCollectibles.length} found
                   </div>
                 </div>
-
-                {/* Status Icon */}
-                <div className={`text-2xl ${
-                  collectible.collected ? "text-green-500" : "text-gray-400"
-                }`}>
-                  {collectible.collected ? (
-                    <motion.i 
-                      className="fas fa-check-circle"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                
+                {/* Biome Progress Bar */}
+                <div className="mb-6">
+                  <div className={`bg-amber-200 rounded-full h-2 overflow-hidden`}>
+                    <motion.div
+                      className={`h-full rounded-full ${getCollectibleStyle(biome)}`}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(collectedInBiome / biomeCollectibles.length) * 100}%` }}
+                      transition={{ duration: 1.5, ease: "easeInOut", delay: biomeIndex * 0.1 }}
                     />
-                  ) : (
-                    <i className="fas fa-circle"></i>
-                  )}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+                
+                {/* Biome Collectibles Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {biomeCollectibles.map((collectible, index) => (
+                    <motion.div
+                      key={collectible.id}
+                      className={`bg-white/70 rounded-xl p-4 shadow-md border-2 transition-all duration-300 ${
+                        collectible.collected 
+                          ? "border-green-300 bg-green-50/80" 
+                          : "border-gray-200 bg-gray-50/80"
+                      }`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: (biomeIndex * 0.3) + (index * 0.1) }}
+                      data-testid={`collectible-${collectible.id}`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        {/* Compact Collectible Orb */}
+                        <motion.div 
+                          className={`relative w-12 h-12 rounded-full flex items-center justify-center ${
+                            collectible.collected ? "opacity-100" : "opacity-40"
+                          }`}
+                          animate={collectible.collected ? {
+                            y: [0, -4, 0],
+                            scale: [1, 1.05, 1]
+                          } : {}}
+                          transition={collectible.collected ? {
+                            duration: 2.5,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: index * 0.2
+                          } : {}}
+                        >
+                          {/* Main collectible orb */}
+                          <div className={`w-full h-full rounded-full ${getCollectibleStyle(collectible.biome)} border-2 border-white shadow-md`} />
+                          
+                          {/* Subtle glow effect for collected items */}
+                          {collectible.collected && (
+                            <motion.div
+                              className={`absolute inset-0 rounded-full ${getCollectibleGlow(collectible.biome)} opacity-50`}
+                              animate={{
+                                scale: [1, 1.15, 1],
+                                opacity: [0.3, 0.7, 0.3]
+                              }}
+                              transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                                delay: index * 0.15
+                              }}
+                            />
+                          )}
+                          
+                          {/* Lock Overlay */}
+                          {!collectible.collected && (
+                            <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
+                              <i className="fas fa-lock text-white text-sm"></i>
+                            </div>
+                          )}
+                        </motion.div>
+
+                        {/* Compact Collectible Info */}
+                        <div className="flex-1 min-w-0">
+                          <h4 className={`font-semibold text-base mb-1 truncate ${
+                            collectible.collected ? "text-green-800" : "text-gray-600"
+                          }`}>
+                            {collectible.name}
+                          </h4>
+                          <p className={`text-xs leading-relaxed ${
+                            collectible.collected ? "text-green-600" : "text-gray-500"
+                          }`}>
+                            {collectible.description}
+                          </p>
+                        </div>
+
+                        {/* Compact Status Icon */}
+                        <div className={`text-lg ${
+                          collectible.collected ? "text-green-500" : "text-gray-400"
+                        }`}>
+                          {collectible.collected ? (
+                            <motion.i 
+                              className="fas fa-check-circle"
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                            />
+                          ) : (
+                            <i className="far fa-circle"></i>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
 
         {/* Scout Message */}
