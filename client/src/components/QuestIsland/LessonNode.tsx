@@ -1,0 +1,106 @@
+import { motion } from "framer-motion";
+
+interface LessonNodeProps {
+  id: string;
+  title: string;
+  biome: string;
+  position: { x: number; y: number };
+  completed: boolean;
+  locked: boolean;
+  onClick: () => void;
+}
+
+export function LessonNode({ id, title, biome, position, completed, locked, onClick }: LessonNodeProps) {
+  const getNodeColor = () => {
+    if (completed) return "from-green-400 to-emerald-500";
+    if (locked) return "from-gray-400 to-gray-500";
+    return "from-yellow-400 to-amber-500";
+  };
+
+  const getNodeIcon = () => {
+    if (completed) return "✓";
+    if (locked) return "🔒";
+    return "●";
+  };
+
+  return (
+    <motion.div
+      className={`absolute cursor-pointer group ${locked ? 'cursor-not-allowed' : ''}`}
+      style={{ 
+        left: position.x + "%", 
+        top: position.y + "%",
+        transform: "translate(-50%, -50%)"
+      }}
+      onClick={onClick}
+      whileHover={!locked ? { scale: 1.1 } : {}}
+      whileTap={!locked ? { scale: 0.9 } : {}}
+      data-testid={`lesson-node-${id}`}
+    >
+      {/* Node Circle */}
+      <motion.div
+        className={`relative w-12 h-12 bg-gradient-to-br ${getNodeColor()} rounded-full shadow-lg border-2 border-white/50`}
+        animate={!locked && !completed ? {
+          boxShadow: [
+            "0 0 10px rgba(255, 193, 7, 0.5)",
+            "0 0 20px rgba(255, 193, 7, 0.8)",
+            "0 0 10px rgba(255, 193, 7, 0.5)"
+          ],
+          scale: [1, 1.05, 1]
+        } : {}}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+      >
+        {/* Node Icon */}
+        <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-lg">
+          {getNodeIcon()}
+        </div>
+
+        {/* Completion Sparkle */}
+        {completed && (
+          <motion.div
+            className="absolute -inset-2"
+            animate={{
+              rotate: [0, 360],
+              scale: [0.8, 1.2, 0.8]
+            }}
+            transition={{ 
+              rotate: { duration: 8, repeat: Infinity, ease: "linear" },
+              scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+            }}
+          >
+            <div className="absolute top-0 left-1/2 w-1 h-1 bg-yellow-300 rounded-full transform -translate-x-1/2"></div>
+            <div className="absolute bottom-0 left-1/2 w-1 h-1 bg-yellow-300 rounded-full transform -translate-x-1/2"></div>
+            <div className="absolute left-0 top-1/2 w-1 h-1 bg-yellow-300 rounded-full transform -translate-y-1/2"></div>
+            <div className="absolute right-0 top-1/2 w-1 h-1 bg-yellow-300 rounded-full transform -translate-y-1/2"></div>
+          </motion.div>
+        )}
+
+        {/* Hover Label */}
+        <motion.div
+          className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30"
+          initial={{ y: 5 }}
+          whileHover={{ y: 0 }}
+        >
+          {title}
+          {locked && <span className="ml-2 opacity-60">(Locked)</span>}
+          
+          {/* Arrow pointing up */}
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2">
+            <div className="w-0 h-0 border-l-2 border-r-2 border-b-2 border-l-transparent border-r-transparent border-b-black/80"></div>
+          </div>
+        </motion.div>
+      </motion.div>
+
+      {/* Available Node Glow */}
+      {!locked && !completed && (
+        <motion.div
+          className="absolute inset-0 bg-yellow-400/30 rounded-full scale-150 blur-sm"
+          animate={{ 
+            opacity: [0.2, 0.5, 0.2],
+            scale: [1.4, 1.6, 1.4]
+          }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        />
+      )}
+    </motion.div>
+  );
+}
