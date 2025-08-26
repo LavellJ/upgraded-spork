@@ -42,7 +42,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   const [collectedItems, setCollectedItems] = useState<Set<string>>(new Set());
   const [recentCollection, setRecentCollection] = useState<string | null>(null);
   
-  // Enhanced collectibles with interactive positions across the epic island  
+  // Collectibles positioned to avoid lesson overlaps
   const baseCollectibles: Collectible[] = [
     {
       id: "seashell",
@@ -51,7 +51,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       image: "/attached_assets/generated_images/Seashell_of_Curiosity_collectible_a28580d3.png",
       biome: "beach",
       collected: false,
-      position: { x: 20, y: 70 }
+      position: { x: 15, y: 68 } // Moved away from beach lessons
     },
     {
       id: "leaf",
@@ -60,7 +60,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       image: "/attached_assets/generated_images/Leaf_of_Discovery_collectible_143c8fae.png",
       biome: "jungle",
       collected: false,
-      position: { x: 38, y: 48 }
+      position: { x: 40, y: 52 } // Positioned between jungle lessons safely
     },
     {
       id: "ember",
@@ -69,7 +69,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       image: "/attached_assets/generated_images/Ember_of_Courage_collectible_e0c2926b.png",
       biome: "volcano",
       collected: false,
-      position: { x: 80, y: 25 }
+      position: { x: 78, y: 30 } // Moved away from volcano lesson cluster
     },
     {
       id: "blossom",
@@ -78,7 +78,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       image: "/attached_assets/generated_images/Blossom_of_Wisdom_collectible_be1aafdf.png",
       biome: "meadow", 
       collected: false,
-      position: { x: 55, y: 35 }
+      position: { x: 58, y: 32 } // Safe central position
     },
     {
       id: "moonstone",
@@ -87,7 +87,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       image: "/attached_assets/generated_images/Moonstone_of_Mastery_collectible_b09d1d33.png",
       biome: "lagoon",
       collected: false,
-      position: { x: 65, y: 78 }
+      position: { x: 62, y: 75 } // Positioned away from lagoon lessons
     }
   ];
 
@@ -116,27 +116,27 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     }
   };
 
-  // Enhanced lesson data with progression and details
+  // Enhanced lesson data with proper spacing to prevent overlaps
   const baseLessons: LessonNodeData[] = [
-    // Beach biome (Mathematics) - Far southwest - Starting point
-    { id: "beach-1", title: "Counting Shells", biome: "beach", position: { x: 12, y: 78 }, completed: false, locked: false, difficulty: 'easy', estimatedMinutes: 3 },
-    { id: "beach-2", title: "Wave Patterns", biome: "beach", position: { x: 18, y: 75 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 5, prerequisite: "Counting Shells" },
-    { id: "beach-3", title: "Treasure Sorting", biome: "beach", position: { x: 22, y: 80 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 7, prerequisite: "Wave Patterns" },
+    // Beach biome (Mathematics) - Far southwest - Starting point, well spaced
+    { id: "beach-1", title: "Counting Shells", biome: "beach", position: { x: 10, y: 78 }, completed: false, locked: false, difficulty: 'easy', estimatedMinutes: 3 },
+    { id: "beach-2", title: "Wave Patterns", biome: "beach", position: { x: 18, y: 74 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 5, prerequisite: "Counting Shells" },
+    { id: "beach-3", title: "Treasure Sorting", biome: "beach", position: { x: 26, y: 82 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 7, prerequisite: "Wave Patterns" },
     
-    // Jungle biome (Literacy) - Central west - Unlocks after beach-1
-    { id: "jungle-1", title: "Animal Sounds", biome: "jungle", position: { x: 35, y: 45 }, completed: false, locked: true, difficulty: 'easy', estimatedMinutes: 4, prerequisite: "Counting Shells" },
-    { id: "jungle-2", title: "Story Vines", biome: "jungle", position: { x: 42, y: 40 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 8, prerequisite: "Animal Sounds" },
-    { id: "jungle-3", title: "Letter Hunt", biome: "jungle", position: { x: 48, y: 42 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 10, prerequisite: "Story Vines" },
+    // Jungle biome (Literacy) - Central west, better spacing to prevent overlaps
+    { id: "jungle-1", title: "Animal Sounds", biome: "jungle", position: { x: 34, y: 46 }, completed: false, locked: true, difficulty: 'easy', estimatedMinutes: 4, prerequisite: "Counting Shells" },
+    { id: "jungle-2", title: "Story Vines", biome: "jungle", position: { x: 43, y: 38 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 8, prerequisite: "Animal Sounds" },
+    { id: "jungle-3", title: "Letter Hunt", biome: "jungle", position: { x: 52, y: 44 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 10, prerequisite: "Story Vines" },
     
-    // Volcano biome (Science) - Far northeast - Unlocks after 2 completed lessons
-    { id: "volcano-1", title: "Rock Formation", biome: "volcano", position: { x: 82, y: 18 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 6, prerequisite: "Complete 2 lessons" },
-    { id: "volcano-2", title: "Heat & Cold", biome: "volcano", position: { x: 88, y: 15 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 8, prerequisite: "Rock Formation" },
-    { id: "volcano-3", title: "Color Mixing", biome: "volcano", position: { x: 85, y: 22 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 12, prerequisite: "Heat & Cold" },
+    // Volcano biome (Science) - Far northeast, spread out more
+    { id: "volcano-1", title: "Rock Formation", biome: "volcano", position: { x: 80, y: 20 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 6, prerequisite: "Complete 2 lessons" },
+    { id: "volcano-2", title: "Heat & Cold", biome: "volcano", position: { x: 88, y: 14 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 8, prerequisite: "Rock Formation" },
+    { id: "volcano-3", title: "Color Mixing", biome: "volcano", position: { x: 84, y: 26 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 12, prerequisite: "Heat & Cold" },
     
-    // Lagoon biome (Social Studies) - Southeast - Final challenge area
-    { id: "lagoon-1", title: "Community Pond", biome: "lagoon", position: { x: 68, y: 85 }, completed: false, locked: true, difficulty: 'easy', estimatedMinutes: 5, prerequisite: "Complete 4 lessons" },
-    { id: "lagoon-2", title: "Helping Friends", biome: "lagoon", position: { x: 75, y: 82 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 15, prerequisite: "Community Pond" },
-    { id: "lagoon-3", title: "Island Home", biome: "lagoon", position: { x: 72, y: 88 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 20, prerequisite: "Helping Friends" }
+    // Lagoon biome (Social Studies) - Southeast, better distribution
+    { id: "lagoon-1", title: "Community Pond", biome: "lagoon", position: { x: 66, y: 86 }, completed: false, locked: true, difficulty: 'easy', estimatedMinutes: 5, prerequisite: "Complete 4 lessons" },
+    { id: "lagoon-2", title: "Helping Friends", biome: "lagoon", position: { x: 76, y: 80 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 15, prerequisite: "Community Pond" },
+    { id: "lagoon-3", title: "Island Home", biome: "lagoon", position: { x: 70, y: 90 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 20, prerequisite: "Helping Friends" }
   ];
 
   // Apply progression logic to determine which lessons are unlocked
@@ -314,24 +314,11 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               />
             ))}
 
-            {/* Enhanced Lesson Nodes */}
-            {lessonNodes.map(node => (
-              <LessonNode
-                key={node.id}
-                {...node}
-                onClick={() => {
-                  if (!node.locked) {
-                    handleLessonStart(node.id);
-                  }
-                }}
-              />
-            ))}
-            
-            {/* Connection Lines between lessons */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1200 900">
+            {/* Connection Lines between lessons - Bottom layer (z-index: 10) */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 1200 900">
               {/* Beach progression line */}
               <motion.path
-                d="M 144 702 Q 180 680, 216 675 Q 240 678, 264 720"
+                d="M 120 702 Q 180 680, 216 675 Q 260 678, 312 738"
                 stroke="rgba(34, 197, 94, 0.3)"
                 strokeWidth="2"
                 strokeDasharray="4,4"
@@ -343,7 +330,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               
               {/* Beach to Jungle connection */}
               <motion.path
-                d="M 144 702 Q 250 550, 420 405"
+                d="M 120 702 Q 250 550, 408 414"
                 stroke="rgba(59, 130, 246, 0.3)"
                 strokeWidth="2"
                 strokeDasharray="4,4"
@@ -353,29 +340,24 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 transition={{ duration: 1.5, ease: "easeInOut", delay: 0.5 }}
               />
               
-              {/* More connection lines can be added here */}
+              {/* Jungle progression line */}
+              <motion.path
+                d="M 408 414 Q 470 350, 516 342 Q 550 360, 624 396"
+                stroke="rgba(34, 197, 94, 0.3)"
+                strokeWidth="2"
+                strokeDasharray="4,4"
+                fill="none"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: lessonProgress['jungle-1']?.completed ? 1 : 0 }}
+                transition={{ duration: 1, ease: "easeInOut" }}
+              />
             </svg>
 
-            {/* Enhanced Interactive Scout */}
-            <Scout 
-              position={scoutPosition}
-              target={scoutTarget}
-              onReachTarget={() => setScoutTarget(null)}
-              ageGroup="pre-primary"
-              currentBiome={scoutTarget}
-              onScoutClick={() => {
-                // Scout click provides contextual guidance
-                console.log("Scout clicked! Providing guidance and encouragement.");
-              }}
-              lessonCount={Object.values(lessonProgress).filter(p => p.completed).length}
-              collectibleCount={collectedItems.size}
-            />
-
-            {/* Interactive Collectibles */}
+            {/* Interactive Collectibles - Middle layer (z-index: 15) */}
             {collectibles.map(collectible => (
               <motion.div
                 key={collectible.id}
-                className={`absolute cursor-pointer group ${collectible.collected ? 'pointer-events-none' : ''}`}
+                className={`absolute cursor-pointer group z-15 ${collectible.collected ? 'pointer-events-none' : ''}`}
                 style={{
                   left: collectible.position.x + "%",
                   top: collectible.position.y + "%",
@@ -434,9 +416,9 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                       />
                     </motion.div>
 
-                    {/* Hover Tooltip */}
+                    {/* Hover Tooltip - High z-index */}
                     <motion.div
-                      className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-2 rounded-xl shadow-xl border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30 whitespace-nowrap"
+                      className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-2 rounded-xl shadow-xl border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50 whitespace-nowrap"
                       initial={{ y: 5, scale: 0.9 }}
                       whileHover={{ y: 0, scale: 1 }}
                     >
@@ -453,7 +435,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                   /* Collection animation */
                   recentCollection === collectible.id && (
                     <motion.div
-                      className="absolute inset-0 flex items-center justify-center"
+                      className="absolute inset-0 flex items-center justify-center z-30"
                       initial={{ scale: 1, opacity: 1 }}
                       animate={{ 
                         scale: [1, 2, 0],
@@ -470,10 +452,41 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               </motion.div>
             ))}
 
-            {/* Collection Celebration Effect */}
+            {/* Enhanced Lesson Nodes - Upper layer (z-index: 20) */}
+            {lessonNodes.map(node => (
+              <div key={node.id} className="z-20 relative">
+                <LessonNode
+                  {...node}
+                  onClick={() => {
+                    if (!node.locked) {
+                      handleLessonStart(node.id);
+                    }
+                  }}
+                />
+              </div>
+            ))}
+
+            {/* Enhanced Interactive Scout - Top interactive layer (z-index: 25) */}
+            <div className="z-25 relative">
+              <Scout 
+                position={scoutPosition}
+                target={scoutTarget}
+                onReachTarget={() => setScoutTarget(null)}
+                ageGroup="pre-primary"
+                currentBiome={scoutTarget}
+                onScoutClick={() => {
+                  // Scout click provides contextual guidance
+                  console.log("Scout clicked! Providing guidance and encouragement.");
+                }}
+                lessonCount={Object.values(lessonProgress).filter(p => p.completed).length}
+                collectibleCount={collectedItems.size}
+              />
+            </div>
+
+            {/* Collection Celebration Effect - Highest layer (z-index: 40) */}
             {recentCollection && (
               <motion.div
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-30"
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-40"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ 
                   scale: [0, 1.5, 0],
