@@ -207,7 +207,7 @@ export function Biome({ id, name, subject, position, color, description, onClick
     >
       {/* Biome Circle */}
       <motion.div
-        className={`relative w-20 h-20 rounded-full shadow-lg overflow-hidden`}
+        className={`relative w-32 h-32 rounded-full shadow-lg overflow-hidden`}
         style={{
           backgroundImage: getBiomeImage() ? `url(${getBiomeImage()})` : undefined,
           backgroundSize: 'cover',
