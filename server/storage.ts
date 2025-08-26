@@ -3098,12 +3098,16 @@ export class MemStorage implements IStorage {
   // Lesson Completion Methods
   async getCompletedLessons(studentId: string): Promise<LessonCompletion[]> {
     try {
-      return await databaseStorage.getCompletedLessons(studentId);
+      const dbResults = await databaseStorage.getCompletedLessons(studentId);
+      console.log(`Database returned ${dbResults.length} completions for ${studentId}`);
+      return dbResults;
     } catch (error) {
-      // Fallback to in-memory storage
-      return Array.from(this.lessonCompletions.values()).filter(
+      console.log('Database unavailable for lesson completions, using in-memory storage');
+      const memResults = Array.from(this.lessonCompletions.values()).filter(
         completion => completion.studentId === studentId
       );
+      console.log(`In-memory storage has ${memResults.length} completions for ${studentId}:`, memResults);
+      return memResults;
     }
   }
 
@@ -3120,6 +3124,8 @@ export class MemStorage implements IStorage {
         completedAt: new Date()
       };
       this.lessonCompletions.set(id, newCompletion);
+      console.log(`Stored lesson completion in memory:`, newCompletion);
+      console.log(`Total in-memory completions now:`, this.lessonCompletions.size);
       return newCompletion;
     }
   }
