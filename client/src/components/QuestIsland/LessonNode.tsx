@@ -24,7 +24,7 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
   };
 
   return (
-    <motion.div
+    <div
       className={`absolute cursor-pointer group ${locked ? 'cursor-not-allowed' : ''}`}
       style={{ 
         left: position.x + "%", 
@@ -32,8 +32,6 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
         transform: "translate(-50%, -50%)"
       }}
       onClick={onClick}
-      whileHover={!locked ? { scale: 1.1 } : {}}
-      whileTap={!locked ? { scale: 0.9 } : {}}
       data-testid={`lesson-node-${id}`}
     >
       {/* Node Circle */}
@@ -47,6 +45,8 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
           ],
           scale: [1, 1.05, 1]
         } : {}}
+        whileHover={!locked ? { scale: 1.1 } : {}}
+        whileTap={!locked ? { scale: 0.9 } : {}}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
       >
         {/* Node Icon */}
@@ -101,6 +101,6 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
       )}
-    </motion.div>
+    </div>
   );
 }
