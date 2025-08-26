@@ -3097,18 +3097,28 @@ export class MemStorage implements IStorage {
 
   // Lesson Completion Methods
   async getCompletedLessons(studentId: string): Promise<LessonCompletion[]> {
-    try {
-      const dbResults = await databaseStorage.getCompletedLessons(studentId);
-      console.log(`Database returned ${dbResults.length} completions for ${studentId}`);
-      return dbResults;
-    } catch (error) {
-      console.log('Database unavailable for lesson completions, using in-memory storage');
-      const memResults = Array.from(this.lessonCompletions.values()).filter(
-        completion => completion.studentId === studentId
-      );
-      console.log(`In-memory storage has ${memResults.length} completions for ${studentId}:`, memResults);
-      return memResults;
+    // Always check in-memory storage first for fast response
+    const memResults = Array.from(this.lessonCompletions.values()).filter(
+      completion => completion.studentId === studentId
+    );
+    
+    // Try database only if in-memory is empty
+    if (memResults.length === 0) {
+      try {
+        const dbResults = await databaseStorage.getCompletedLessons(studentId);
+        console.log(`Database returned ${dbResults.length} completions for ${studentId}`);
+        // Cache DB results in memory for faster subsequent access
+        dbResults.forEach(completion => {
+          this.lessonCompletions.set(completion.id, completion);
+        });
+        return dbResults;
+      } catch (error) {
+        console.log('Database unavailable for lesson completions, using in-memory storage');
+      }
     }
+    
+    console.log(`In-memory storage has ${memResults.length} completions for ${studentId}`);
+    return memResults;
   }
 
   async createLessonCompletion(completion: InsertLessonCompletion): Promise<LessonCompletion> {
