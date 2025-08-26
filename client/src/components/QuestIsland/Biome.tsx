@@ -225,12 +225,6 @@ export function Biome({ id, name, subject, position, color, description, onClick
       {/* Biome Circle */}
       <motion.div
         className={`relative w-32 h-32 rounded-full shadow-lg overflow-hidden`}
-        style={{
-          backgroundImage: getBiomeImage() ? `url(${getBiomeImage()})` : undefined,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundColor: getBiomeImage() ? getBiomeBackgroundColor() : undefined
-        }}
         animate={{ 
           boxShadow: [
             "0 4px 12px rgba(0,0,0,0.1)",
@@ -240,6 +234,26 @@ export function Biome({ id, name, subject, position, color, description, onClick
         }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       >
+        {/* Solid background layer for images with transparency */}
+        {getBiomeImage() && (
+          <div 
+            className="absolute inset-0 rounded-full"
+            style={{ backgroundColor: getBiomeBackgroundColor() }}
+          />
+        )}
+        
+        {/* Image layer */}
+        {getBiomeImage() && (
+          <div 
+            className="absolute inset-0 rounded-full"
+            style={{
+              backgroundImage: `url(${getBiomeImage()})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          />
+        )}
+        
         {/* Fallback gradient background for biomes without images */}
         {!getBiomeImage() && (
           <div className={`absolute inset-0 bg-gradient-to-br ${color} rounded-full`} />
