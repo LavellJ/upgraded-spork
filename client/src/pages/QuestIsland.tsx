@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { QuestIsland as QuestIslandMap } from "@/components/QuestIsland/QuestIsland";
 import { FloatingNavigation } from "@/components/FloatingNavigation";
+import { getLearnerName } from "@/utils/learnerName";
 
 export default function QuestIslandPage() {
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
@@ -39,7 +40,7 @@ export default function QuestIslandPage() {
           <span className="font-semibold">Scout</span>
         </div>
         <p className="text-sm leading-relaxed">
-          G'day, mate! Welcome to Quest Island! Click on the glowing biomes to start your learning adventure. 
+          G'day, {getLearnerName()}! Welcome to Quest Island! Click on the glowing biomes to start your learning adventure. 
           Complete lessons to unlock new areas and collect amazing treasures!
         </p>
       </motion.div>

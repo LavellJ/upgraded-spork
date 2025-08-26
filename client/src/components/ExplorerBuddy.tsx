@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { AgeGroup } from "./AgeSelector";
+import { getLearnerName } from "@/utils/learnerName";
 // Import Scout character images - 3 versions used throughout entire app
 import explorerDefault from '@assets/image_1756014874313.png';
 import explorerExcited from '@assets/scout-excited.png';
@@ -39,17 +40,18 @@ export function ExplorerBuddy({
 
   // Get personality traits based on age group
   const getPersonality = useCallback(() => {
+    const learnerName = getLearnerName();
     const personalities = {
       "pre-primary": {
         tone: "excited",
         vocabulary: "simple",
         curiosityLevel: "high",
         examples: {
-          encouragement: ["We're doing great!", "Look what we found!", "This is fun!"],
-          break_suggestion: ["I'm getting sleepy, should we play?", "Let's go explore outside!"],
-          celebration: ["Yay! We did it!", "We're so clever!", "High five!"],
-          curiosity: ["Ooh, what's this?", "I wonder...", "Let's see what happens!"],
-          companionship: ["I'm here with you!", "We make a good team!", "I like learning with you!"]
+          encouragement: [`We're doing great, ${learnerName}!`, `Look what we found, ${learnerName}!`, `This is fun, ${learnerName}!`],
+          break_suggestion: [`I'm getting sleepy, ${learnerName}, should we play?`, `Let's go explore outside, ${learnerName}!`],
+          celebration: [`Yay! We did it, ${learnerName}!`, `We're so clever, ${learnerName}!`, `High five, ${learnerName}!`],
+          curiosity: [`Ooh, what's this, ${learnerName}?`, `I wonder, ${learnerName}...`, `Let's see what happens, ${learnerName}!`],
+          companionship: [`I'm here with you, ${learnerName}!`, `We make a good team, ${learnerName}!`, `I like learning with you, ${learnerName}!`]
         }
       },
       "primary": {
@@ -57,11 +59,11 @@ export function ExplorerBuddy({
         vocabulary: "moderate", 
         curiosityLevel: "investigative",
         examples: {
-          encouragement: ["We're figuring this out together!", "I think we're onto something!", "Nice work, teammate!"],
-          break_suggestion: ["My brain needs a rest too - want to take a break?", "I bet a quick walk would help us both!"],
-          celebration: ["We crushed that!", "Look how much we've learned!", "We're getting really good at this!"],
-          curiosity: ["I wonder if there's a pattern here...", "This reminds me of something...", "What if we try..."],
-          companionship: ["I'm stuck on this part too", "Let's think about this together", "We've got this!"]
+          encouragement: [`We're figuring this out together, ${learnerName}!`, `I think we're onto something, ${learnerName}!`, `Nice work, ${learnerName}!`],
+          break_suggestion: [`My brain needs a rest too, ${learnerName} - want to take a break?`, `I bet a quick walk would help us both, ${learnerName}!`],
+          celebration: [`We crushed that, ${learnerName}!`, `Look how much we've learned, ${learnerName}!`, `We're getting really good at this, ${learnerName}!`],
+          curiosity: [`I wonder if there's a pattern here, ${learnerName}...`, `This reminds me of something, ${learnerName}...`, `What if we try, ${learnerName}...`],
+          companionship: [`I'm stuck on this part too, ${learnerName}`, `Let's think about this together, ${learnerName}`, `We've got this, ${learnerName}!`]
         }
       },
       "upper-primary": {
@@ -69,11 +71,11 @@ export function ExplorerBuddy({
         vocabulary: "advanced",
         curiosityLevel: "strategic",
         examples: {
-          encouragement: ["We're building some serious skills here", "I can see us both improving", "This challenge is making us stronger"],
-          break_suggestion: ["I think we've earned a proper break", "Sometimes stepping away helps me see things differently"],
-          celebration: ["We've made real progress together", "I'm proud of how we tackled that", "We're becoming quite the explorers!"],
-          curiosity: ["I'm noticing some interesting connections...", "This might relate to what we learned before", "I have a theory about this..."],
-          companionship: ["We're in this together", "I find this challenging too", "Let's approach this systematically"]
+          encouragement: [`We're building some serious skills here, ${learnerName}`, `I can see us both improving, ${learnerName}`, `This challenge is making us stronger, ${learnerName}`],
+          break_suggestion: [`I think we've earned a proper break, ${learnerName}`, `Sometimes stepping away helps me see things differently, ${learnerName}`],
+          celebration: [`We've made real progress together, ${learnerName}`, `I'm proud of how we tackled that, ${learnerName}`, `We're becoming quite the explorers, ${learnerName}!`],
+          curiosity: [`I'm noticing some interesting connections, ${learnerName}...`, `This might relate to what we learned before, ${learnerName}`, `I have a theory about this, ${learnerName}...`],
+          companionship: [`We're in this together, ${learnerName}`, `I find this challenging too, ${learnerName}`, `Let's approach this systematically, ${learnerName}`]
         }
       }
     };
@@ -122,7 +124,7 @@ export function ExplorerBuddy({
           studyDuration,
           recentProgress,
           messageType,
-          studentName: 'friend' // Could be customizable
+          studentName: getLearnerName()
         })
       });
       
