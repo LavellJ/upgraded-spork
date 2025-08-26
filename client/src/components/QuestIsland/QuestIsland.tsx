@@ -362,63 +362,115 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     }
   }, [newDiscovery]);
 
-  // Define vein structure - each biome has veins branching from main pathway with lessons at endpoints
+  // Define fractal vein structure - each biome has branching network from main pathway
   const biomeVeins = {
     beach: {
       pathwayPoint: { x: 120, y: 650 }, // Connection point on main pathway
+      mainBranch: { x: 180, y: 680 }, // Primary branch junction
       veins: [
-        { endpoint: { x: 144, y: 702 }, lessonId: "beach-1" }, // Vein 1 endpoint
-        { endpoint: { x: 216, y: 675 }, lessonId: "beach-2" }, // Vein 2 endpoint  
-        { endpoint: { x: 264, y: 720 }, lessonId: "beach-3" }  // Vein 3 endpoint
+        { 
+          path: [{ x: 120, y: 650 }, { x: 180, y: 680 }, { x: 144, y: 720 }], 
+          endpoint: { x: 144, y: 720 }, 
+          lessonId: "beach-1" 
+        },
+        { 
+          path: [{ x: 120, y: 650 }, { x: 180, y: 680 }, { x: 220, y: 700 }], 
+          endpoint: { x: 220, y: 700 }, 
+          lessonId: "beach-2" 
+        },
+        { 
+          path: [{ x: 120, y: 650 }, { x: 180, y: 680 }, { x: 240, y: 740 }], 
+          endpoint: { x: 240, y: 740 }, 
+          lessonId: "beach-3" 
+        }
       ]
     },
     jungle: {
       pathwayPoint: { x: 420, y: 315 },
+      mainBranch: { x: 380, y: 360 },
       veins: [
-        { endpoint: { x: 360, y: 405 }, lessonId: "jungle-1" },
-        { endpoint: { x: 444, y: 360 }, lessonId: "jungle-2" },
-        { endpoint: { x: 516, y: 378 }, lessonId: "jungle-3" }
+        { 
+          path: [{ x: 420, y: 315 }, { x: 380, y: 360 }, { x: 340, y: 400 }], 
+          endpoint: { x: 340, y: 400 }, 
+          lessonId: "jungle-1" 
+        },
+        { 
+          path: [{ x: 420, y: 315 }, { x: 380, y: 360 }, { x: 420, y: 380 }], 
+          endpoint: { x: 420, y: 380 }, 
+          lessonId: "jungle-2" 
+        },
+        { 
+          path: [{ x: 420, y: 315 }, { x: 380, y: 360 }, { x: 460, y: 390 }], 
+          endpoint: { x: 460, y: 390 }, 
+          lessonId: "jungle-3" 
+        }
       ]
     },
     volcano: {
       pathwayPoint: { x: 780, y: 135 },
+      mainBranch: { x: 820, y: 160 },
       veins: [
-        { endpoint: { x: 828, y: 162 }, lessonId: "volcano-1" },
-        { endpoint: { x: 888, y: 135 }, lessonId: "volcano-2" },
-        { endpoint: { x: 858, y: 198 }, lessonId: "volcano-3" }
+        { 
+          path: [{ x: 780, y: 135 }, { x: 820, y: 160 }, { x: 840, y: 120 }], 
+          endpoint: { x: 840, y: 120 }, 
+          lessonId: "volcano-1" 
+        },
+        { 
+          path: [{ x: 780, y: 135 }, { x: 820, y: 160 }, { x: 880, y: 140 }], 
+          endpoint: { x: 880, y: 140 }, 
+          lessonId: "volcano-2" 
+        },
+        { 
+          path: [{ x: 780, y: 135 }, { x: 820, y: 160 }, { x: 860, y: 200 }], 
+          endpoint: { x: 860, y: 200 }, 
+          lessonId: "volcano-3" 
+        }
       ]
     },
     lagoon: {
       pathwayPoint: { x: 720, y: 650 },
+      mainBranch: { x: 740, y: 720 },
       veins: [
-        { endpoint: { x: 684, y: 765 }, lessonId: "lagoon-1" },
-        { endpoint: { x: 780, y: 738 }, lessonId: "lagoon-2" },
-        { endpoint: { x: 756, y: 792 }, lessonId: "lagoon-3" }
+        { 
+          path: [{ x: 720, y: 650 }, { x: 740, y: 720 }, { x: 680, y: 760 }], 
+          endpoint: { x: 680, y: 760 }, 
+          lessonId: "lagoon-1" 
+        },
+        { 
+          path: [{ x: 720, y: 650 }, { x: 740, y: 720 }, { x: 780, y: 740 }], 
+          endpoint: { x: 780, y: 740 }, 
+          lessonId: "lagoon-2" 
+        },
+        { 
+          path: [{ x: 720, y: 650 }, { x: 740, y: 720 }, { x: 760, y: 800 }], 
+          endpoint: { x: 760, y: 800 }, 
+          lessonId: "lagoon-3" 
+        }
       ]
     }
   };
 
-  // Generate lesson nodes positioned at vein endpoints (convert SVG coords to percentage)
+  // Generate lesson nodes positioned at fractal vein endpoints (convert SVG coords to percentage)
   const lessonNodes: LessonNodeData[] = [
-    // Beach biome (Mathematics) - Lessons positioned at vein endpoints
-    { id: "beach-1", title: "Counting Shells", biome: "beach", position: { x: 144/12, y: 702/10 }, completed: lessonProgress["beach-1"]?.completed || false, locked: lessonProgress["beach-1"]?.locked === undefined ? false : lessonProgress["beach-1"].locked },
-    { id: "beach-2", title: "Ocean Wildlife", biome: "beach", position: { x: 216/12, y: 675/10 }, completed: lessonProgress["beach-2"]?.completed || false, locked: lessonProgress["beach-2"]?.locked === undefined ? true : lessonProgress["beach-2"].locked },
-    { id: "beach-3", title: "Treasure Sorting", biome: "beach", position: { x: 264/12, y: 720/10 }, completed: lessonProgress["beach-3"]?.completed || false, locked: lessonProgress["beach-3"]?.locked === undefined ? true : lessonProgress["beach-3"].locked },
+    // Beach biome (Mathematics) - Lessons positioned at fractal vein endpoints
+    { id: "beach-1", title: "Counting Shells", biome: "beach", position: { x: 144/12, y: 720/10 }, completed: lessonProgress["beach-1"]?.completed || false, locked: lessonProgress["beach-1"]?.locked === undefined ? false : lessonProgress["beach-1"].locked },
+    { id: "beach-2", title: "Ocean Wildlife", biome: "beach", position: { x: 220/12, y: 700/10 }, completed: lessonProgress["beach-2"]?.completed || false, locked: lessonProgress["beach-2"]?.locked === undefined ? true : lessonProgress["beach-2"].locked },
+    { id: "beach-3", title: "Treasure Sorting", biome: "beach", position: { x: 240/12, y: 740/10 }, completed: lessonProgress["beach-3"]?.completed || false, locked: lessonProgress["beach-3"]?.locked === undefined ? true : lessonProgress["beach-3"].locked },
     
-    // Jungle biome (Literacy) - Lessons positioned at vein endpoints
-    { id: "jungle-1", title: "Animal Sounds", biome: "jungle", position: { x: 360/12, y: 405/10 }, completed: lessonProgress["jungle-1"]?.completed || false, locked: lessonProgress["jungle-1"]?.locked === undefined ? true : lessonProgress["jungle-1"].locked },
-    { id: "jungle-2", title: "Story Vines", biome: "jungle", position: { x: 444/12, y: 360/10 }, completed: lessonProgress["jungle-2"]?.completed || false, locked: lessonProgress["jungle-2"]?.locked === undefined ? true : lessonProgress["jungle-2"].locked },
-    { id: "jungle-3", title: "Letter Hunt", biome: "jungle", position: { x: 516/12, y: 378/10 }, completed: lessonProgress["jungle-3"]?.completed || false, locked: lessonProgress["jungle-3"]?.locked === undefined ? true : lessonProgress["jungle-3"].locked },
+    // Jungle biome (Literacy) - Lessons positioned at fractal vein endpoints
+    { id: "jungle-1", title: "Animal Sounds", biome: "jungle", position: { x: 340/12, y: 400/10 }, completed: lessonProgress["jungle-1"]?.completed || false, locked: lessonProgress["jungle-1"]?.locked === undefined ? true : lessonProgress["jungle-1"].locked },
+    { id: "jungle-2", title: "Story Vines", biome: "jungle", position: { x: 420/12, y: 380/10 }, completed: lessonProgress["jungle-2"]?.completed || false, locked: lessonProgress["jungle-2"]?.locked === undefined ? true : lessonProgress["jungle-2"].locked },
+    { id: "jungle-3", title: "Letter Hunt", biome: "jungle", position: { x: 460/12, y: 390/10 }, completed: lessonProgress["jungle-3"]?.completed || false, locked: lessonProgress["jungle-3"]?.locked === undefined ? true : lessonProgress["jungle-3"].locked },
     
-    // Volcano biome (Science) - Lessons positioned at vein endpoints  
-    { id: "volcano-1", title: "Rock Formation", biome: "volcano", position: { x: 828/12, y: 162/10 }, completed: lessonProgress["volcano-1"]?.completed || false, locked: lessonProgress["volcano-1"]?.locked === undefined ? true : lessonProgress["volcano-1"].locked },
-    { id: "volcano-2", title: "Heat & Cold", biome: "volcano", position: { x: 888/12, y: 135/10 }, completed: lessonProgress["volcano-2"]?.completed || false, locked: lessonProgress["volcano-2"]?.locked === undefined ? true : lessonProgress["volcano-2"].locked },
-    { id: "volcano-3", title: "Color Mixing", biome: "volcano", position: { x: 858/12, y: 198/10 }, completed: lessonProgress["volcano-3"]?.completed || false, locked: lessonProgress["volcano-3"]?.locked === undefined ? true : lessonProgress["volcano-3"].locked },
+    // Volcano biome (Science) - Lessons positioned at fractal vein endpoints  
+    { id: "volcano-1", title: "Rock Formation", biome: "volcano", position: { x: 840/12, y: 120/10 }, completed: lessonProgress["volcano-1"]?.completed || false, locked: lessonProgress["volcano-1"]?.locked === undefined ? true : lessonProgress["volcano-1"].locked },
+    { id: "volcano-2", title: "Heat & Cold", biome: "volcano", position: { x: 880/12, y: 140/10 }, completed: lessonProgress["volcano-2"]?.completed || false, locked: lessonProgress["volcano-2"]?.locked === undefined ? true : lessonProgress["volcano-2"].locked },
+    { id: "volcano-3", title: "Color Mixing", biome: "volcano", position: { x: 860/12, y: 200/10 }, completed: lessonProgress["volcano-3"]?.completed || false, locked: lessonProgress["volcano-3"]?.locked === undefined ? true : lessonProgress["volcano-3"].locked },
     
-    // Lagoon biome (Social Studies) - Lessons positioned at vein endpoints  
-    { id: "lagoon-1", title: "Community Pond", biome: "lagoon", position: { x: 684/12, y: 765/10 }, completed: lessonProgress["lagoon-1"]?.completed || false, locked: lessonProgress["lagoon-1"]?.locked === undefined ? true : lessonProgress["lagoon-1"].locked },
-    { id: "lagoon-2", title: "Helping Friends", biome: "lagoon", position: { x: 780/12, y: 738/10 }, completed: lessonProgress["lagoon-2"]?.completed || false, locked: lessonProgress["lagoon-2"]?.locked === undefined ? true : lessonProgress["lagoon-2"].locked },
-    { id: "lagoon-3", title: "Island Home", biome: "lagoon", position: { x: 756/12, y: 792/10 }, completed: lessonProgress["lagoon-3"]?.completed || false, locked: lessonProgress["lagoon-3"]?.locked === undefined ? true : lessonProgress["lagoon-3"].locked }
+    // Lagoon biome (Social Studies) - Lessons positioned at fractal vein endpoints  
+    { id: "lagoon-1", title: "Community Pond", biome: "lagoon", position: { x: 680/12, y: 760/10 }, completed: lessonProgress["lagoon-1"]?.completed || false, locked: lessonProgress["lagoon-1"]?.locked === undefined ? true : lessonProgress["lagoon-1"].locked },
+    { id: "lagoon-2", title: "Helping Friends", biome: "lagoon", position: { x: 780/12, y: 740/10 }, completed: lessonProgress["lagoon-2"]?.completed || false, locked: lessonProgress["lagoon-2"]?.locked === undefined ? true : lessonProgress["lagoon-2"].locked },
+    { id: "lagoon-3", title: "Island Home", biome: "lagoon", position: { x: 760/12, y: 800/10 }, completed: lessonProgress["lagoon-3"]?.completed || false, locked: lessonProgress["lagoon-3"]?.locked === undefined ? true : lessonProgress["lagoon-3"].locked }
   ];
 
   const handleLessonComplete = useCallback((lessonId: string) => {
@@ -481,12 +533,12 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     
     if (nextLesson) {
       setScoutMessage(`Ready for an adventure? Try "${lessonTitles[nextLesson]}" next!`);
-      // Move Scout to suggest the next lesson (updated to vein endpoint positions)
+      // Move Scout to suggest the next lesson (updated to fractal vein endpoint positions)
       const lessonPositions: Record<string, { x: number; y: number }> = {
-        "beach-1": { x: 144/12, y: 702/10 }, "beach-2": { x: 216/12, y: 675/10 }, "beach-3": { x: 264/12, y: 720/10 },
-        "jungle-1": { x: 360/12, y: 405/10 }, "jungle-2": { x: 444/12, y: 360/10 }, "jungle-3": { x: 516/12, y: 378/10 },
-        "volcano-1": { x: 828/12, y: 162/10 }, "volcano-2": { x: 888/12, y: 135/10 }, "volcano-3": { x: 858/12, y: 198/10 },
-        "lagoon-1": { x: 684/12, y: 765/10 }, "lagoon-2": { x: 780/12, y: 738/10 }, "lagoon-3": { x: 756/12, y: 792/10 }
+        "beach-1": { x: 144/12, y: 720/10 }, "beach-2": { x: 220/12, y: 700/10 }, "beach-3": { x: 240/12, y: 740/10 },
+        "jungle-1": { x: 340/12, y: 400/10 }, "jungle-2": { x: 420/12, y: 380/10 }, "jungle-3": { x: 460/12, y: 390/10 },
+        "volcano-1": { x: 840/12, y: 120/10 }, "volcano-2": { x: 880/12, y: 140/10 }, "volcano-3": { x: 860/12, y: 200/10 },
+        "lagoon-1": { x: 680/12, y: 760/10 }, "lagoon-2": { x: 780/12, y: 740/10 }, "lagoon-3": { x: 760/12, y: 800/10 }
       };
       const targetPosition = lessonPositions[nextLesson];
       if (targetPosition) {
@@ -662,42 +714,92 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 />
               )}
 
-              {/* Biome Vein System - Lessons positioned at vein endpoints */}
+              {/* Fractal Biome Vein System - All lessons at fractal branch endpoints */}
               {Object.entries(biomeVeins).map(([biomeName, biomeData], biomeIndex) => 
                 biomeData.veins.map((vein, veinIndex) => {
                   const lesson = lessonNodes.find(l => l.id === vein.lessonId);
                   if (!lesson) return null;
 
-                  const veinPath = `M ${biomeData.pathwayPoint.x} ${biomeData.pathwayPoint.y} L ${vein.endpoint.x} ${vein.endpoint.y}`;
+                  // Create fractal path string from the path array
+                  const pathString = vein.path.map((point, i) => 
+                    i === 0 ? `M ${point.x} ${point.y}` : `L ${point.x} ${point.y}`
+                  ).join(' ');
+
                   const isUnlocked = !lesson.locked;
                   const isCompleted = lesson.completed;
                   
                   return (
                     <motion.path
                       key={`vein-${lesson.id}`}
-                      d={veinPath}
-                      stroke={isCompleted ? "url(#progressGradient)" : isUnlocked ? "url(#basePathGradient)" : "rgba(255,255,255,0.1)"}
+                      d={pathString}
+                      stroke={isCompleted ? "url(#progressGradient)" : isUnlocked ? "url(#basePathGradient)" : "rgba(255,255,255,0.15)"}
                       strokeWidth={isCompleted ? "4" : isUnlocked ? "3" : "2"}
                       fill="none"
                       strokeLinecap="round"
                       initial={{ pathLength: 0, opacity: 0 }}
                       animate={{ 
-                        pathLength: isUnlocked ? 1 : 0,
-                        opacity: isCompleted ? 0.8 : isUnlocked ? 0.4 : 0.1
+                        pathLength: 1, // Always show veins for all lessons (locked, unlocked, completed)
+                        opacity: isCompleted ? 0.9 : isUnlocked ? 0.5 : 0.2
                       }}
                       transition={{ 
-                        duration: 2,
-                        delay: biomeIndex * 0.8 + veinIndex * 0.3,
+                        duration: 2.5,
+                        delay: biomeIndex * 0.8 + veinIndex * 0.4,
                         ease: "easeInOut" 
                       }}
                       style={{ 
                         filter: isCompleted 
-                          ? "drop-shadow(0 0 4px rgba(255,215,0,0.6))"
+                          ? "drop-shadow(0 0 6px rgba(255,215,0,0.8))"
                           : isUnlocked 
-                          ? "drop-shadow(0 0 2px rgba(255,255,255,0.4))"
-                          : "none"
+                          ? "drop-shadow(0 0 3px rgba(255,255,255,0.5))"
+                          : "drop-shadow(0 0 1px rgba(255,255,255,0.2))"
                       }}
                     />
+                  );
+                })
+              ).flat()}
+
+              {/* Vein Energy Pulses - Flow through completed lesson veins */}
+              {Object.entries(biomeVeins).map(([biomeName, biomeData], biomeIndex) => 
+                biomeData.veins.map((vein, veinIndex) => {
+                  const lesson = lessonNodes.find(l => l.id === vein.lessonId);
+                  if (!lesson || !lesson.completed) return null;
+
+                  const pathId = `vein-path-${lesson.id}`;
+                  const pathString = vein.path.map((point, i) => 
+                    i === 0 ? `M ${point.x} ${point.y}` : `L ${point.x} ${point.y}`
+                  ).join(' ');
+                  
+                  return (
+                    <g key={`vein-energy-${lesson.id}`}>
+                      {/* Hidden path for energy flow animation */}
+                      <path
+                        id={pathId}
+                        d={pathString}
+                        fill="none"
+                        stroke="none"
+                      />
+                      
+                      {/* Energy pulse flowing through vein */}
+                      <motion.circle
+                        r="3"
+                        fill="url(#energyPulseGradient)"
+                        opacity="0.9"
+                      >
+                        <animateMotion
+                          dur={`${3 + veinIndex}s`}
+                          repeatCount="indefinite"
+                          begin={`${biomeIndex * 0.5}s`}
+                        >
+                          <mpath xlinkHref={`#${pathId}`} />
+                        </animateMotion>
+                        <animate
+                          attributeName="r"
+                          values="2;4;2"
+                          dur="2s"
+                          repeatCount="indefinite"
+                        />
+                      </motion.circle>
+                    </g>
                   );
                 })
               ).flat()}
