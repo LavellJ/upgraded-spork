@@ -684,7 +684,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             {/* Scout Guidance Message */}
             {showScoutMessage && scoutMessage && (
               <motion.div
-                className="absolute bottom-8 left-8 bg-white/95 text-gray-800 rounded-2xl shadow-lg backdrop-blur-sm border border-white/20 max-w-xl w-[28rem] z-50"
+                className="absolute top-8 left-8 bg-white/95 text-gray-800 rounded-2xl shadow-lg backdrop-blur-sm border border-white/20 max-w-xl w-[28rem] z-50"
                 initial={{ opacity: 0, scale: 0.8, y: -20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.8, y: -20 }}
