@@ -1,6 +1,13 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 
+// Import biome illustrations
+import jungleBiome from '@assets/generated_images/Magical_jungle_biome_illustration_16fb319a.png';
+import lagoonBiome from '@assets/generated_images/Serene_lagoon_biome_illustration_312df41f.png';
+import volcanoBiome from '@assets/generated_images/Mystical_volcano_biome_illustration_3aac8f1e.png';
+import beachBiome from '@assets/generated_images/Peaceful_beach_biome_illustration_aeb91261.png';
+import meadowBiome from '@assets/generated_images/Peaceful_meadow_biome_illustration_ae2287cc.png';
+
 interface BiomeProps {
   id: string;
   name: string;
@@ -40,8 +47,27 @@ export function Biome({ id, name, subject, position, color, description, onClick
         return "🌋";
       case "lagoon":
         return "🌊";
+      case "meadow":
+        return "🌸";
       default:
         return "🏝️";
+    }
+  };
+
+  const getBiomeImage = () => {
+    switch (id) {
+      case "beach":
+        return beachBiome;
+      case "jungle":
+        return jungleBiome;
+      case "volcano":
+        return volcanoBiome;
+      case "lagoon":
+        return lagoonBiome;
+      case "meadow":
+        return meadowBiome;
+      default:
+        return null;
     }
   };
 
@@ -137,6 +163,28 @@ export function Biome({ id, name, subject, position, color, description, onClick
             />
           </>
         );
+      case "meadow":
+        return (
+          <>
+            {/* Floating petals */}
+            <motion.div
+              className="absolute top-1 left-3 w-2 h-2 bg-pink-300/60 rounded-full"
+              animate={{ 
+                y: [0, -5, 0],
+                opacity: [0.4, 0.8, 0.4]
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute bottom-3 right-2 w-1.5 h-1.5 bg-yellow-300/50 rounded-full"
+              animate={{ 
+                rotate: [0, 360],
+                scale: [0.8, 1.2, 0.8]
+              }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            />
+          </>
+        );
       default:
         return null;
     }
@@ -159,7 +207,13 @@ export function Biome({ id, name, subject, position, color, description, onClick
     >
       {/* Biome Circle */}
       <motion.div
-        className={`relative w-20 h-20 bg-gradient-to-br ${color} rounded-full shadow-lg`}
+        className={`relative w-20 h-20 rounded-full shadow-lg overflow-hidden`}
+        style={{
+          backgroundImage: getBiomeImage() ? `url(${getBiomeImage()})` : undefined,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundColor: getBiomeImage() ? 'transparent' : undefined
+        }}
         animate={{ 
           boxShadow: [
             "0 4px 12px rgba(0,0,0,0.1)",
@@ -169,9 +223,15 @@ export function Biome({ id, name, subject, position, color, description, onClick
         }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       >
-        {/* Biome Icon */}
+        {/* Fallback gradient background for biomes without images */}
+        {!getBiomeImage() && (
+          <div className={`absolute inset-0 bg-gradient-to-br ${color} rounded-full`} />
+        )}
+        {/* Biome Icon - with subtle background for better visibility */}
         <div className="absolute inset-0 flex items-center justify-center text-2xl">
-          {getBiomeIcon()}
+          <div className="bg-white/20 backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center">
+            {getBiomeIcon()}
+          </div>
         </div>
 
         {/* Biome Elements */}
