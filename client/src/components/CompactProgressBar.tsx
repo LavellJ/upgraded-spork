@@ -26,22 +26,17 @@ export function CompactProgressBar({ studentId }: CompactProgressBarProps) {
   // Get current learning path (like in ProgressLandscape)
   const getCurrentPath = () => {
     const overallProgress = getOverallProgress();
-    if (overallProgress >= 80) return { 
+    if (overallProgress >= 75) return { 
       name: 'Eagle Heights', 
       icon: '🦅',
       color: 'from-purple-400 to-blue-500'
     };
-    if (overallProgress >= 60) return { 
-      name: 'Owl Valley', 
-      icon: '🦉',
-      color: 'from-cyan-400 to-blue-400'
-    };
-    if (overallProgress >= 40) return { 
+    if (overallProgress >= 50) return { 
       name: 'Squirrel Forest', 
       icon: '🐿️',
       color: 'from-green-400 to-emerald-500'
     };
-    if (overallProgress >= 20) return { 
+    if (overallProgress >= 25) return { 
       name: 'Fox Meadows', 
       icon: '🦊',
       color: 'from-yellow-400 to-green-400'
