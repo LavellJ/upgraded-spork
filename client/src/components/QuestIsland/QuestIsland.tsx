@@ -362,27 +362,63 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     }
   }, [newDiscovery]);
 
-  // Generate lesson nodes with current progress
+  // Define vein structure - each biome has veins branching from main pathway with lessons at endpoints
+  const biomeVeins = {
+    beach: {
+      pathwayPoint: { x: 120, y: 650 }, // Connection point on main pathway
+      veins: [
+        { endpoint: { x: 144, y: 702 }, lessonId: "beach-1" }, // Vein 1 endpoint
+        { endpoint: { x: 216, y: 675 }, lessonId: "beach-2" }, // Vein 2 endpoint  
+        { endpoint: { x: 264, y: 720 }, lessonId: "beach-3" }  // Vein 3 endpoint
+      ]
+    },
+    jungle: {
+      pathwayPoint: { x: 420, y: 315 },
+      veins: [
+        { endpoint: { x: 360, y: 405 }, lessonId: "jungle-1" },
+        { endpoint: { x: 444, y: 360 }, lessonId: "jungle-2" },
+        { endpoint: { x: 516, y: 378 }, lessonId: "jungle-3" }
+      ]
+    },
+    volcano: {
+      pathwayPoint: { x: 780, y: 135 },
+      veins: [
+        { endpoint: { x: 828, y: 162 }, lessonId: "volcano-1" },
+        { endpoint: { x: 888, y: 135 }, lessonId: "volcano-2" },
+        { endpoint: { x: 858, y: 198 }, lessonId: "volcano-3" }
+      ]
+    },
+    lagoon: {
+      pathwayPoint: { x: 720, y: 650 },
+      veins: [
+        { endpoint: { x: 684, y: 765 }, lessonId: "lagoon-1" },
+        { endpoint: { x: 780, y: 738 }, lessonId: "lagoon-2" },
+        { endpoint: { x: 756, y: 792 }, lessonId: "lagoon-3" }
+      ]
+    }
+  };
+
+  // Generate lesson nodes positioned at vein endpoints (convert SVG coords to percentage)
   const lessonNodes: LessonNodeData[] = [
-    // Beach biome (Mathematics) - Far southwest
-    { id: "beach-1", title: "Counting Shells", biome: "beach", position: { x: 12, y: 78 }, completed: lessonProgress["beach-1"]?.completed || false, locked: lessonProgress["beach-1"]?.locked === undefined ? false : lessonProgress["beach-1"].locked },
-    { id: "beach-2", title: "Ocean Wildlife", biome: "beach", position: { x: 18, y: 75 }, completed: lessonProgress["beach-2"]?.completed || false, locked: lessonProgress["beach-2"]?.locked === undefined ? true : lessonProgress["beach-2"].locked },
-    { id: "beach-3", title: "Treasure Sorting", biome: "beach", position: { x: 22, y: 80 }, completed: lessonProgress["beach-3"]?.completed || false, locked: lessonProgress["beach-3"]?.locked === undefined ? true : lessonProgress["beach-3"].locked },
+    // Beach biome (Mathematics) - Lessons positioned at vein endpoints
+    { id: "beach-1", title: "Counting Shells", biome: "beach", position: { x: 144/12, y: 702/10 }, completed: lessonProgress["beach-1"]?.completed || false, locked: lessonProgress["beach-1"]?.locked === undefined ? false : lessonProgress["beach-1"].locked },
+    { id: "beach-2", title: "Ocean Wildlife", biome: "beach", position: { x: 216/12, y: 675/10 }, completed: lessonProgress["beach-2"]?.completed || false, locked: lessonProgress["beach-2"]?.locked === undefined ? true : lessonProgress["beach-2"].locked },
+    { id: "beach-3", title: "Treasure Sorting", biome: "beach", position: { x: 264/12, y: 720/10 }, completed: lessonProgress["beach-3"]?.completed || false, locked: lessonProgress["beach-3"]?.locked === undefined ? true : lessonProgress["beach-3"].locked },
     
-    // Jungle biome (Literacy) - Central west
-    { id: "jungle-1", title: "Animal Sounds", biome: "jungle", position: { x: 35, y: 45 }, completed: lessonProgress["jungle-1"]?.completed || false, locked: lessonProgress["jungle-1"]?.locked === undefined ? true : lessonProgress["jungle-1"].locked },
-    { id: "jungle-2", title: "Story Vines", biome: "jungle", position: { x: 42, y: 40 }, completed: lessonProgress["jungle-2"]?.completed || false, locked: lessonProgress["jungle-2"]?.locked === undefined ? true : lessonProgress["jungle-2"].locked },
-    { id: "jungle-3", title: "Letter Hunt", biome: "jungle", position: { x: 48, y: 42 }, completed: lessonProgress["jungle-3"]?.completed || false, locked: lessonProgress["jungle-3"]?.locked === undefined ? true : lessonProgress["jungle-3"].locked },
+    // Jungle biome (Literacy) - Lessons positioned at vein endpoints
+    { id: "jungle-1", title: "Animal Sounds", biome: "jungle", position: { x: 360/12, y: 405/10 }, completed: lessonProgress["jungle-1"]?.completed || false, locked: lessonProgress["jungle-1"]?.locked === undefined ? true : lessonProgress["jungle-1"].locked },
+    { id: "jungle-2", title: "Story Vines", biome: "jungle", position: { x: 444/12, y: 360/10 }, completed: lessonProgress["jungle-2"]?.completed || false, locked: lessonProgress["jungle-2"]?.locked === undefined ? true : lessonProgress["jungle-2"].locked },
+    { id: "jungle-3", title: "Letter Hunt", biome: "jungle", position: { x: 516/12, y: 378/10 }, completed: lessonProgress["jungle-3"]?.completed || false, locked: lessonProgress["jungle-3"]?.locked === undefined ? true : lessonProgress["jungle-3"].locked },
     
-    // Volcano biome (Science) - Far northeast  
-    { id: "volcano-1", title: "Rock Formation", biome: "volcano", position: { x: 82, y: 18 }, completed: lessonProgress["volcano-1"]?.completed || false, locked: lessonProgress["volcano-1"]?.locked === undefined ? true : lessonProgress["volcano-1"].locked },
-    { id: "volcano-2", title: "Heat & Cold", biome: "volcano", position: { x: 88, y: 15 }, completed: lessonProgress["volcano-2"]?.completed || false, locked: lessonProgress["volcano-2"]?.locked === undefined ? true : lessonProgress["volcano-2"].locked },
-    { id: "volcano-3", title: "Color Mixing", biome: "volcano", position: { x: 85, y: 22 }, completed: lessonProgress["volcano-3"]?.completed || false, locked: lessonProgress["volcano-3"]?.locked === undefined ? true : lessonProgress["volcano-3"].locked },
+    // Volcano biome (Science) - Lessons positioned at vein endpoints  
+    { id: "volcano-1", title: "Rock Formation", biome: "volcano", position: { x: 828/12, y: 162/10 }, completed: lessonProgress["volcano-1"]?.completed || false, locked: lessonProgress["volcano-1"]?.locked === undefined ? true : lessonProgress["volcano-1"].locked },
+    { id: "volcano-2", title: "Heat & Cold", biome: "volcano", position: { x: 888/12, y: 135/10 }, completed: lessonProgress["volcano-2"]?.completed || false, locked: lessonProgress["volcano-2"]?.locked === undefined ? true : lessonProgress["volcano-2"].locked },
+    { id: "volcano-3", title: "Color Mixing", biome: "volcano", position: { x: 858/12, y: 198/10 }, completed: lessonProgress["volcano-3"]?.completed || false, locked: lessonProgress["volcano-3"]?.locked === undefined ? true : lessonProgress["volcano-3"].locked },
     
-    // Lagoon biome (Social Studies) - Southeast  
-    { id: "lagoon-1", title: "Community Pond", biome: "lagoon", position: { x: 68, y: 85 }, completed: lessonProgress["lagoon-1"]?.completed || false, locked: lessonProgress["lagoon-1"]?.locked === undefined ? true : lessonProgress["lagoon-1"].locked },
-    { id: "lagoon-2", title: "Helping Friends", biome: "lagoon", position: { x: 75, y: 82 }, completed: lessonProgress["lagoon-2"]?.completed || false, locked: lessonProgress["lagoon-2"]?.locked === undefined ? true : lessonProgress["lagoon-2"].locked },
-    { id: "lagoon-3", title: "Island Home", biome: "lagoon", position: { x: 72, y: 88 }, completed: lessonProgress["lagoon-3"]?.completed || false, locked: lessonProgress["lagoon-3"]?.locked === undefined ? true : lessonProgress["lagoon-3"].locked }
+    // Lagoon biome (Social Studies) - Lessons positioned at vein endpoints  
+    { id: "lagoon-1", title: "Community Pond", biome: "lagoon", position: { x: 684/12, y: 765/10 }, completed: lessonProgress["lagoon-1"]?.completed || false, locked: lessonProgress["lagoon-1"]?.locked === undefined ? true : lessonProgress["lagoon-1"].locked },
+    { id: "lagoon-2", title: "Helping Friends", biome: "lagoon", position: { x: 780/12, y: 738/10 }, completed: lessonProgress["lagoon-2"]?.completed || false, locked: lessonProgress["lagoon-2"]?.locked === undefined ? true : lessonProgress["lagoon-2"].locked },
+    { id: "lagoon-3", title: "Island Home", biome: "lagoon", position: { x: 756/12, y: 792/10 }, completed: lessonProgress["lagoon-3"]?.completed || false, locked: lessonProgress["lagoon-3"]?.locked === undefined ? true : lessonProgress["lagoon-3"].locked }
   ];
 
   const handleLessonComplete = useCallback((lessonId: string) => {
@@ -445,12 +481,12 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     
     if (nextLesson) {
       setScoutMessage(`Ready for an adventure? Try "${lessonTitles[nextLesson]}" next!`);
-      // Move Scout to suggest the next lesson
+      // Move Scout to suggest the next lesson (updated to vein endpoint positions)
       const lessonPositions: Record<string, { x: number; y: number }> = {
-        "beach-1": { x: 12, y: 78 }, "beach-2": { x: 18, y: 75 }, "beach-3": { x: 22, y: 80 },
-        "jungle-1": { x: 35, y: 45 }, "jungle-2": { x: 42, y: 40 }, "jungle-3": { x: 48, y: 42 },
-        "volcano-1": { x: 82, y: 18 }, "volcano-2": { x: 88, y: 15 }, "volcano-3": { x: 85, y: 22 },
-        "lagoon-1": { x: 68, y: 85 }, "lagoon-2": { x: 75, y: 82 }, "lagoon-3": { x: 72, y: 88 }
+        "beach-1": { x: 144/12, y: 702/10 }, "beach-2": { x: 216/12, y: 675/10 }, "beach-3": { x: 264/12, y: 720/10 },
+        "jungle-1": { x: 360/12, y: 405/10 }, "jungle-2": { x: 444/12, y: 360/10 }, "jungle-3": { x: 516/12, y: 378/10 },
+        "volcano-1": { x: 828/12, y: 162/10 }, "volcano-2": { x: 888/12, y: 135/10 }, "volcano-3": { x: 858/12, y: 198/10 },
+        "lagoon-1": { x: 684/12, y: 765/10 }, "lagoon-2": { x: 780/12, y: 738/10 }, "lagoon-3": { x: 756/12, y: 792/10 }
       };
       const targetPosition = lessonPositions[nextLesson];
       if (targetPosition) {
@@ -626,58 +662,45 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 />
               )}
 
-              {/* Lesson Vein Connections - Connect each lesson to the main pathway like veins to an artery */}
-              {lessonNodes.map(lesson => {
-                // Calculate nearest connection point on main pathway for each lesson
-                let connectionPoint = "";
-                let pathPoint = "";
-                
-                if (lesson.biome === "beach") {
-                  connectionPoint = `M ${lesson.position.x * 12} ${lesson.position.y * 10}`;
-                  pathPoint = "L 120 650";
-                } else if (lesson.biome === "jungle") {
-                  connectionPoint = `M ${lesson.position.x * 12} ${lesson.position.y * 10}`;
-                  pathPoint = "L 420 315";
-                } else if (lesson.biome === "volcano") {
-                  connectionPoint = `M ${lesson.position.x * 12} ${lesson.position.y * 10}`;
-                  pathPoint = "L 780 135";
-                } else if (lesson.biome === "lagoon") {
-                  connectionPoint = `M ${lesson.position.x * 12} ${lesson.position.y * 10}`;
-                  pathPoint = "L 720 650";
-                }
+              {/* Biome Vein System - Lessons positioned at vein endpoints */}
+              {Object.entries(biomeVeins).map(([biomeName, biomeData], biomeIndex) => 
+                biomeData.veins.map((vein, veinIndex) => {
+                  const lesson = lessonNodes.find(l => l.id === vein.lessonId);
+                  if (!lesson) return null;
 
-                const veinPath = connectionPoint + " " + pathPoint;
-                const isUnlocked = !lesson.locked;
-                const isCompleted = lesson.completed;
-                
-                return (
-                  <motion.path
-                    key={`vein-${lesson.id}`}
-                    d={veinPath}
-                    stroke={isCompleted ? "url(#progressGradient)" : isUnlocked ? "url(#basePathGradient)" : "rgba(255,255,255,0.1)"}
-                    strokeWidth={isCompleted ? "4" : isUnlocked ? "3" : "2"}
-                    fill="none"
-                    strokeLinecap="round"
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ 
-                      pathLength: isUnlocked ? 1 : 0,
-                      opacity: isCompleted ? 0.8 : isUnlocked ? 0.4 : 0.1
-                    }}
-                    transition={{ 
-                      duration: 2,
-                      delay: lesson.biome === "beach" ? 0 : lesson.biome === "jungle" ? 1 : lesson.biome === "volcano" ? 2 : 3,
-                      ease: "easeInOut" 
-                    }}
-                    style={{ 
-                      filter: isCompleted 
-                        ? "drop-shadow(0 0 4px rgba(255,215,0,0.6))"
-                        : isUnlocked 
-                        ? "drop-shadow(0 0 2px rgba(255,255,255,0.4))"
-                        : "none"
-                    }}
-                  />
-                );
-              })}
+                  const veinPath = `M ${biomeData.pathwayPoint.x} ${biomeData.pathwayPoint.y} L ${vein.endpoint.x} ${vein.endpoint.y}`;
+                  const isUnlocked = !lesson.locked;
+                  const isCompleted = lesson.completed;
+                  
+                  return (
+                    <motion.path
+                      key={`vein-${lesson.id}`}
+                      d={veinPath}
+                      stroke={isCompleted ? "url(#progressGradient)" : isUnlocked ? "url(#basePathGradient)" : "rgba(255,255,255,0.1)"}
+                      strokeWidth={isCompleted ? "4" : isUnlocked ? "3" : "2"}
+                      fill="none"
+                      strokeLinecap="round"
+                      initial={{ pathLength: 0, opacity: 0 }}
+                      animate={{ 
+                        pathLength: isUnlocked ? 1 : 0,
+                        opacity: isCompleted ? 0.8 : isUnlocked ? 0.4 : 0.1
+                      }}
+                      transition={{ 
+                        duration: 2,
+                        delay: biomeIndex * 0.8 + veinIndex * 0.3,
+                        ease: "easeInOut" 
+                      }}
+                      style={{ 
+                        filter: isCompleted 
+                          ? "drop-shadow(0 0 4px rgba(255,215,0,0.6))"
+                          : isUnlocked 
+                          ? "drop-shadow(0 0 2px rgba(255,255,255,0.4))"
+                          : "none"
+                      }}
+                    />
+                  );
+                })
+              ).flat()}
 
               {/* Energy Flow Pulses - Only on completed path sections */}
               {Object.values(lessonProgress).filter(p => p.completed).length > 0 && (
