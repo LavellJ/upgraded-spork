@@ -42,8 +42,12 @@ export default function QuestIslandPage() {
         data-testid="welcome-message"
       >
         <div className="flex items-center space-x-3 mb-2">
-          <div className="w-10 h-10 bg-gradient-to-b from-blue-400 to-blue-500 rounded-full flex items-center justify-center">
-            <div className="w-8 h-8 bg-gradient-to-b from-amber-100 to-amber-200 rounded-full"></div>
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-white/90 shadow-lg border border-white/30">
+            <img 
+              src="/attached_assets/image_1756014874313.png"
+              alt="Scout Explorer"
+              className="w-full h-full object-cover"
+            />
           </div>
           <span className="font-semibold">Scout</span>
         </div>
