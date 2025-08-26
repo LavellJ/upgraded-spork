@@ -678,6 +678,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 strokeWidth="10"
                 fill="none"
                 strokeLinecap="round"
+                pointerEvents="none"
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 0.7 }}
                 transition={{ duration: 4, ease: "easeInOut" }}
@@ -691,6 +692,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 strokeWidth="14"
                 fill="none"
                 strokeLinecap="round"
+                pointerEvents="none"
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ 
                   pathLength: (Object.values(lessonProgress).filter(p => p.completed).length / 12) * 1,
@@ -708,6 +710,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                   strokeWidth="18"
                   fill="none"
                   strokeLinecap="round"
+                  pointerEvents="none"
                   pathLength={(Object.values(lessonProgress).filter(p => p.completed).length / 12) * 1}
                   animate={{ 
                     opacity: [0.4, 0.9, 0.4],
@@ -738,6 +741,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                       strokeWidth={isCompleted ? "6" : isUnlocked ? "5" : "4"}
                       fill="none"
                       strokeLinecap="round"
+                      pointerEvents="none"
                       initial={{ pathLength: 0, opacity: 0 }}
                       animate={{ 
                         pathLength: 1, // Tree branches - ALL lessons get branches (locked, unlocked, completed)
@@ -753,7 +757,8 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                           ? "drop-shadow(0 0 4px rgba(255,215,0,0.5))"
                           : isUnlocked 
                           ? "drop-shadow(0 0 2px rgba(255,255,255,0.3))"
-                          : "drop-shadow(0 0 1px rgba(255,255,255,0.2))"
+                          : "drop-shadow(0 0 1px rgba(255,255,255,0.2))",
+                        pointerEvents: "none"
                       }}
                     />
                   );
