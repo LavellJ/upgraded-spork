@@ -168,9 +168,8 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
     <motion.div
       className="absolute z-20"
       style={{ 
-        left: position.x + "%", 
-        top: position.y + "%",
-        transform: "translate(-50%, -50%)"
+        left: `calc(${position.x}% - 32px)`, 
+        top: `calc(${position.y}% - 32px)`
       }}
       animate={controls}
       data-testid="scout-character"
@@ -179,15 +178,11 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
       <motion.div
         className="relative w-16 h-16"
         animate={scoutMood === 'excited' ? {
-          y: [0, -6, 0],
-          rotate: [0, 3, -3, 0]
+          y: [0, -4, 0]
         } : scoutMood === 'thinking' ? {
-          y: [0, -2, 0],
-          rotate: [0, 2, -1, 1, 0],
-          x: [0, 1, -1, 0]
+          y: [0, -2, 0]
         } : {
-          y: [0, -3, 0],
-          rotate: [0, 1, -1, 0]
+          y: [0, -2, 0]
         }}
         transition={{ 
           duration: scoutMood === 'excited' ? 2.5 : scoutMood === 'thinking' ? 3.5 : 4, 
@@ -203,8 +198,7 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
             className="w-full h-full object-contain drop-shadow-lg"
           />
           
-          {/* Subtle glow effect */}
-          <div className="absolute inset-0 bg-gradient-radial from-blue-200/10 via-transparent to-transparent pointer-events-none"></div>
+          {/* Subtle glow effect - removed to prevent blur */}
         </div>
 
         {/* Pointing Animation when target is selected */}
