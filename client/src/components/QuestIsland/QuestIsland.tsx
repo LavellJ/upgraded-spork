@@ -597,7 +597,16 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               </defs>
             </svg>
 
-            {/* Biomes with Completion Effects */}
+            {/* Biomes */}
+            {biomes.map(biome => (
+              <Biome
+                key={biome.id}
+                {...biome}
+                onClick={() => setScoutTarget(biome.id)}
+              />
+            ))}
+
+            {/* Biome Completion Effects - Positioned properly within map container */}
             {biomes.map(biome => {
               const biomeLessons = lessonNodes.filter(node => node.biome === biome.id);
               const completedInBiome = biomeLessons.filter(node => node.completed).length;
@@ -605,19 +614,14 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               const isFullyCompleted = biomeLessons.length > 0 && biomeLessons.every(node => node.completed);
               
               return (
-                <div key={biome.id} className="relative">
-                  <Biome
-                    {...biome}
-                    onClick={() => setScoutTarget(biome.id)}
-                  />
-                  
-                  {/* Biome completion indicator */}
+                <div key={`${biome.id}-effects`}>
+                  {/* Biome completion indicator - positioned within map container */}
                   {isUnlocked && (
                     <motion.div
-                      className="absolute top-2 right-2 text-xs font-bold px-2 py-1 rounded-full"
+                      className="absolute z-10"
                       style={{
-                        left: `${biome.position.x}%`,
-                        top: `${biome.position.y - 15}%`,
+                        left: `calc(${biome.position.x}% + 20px)`,
+                        top: `calc(${biome.position.y}% - 20px)`,
                       }}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
@@ -635,13 +639,15 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                     </motion.div>
                   )}
                   
-                  {/* Biome completion celebration effect */}
+                  {/* Biome completion celebration effect - positioned within map container */}
                   {isFullyCompleted && (
                     <motion.div
-                      className="absolute inset-0 pointer-events-none"
+                      className="absolute pointer-events-none z-0"
                       style={{
-                        left: `${biome.position.x}%`,
-                        top: `${biome.position.y}%`,
+                        left: `calc(${biome.position.x}% - 64px)`,
+                        top: `calc(${biome.position.y}% - 64px)`,
+                        width: '128px',
+                        height: '128px',
                       }}
                       animate={{
                         scale: [1, 1.2, 1],
@@ -653,7 +659,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                         ease: "easeInOut"
                       }}
                     >
-                      <div className="w-32 h-32 bg-yellow-300 rounded-full opacity-20 blur-xl" />
+                      <div className="w-full h-full bg-yellow-300 rounded-full opacity-20 blur-xl" />
                     </motion.div>
                   )}
                 </div>
