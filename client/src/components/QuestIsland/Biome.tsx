@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 interface BiomeProps {
   id: string;
@@ -11,6 +12,24 @@ interface BiomeProps {
 }
 
 export function Biome({ id, name, subject, position, color, description, onClick }: BiomeProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  const handleMouseEnter = (e: React.MouseEvent) => {
+    setIsHovered(true);
+    setMousePosition({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isHovered) {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    }
+  };
+
   const getBiomeIcon = () => {
     switch (id) {
       case "beach":
@@ -124,6 +143,7 @@ export function Biome({ id, name, subject, position, color, description, onClick
   };
 
   return (
+    <>
     <motion.div
       className="absolute cursor-pointer group"
       style={{ 
@@ -132,6 +152,9 @@ export function Biome({ id, name, subject, position, color, description, onClick
         transform: "translate(-50%, -50%)"
       }}
       onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onMouseMove={handleMouseMove}
       data-testid={`biome-${id}`}
     >
       {/* Biome Circle */}
@@ -154,21 +177,6 @@ export function Biome({ id, name, subject, position, color, description, onClick
         {/* Biome Elements */}
         {getBiomeElements()}
 
-        {/* Hover Label */}
-        <motion.div
-          className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-sm px-3 py-2 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-[9999]"
-          initial={{ y: 10 }}
-          whileHover={{ y: 0 }}
-        >
-          <div className="font-semibold">{name}</div>
-          <div className="text-xs opacity-80">{subject}</div>
-          <div className="text-xs opacity-60">{description}</div>
-          
-          {/* Arrow pointing up */}
-          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2">
-            <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-l-transparent border-r-transparent border-b-black/80"></div>
-          </div>
-        </motion.div>
       </motion.div>
 
       {/* Ambient Glow */}
@@ -181,5 +189,22 @@ export function Biome({ id, name, subject, position, color, description, onClick
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />
     </motion.div>
+
+    {/* Fixed Position Tooltip */}
+    {isHovered && (
+      <div
+        className="fixed bg-black/90 text-white text-sm px-4 py-3 rounded-lg shadow-xl whitespace-nowrap pointer-events-none"
+        style={{
+          left: mousePosition.x + 10,
+          top: mousePosition.y - 80,
+          zIndex: 99999
+        }}
+      >
+        <div className="font-semibold">{name}</div>
+        <div className="text-xs opacity-80">{subject}</div>
+        <div className="text-xs opacity-60">{description}</div>
+      </div>
+    )}
+    </>
   );
 }
