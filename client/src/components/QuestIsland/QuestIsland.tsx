@@ -477,6 +477,90 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                 />
               )}
+
+              {/* Energy Flow Pulses - Only on completed path sections */}
+              {Object.values(lessonProgress).filter(p => p.completed).length > 0 && (
+                <>
+                  {/* Hidden path for energy flow animation */}
+                  <path
+                    id="adventurePath"
+                    d="M 120 650 Q 250 500, 420 315 Q 580 200, 780 135 Q 900 100, 1020 135 Q 1100 160, 1050 250 Q 1000 340, 900 450 Q 800 560, 720 650 Q 640 740, 840 720"
+                    fill="none"
+                    stroke="none"
+                  />
+                  
+                  {/* Primary Energy Pulse */}
+                  <motion.circle
+                    r="6"
+                    fill="url(#energyPulseGradient)"
+                    opacity="0.8"
+                  >
+                    <animateMotion
+                      dur="8s"
+                      repeatCount="indefinite"
+                    >
+                      <mpath xlinkHref="#adventurePath" />
+                    </animateMotion>
+                    <animate
+                      attributeName="r"
+                      values="4;8;4"
+                      dur="2s"
+                      repeatCount="indefinite"
+                    />
+                    <animate
+                      attributeName="opacity"
+                      values="0.3;0.8;0.3"
+                      dur="2s"
+                      repeatCount="indefinite"
+                    />
+                  </motion.circle>
+                  
+                  {/* Secondary Energy Pulse (offset) */}
+                  <motion.circle
+                    r="4"
+                    fill="url(#energyPulse2Gradient)"
+                    opacity="0.6"
+                  >
+                    <animateMotion
+                      dur="12s"
+                      repeatCount="indefinite"
+                      begin="4s"
+                    >
+                      <mpath xlinkHref="#adventurePath" />
+                    </animateMotion>
+                    <animate
+                      attributeName="r"
+                      values="3;6;3"
+                      dur="3s"
+                      repeatCount="indefinite"
+                    />
+                  </motion.circle>
+                  
+                  {/* Trailing Sparkles */}
+                  {[...Array(3)].map((_, i) => (
+                    <motion.circle
+                      key={i}
+                      r="2"
+                      fill="rgba(255, 215, 0, 0.4)"
+                      opacity="0.5"
+                    >
+                      <animateMotion
+                        dur="10s"
+                        repeatCount="indefinite"
+                        begin={`${i * 2}s`}
+                      >
+                        <mpath xlinkHref="#adventurePath" />
+                      </animateMotion>
+                      <animate
+                        attributeName="opacity"
+                        values="0;0.6;0"
+                        dur="4s"
+                        repeatCount="indefinite"
+                      />
+                    </motion.circle>
+                  ))}
+                </>
+              )}
               
               <defs>
                 <linearGradient id="basePathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -494,6 +578,18 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                   <stop offset="50%" stopColor="#fbbf24" stopOpacity="0.9" />
                   <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.8" />
                 </linearGradient>
+                
+                {/* Energy Flow Gradients */}
+                <radialGradient id="energyPulseGradient" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#fbbf24" stopOpacity="1.0" />
+                  <stop offset="50%" stopColor="#f59e0b" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="#d97706" stopOpacity="0.4" />
+                </radialGradient>
+                <radialGradient id="energyPulse2Gradient" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#fef3c7" stopOpacity="0.9" />
+                  <stop offset="50%" stopColor="#fbbf24" stopOpacity="0.6" />
+                  <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.3" />
+                </radialGradient>
               </defs>
             </svg>
 
