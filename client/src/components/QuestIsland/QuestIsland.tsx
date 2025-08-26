@@ -837,7 +837,13 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         <div className="flex items-center space-x-4">
           <div className="text-2xl">🗺️</div>
           <div>
-            <div className="text-sm font-bold text-gray-800 mb-1">Island Progress</div>
+            <div className="flex items-center justify-center mb-1">
+              <img 
+                src="/attached_assets/925fba67-25bb-45e9-8e91-eb6e19d9394c_1756186426342.png" 
+                alt="Island Progress"
+                className="w-8 h-8 object-contain"
+              />
+            </div>
             <div className="flex items-center space-x-3">
               <div className="bg-gray-200 rounded-full h-3 w-40 overflow-hidden">
                 <motion.div
