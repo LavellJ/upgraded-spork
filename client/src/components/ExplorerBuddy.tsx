@@ -303,10 +303,10 @@ export function ExplorerBuddy({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.8 }}
               transition={{ duration: 0.3 }}
-              className="absolute bottom-full right-0 mb-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-3 max-w-xs"
+              className="absolute bottom-full right-0 mb-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-3 max-w-sm w-80"
             >
               <p
-                className="text-sm text-gray-700 leading-relaxed font-medium mb-1"
+                className="text-sm text-gray-700 leading-relaxed font-medium mb-1 break-words hyphens-auto"
                 data-testid={`buddy-message-${currentMessage.type}`}
               >
                 {currentMessage.text}
