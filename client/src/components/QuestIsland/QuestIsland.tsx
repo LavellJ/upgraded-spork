@@ -578,32 +578,34 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             
             
             {/* Adventure Path with Progress */}
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 900">
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 900" style={{ zIndex: 50 }}>
               {/* Base Path */}
               <motion.path
                 d="M 120 650 Q 250 500, 420 315 Q 580 200, 780 135 Q 900 100, 1020 135 Q 1100 160, 1050 250 Q 1000 340, 900 450 Q 800 560, 720 650 Q 640 740, 840 720"
                 stroke="url(#basePathGradient)"
-                strokeWidth="8"
+                strokeWidth="10"
                 fill="none"
                 strokeLinecap="round"
                 initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 0.4 }}
+                animate={{ pathLength: 1, opacity: 0.7 }}
                 transition={{ duration: 4, ease: "easeInOut" }}
+                style={{ filter: "drop-shadow(0 0 6px rgba(255,255,255,0.9))" }}
               />
               
               {/* Completed Progress Path */}
               <motion.path
                 d="M 120 650 Q 250 500, 420 315 Q 580 200, 780 135 Q 900 100, 1020 135 Q 1100 160, 1050 250 Q 1000 340, 900 450 Q 800 560, 720 650 Q 640 740, 840 720"
                 stroke="url(#progressGradient)"
-                strokeWidth="12"
+                strokeWidth="14"
                 fill="none"
                 strokeLinecap="round"
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ 
                   pathLength: (Object.values(lessonProgress).filter(p => p.completed).length / 12) * 1,
-                  opacity: 0.9 
+                  opacity: 1 
                 }}
                 transition={{ duration: 2, ease: "easeInOut" }}
+                style={{ filter: "drop-shadow(0 0 8px rgba(255,215,0,0.8))" }}
               />
               
               {/* Animated Sparkles along completed path */}
@@ -611,15 +613,16 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 <motion.path
                   d="M 120 650 Q 250 500, 420 315 Q 580 200, 780 135 Q 900 100, 1020 135 Q 1100 160, 1050 250 Q 1000 340, 900 450 Q 800 560, 720 650 Q 640 740, 840 720"
                   stroke="url(#sparkleGradient)"
-                  strokeWidth="16"
+                  strokeWidth="18"
                   fill="none"
                   strokeLinecap="round"
                   pathLength={(Object.values(lessonProgress).filter(p => p.completed).length / 12) * 1}
                   animate={{ 
-                    opacity: [0.3, 0.8, 0.3],
-                    strokeWidth: [14, 18, 14]
+                    opacity: [0.4, 0.9, 0.4],
+                    strokeWidth: [16, 22, 16]
                   }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ filter: "drop-shadow(0 0 10px rgba(255,255,255,1))" }}
                 />
               )}
 
@@ -827,7 +830,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 target={scoutTarget}
                 onReachTarget={() => setScoutTarget(null)}
                 ageGroup="pre-primary"
-                currentBiome={scoutTarget}
+                currentBiome={scoutTarget ?? undefined}
               />
             </div>
             
