@@ -370,35 +370,133 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             {/* Island Shape */}
             <div className="absolute inset-0 bg-gradient-to-br from-sand-200 via-sand-100 to-green-200 rounded-full opacity-90 transform rotate-12 scale-110" />
             
-            {/* Glowing Path */}
+            {/* Adventure Path with Progress */}
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 900">
+              {/* Base Path */}
               <motion.path
                 d="M 120 650 Q 250 500, 420 315 Q 580 200, 780 135 Q 900 100, 1020 135 Q 1100 160, 1050 250 Q 1000 340, 900 450 Q 800 560, 720 650 Q 640 740, 840 720"
-                stroke="url(#pathGradient)"
+                stroke="url(#basePathGradient)"
+                strokeWidth="8"
+                fill="none"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 0.4 }}
+                transition={{ duration: 4, ease: "easeInOut" }}
+              />
+              
+              {/* Completed Progress Path */}
+              <motion.path
+                d="M 120 650 Q 250 500, 420 315 Q 580 200, 780 135 Q 900 100, 1020 135 Q 1100 160, 1050 250 Q 1000 340, 900 450 Q 800 560, 720 650 Q 640 740, 840 720"
+                stroke="url(#progressGradient)"
                 strokeWidth="12"
                 fill="none"
                 strokeLinecap="round"
                 initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 0.7 }}
-                transition={{ duration: 4, ease: "easeInOut" }}
+                animate={{ 
+                  pathLength: (Object.values(lessonProgress).filter(p => p.completed).length / 12) * 1,
+                  opacity: 0.9 
+                }}
+                transition={{ duration: 2, ease: "easeInOut" }}
               />
+              
+              {/* Animated Sparkles along completed path */}
+              {Object.values(lessonProgress).filter(p => p.completed).length > 0 && (
+                <motion.path
+                  d="M 120 650 Q 250 500, 420 315 Q 580 200, 780 135 Q 900 100, 1020 135 Q 1100 160, 1050 250 Q 1000 340, 900 450 Q 800 560, 720 650 Q 640 740, 840 720"
+                  stroke="url(#sparkleGradient)"
+                  strokeWidth="16"
+                  fill="none"
+                  strokeLinecap="round"
+                  pathLength={(Object.values(lessonProgress).filter(p => p.completed).length / 12) * 1}
+                  animate={{ 
+                    opacity: [0.3, 0.8, 0.3],
+                    strokeWidth: [14, 18, 14]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                />
+              )}
+              
               <defs>
-                <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.8" />
-                  <stop offset="50%" stopColor="#f59e0b" stopOpacity="0.9" />
-                  <stop offset="100%" stopColor="#d97706" stopOpacity="0.7" />
+                <linearGradient id="basePathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#e5e7eb" stopOpacity="0.6" />
+                  <stop offset="50%" stopColor="#d1d5db" stopOpacity="0.7" />
+                  <stop offset="100%" stopColor="#9ca3af" stopOpacity="0.6" />
+                </linearGradient>
+                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.9" />
+                  <stop offset="50%" stopColor="#f59e0b" stopOpacity="1.0" />
+                  <stop offset="100%" stopColor="#d97706" stopOpacity="0.9" />
+                </linearGradient>
+                <linearGradient id="sparkleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#fef3c7" stopOpacity="0.8" />
+                  <stop offset="50%" stopColor="#fbbf24" stopOpacity="0.9" />
+                  <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.8" />
                 </linearGradient>
               </defs>
             </svg>
 
-            {/* Biomes */}
-            {biomes.map(biome => (
-              <Biome
-                key={biome.id}
-                {...biome}
-                onClick={() => setScoutTarget(biome.id)}
-              />
-            ))}
+            {/* Biomes with Completion Effects */}
+            {biomes.map(biome => {
+              const biomeLessons = lessonNodes.filter(node => node.biome === biome.id);
+              const completedInBiome = biomeLessons.filter(node => node.completed).length;
+              const isUnlocked = biomeLessons.some(node => !node.locked);
+              const isFullyCompleted = biomeLessons.length > 0 && biomeLessons.every(node => node.completed);
+              
+              return (
+                <div key={biome.id} className="relative">
+                  <Biome
+                    {...biome}
+                    onClick={() => setScoutTarget(biome.id)}
+                  />
+                  
+                  {/* Biome completion indicator */}
+                  {isUnlocked && (
+                    <motion.div
+                      className="absolute top-2 right-2 text-xs font-bold px-2 py-1 rounded-full"
+                      style={{
+                        left: `${biome.position.x}%`,
+                        top: `${biome.position.y - 15}%`,
+                      }}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      <div className={`
+                        px-2 py-1 rounded-full text-xs font-bold shadow-lg
+                        ${isFullyCompleted 
+                          ? 'bg-green-500 text-white' 
+                          : 'bg-blue-500 text-white opacity-80'
+                        }
+                      `}>
+                        {isFullyCompleted ? '🏆' : `${completedInBiome}/${biomeLessons.length}`}
+                      </div>
+                    </motion.div>
+                  )}
+                  
+                  {/* Biome completion celebration effect */}
+                  {isFullyCompleted && (
+                    <motion.div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        left: `${biome.position.x}%`,
+                        top: `${biome.position.y}%`,
+                      }}
+                      animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.3, 0.6, 0.3]
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <div className="w-32 h-32 bg-yellow-300 rounded-full opacity-20 blur-xl" />
+                    </motion.div>
+                  )}
+                </div>
+              );
+            })}
 
             {/* Lesson Nodes */}
             {lessonNodes.map(node => (
@@ -554,29 +652,75 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         </div>
       </div>
 
-      {/* Progress Indicator */}
+      {/* Enhanced Progress Indicator */}
       <motion.div
-        className="fixed top-8 left-8 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg px-4 py-3 z-40"
+        className="fixed top-8 left-8 bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl px-6 py-4 z-40 border border-white/50"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1 }}
       >
-        <div className="text-sm font-medium text-gray-700 mb-1">Learning Progress</div>
-        <div className="flex items-center space-x-2">
-          <div className="bg-gray-200 rounded-full h-2 w-32">
-            <motion.div
-              className="bg-gradient-to-r from-green-400 to-emerald-500 h-2 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ 
-                width: `${(Object.values(lessonProgress).filter(p => p.completed).length / 12) * 100}%` 
-              }}
-              transition={{ duration: 0.5 }}
-            />
+        <div className="flex items-center space-x-4">
+          <div className="text-2xl">🗺️</div>
+          <div>
+            <div className="text-sm font-bold text-gray-800 mb-1">Island Progress</div>
+            <div className="flex items-center space-x-3">
+              <div className="bg-gray-200 rounded-full h-3 w-40 overflow-hidden">
+                <motion.div
+                  className="bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 h-3 rounded-full relative"
+                  initial={{ width: 0 }}
+                  animate={{ 
+                    width: `${(Object.values(lessonProgress).filter(p => p.completed).length / 12) * 100}%` 
+                  }}
+                  transition={{ duration: 1, ease: "easeInOut" }}
+                >
+                  {/* Animated progress sparkle */}
+                  <motion.div
+                    className="absolute right-0 top-0 w-3 h-3 bg-yellow-300 rounded-full -translate-y-0.5 opacity-80"
+                    animate={{
+                      scale: [1, 1.3, 1],
+                      opacity: [0.6, 1, 0.6]
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                </motion.div>
+              </div>
+              <div className="flex items-center space-x-1">
+                <span className="text-sm font-bold text-amber-600">
+                  {Object.values(lessonProgress).filter(p => p.completed).length}
+                </span>
+                <span className="text-xs text-gray-500">/</span>
+                <span className="text-xs text-gray-500">12</span>
+                <motion.div
+                  className="ml-1"
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  ⭐
+                </motion.div>
+              </div>
+            </div>
           </div>
-          <span className="text-xs text-gray-600">
-            {Object.values(lessonProgress).filter(p => p.completed).length}/12
-          </span>
         </div>
+        
+        {/* Completion celebration */}
+        {Object.values(lessonProgress).filter(p => p.completed).length === 12 && (
+          <motion.div
+            className="absolute -inset-2 bg-gradient-to-r from-yellow-300 via-amber-300 to-orange-300 rounded-3xl opacity-30"
+            animate={{
+              scale: [1, 1.05, 1],
+              opacity: [0.2, 0.4, 0.2]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        )}
       </motion.div>
 
       {/* Scout's Backpack Button - Just the backpack image */}
