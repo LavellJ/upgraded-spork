@@ -110,62 +110,62 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     }
   }, []);
   
-  // Interactive collectibles state with collection tracking
+  // Interactive collectibles state with collection tracking - Simple Alto's style
   const [collectibles, setCollectibles] = useState<Collectible[]>([
     {
-      id: "seashell",
-      name: "Seashell of Curiosity",
-      description: "Represents curiosity and the start of the learning journey.",
-      image: "/attached_assets/generated_images/Seashell_of_Curiosity_collectible_a28580d3.png",
+      id: "beach-orb",
+      name: "Ocean Orb",
+      description: "A crystal sphere that captures the essence of ocean waves.",
+      image: "", // Using CSS styling instead
       biome: "beach",
       collected: false,
       position: { x: 15, y: 82 },
-      story: "🐚 This magical seashell whispers the sound of ocean waves! Legend says it was left by ancient explorers who discovered the secrets of numbers.",
-      reward: "Counting Power +1"
+      story: "A crystal blue orb that holds the rhythm of ocean waves. When you hold it close, you can hear the gentle counting of each wave as it reaches the shore.",
+      reward: "Math Focus +1"
     },
     {
-      id: "leaf",
-      name: "Leaf of Discovery", 
-      description: "Discovery and growth through learning.",
-      image: "/attached_assets/generated_images/Leaf_of_Discovery_collectible_143c8fae.png",
+      id: "jungle-gem",
+      name: "Forest Gem", 
+      description: "A green gem that pulses with forest life.",
+      image: "", // Using CSS styling instead
       biome: "jungle",
       collected: false,
       position: { x: 38, y: 48 },
-      story: "🍃 A leaf that glows with ancient forest wisdom! It holds the stories of all the animals in Whisper Woods.",
-      reward: "Reading Skill +1"
+      story: "This emerald gem glows softly with the wisdom of ancient trees. It whispers the stories that leaves tell when they dance in the wind.",
+      reward: "Reading Flow +1"
     },
     {
-      id: "ember",
-      name: "Ember of Courage",
-      description: "Represents bravery when tackling harder lessons.",
-      image: "/attached_assets/generated_images/Ember_of_Courage_collectible_e0c2926b.png",
+      id: "volcano-crystal",
+      name: "Fire Crystal",
+      description: "A warm crystal that burns with curiosity.",
+      image: "", // Using CSS styling instead
       biome: "volcano",
       collected: false,
       position: { x: 85, y: 25 },
-      story: "🔥 This fiery ember holds the power of curiosity! It never burns out and helps brave explorers discover how the world works.",
-      reward: "Science Wonder +1"
+      story: "Warm to the touch, this amber crystal burns with endless curiosity. It helps brave explorers ask the right questions about how our world works.",
+      reward: "Wonder Spark +1"
     },
     {
-      id: "blossom",
-      name: "Blossom of Wisdom",
-      description: "Wisdom earned through completing lessons.",
-      image: "/attached_assets/generated_images/Blossom_of_Wisdom_collectible_be1aafdf.png",
+      id: "meadow-stone",
+      name: "Harmony Stone",
+      description: "A gentle stone that radiates peaceful energy.",
+      image: "", // Using CSS styling instead
       biome: "meadow",
       collected: false,
       position: { x: 55, y: 65 },
-      story: "🌸 A beautiful blossom that blooms only for wise explorers! It carries the sweetest fragrance of accomplishment.",
-      reward: "Wisdom +1"
+      story: "Smooth and calming, this lavender stone brings peace to all who find it. It teaches us that wisdom grows slowly, like flowers in a garden.",
+      reward: "Calm Wisdom +1"
     },
     {
-      id: "moonstone",
-      name: "Moonstone of Mastery",
-      description: "Mastery of a subject or finishing a quest.",
-      image: "/attached_assets/generated_images/Moonstone_of_Mastery_collectible_b09d1d33.png",
+      id: "lagoon-pearl",
+      name: "Friendship Pearl",
+      description: "A pearl that shimmers with connection.",
+      image: "", // Using CSS styling instead
       biome: "lagoon",
       collected: false,
       position: { x: 70, y: 88 },
-      story: "🌙 A pearl of friendship from the Crystal Lagoon! It teaches us that learning together makes everything more magical.",
-      reward: "Social Skills +1"
+      story: "This pearl shimmers with all the colors of friendship. Found in the deepest part of the lagoon, it reminds us that learning together makes everything more beautiful.",
+      reward: "Social Bond +1"
     }
   ]);
   
@@ -266,6 +266,29 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     setTimeout(() => setShowScoutMessage(false), 5000);
   }, [getNextSuggestedLesson]);
   
+  // Helper functions for collectible styling
+  const getCollectibleStyle = (biome: string) => {
+    switch(biome) {
+      case 'beach': return 'bg-gradient-to-br from-blue-300 to-cyan-400';
+      case 'jungle': return 'bg-gradient-to-br from-green-300 to-emerald-400';
+      case 'volcano': return 'bg-gradient-to-br from-red-300 to-orange-400';
+      case 'meadow': return 'bg-gradient-to-br from-pink-300 to-purple-400';
+      case 'lagoon': return 'bg-gradient-to-br from-indigo-300 to-blue-400';
+      default: return 'bg-gradient-to-br from-yellow-300 to-amber-400';
+    }
+  };
+
+  const getCollectibleGlow = (biome: string) => {
+    switch(biome) {
+      case 'beach': return 'bg-cyan-200';
+      case 'jungle': return 'bg-green-200';
+      case 'volcano': return 'bg-orange-200';
+      case 'meadow': return 'bg-purple-200';
+      case 'lagoon': return 'bg-blue-200';
+      default: return 'bg-yellow-200';
+    }
+  };
+
   // Handle collectible discovery
   const handleCollectibleClick = useCallback((collectible: Collectible) => {
     if (collectible.collected) return;
@@ -434,52 +457,46 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               </motion.div>
             )}
 
-            {/* Interactive Collectibles */}
-            {collectibles.map((collectible) => (
+            {/* Interactive Collectibles - Only show uncollected ones */}
+            {collectibles.filter(c => !c.collected).map((collectible) => (
               <motion.div
                 key={collectible.id}
-                className={`absolute w-8 h-8 cursor-pointer transform transition-all duration-300 ${
-                  collectible.collected ? 'opacity-30 scale-75' : 'hover:scale-110'
-                }`}
+                className="absolute w-6 h-6 cursor-pointer transform transition-all duration-300 hover:scale-110"
                 style={{
                   left: `${collectible.position.x}%`,
                   top: `${collectible.position.y}%`,
                 }}
                 onClick={() => handleCollectibleClick(collectible)}
                 data-testid={`collectible-${collectible.id}`}
-                whileHover={{ scale: collectible.collected ? 0.75 : 1.2 }}
+                whileHover={{ scale: 1.3 }}
                 whileTap={{ scale: 0.9 }}
-                animate={collectible.collected ? {} : {
-                  y: [0, -8, 0],
-                  rotate: [0, 5, -5, 0],
-                  scale: [1, 1.1, 1]
+                animate={{
+                  y: [0, -6, 0],
+                  scale: [1, 1.05, 1]
                 }}
-                transition={collectible.collected ? {} : {
-                  duration: 3,
+                transition={{
+                  duration: 2.5,
                   repeat: Infinity,
                   ease: "easeInOut",
                   delay: Math.random() * 2
                 }}
               >
-                <img
-                  src={collectible.image}
-                  alt={collectible.name}
-                  className="w-full h-full object-contain drop-shadow-lg"
+                {/* Simple geometric collectibles matching Alto's style */}
+                <div className={`w-full h-full rounded-full ${getCollectibleStyle(collectible.biome)} border-2 border-white/50 shadow-lg`} />
+                
+                {/* Subtle glow effect */}
+                <motion.div
+                  className={`absolute inset-0 rounded-full ${getCollectibleGlow(collectible.biome)} opacity-60`}
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.4, 0.8, 0.4]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
                 />
-                {!collectible.collected && (
-                  <motion.div
-                    className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full"
-                    animate={{
-                      scale: [1, 1.3, 1],
-                      opacity: [0.7, 1, 0.7]
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
-                )}
               </motion.div>
             ))}
 
@@ -562,16 +579,20 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         </div>
       </motion.div>
 
-      {/* Journey Journal Button */}
+      {/* Scout's Backpack Button */}
       <motion.button
-        className="fixed bottom-8 right-8 bg-gradient-to-br from-purple-400 to-indigo-500 text-white px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+        className="fixed bottom-8 right-8 bg-gradient-to-br from-amber-400 to-orange-500 text-white px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center"
         onClick={() => setShowJournal(true)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        data-testid="button-journey-journal"
+        data-testid="button-scout-backpack"
       >
-        <i className="fas fa-book-open mr-2"></i>
-        Journey Journal
+        <img 
+          src="/attached_assets/fd4dc3d1-ed79-4c91-a0b1-e71382387485_1756182003955.png"
+          alt="Scout's Backpack"
+          className="w-6 h-6 mr-2 object-contain"
+        />
+        Scout's Backpack
       </motion.button>
 
       {/* Journey Journal Modal */}
@@ -602,7 +623,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               transition={{ type: "spring", damping: 20 }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header with collectible image */}
+              {/* Header with collectible orb */}
               <div className="bg-gradient-to-br from-yellow-200 via-amber-100 to-orange-200 p-6 text-center">
                 <motion.div
                   className="w-20 h-20 mx-auto mb-4"
@@ -610,11 +631,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ delay: 0.2, type: "spring", damping: 15 }}
                 >
-                  <img
-                    src={currentCollectible.image}
-                    alt={currentCollectible.name}
-                    className="w-full h-full object-contain drop-shadow-lg"
-                  />
+                  <div className={`w-full h-full rounded-full ${getCollectibleStyle(currentCollectible.biome)} border-4 border-white shadow-2xl`} />
                 </motion.div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2">
                   {currentCollectible.name}
