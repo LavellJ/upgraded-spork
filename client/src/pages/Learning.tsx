@@ -120,7 +120,7 @@ export default function Learning() {
               No topic selected
             </h2>
             <p className="text-white/80 mb-8">Please select a topic from the dashboard to start learning.</p>
-            <a href="/dashboard" className="bg-gradient-to-r from-sunset-orange to-warm-orange text-white px-8 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300">
+            <a href="/dashboard" className="bg-gradient-to-r from-sunset-orange to-warm-orange text-white px-8 py-3 rounded-xl font-semibold hover:bg-gradient-to-r hover:from-sunset-orange/80 hover:to-warm-orange/80 transition-all duration-500">
               Go to Dashboard
             </a>
           </div>
@@ -150,7 +150,7 @@ export default function Learning() {
                   {topic?.name}
                 </h1>
                 <p className="text-white/80 text-lg mb-2">
-                  🎓 Teaching Cycle: Learn → Practice → Reflect → Create
+                  Teaching Cycle: Learn → Practice → Reflect → Create
                 </p>
                 <div className="flex items-center justify-center space-x-6 text-white/60">
                   <span>Age Group: {selectedAgeGroup || "Primary"}</span>
@@ -191,7 +191,6 @@ export default function Learning() {
                 <div className="floating-ui rounded-3xl p-8 text-center" data-testid="completion-section">
                   <div className="mb-8">
                     <div className="w-16 h-16 bg-gradient-to-r from-warm-orange to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <span className="text-2xl">🎓</span>
                     </div>
                     <h2 className="font-display text-3xl font-bold text-white mb-4">
                       Learning Cycle Complete!
@@ -202,7 +201,7 @@ export default function Learning() {
                     <p className="text-white/70">
                       Created {sessionArtifacts.length} learning artifacts
                       <span className="text-warm-orange font-semibold ml-2">
-                        🌟 Well done!
+                        Well done!
                       </span>
                     </p>
                   </div>
@@ -210,26 +209,23 @@ export default function Learning() {
                   <div className="flex flex-wrap justify-center gap-4">
                     <button 
                       onClick={() => setShowRecommendations(true)}
-                      className="bg-gradient-to-r from-accent-teal to-sky-blue text-white px-8 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300"
+                      className="bg-gradient-to-r from-accent-teal to-sky-blue text-white px-8 py-3 rounded-xl font-semibold hover:bg-gradient-to-r hover:from-accent-teal/80 hover:to-sky-blue/80 transition-all duration-500"
                       data-testid="button-show-recommendations"
                     >
-                      <span className="mr-2">🗺️</span>
                       What's Next?
                     </button>
                     <button 
                       onClick={handleStartNewSession}
-                      className="bg-gradient-to-r from-sunset-orange to-warm-orange text-white px-8 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300"
+                      className="bg-gradient-to-r from-sunset-orange to-warm-orange text-white px-8 py-3 rounded-xl font-semibold hover:bg-gradient-to-r hover:from-sunset-orange/80 hover:to-warm-orange/80 transition-all duration-500"
                       data-testid="button-new-session"
                     >
-                      <span className="mr-2">🔄</span>
                       Start New Session
                     </button>
                     <a 
                       href="/dashboard"
-                      className="bg-white/20 text-white px-8 py-3 rounded-xl font-semibold hover:bg-white/30 transition-colors duration-300"
+                      className="bg-white/20 text-white px-8 py-3 rounded-xl font-semibold hover:bg-white/25 transition-colors duration-500"
                       data-testid="button-back-dashboard"
                     >
-                      <span className="mr-2">🏠</span>
                       Back to Dashboard
                     </a>
                   </div>
@@ -249,14 +245,12 @@ export default function Learning() {
       </div>
 
       {/* Badge Notifications */}
-      {newBadges.map((badge) => (
+      {newBadges.length > 0 && (
         <BadgeNotification
-          key={badge.badgeId}
-          badgeId={badge.badgeId}
-          metadata={badge.metadata}
-          onDismiss={handleBadgeDismissed}
+          badges={newBadges}
+          onClose={handleBadgeDismissed}
         />
-      ))}
+      )}
 
       {/* Achievement Celebration */}
       {currentAchievement && (
@@ -267,13 +261,11 @@ export default function Learning() {
       )}
 
       {/* Learning Path Recommendations */}
-      {showRecommendations && (
-        <LearningPathRecommendations 
-          currentTopicId={topicId}
-          onClose={() => setShowRecommendations(false)}
-          ageGroup={selectedAgeGroup as AgeGroup}
-        />
-      )}
+      <LearningPathRecommendations 
+        show={showRecommendations}
+        onClose={() => setShowRecommendations(false)}
+        ageGroup={selectedAgeGroup as AgeGroup}
+      />
     </>
   );
 }
