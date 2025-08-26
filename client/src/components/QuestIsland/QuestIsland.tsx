@@ -16,6 +16,9 @@ export interface Collectible {
   image: string;
   biome: string;
   collected: boolean;
+  position: { x: number; y: number };
+  story: string;
+  reward: string;
 }
 
 export interface LessonNodeData {
@@ -107,14 +110,18 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     }
   }, []);
   
-  const collectibles: Collectible[] = [
+  // Interactive collectibles state with collection tracking
+  const [collectibles, setCollectibles] = useState<Collectible[]>([
     {
       id: "seashell",
       name: "Seashell of Curiosity",
       description: "Represents curiosity and the start of the learning journey.",
       image: "/attached_assets/generated_images/Seashell_of_Curiosity_collectible_a28580d3.png",
       biome: "beach",
-      collected: false
+      collected: false,
+      position: { x: 15, y: 82 },
+      story: "🐚 This magical seashell whispers the sound of ocean waves! Legend says it was left by ancient explorers who discovered the secrets of numbers.",
+      reward: "Counting Power +1"
     },
     {
       id: "leaf",
@@ -122,7 +129,10 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       description: "Discovery and growth through learning.",
       image: "/attached_assets/generated_images/Leaf_of_Discovery_collectible_143c8fae.png",
       biome: "jungle",
-      collected: false
+      collected: false,
+      position: { x: 38, y: 48 },
+      story: "🍃 A leaf that glows with ancient forest wisdom! It holds the stories of all the animals in Whisper Woods.",
+      reward: "Reading Skill +1"
     },
     {
       id: "ember",
@@ -130,7 +140,10 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       description: "Represents bravery when tackling harder lessons.",
       image: "/attached_assets/generated_images/Ember_of_Courage_collectible_e0c2926b.png",
       biome: "volcano",
-      collected: false
+      collected: false,
+      position: { x: 85, y: 25 },
+      story: "🔥 This fiery ember holds the power of curiosity! It never burns out and helps brave explorers discover how the world works.",
+      reward: "Science Wonder +1"
     },
     {
       id: "blossom",
@@ -138,7 +151,10 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       description: "Wisdom earned through completing lessons.",
       image: "/attached_assets/generated_images/Blossom_of_Wisdom_collectible_be1aafdf.png",
       biome: "meadow",
-      collected: false
+      collected: false,
+      position: { x: 55, y: 65 },
+      story: "🌸 A beautiful blossom that blooms only for wise explorers! It carries the sweetest fragrance of accomplishment.",
+      reward: "Wisdom +1"
     },
     {
       id: "moonstone",
@@ -146,9 +162,15 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       description: "Mastery of a subject or finishing a quest.",
       image: "/attached_assets/generated_images/Moonstone_of_Mastery_collectible_b09d1d33.png",
       biome: "lagoon",
-      collected: false
+      collected: false,
+      position: { x: 70, y: 88 },
+      story: "🌙 A pearl of friendship from the Crystal Lagoon! It teaches us that learning together makes everything more magical.",
+      reward: "Social Skills +1"
     }
-  ];
+  ]);
+  
+  const [showCollectibleStory, setShowCollectibleStory] = useState(false);
+  const [currentCollectible, setCurrentCollectible] = useState<Collectible | null>(null);
 
   // Generate lesson nodes with current progress
   const lessonNodes: LessonNodeData[] = [
@@ -243,6 +265,28 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     setShowScoutMessage(true);
     setTimeout(() => setShowScoutMessage(false), 5000);
   }, [getNextSuggestedLesson]);
+  
+  // Handle collectible discovery
+  const handleCollectibleClick = useCallback((collectible: Collectible) => {
+    if (collectible.collected) return;
+    
+    setCollectibles(prev => 
+      prev.map(c => 
+        c.id === collectible.id 
+          ? { ...c, collected: true }
+          : c
+      )
+    );
+    
+    // Show the collectible story
+    setCurrentCollectible(collectible);
+    setShowCollectibleStory(true);
+    
+    // Scout celebrates the discovery
+    setScoutMessage(`Amazing discovery! You found the ${collectible.name}! 🎉`);
+    setShowScoutMessage(true);
+    setTimeout(() => setShowScoutMessage(false), 3000);
+  }, []);
 
   const biomes = [
     {
@@ -390,6 +434,55 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               </motion.div>
             )}
 
+            {/* Interactive Collectibles */}
+            {collectibles.map((collectible) => (
+              <motion.div
+                key={collectible.id}
+                className={`absolute w-8 h-8 cursor-pointer transform transition-all duration-300 ${
+                  collectible.collected ? 'opacity-30 scale-75' : 'hover:scale-110'
+                }`}
+                style={{
+                  left: `${collectible.position.x}%`,
+                  top: `${collectible.position.y}%`,
+                }}
+                onClick={() => handleCollectibleClick(collectible)}
+                data-testid={`collectible-${collectible.id}`}
+                whileHover={{ scale: collectible.collected ? 0.75 : 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                animate={collectible.collected ? {} : {
+                  y: [0, -8, 0],
+                  rotate: [0, 5, -5, 0],
+                  scale: [1, 1.1, 1]
+                }}
+                transition={collectible.collected ? {} : {
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: Math.random() * 2
+                }}
+              >
+                <img
+                  src={collectible.image}
+                  alt={collectible.name}
+                  className="w-full h-full object-contain drop-shadow-lg"
+                />
+                {!collectible.collected && (
+                  <motion.div
+                    className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full"
+                    animate={{
+                      scale: [1, 1.3, 1],
+                      opacity: [0.7, 1, 0.7]
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                )}
+              </motion.div>
+            ))}
+
             {/* Ambient Elements - Spread across the epic journey */}
             <motion.div
               className="absolute top-48 left-96 w-3 h-3 bg-yellow-300 rounded-full opacity-70"
@@ -488,6 +581,67 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             collectibles={collectibles}
             onClose={() => setShowJournal(false)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Collectible Story Modal */}
+      <AnimatePresence>
+        {showCollectibleStory && currentCollectible && (
+          <motion.div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowCollectibleStory(false)}
+          >
+            <motion.div
+              className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl max-w-md mx-4 overflow-hidden"
+              initial={{ scale: 0.8, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 50 }}
+              transition={{ type: "spring", damping: 20 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header with collectible image */}
+              <div className="bg-gradient-to-br from-yellow-200 via-amber-100 to-orange-200 p-6 text-center">
+                <motion.div
+                  className="w-20 h-20 mx-auto mb-4"
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.2, type: "spring", damping: 15 }}
+                >
+                  <img
+                    src={currentCollectible.image}
+                    alt={currentCollectible.name}
+                    className="w-full h-full object-contain drop-shadow-lg"
+                  />
+                </motion.div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                  {currentCollectible.name}
+                </h3>
+                <div className="inline-block bg-green-500 text-white px-4 py-1 rounded-full text-sm font-medium">
+                  ✨ {currentCollectible.reward}
+                </div>
+              </div>
+
+              {/* Story content */}
+              <div className="p-6">
+                <p className="text-gray-700 leading-relaxed text-lg mb-6">
+                  {currentCollectible.story}
+                </p>
+                
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => setShowCollectibleStory(false)}
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-2xl font-medium hover:shadow-lg transition-all duration-300"
+                    data-testid="button-close-story"
+                  >
+                    Continue Exploring! 🗺️
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
