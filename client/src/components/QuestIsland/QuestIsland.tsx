@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Scout } from "./Scout";
 import { Biome } from "./Biome";
 import { JourneyJournal } from "./JourneyJournal";
@@ -47,6 +48,40 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   const [scoutMessage, setScoutMessage] = useState<string>("");
   const [showScoutMessage, setShowScoutMessage] = useState(false);
   
+  // Fetch completed lessons from backend to sync progress
+  const { data: completedLessons = [] } = useQuery<any[]>({
+    queryKey: [`/api/lesson-completions/demo-student`],
+    enabled: true,
+  });
+
+  // Sync Quest Island progress with backend completion data
+  useEffect(() => {
+    if (completedLessons.length > 0) {
+      setLessonProgress(prev => {
+        const newProgress = { ...prev };
+        const lessonOrder = ["beach-1", "beach-2", "beach-3", "jungle-1", "jungle-2", "jungle-3", "volcano-1", "volcano-2", "volcano-3", "lagoon-1", "lagoon-2", "lagoon-3"];
+        
+        // Mark completed lessons and unlock next ones based on backend data
+        completedLessons.forEach(completion => {
+          if (completion.lessonId && newProgress[completion.lessonId]) {
+            newProgress[completion.lessonId] = { completed: true, locked: false };
+            
+            // Unlock next lesson in sequence
+            const currentIndex = lessonOrder.indexOf(completion.lessonId);
+            if (currentIndex !== -1 && currentIndex < lessonOrder.length - 1) {
+              const nextLessonId = lessonOrder[currentIndex + 1];
+              if (newProgress[nextLessonId]) {
+                newProgress[nextLessonId] = { completed: false, locked: false };
+              }
+            }
+          }
+        });
+        
+        return newProgress;
+      });
+    }
+  }, [completedLessons]);
+
   // Show initial guidance when Quest Island loads
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -56,6 +91,20 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     }, 2000);
     
     return () => clearTimeout(timer);
+  }, []);
+  
+  // Celebrate when kids return from completing a lesson
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnedFromLesson = urlParams.get('completed');
+    if (returnedFromLesson) {
+      setScoutMessage(`Amazing work on ${returnedFromLesson}! You're becoming a true explorer! 🎉`);
+      setShowScoutMessage(true);
+      setTimeout(() => setShowScoutMessage(false), 5000);
+      
+      // Clear the URL parameter
+      window.history.replaceState({}, '', '/quest-island');
+    }
   }, []);
   
   const collectibles: Collectible[] = [
