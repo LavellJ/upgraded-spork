@@ -42,7 +42,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   const [collectedItems, setCollectedItems] = useState<Set<string>>(new Set());
   const [recentCollection, setRecentCollection] = useState<string | null>(null);
   
-  // Collectibles positioned within their biomes but clear of lesson nodes
+  // Collectibles positioned to avoid lesson overlaps
   const baseCollectibles: Collectible[] = [
     {
       id: "seashell",
@@ -51,7 +51,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       image: "/attached_assets/generated_images/Seashell_of_Curiosity_collectible_a28580d3.png",
       biome: "beach",
       collected: false,
-      position: { x: 12, y: 65 } // Beach area, away from lessons
+      position: { x: 15, y: 68 } // Moved away from beach lessons
     },
     {
       id: "leaf",
@@ -60,7 +60,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       image: "/attached_assets/generated_images/Leaf_of_Discovery_collectible_143c8fae.png",
       biome: "jungle",
       collected: false,
-      position: { x: 50, y: 55 } // Jungle area, clear space
+      position: { x: 40, y: 52 } // Positioned between jungle lessons safely
     },
     {
       id: "ember",
@@ -69,7 +69,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       image: "/attached_assets/generated_images/Ember_of_Courage_collectible_e0c2926b.png",
       biome: "volcano",
       collected: false,
-      position: { x: 72, y: 30 } // Volcano area, separate from lessons
+      position: { x: 78, y: 30 } // Moved away from volcano lesson cluster
     },
     {
       id: "blossom",
@@ -78,7 +78,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       image: "/attached_assets/generated_images/Blossom_of_Wisdom_collectible_be1aafdf.png",
       biome: "meadow", 
       collected: false,
-      position: { x: 55, y: 38 } // Central meadow area
+      position: { x: 58, y: 32 } // Safe central position
     },
     {
       id: "moonstone",
@@ -87,7 +87,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       image: "/attached_assets/generated_images/Moonstone_of_Mastery_collectible_b09d1d33.png",
       biome: "lagoon",
       collected: false,
-      position: { x: 60, y: 70 } // Lagoon area, away from lessons
+      position: { x: 62, y: 75 } // Positioned away from lagoon lessons
     }
   ];
 
@@ -116,27 +116,27 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     }
   };
 
-  // Lessons positioned in their correct biome areas with proper spacing
+  // Enhanced lesson data with proper spacing to prevent overlaps
   const baseLessons: LessonNodeData[] = [
-    // Beach biome (Mathematics) - Southwest area near beach
-    { id: "beach-1", title: "Counting Shells", biome: "beach", position: { x: 15, y: 75 }, completed: false, locked: false, difficulty: 'easy', estimatedMinutes: 3 },
-    { id: "beach-2", title: "Wave Patterns", biome: "beach", position: { x: 25, y: 70 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 5, prerequisite: "Counting Shells" },
-    { id: "beach-3", title: "Treasure Sorting", biome: "beach", position: { x: 20, y: 85 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 7, prerequisite: "Wave Patterns" },
+    // Beach biome (Mathematics) - Far southwest - Starting point, well spaced
+    { id: "beach-1", title: "Counting Shells", biome: "beach", position: { x: 10, y: 78 }, completed: false, locked: false, difficulty: 'easy', estimatedMinutes: 3 },
+    { id: "beach-2", title: "Wave Patterns", biome: "beach", position: { x: 18, y: 74 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 5, prerequisite: "Counting Shells" },
+    { id: "beach-3", title: "Treasure Sorting", biome: "beach", position: { x: 26, y: 82 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 7, prerequisite: "Wave Patterns" },
     
-    // Jungle biome (Literacy) - Central-west jungle area
-    { id: "jungle-1", title: "Animal Sounds", biome: "jungle", position: { x: 35, y: 50 }, completed: false, locked: true, difficulty: 'easy', estimatedMinutes: 4, prerequisite: "Counting Shells" },
-    { id: "jungle-2", title: "Story Vines", biome: "jungle", position: { x: 45, y: 45 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 8, prerequisite: "Animal Sounds" },
-    { id: "jungle-3", title: "Letter Hunt", biome: "jungle", position: { x: 40, y: 60 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 10, prerequisite: "Story Vines" },
+    // Jungle biome (Literacy) - Central west, better spacing to prevent overlaps
+    { id: "jungle-1", title: "Animal Sounds", biome: "jungle", position: { x: 34, y: 46 }, completed: false, locked: true, difficulty: 'easy', estimatedMinutes: 4, prerequisite: "Counting Shells" },
+    { id: "jungle-2", title: "Story Vines", biome: "jungle", position: { x: 43, y: 38 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 8, prerequisite: "Animal Sounds" },
+    { id: "jungle-3", title: "Letter Hunt", biome: "jungle", position: { x: 52, y: 44 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 10, prerequisite: "Story Vines" },
     
-    // Volcano biome (Science) - Northeast volcanic area
-    { id: "volcano-1", title: "Rock Formation", biome: "volcano", position: { x: 75, y: 25 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 6, prerequisite: "Complete 2 lessons" },
-    { id: "volcano-2", title: "Heat & Cold", biome: "volcano", position: { x: 85, y: 20 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 8, prerequisite: "Rock Formation" },
-    { id: "volcano-3", title: "Color Mixing", biome: "volcano", position: { x: 80, y: 35 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 12, prerequisite: "Heat & Cold" },
+    // Volcano biome (Science) - Far northeast, spread out more
+    { id: "volcano-1", title: "Rock Formation", biome: "volcano", position: { x: 80, y: 20 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 6, prerequisite: "Complete 2 lessons" },
+    { id: "volcano-2", title: "Heat & Cold", biome: "volcano", position: { x: 88, y: 14 }, completed: false, locked: true, difficulty: 'medium', estimatedMinutes: 8, prerequisite: "Rock Formation" },
+    { id: "volcano-3", title: "Color Mixing", biome: "volcano", position: { x: 84, y: 26 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 12, prerequisite: "Heat & Cold" },
     
-    // Lagoon biome (Social Studies) - Southeast lagoon area
-    { id: "lagoon-1", title: "Community Pond", biome: "lagoon", position: { x: 65, y: 80 }, completed: false, locked: true, difficulty: 'easy', estimatedMinutes: 5, prerequisite: "Complete 4 lessons" },
-    { id: "lagoon-2", title: "Helping Friends", biome: "lagoon", position: { x: 75, y: 75 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 15, prerequisite: "Community Pond" },
-    { id: "lagoon-3", title: "Island Home", biome: "lagoon", position: { x: 70, y: 85 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 20, prerequisite: "Helping Friends" }
+    // Lagoon biome (Social Studies) - Southeast, better distribution
+    { id: "lagoon-1", title: "Community Pond", biome: "lagoon", position: { x: 66, y: 86 }, completed: false, locked: true, difficulty: 'easy', estimatedMinutes: 5, prerequisite: "Complete 4 lessons" },
+    { id: "lagoon-2", title: "Helping Friends", biome: "lagoon", position: { x: 76, y: 80 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 15, prerequisite: "Community Pond" },
+    { id: "lagoon-3", title: "Island Home", biome: "lagoon", position: { x: 70, y: 90 }, completed: false, locked: true, difficulty: 'hard', estimatedMinutes: 20, prerequisite: "Helping Friends" }
   ];
 
   // Apply progression logic to determine which lessons are unlocked
