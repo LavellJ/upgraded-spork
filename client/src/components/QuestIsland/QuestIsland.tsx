@@ -70,8 +70,8 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
 
   // Sync Quest Island progress with backend completion data + local fallback
   useEffect(() => {
-    console.log('Completed lessons from backend:', completedLessons); // Debug log
-    console.log('Local completions:', localCompletions); // Debug log
+    // Completed lessons from backend: completedLessons
+    // Local completions: localCompletions
     
     const newProgress = { ...lessonProgress };
     const lessonOrder = ["beach-1", "beach-2", "beach-3", "jungle-1", "jungle-2", "jungle-3", "volcano-1", "volcano-2", "volcano-3", "lagoon-1", "lagoon-2", "lagoon-3"];
@@ -84,7 +84,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     // Mark completed lessons from backend data
     if (completedLessons.length > 0) {
       completedLessons.forEach(completion => {
-        console.log('Processing backend completion:', completion); // Debug log
+        // Processing backend completion: completion
         if (completion.lessonId && newProgress[completion.lessonId]) {
           newProgress[completion.lessonId] = { completed: true, locked: false };
           
@@ -103,7 +103,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     // ALSO mark completions from local storage (fallback during database issues)
     localCompletions.forEach(lessonId => {
       if (newProgress[lessonId]) {
-        console.log('Processing local completion:', lessonId); // Debug log
+        // Processing local completion: lessonId
         newProgress[lessonId] = { completed: true, locked: false };
         
         // Unlock next lesson in sequence
@@ -117,7 +117,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       }
     });
     
-    console.log('Final lesson progress:', newProgress); // Debug log
+    // Final lesson progress: newProgress
     setLessonProgress(newProgress);
   }, [completedLessons, localCompletions]);
 
@@ -840,7 +840,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               newCompletions.push('beach-1');
               setLocalCompletions(newCompletions);
               localStorage.setItem('quest-island-completions', JSON.stringify(newCompletions));
-              console.log('Manually marked beach-1 as completed!');
+              // Manually marked beach-1 as completed!
             }
           }}
           className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 text-white rounded-full text-xs hover:bg-green-600 transition-colors z-10"

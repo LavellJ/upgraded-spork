@@ -10,7 +10,7 @@ export default function QuestIslandPage() {
 
   const handleLessonSelect = (lessonId: string) => {
     setSelectedLesson(lessonId);
-    console.log("Selected lesson:", lessonId);
+    // Selected lesson: lessonId
     // Navigate to lesson or show lesson modal
   };
 

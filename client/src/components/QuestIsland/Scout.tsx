@@ -77,8 +77,9 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
   useEffect(() => {
     if (target) {
       setScoutMood('excited');
-      setCurrentMessage(getPersonalityMessage());
-      setShowMessage(true);
+      // Don't show Scout's own speech bubble - use main Quest Island bubble instead
+      // setCurrentMessage(getPersonalityMessage());
+      // setShowMessage(true);
       
       // Scout moves to target and points
       controls.start({
@@ -88,14 +89,9 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
       }).then(() => {
         setScoutMood('neutral');
         onReachTarget?.();
-        
-        // Hide message after reaching target
-        setTimeout(() => {
-          setShowMessage(false);
-        }, 3000);
       });
     }
-  }, [target, position, controls, onReachTarget, getPersonalityMessage]);
+  }, [target, position, controls, onReachTarget]);
 
   // Curious exploration behavior - Scout wanders around when idle
   useEffect(() => {
@@ -141,23 +137,12 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
     }
   }, [target, showMessage, isExploring, basePosition, controls]);
 
-  // Periodic friendly messages
+  // Periodic friendly messages - Disabled to use main Quest Island speech bubble instead
   useEffect(() => {
-    const messageInterval = setInterval(() => {
-      if (!target && !showMessage && !isExploring) {
-        setScoutMood(Math.random() > 0.7 ? 'excited' : 'neutral');
-        setCurrentMessage(getPersonalityMessage());
-        setShowMessage(true);
-        
-        setTimeout(() => {
-          setShowMessage(false);
-          setScoutMood('neutral');
-        }, 4000);
-      }
-    }, 12000); // Show message every 12 seconds
-
-    return () => clearInterval(messageInterval);
-  }, [target, showMessage, isExploring, getPersonalityMessage]);
+    // No longer showing Scout's own speech bubble messages
+    // Messages will be handled by the main Quest Island speech bubble system
+    return () => {}; // Empty cleanup
+  }, []);
   
   // Update base position when target changes
   useEffect(() => {
@@ -221,24 +206,8 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
           </motion.div>
         )}
 
-        {/* Quest Island Speech Bubble */}
-        {showMessage && currentMessage && (
-          <motion.div
-            className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-white/95 text-gray-800 text-xs px-4 py-2 rounded-2xl shadow-lg backdrop-blur-sm border border-white/20 whitespace-nowrap max-w-48"
-            initial={{ opacity: 0, scale: 0.8, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 10 }}
-            transition={{ type: "spring", damping: 15 }}
-          >
-            <p className="font-medium leading-tight">{currentMessage}</p>
-            <div className="text-xs text-gray-500 mt-1">Scout</div>
-            
-            {/* Speech bubble arrow */}
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2">
-              <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white/95"></div>
-            </div>
-          </motion.div>
-        )}
+        {/* Quest Island Speech Bubble - Disabled to use main speech bubble system */}
+        {/* All Scout messages now handled by main Quest Island speech bubble interface */}
 
         {/* Ambient sparkles around Scout - Enhanced for different moods */}
         <motion.div

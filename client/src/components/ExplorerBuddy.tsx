@@ -141,7 +141,7 @@ export function ExplorerBuddy({
         duration
       };
     } catch (error) {
-      console.log('Using fallback buddy message (AI unavailable)');
+      // Using fallback buddy message (AI unavailable)
       
       // Fallback to personality examples (always works)
       const personality = getPersonality();
