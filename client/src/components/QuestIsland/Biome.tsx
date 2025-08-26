@@ -239,15 +239,6 @@ export function Biome({ id, name, subject, position, color, description, onClick
 
       </motion.div>
 
-      {/* Ambient Glow */}
-      <motion.div
-        className={`absolute inset-0 bg-gradient-to-br ${color} rounded-full opacity-20 scale-125 blur-md`}
-        animate={{ 
-          opacity: [0.1, 0.3, 0.1],
-          scale: [1.2, 1.3, 1.2]
-        }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
     </motion.div>
 
     {/* Fixed Position Tooltip */}
