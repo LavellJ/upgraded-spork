@@ -56,7 +56,7 @@ export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
               Scout's Backpack
             </h2>
             <p className="text-amber-700">
-              Collectibles Found: {collectedCount} / {collectibles.length}
+              Adventure Treasures Collected: {collectedCount}
             </p>
           </div>
           <button
@@ -68,24 +68,15 @@ export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
           </button>
         </div>
 
-        {/* Progress Bar */}
+        {/* Decorative Divider */}
         <div className="mb-8">
-          <div className="bg-amber-200 rounded-full h-3 overflow-hidden">
-            <motion.div
-              className="bg-gradient-to-r from-amber-400 to-orange-500 h-full rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${(collectedCount / collectibles.length) * 100}%` }}
-              transition={{ duration: 1, ease: "easeInOut" }}
-            />
-          </div>
+          <div className="bg-gradient-to-r from-transparent via-amber-300 to-transparent h-0.5 rounded-full"></div>
         </div>
 
         {/* Collectibles by Biome Categories */}
         <div className="space-y-8">
           {['beach', 'jungle', 'volcano', 'meadow', 'lagoon'].map((biome, biomeIndex) => {
             const biomeCollectibles = collectibles.filter(c => c.biome === biome);
-            if (biomeCollectibles.length === 0) return null;
-            
             const collectedInBiome = biomeCollectibles.filter(c => c.collected).length;
             
             return (
@@ -104,25 +95,19 @@ export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
                     {biome === 'meadow' && '🌸'} {biome === 'lagoon' && '🏞️'} {biome.charAt(0).toUpperCase() + biome.slice(1)} Collection
                   </h3>
                   <div className="text-sm text-amber-700 font-medium">
-                    {collectedInBiome}/{biomeCollectibles.length} found
+                    {collectedInBiome > 0 ? `${collectedInBiome} discovered` : 'Explore to discover'}
                   </div>
                 </div>
                 
-                {/* Biome Progress Bar */}
+                {/* Decorative Biome Line */}
                 <div className="mb-6">
-                  <div className={`bg-amber-200 rounded-full h-2 overflow-hidden`}>
-                    <motion.div
-                      className={`h-full rounded-full ${getCollectibleStyle(biome)}`}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${(collectedInBiome / biomeCollectibles.length) * 100}%` }}
-                      transition={{ duration: 1.5, ease: "easeInOut", delay: biomeIndex * 0.1 }}
-                    />
-                  </div>
+                  <div className={`bg-gradient-to-r from-transparent via-amber-200 to-transparent h-px rounded-full`}></div>
                 </div>
                 
                 {/* Biome Collectibles Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {biomeCollectibles.map((collectible, index) => (
+                  {biomeCollectibles.length > 0 ? (
+                    biomeCollectibles.map((collectible, index) => (
                     <motion.div
                       key={collectible.id}
                       className={`bg-white/70 rounded-xl p-4 shadow-md border-2 transition-all duration-300 ${
@@ -211,31 +196,96 @@ export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
                         </div>
                       </div>
                     </motion.div>
-                  ))}
+                    ))
+                  ) : (
+                    <div className="col-span-full text-center py-8">
+                      <motion.div
+                        className={`w-20 h-20 mx-auto mb-4 rounded-full ${getCollectibleStyle(biome)} opacity-20 border-2 border-dashed border-amber-300`}
+                        animate={{ 
+                          scale: [1, 1.05, 1],
+                          opacity: [0.15, 0.25, 0.15]
+                        }}
+                        transition={{ 
+                          duration: 3, 
+                          repeat: Infinity, 
+                          ease: "easeInOut" 
+                        }}
+                      />
+                      <p className="text-amber-600 text-sm italic">
+                        Complete lessons to discover treasures in this biome!
+                      </p>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             );
           })}
         </div>
 
-        {/* Scout Message */}
+        {/* Scout in Backpack with Speech Bubble */}
         <motion.div
-          className="mt-8 bg-blue-100 rounded-2xl p-6 border-2 border-blue-200"
+          className="mt-8 relative"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <div className="flex items-center space-x-3 mb-3">
-            <div className="w-8 h-8 bg-gradient-to-b from-blue-400 to-blue-500 rounded-full flex items-center justify-center">
-              <div className="w-6 h-6 bg-gradient-to-b from-amber-100 to-amber-200 rounded-full"></div>
-            </div>
-            <span className="font-semibold text-blue-800">Scout's Message</span>
+          <div className="flex items-end justify-center space-x-4">
+            {/* Scout Character */}
+            <motion.div 
+              className="relative flex items-end"
+              animate={{
+                y: [0, -3, 0],
+              }}
+              transition={{
+                duration: 2.8,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              {/* Speech Bubble */}
+              <motion.div
+                className="absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-white rounded-2xl p-4 shadow-lg border-2 border-blue-200 max-w-xs"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.8, type: "spring", stiffness: 200, damping: 15 }}
+              >
+                <p className="text-blue-800 text-sm leading-relaxed font-medium">
+                  {collectedCount === 0 && "G'day, mate! Ready to start our adventure? Each biome has special treasures waiting for you to discover!"}
+                  {collectedCount > 0 && collectedCount < 10 && "You're doing brilliant, friend! Keep exploring to find more amazing collectibles on our island adventure!"}
+                  {collectedCount >= 10 && "Crikey! You're becoming a real treasure hunter, legend! What an amazing collection!"}
+                </p>
+                {/* Speech bubble arrow */}
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
+                  <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"></div>
+                  <div className="absolute -top-0.5 left-1/2 transform -translate-x-1/2">
+                    <div className="w-0 h-0 border-l-6 border-r-6 border-t-6 border-l-transparent border-r-transparent border-t-blue-200"></div>
+                  </div>
+                </div>
+              </motion.div>
+              
+              {/* Scout Character */}
+              <motion.div 
+                className="w-16 h-16 bg-gradient-to-b from-blue-400 to-blue-500 rounded-full flex items-center justify-center border-3 border-white shadow-lg"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {/* Scout's Face */}
+                <div className="w-12 h-12 bg-gradient-to-b from-amber-100 to-amber-200 rounded-full flex items-center justify-center">
+                  {/* Eyes */}
+                  <div className="flex items-center space-x-1">
+                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
+                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
+                  </div>
+                  {/* Smile */}
+                  <motion.div 
+                    className="absolute bottom-3 w-3 h-1.5 border-b-2 border-blue-600 rounded-b-full"
+                    animate={{ scaleX: [1, 1.1, 1] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                </div>
+              </motion.div>
+            </motion.div>
           </div>
-          <p className="text-blue-700 text-sm leading-relaxed">
-            {collectedCount === 0 && "G'day, mate! Ready to start our adventure? Each biome has special treasures waiting for you to discover!"}
-            {collectedCount > 0 && collectedCount < collectibles.length && "You're doing brilliant, friend! Keep exploring to find more amazing collectibles on our island adventure!"}
-            {collectedCount === collectibles.length && "Crikey! You've found everything, legend! You're a true island explorer now!"}
-          </p>
         </motion.div>
       </motion.div>
     </motion.div>
