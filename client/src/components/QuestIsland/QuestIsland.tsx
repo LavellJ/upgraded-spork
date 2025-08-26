@@ -839,7 +839,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         <div className="relative">
           {/* Map Background with Gentle Shadow */}
           <motion.div
-            className="relative bg-gradient-to-br from-amber-100 to-orange-50 rounded-2xl p-4 shadow-2xl border-4 border-amber-200/60"
+            className="relative bg-gradient-to-br from-amber-100 to-orange-50 rounded-2xl p-4 shadow-2xl"
             style={{
               background: 'linear-gradient(135deg, #fef3c7 0%, #fed7aa 50%, #fdba74 100%)',
               boxShadow: '0 20px 40px rgba(0,0,0,0.1), 0 8px 16px rgba(245,158,11,0.2)'
@@ -909,7 +909,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             
             {/* Progress Counter */}
             <motion.div 
-              className="absolute -bottom-2 -right-2 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg border border-amber-200/60"
+              className="absolute -bottom-2 -right-2 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 1.5, duration: 0.5, ease: "backOut" }}
