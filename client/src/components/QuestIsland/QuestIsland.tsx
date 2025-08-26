@@ -734,14 +734,14 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                     <motion.path
                       key={`branch-${lesson.id}`}
                       d={branchPath}
-                      stroke={isCompleted ? "url(#progressGradient)" : isUnlocked ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.08)"}
-                      strokeWidth={isCompleted ? "4" : isUnlocked ? "3" : "2"}
+                      stroke={isCompleted ? "url(#progressGradient)" : isUnlocked ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.5)"}
+                      strokeWidth={isCompleted ? "6" : isUnlocked ? "5" : "4"}
                       fill="none"
                       strokeLinecap="round"
                       initial={{ pathLength: 0, opacity: 0 }}
                       animate={{ 
-                        pathLength: 1, // Always show branches for all lessons like tree structure
-                        opacity: isCompleted ? 0.9 : isUnlocked ? 0.4 : 0.2
+                        pathLength: 1, // Tree branches - ALL lessons get branches (locked, unlocked, completed)
+                        opacity: isCompleted ? 1.0 : isUnlocked ? 0.9 : 0.7
                       }}
                       transition={{ 
                         duration: 2,
