@@ -3,7 +3,6 @@ import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { QuestIsland as QuestIslandMap } from "@/components/QuestIsland/QuestIsland";
 import { FloatingNavigation } from "@/components/FloatingNavigation";
-import { CompactProgressBar } from "@/components/CompactProgressBar";
 
 export default function QuestIslandPage() {
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
@@ -17,7 +16,6 @@ export default function QuestIslandPage() {
   return (
     <div className="relative min-h-screen">
       <FloatingNavigation />
-      <CompactProgressBar studentId="demo-student" />
 
       {/* Quest Island Map */}
       <QuestIslandMap onLessonSelect={handleLessonSelect} />
