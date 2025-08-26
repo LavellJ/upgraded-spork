@@ -4,9 +4,9 @@ import { useState } from "react";
 // Import biome illustrations
 import jungleBiome from '@assets/generated_images/Magical_jungle_biome_illustration_16fb319a.png';
 import lagoonBiome from '@assets/generated_images/Serene_lagoon_biome_illustration_312df41f.png';
-import volcanoBiome from '@assets/generated_images/Filled_volcano_biome_illustration_f5b2ae77.png';
-import beachBiome from '@assets/generated_images/Filled_beach_biome_illustration_1bd89ad0.png';
-import meadowBiome from '@assets/generated_images/Filled_meadow_biome_illustration_a58c4f2f.png';
+import volcanoBiome from '@assets/generated_images/Clean_edge_volcano_biome_a4284834.png';
+import beachBiome from '@assets/generated_images/Clean_edge_beach_biome_63336687.png';
+import meadowBiome from '@assets/generated_images/Clean_edge_meadow_biome_7b25575e.png';
 
 interface BiomeProps {
   id: string;
