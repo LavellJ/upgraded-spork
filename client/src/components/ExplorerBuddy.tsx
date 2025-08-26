@@ -1,11 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { AgeGroup } from "./AgeSelector";
+// Import Scout character images - Only 2 versions used throughout entire app
 import explorerDefault from '@assets/image_1756014874313.png';
-import explorerHappy from '@assets/generated_images/Happy_excited_explorer_buddy_f9c13ae1.png';
-import explorerThinking from '@assets/generated_images/Thinking_explorer_buddy_31d38867.png';
-import explorerSurprised from '@assets/generated_images/Surprised_explorer_buddy_3aeaa8d8.png';
-import explorerCelebrating from '@assets/generated_images/Celebrating_explorer_buddy_b6cc403f.png';
+import explorerExcited from '@assets/scout-excited.png';
 
 interface ExplorerBuddyProps {
   ageGroup: AgeGroup;
@@ -36,7 +34,7 @@ export function ExplorerBuddy({
 }: ExplorerBuddyProps) {
   const [currentMessage, setCurrentMessage] = useState<BuddyMessage | null>(null);
   const [lastInteraction, setLastInteraction] = useState<number>(Date.now());
-  const [buddyMood, setBuddyMood] = useState<'neutral' | 'excited' | 'thoughtful' | 'celebrating' | 'thinking' | 'surprised' | 'happy'>('neutral');
+  const [buddyMood, setBuddyMood] = useState<'neutral' | 'excited'>('neutral');
 
   // Get personality traits based on age group
   const getPersonality = useCallback(() => {
@@ -163,13 +161,12 @@ export function ExplorerBuddy({
         setCurrentMessage(message);
         setLastInteraction(Date.now());
         
-        // Set mood based on message type and context
+        // Set mood based on message type and context - Only 2 versions used
         setBuddyMood(
-          message.type === 'celebration' ? 'celebrating' :
-          message.type === 'curiosity' ? 'surprised' :
-          message.type === 'encouragement' ? 'happy' :
-          message.type === 'break_suggestion' ? 'thinking' :
-          recentProgress?.streakCount && recentProgress.streakCount > 3 ? 'excited' :
+          message.type === 'celebration' ||
+          message.type === 'curiosity' ||
+          message.type === 'encouragement' ||
+          (recentProgress?.streakCount && recentProgress.streakCount > 3) ? 'excited' :
           'neutral'
         );
         
@@ -191,32 +188,28 @@ export function ExplorerBuddy({
     };
   }, [generateMessage]);
 
-  // Always use the default expression for consistent feel
+  // Get Scout image based on mood - Only 2 versions used throughout entire app
   const getExpressionImage = useCallback(() => {
-    return explorerDefault;
-  }, []);
+    return buddyMood === 'excited' ? explorerExcited : explorerDefault;
+  }, [buddyMood]);
 
   // Explorer character visual design (Alto-inspired) with mood animations
   const ExplorerCharacter = () => (
     <motion.div
       className="relative cursor-pointer"
       animate={{ 
-        scale: buddyMood === 'celebrating' ? [1, 1.1, 1] : 
-               buddyMood === 'excited' ? [1, 1.05, 1] : 1,
-        rotate: buddyMood === 'celebrating' ? [-2, 2, -2, 0] : 0
+        scale: buddyMood === 'excited' ? [1, 1.05, 1] : 1,
+        rotate: buddyMood === 'excited' ? [-1, 1, -1, 0] : 0
       }}
       transition={{ 
-        duration: buddyMood === 'celebrating' ? 0.6 : buddyMood === 'excited' ? 1.2 : 2,
+        duration: buddyMood === 'excited' ? 1.2 : 2,
         repeat: buddyMood !== 'neutral' ? Infinity : 0,
         repeatType: "reverse"
       }}
       whileHover={{ scale: 1.05 }}
       onClick={() => {
-        // Cycle through expressions on click for fun interaction
-        const expressions: Array<'excited' | 'happy' | 'surprised' | 'thinking' | 'celebrating'> = 
-          ['excited', 'happy', 'surprised', 'thinking', 'celebrating'];
-        const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
-        setBuddyMood(randomExpression);
+        // Toggle between excited and neutral on click
+        setBuddyMood(buddyMood === 'excited' ? 'neutral' : 'excited');
         setTimeout(() => setBuddyMood('neutral'), 2000);
       }}
     >
@@ -227,12 +220,11 @@ export function ExplorerBuddy({
           backdropFilter: 'none'
         }}
         animate={{ 
-          y: buddyMood === 'excited' ? [-2, 2, -2] : 0,
-          rotate: buddyMood === 'celebrating' ? [-2, 2, -2] : 0,
-          scale: buddyMood === 'excited' ? [1, 1.05, 1] : 1
+          y: buddyMood === 'excited' ? [-2, 2, -2] : [0, -1, 0],
+          scale: buddyMood === 'excited' ? [1, 1.02, 1] : 1
         }}
         transition={{ 
-          duration: buddyMood === 'excited' ? 1.5 : 2, 
+          duration: buddyMood === 'excited' ? 1.5 : 3, 
           repeat: Infinity, 
           ease: "easeInOut" 
         }}
@@ -253,11 +245,11 @@ export function ExplorerBuddy({
         <motion.div
           className="absolute top-2 right-2 w-3 h-3 rounded-full bg-yellow-400"
           animate={{ 
-            opacity: buddyMood === 'celebrating' ? [0.5, 1, 0.5] : [0.3, 0.7, 0.3], 
-            scale: buddyMood === 'celebrating' ? [1, 1.5, 1] : [0.8, 1.2, 0.8] 
+            opacity: buddyMood === 'excited' ? [0.5, 1, 0.5] : [0.3, 0.7, 0.3], 
+            scale: buddyMood === 'excited' ? [1, 1.3, 1] : [0.8, 1.2, 0.8] 
           }}
           transition={{ 
-            duration: buddyMood === 'celebrating' ? 0.8 : 2, 
+            duration: buddyMood === 'excited' ? 1 : 2, 
             repeat: Infinity, 
             delay: 0 
           }}
@@ -274,7 +266,7 @@ export function ExplorerBuddy({
           className="absolute top-20 right-4 w-2.5 h-2.5 rounded-full bg-pink-400"
           animate={{ 
             opacity: [0.2, 0.7, 0.2], 
-            scale: buddyMood === 'thoughtful' ? [0.5, 0.9, 0.5] : [0.7, 1.3, 0.7] 
+            scale: buddyMood === 'excited' ? [0.8, 1.3, 0.8] : [0.7, 1.1, 0.7] 
           }}
           transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
         />
