@@ -1,0 +1,58 @@
+Build me a Quest Island learning map for kids that combines a gentle adventure theme with a calm and aesthetic style inspired by Alto’s Adventure.
+Key Design Goals:
+•	Style: Minimalist, soft gradients, pastel tones (sand, ocean blues, sunset purples, jungle greens). Avoid generic emoji or cartoon clipart.
+•	Animations: Smooth, slow transitions (drifting clouds, flowing waves, glowing path). No bouncy or flashy animations.
+•	Scout (guide): A small character who walks along the path, pauses, and points at landmarks. Think gentle excitement, not over-the-top.
+•	Map layout: An island divided into biomes — beach, jungle, desert cliffs, volcano, lagoon. Each biome represents a subject area. A glowing winding path connects them.
+•	Lesson markers: Glowing waypoints (stones, shells, lanterns). When completed, they softly light up.
+•	Rewards: Collectibles are elegant (gems, feathers, shells) that go into a “Journey Journal.” Avoid childish coins or stars.
+•	Immersion: Add subtle ambient elements (butterflies, drifting lanterns, fireflies, faint volcano smoke). The map should feel alive but peaceful.
+•	Sound cues (optional): Gentle chimes or nature sounds tied to progress.
+•	Responsiveness: Should scale well to tablet and desktop screens.
+Deliverable:
+Generate a clean, modular skeleton in React with TailwindCSS where:
+•	The map is the main component.
+•	Scout is a movable character with idle + pointing animations.
+•	Each biome has placeholder lesson nodes (glowing circles).
+•	Rewards trigger a modal/journal screen with collectibles.
+•	Design is calm, immersive, and aesthetically cohesive.
+Keep everything simple but structured so I can later add lesson content and audio (via ElevenLabs).
+________________________________________
+
+________________________________________
+🏝️ Collectibles for Quest Island
+1. 🌊 Seashell of Curiosity
+•	Design: A smooth spiral seashell with soft pearl shimmer, glowing faintly.
+•	Theme: Represents curiosity and the start of the learning journey.
+•	AI Prompt:
+A minimalist glowing seashell collectible, pastel tones of sand and pearl, soft gradient background, elegant and calm, game reward icon style, inspired by Alto’s Adventure aesthetic.
+________________________________________
+2. 🍃 Leaf of Discovery
+•	Design: A delicate jungle leaf, jade green with golden veins that faintly glow.
+•	Theme: Discovery and growth through learning.
+•	AI Prompt:
+A glowing jungle leaf with golden veins, soft jade green, peaceful and elegant, collectible reward design, minimalist adventure aesthetic.
+________________________________________
+3. 🔥 Ember of Courage
+•	Design: A tiny ember-like crystal with warm glow, floating particles around it.
+•	Theme: Represents bravery when tackling harder lessons.
+•	AI Prompt:
+A glowing ember-like gem, fiery orange-red with soft light particles, calm minimalist design, collectible item, peaceful atmospheric style.
+________________________________________
+4. 🌸 Blossom of Wisdom
+•	Design: A soft pastel flower, petals slightly translucent, glowing softly in purple and blue hues.
+•	Theme: Wisdom earned through completing lessons.
+•	AI Prompt:
+A glowing blossom flower, translucent petals, pastel purples and blues, elegant minimalist game collectible, Alto’s Adventure inspired.
+________________________________________
+5. 🌙 Moonstone of Mastery
+•	Design: A smooth, polished moonstone with faint swirling mist inside.
+•	Theme: Mastery of a subject or finishing a quest.
+•	AI Prompt:
+A glowing moonstone with swirling mist inside, soft blue-white luminescence, minimalist peaceful collectible, elegant adventure game style.
+________________________________________
+🧾 Reward System Idea
+•	Players collect these items as they complete lessons.
+•	Each biome (beach, jungle, cliffs, volcano, lagoon) has its own signature collectible (e.g., seashell for beach, leaf for jungle, ember for volcano).
+•	They’re stored in a Journey Journal where Scout explains their meaning (in his Bluey-style voice).
+•	Completing a full biome = unlocks the Moonstone of Mastery

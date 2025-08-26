@@ -47,6 +47,13 @@ export function FloatingNavigation() {
           >
             Progress
           </Link>
+          <Link 
+            href="/quest-island" 
+            className={`transition-colors duration-300 ${location === "/quest-island" ? "text-white" : "text-white/80 hover:text-white"}`}
+            data-testid="link-quest-island"
+          >
+            Quest Island
+          </Link>
           <button className="text-white/80 hover:text-white transition-colors duration-300" data-testid="button-settings">
             Settings
           </button>
