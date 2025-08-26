@@ -52,37 +52,46 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   const [showScoutMessage, setShowScoutMessage] = useState(false);
   
   // Fetch completed lessons from backend to sync progress
-  const { data: completedLessons = [] } = useQuery<any[]>({
+  const { data: completedLessons = [], refetch: refetchLessons } = useQuery<any[]>({
     queryKey: [`/api/lesson-completions/demo-student`],
     enabled: true,
+    refetchInterval: 2000, // Refresh every 2 seconds to catch new completions
+    refetchOnWindowFocus: true,
   });
 
   // Sync Quest Island progress with backend completion data
   useEffect(() => {
+    console.log('Completed lessons from backend:', completedLessons); // Debug log
+    
+    const newProgress = { ...lessonProgress };
+    const lessonOrder = ["beach-1", "beach-2", "beach-3", "jungle-1", "jungle-2", "jungle-3", "volcano-1", "volcano-2", "volcano-3", "lagoon-1", "lagoon-2", "lagoon-3"];
+    
+    // Reset progress to default state first
+    lessonOrder.forEach((id, index) => {
+      newProgress[id] = { completed: false, locked: index !== 0 };
+    });
+    
+    // Mark completed lessons and unlock next ones based on backend data
     if (completedLessons.length > 0) {
-      setLessonProgress(prev => {
-        const newProgress = { ...prev };
-        const lessonOrder = ["beach-1", "beach-2", "beach-3", "jungle-1", "jungle-2", "jungle-3", "volcano-1", "volcano-2", "volcano-3", "lagoon-1", "lagoon-2", "lagoon-3"];
-        
-        // Mark completed lessons and unlock next ones based on backend data
-        completedLessons.forEach(completion => {
-          if (completion.lessonId && newProgress[completion.lessonId]) {
-            newProgress[completion.lessonId] = { completed: true, locked: false };
-            
-            // Unlock next lesson in sequence
-            const currentIndex = lessonOrder.indexOf(completion.lessonId);
-            if (currentIndex !== -1 && currentIndex < lessonOrder.length - 1) {
-              const nextLessonId = lessonOrder[currentIndex + 1];
-              if (newProgress[nextLessonId]) {
-                newProgress[nextLessonId] = { completed: false, locked: false };
-              }
+      completedLessons.forEach(completion => {
+        console.log('Processing completion:', completion); // Debug log
+        if (completion.lessonId && newProgress[completion.lessonId]) {
+          newProgress[completion.lessonId] = { completed: true, locked: false };
+          
+          // Unlock next lesson in sequence
+          const currentIndex = lessonOrder.indexOf(completion.lessonId);
+          if (currentIndex !== -1 && currentIndex < lessonOrder.length - 1) {
+            const nextLessonId = lessonOrder[currentIndex + 1];
+            if (newProgress[nextLessonId]) {
+              newProgress[nextLessonId] = { completed: false, locked: false };
             }
           }
-        });
-        
-        return newProgress;
+        }
       });
     }
+    
+    console.log('Updated lesson progress:', newProgress); // Debug log
+    setLessonProgress(newProgress);
   }, [completedLessons]);
 
   // Show initial guidance when Quest Island loads
@@ -105,10 +114,13 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       setShowScoutMessage(true);
       setTimeout(() => setShowScoutMessage(false), 5000);
       
+      // Immediately refetch lessons to show progress
+      refetchLessons();
+      
       // Clear the URL parameter
       window.history.replaceState({}, '', '/quest-island');
     }
-  }, []);
+  }, [refetchLessons]);
   
   // Interactive collectibles state with collection tracking - Simple Alto's style
   const [collectibles, setCollectibles] = useState<Collectible[]>([
@@ -659,6 +671,14 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1 }}
       >
+        {/* Refresh Button for Testing */}
+        <button
+          onClick={() => refetchLessons()}
+          className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 text-white rounded-full text-xs hover:bg-blue-600 transition-colors"
+          title="Refresh Progress"
+        >
+          ↻
+        </button>
         <div className="flex items-center space-x-4">
           <div className="text-2xl">🗺️</div>
           <div>
