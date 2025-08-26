@@ -22,6 +22,8 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
   const [scoutMood, setScoutMood] = useState<ScoutMood>('neutral');
   const [currentMessage, setCurrentMessage] = useState<string>("");
   const [showMessage, setShowMessage] = useState(false);
+  const [isExploring, setIsExploring] = useState(false);
+  const [basePosition, setBasePosition] = useState({ x: position.x, y: position.y });
 
   // Get Scout image based on mood - 3 versions used throughout entire app
   const getScoutImage = () => {
@@ -93,10 +95,54 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
     }
   }, [target, position, controls, onReachTarget, getPersonalityMessage]);
 
+  // Curious exploration behavior - Scout wanders around when idle
+  useEffect(() => {
+    if (!target && !showMessage && !isExploring) {
+      const exploreInterval = setInterval(() => {
+        // Scout occasionally explores nearby areas
+        if (Math.random() > 0.6) {
+          setIsExploring(true);
+          setScoutMood('thinking');
+          
+          // Small random movement within a radius
+          const randomX = basePosition.x + (Math.random() - 0.5) * 8;
+          const randomY = basePosition.y + (Math.random() - 0.5) * 6;
+          
+          // Keep Scout within reasonable bounds
+          const boundedX = Math.max(10, Math.min(90, randomX));
+          const boundedY = Math.max(15, Math.min(85, randomY));
+          
+          controls.start({
+            x: boundedX + "%",
+            y: boundedY + "%",
+            transition: { 
+              duration: 3 + Math.random() * 2, // Vary exploration speed
+              ease: "easeInOut"
+            }
+          }).then(() => {
+            // Return to base position
+            setTimeout(() => {
+              controls.start({
+                x: basePosition.x + "%",
+                y: basePosition.y + "%",
+                transition: { duration: 2, ease: "easeInOut" }
+              }).then(() => {
+                setIsExploring(false);
+                setScoutMood('neutral');
+              });
+            }, 1000 + Math.random() * 2000); // Pause at exploration spot
+          });
+        }
+      }, 15000 + Math.random() * 10000); // Explore every 15-25 seconds
+
+      return () => clearInterval(exploreInterval);
+    }
+  }, [target, showMessage, isExploring, basePosition, controls]);
+
   // Periodic friendly messages
   useEffect(() => {
     const messageInterval = setInterval(() => {
-      if (!target && !showMessage) {
+      if (!target && !showMessage && !isExploring) {
         setScoutMood(Math.random() > 0.7 ? 'excited' : 'neutral');
         setCurrentMessage(getPersonalityMessage());
         setShowMessage(true);
@@ -109,7 +155,14 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
     }, 12000); // Show message every 12 seconds
 
     return () => clearInterval(messageInterval);
-  }, [target, showMessage, getPersonalityMessage]);
+  }, [target, showMessage, isExploring, getPersonalityMessage]);
+  
+  // Update base position when target changes
+  useEffect(() => {
+    if (target) {
+      setBasePosition({ x: position.x, y: position.y });
+    }
+  }, [position, target]);
 
   return (
     <motion.div
@@ -125,12 +178,21 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
       {/* Scout Character */}
       <motion.div
         className="relative w-16 h-16"
-        animate={{ 
+        animate={scoutMood === 'excited' ? {
+          y: [0, -6, 0],
+          rotate: [0, 3, -3, 0],
+          scale: [1, 1.05, 1]
+        } : scoutMood === 'thinking' ? {
+          y: [0, -2, 0],
+          rotate: [0, 2, -1, 1, 0],
+          x: [0, 1, -1, 0]
+        } : {
           y: [0, -3, 0],
-          rotate: [0, 1, -1, 0]
+          rotate: [0, 1, -1, 0],
+          scale: [1, 1.02, 1] // Subtle breathing
         }}
         transition={{ 
-          duration: 4, 
+          duration: scoutMood === 'excited' ? 2.5 : scoutMood === 'thinking' ? 3.5 : 4, 
           repeat: Infinity, 
           ease: "easeInOut" 
         }}
@@ -184,17 +246,71 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
           </motion.div>
         )}
 
-        {/* Ambient sparkles around Scout */}
+        {/* Ambient sparkles around Scout - Enhanced for different moods */}
         <motion.div
           className="absolute -inset-2"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          animate={{ 
+            rotate: 360,
+            scale: scoutMood === 'excited' ? [1, 1.2, 1] : [1, 1.05, 1]
+          }}
+          transition={{ 
+            rotate: { duration: scoutMood === 'excited' ? 15 : 20, repeat: Infinity, ease: "linear" },
+            scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+          }}
         >
-          <div className="absolute top-0 left-1/2 w-1 h-1 bg-yellow-300/60 rounded-full"></div>
-          <div className="absolute bottom-0 right-1/4 w-1 h-1 bg-blue-300/60 rounded-full"></div>
-          <div className="absolute left-0 top-1/3 w-0.5 h-0.5 bg-purple-300/60 rounded-full"></div>
-          <div className="absolute right-0 bottom-1/4 w-0.5 h-0.5 bg-green-300/60 rounded-full"></div>
+          <motion.div 
+            className="absolute top-0 left-1/2 w-1 h-1 bg-yellow-300/60 rounded-full"
+            animate={{ opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div 
+            className="absolute bottom-0 right-1/4 w-1 h-1 bg-blue-300/60 rounded-full"
+            animate={{ opacity: [0.4, 0.8, 0.4] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+          />
+          <motion.div 
+            className="absolute left-0 top-1/3 w-0.5 h-0.5 bg-purple-300/60 rounded-full"
+            animate={{ opacity: [0.5, 0.9, 0.5] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          />
+          <motion.div 
+            className="absolute right-0 bottom-1/4 w-0.5 h-0.5 bg-green-300/60 rounded-full"
+            animate={{ opacity: [0.3, 0.7, 0.3] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+          />
+          
+          {/* Extra sparkles when excited */}
+          {scoutMood === 'excited' && (
+            <>
+              <motion.div 
+                className="absolute top-1/4 right-1/2 w-0.5 h-0.5 bg-orange-300/70 rounded-full"
+                animate={{ opacity: [0, 1, 0], scale: [0.5, 1.5, 0.5] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <motion.div 
+                className="absolute bottom-1/3 left-1/4 w-0.5 h-0.5 bg-pink-300/70 rounded-full"
+                animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+              />
+            </>
+          )}
         </motion.div>
+        
+        {/* Curious exploring indicator */}
+        {isExploring && (
+          <motion.div
+            className="absolute -top-3 left-1/2 transform -translate-x-1/2"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ 
+              opacity: [0, 1, 1, 0],
+              scale: [0, 1.2, 1, 0],
+              y: [0, -5, 0]
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <div className="text-xs">🔍</div>
+          </motion.div>
+        )}
       </motion.div>
     </motion.div>
   );
