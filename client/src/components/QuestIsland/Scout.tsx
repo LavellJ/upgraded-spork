@@ -12,22 +12,15 @@ interface ScoutProps {
   onReachTarget?: () => void;
   ageGroup?: AgeGroup;
   currentBiome?: string;
-  onScoutClick?: () => void;
-  lessonCount?: number;
-  collectibleCount?: number;
 }
 
 type ScoutMood = 'neutral' | 'excited';
 
-export function Scout({ 
-  position, target, onReachTarget, ageGroup = "pre-primary", currentBiome,
-  onScoutClick, lessonCount = 0, collectibleCount = 0 
-}: ScoutProps) {
+export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary", currentBiome }: ScoutProps) {
   const controls = useAnimation();
   const [scoutMood, setScoutMood] = useState<ScoutMood>('neutral');
   const [currentMessage, setCurrentMessage] = useState<string>("");
   const [showMessage, setShowMessage] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   // Get Scout image based on mood - Only 2 versions used throughout entire app
   const getScoutImage = () => {
@@ -37,7 +30,7 @@ export function Scout({
     }
   };
 
-  // Enhanced contextual messages based on game state
+  // Get personality-based messages for Quest Island
   const getPersonalityMessage = useCallback(() => {
     const personalities = {
       "pre-primary": {
@@ -47,14 +40,7 @@ export function Scout({
           volcano: ["Wow, it's warm here!", "Pretty orange colors!", "Let's explore safely!"],
           lagoon: ["The water is so blue!", "Look at the fish!", "This is magical!"],
           general: ["G'day, mate! Ready to explore?", "This is so exciting!", "We're going on an adventure!"]
-        },
-        progressMessages: [
-          `You've completed ${lessonCount} lessons! Amazing!`,
-          `Found ${collectibleCount} treasures! Keep exploring!`,
-          "Click on me for tips and encouragement!",
-          "I love exploring with you!",
-          lessonCount === 0 ? "Try clicking the glowing lesson to start!" : "You're doing great, explorer!"
-        ]
+        }
       },
       "primary": {
         biomeMessages: {
@@ -63,14 +49,7 @@ export function Scout({
           volcano: ["The rocks tell a story!", "I can feel the warmth!", "Science happens here!"],
           lagoon: ["This ecosystem is amazing!", "The water connects everything!", "Perfect for reflection!"],
           general: ["Ready for our next discovery?", "We make a great exploring team!", "What should we learn today?"]
-        },
-        progressMessages: [
-          `Great progress! ${lessonCount} lessons completed!`,
-          `Collected ${collectibleCount} items - well done!`,
-          "Click me for helpful learning tips!",
-          "Our adventure is just beginning!",
-          lessonCount === 0 ? "Start with the bright lesson node!" : "You're becoming a skilled learner!"
-        ]
+        }
       },
       "upper-primary": {
         biomeMessages: {
@@ -79,51 +58,14 @@ export function Scout({
           volcano: ["Geological processes shape our world", "Heat creates transformation", "Science in action!"],
           lagoon: ["Interconnected waterways support life", "Clear thinking comes from still waters", "Perfect for deep learning"],
           general: ["Our learning journey continues", "Each challenge builds our skills", "Ready to explore systematically?"]
-        },
-        progressMessages: [
-          `Excellent work! ${lessonCount} concepts mastered!`,
-          `${collectibleCount} discoveries made through exploration!`,
-          "Click for strategic learning guidance!",
-          "Each step builds upon the last!",
-          lessonCount === 0 ? "Begin your learning journey with the first lesson!" : "Your knowledge grows with each challenge!"
-        ]
+        }
       }
     };
     
     const personality = personalities[ageGroup];
-    
-    // Contextual messages based on progress or click
-    if (isHovered || onScoutClick) {
-      const progressMsgs = personality.progressMessages;
-      return progressMsgs[Math.floor(Math.random() * progressMsgs.length)];
-    }
-    
     const messages = currentBiome ? personality.biomeMessages[currentBiome as keyof typeof personality.biomeMessages] : personality.biomeMessages.general;
     return messages[Math.floor(Math.random() * messages.length)];
-  }, [ageGroup, currentBiome, isHovered, onScoutClick, lessonCount, collectibleCount]);
-
-  // Handle Scout click interaction
-  const handleScoutClick = () => {
-    setScoutMood('excited');
-    setCurrentMessage(getPersonalityMessage());
-    setShowMessage(true);
-    
-    // Scout bounce animation
-    controls.start({
-      scale: [1, 1.1, 1],
-      y: [0, -10, 0],
-      transition: { duration: 0.6, ease: "easeOut" }
-    });
-    
-    // Call optional callback
-    onScoutClick?.();
-    
-    // Hide message after a moment
-    setTimeout(() => {
-      setShowMessage(false);
-      setScoutMood('neutral');
-    }, 5000);
-  };
+  }, [ageGroup, currentBiome]);
 
   // Handle movement to target
   useEffect(() => {
@@ -169,18 +111,13 @@ export function Scout({
 
   return (
     <motion.div
-      className="absolute z-20 cursor-pointer group"
+      className="absolute z-20"
       style={{ 
         left: position.x + "%", 
         top: position.y + "%",
         transform: "translate(-50%, -50%)"
       }}
       animate={controls}
-      onClick={handleScoutClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
       data-testid="scout-character"
     >
       {/* Scout Character */}
@@ -188,8 +125,7 @@ export function Scout({
         className="relative w-16 h-16"
         animate={{ 
           y: [0, -3, 0],
-          rotate: [0, 1, -1, 0],
-          scale: isHovered ? 1.1 : 1
+          rotate: [0, 1, -1, 0]
         }}
         transition={{ 
           duration: 4, 
@@ -205,27 +141,8 @@ export function Scout({
             className="w-full h-full object-contain drop-shadow-lg"
           />
           
-          {/* Enhanced glow effect - stronger when hovered */}
-          <motion.div 
-            className="absolute inset-0 bg-gradient-radial from-blue-200/10 via-transparent to-transparent pointer-events-none"
-            animate={{
-              opacity: isHovered ? 0.8 : 0.3,
-              scale: isHovered ? 1.2 : 1
-            }}
-            transition={{ duration: 0.3 }}
-          />
-
-          {/* Click indicator when hovered */}
-          {isHovered && (
-            <motion.div
-              className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-white/90 text-gray-700 text-xs px-2 py-1 rounded-lg shadow-md whitespace-nowrap"
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 5 }}
-            >
-              Click me for tips!
-            </motion.div>
-          )}
+          {/* Subtle glow effect */}
+          <div className="absolute inset-0 bg-gradient-radial from-blue-200/10 via-transparent to-transparent pointer-events-none"></div>
         </div>
 
         {/* Pointing Animation when target is selected */}
