@@ -17,18 +17,6 @@ export default function QuestIslandPage() {
     <div className="relative min-h-screen">
       <FloatingNavigation />
       
-      {/* Back to Dashboard Button */}
-      <Link href="/dashboard">
-        <motion.button 
-          className="fixed top-20 left-6 z-40 text-white/70 hover:text-white transition-colors duration-300 bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          data-testid="button-back-dashboard"
-        >
-          <i className="fas fa-arrow-left mr-2"></i>
-          Back to Dashboard
-        </motion.button>
-      </Link>
 
       {/* Quest Island Map */}
       <QuestIslandMap onLessonSelect={handleLessonSelect} />
