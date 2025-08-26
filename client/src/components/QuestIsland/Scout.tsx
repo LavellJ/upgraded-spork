@@ -2,12 +2,9 @@ import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState, useCallback } from "react";
 import type { AgeGroup } from "@/components/AgeSelector";
 
-// Import Scout character images
+// Import Scout character images - Only 2 versions used throughout entire app
 import explorerDefault from '@assets/image_1756014874313.png';
-import explorerHappy from '@assets/generated_images/Happy_excited_explorer_buddy_f9c13ae1.png';
-import explorerThinking from '@assets/generated_images/Thinking_explorer_buddy_31d38867.png';
-import explorerSurprised from '@assets/generated_images/Surprised_explorer_buddy_3aeaa8d8.png';
-import explorerCelebrating from '@assets/generated_images/Celebrating_explorer_buddy_b6cc403f.png';
+import explorerExcited from '@assets/scout-excited.png';
 
 interface ScoutProps {
   position: { x: number; y: number };
@@ -17,7 +14,7 @@ interface ScoutProps {
   currentBiome?: string;
 }
 
-type ScoutMood = 'neutral' | 'excited' | 'thoughtful' | 'celebrating' | 'thinking' | 'surprised' | 'happy';
+type ScoutMood = 'neutral' | 'excited';
 
 export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary", currentBiome }: ScoutProps) {
   const controls = useAnimation();
@@ -25,15 +22,10 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
   const [currentMessage, setCurrentMessage] = useState<string>("");
   const [showMessage, setShowMessage] = useState(false);
 
-  // Get Scout image based on mood
+  // Get Scout image based on mood - Only 2 versions used throughout entire app
   const getScoutImage = () => {
     switch (scoutMood) {
-      case 'celebrating': return explorerCelebrating;
-      case 'excited': 
-      case 'happy': return explorerHappy;
-      case 'thinking':
-      case 'thoughtful': return explorerThinking;
-      case 'surprised': return explorerSurprised;
+      case 'excited': return explorerExcited;
       default: return explorerDefault;
     }
   };
@@ -88,7 +80,7 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
         y: position.y + "%",
         transition: { duration: 2, ease: "easeInOut" }
       }).then(() => {
-        setScoutMood('thoughtful');
+        setScoutMood('neutral');
         onReachTarget?.();
         
         // Hide message after reaching target
@@ -103,7 +95,7 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
   useEffect(() => {
     const messageInterval = setInterval(() => {
       if (!target && !showMessage) {
-        setScoutMood(Math.random() > 0.7 ? 'happy' : 'neutral');
+        setScoutMood(Math.random() > 0.7 ? 'excited' : 'neutral');
         setCurrentMessage(getPersonalityMessage());
         setShowMessage(true);
         
