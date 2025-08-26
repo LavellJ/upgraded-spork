@@ -55,13 +55,21 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   const { data: completedLessons = [], refetch: refetchLessons } = useQuery<any[]>({
     queryKey: [`/api/lesson-completions/demo-student`],
     enabled: true,
-    refetchInterval: 2000, // Refresh every 2 seconds to catch new completions
+    refetchInterval: 1000, // Refresh every 1 second to catch new completions faster
     refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
-  // Sync Quest Island progress with backend completion data
+  // Add temporary local state to track completions until backend issues are resolved
+  const [localCompletions, setLocalCompletions] = useState<string[]>(() => {
+    const stored = localStorage.getItem('quest-island-completions');
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  // Sync Quest Island progress with backend completion data + local fallback
   useEffect(() => {
     console.log('Completed lessons from backend:', completedLessons); // Debug log
+    console.log('Local completions:', localCompletions); // Debug log
     
     const newProgress = { ...lessonProgress };
     const lessonOrder = ["beach-1", "beach-2", "beach-3", "jungle-1", "jungle-2", "jungle-3", "volcano-1", "volcano-2", "volcano-3", "lagoon-1", "lagoon-2", "lagoon-3"];
@@ -71,10 +79,10 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       newProgress[id] = { completed: false, locked: index !== 0 };
     });
     
-    // Mark completed lessons and unlock next ones based on backend data
+    // Mark completed lessons from backend data
     if (completedLessons.length > 0) {
       completedLessons.forEach(completion => {
-        console.log('Processing completion:', completion); // Debug log
+        console.log('Processing backend completion:', completion); // Debug log
         if (completion.lessonId && newProgress[completion.lessonId]) {
           newProgress[completion.lessonId] = { completed: true, locked: false };
           
@@ -90,9 +98,26 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       });
     }
     
-    console.log('Updated lesson progress:', newProgress); // Debug log
+    // ALSO mark completions from local storage (fallback during database issues)
+    localCompletions.forEach(lessonId => {
+      if (newProgress[lessonId]) {
+        console.log('Processing local completion:', lessonId); // Debug log
+        newProgress[lessonId] = { completed: true, locked: false };
+        
+        // Unlock next lesson in sequence
+        const currentIndex = lessonOrder.indexOf(lessonId);
+        if (currentIndex !== -1 && currentIndex < lessonOrder.length - 1) {
+          const nextLessonId = lessonOrder[currentIndex + 1];
+          if (newProgress[nextLessonId]) {
+            newProgress[nextLessonId] = { completed: false, locked: false };
+          }
+        }
+      }
+    });
+    
+    console.log('Final lesson progress:', newProgress); // Debug log
     setLessonProgress(newProgress);
-  }, [completedLessons]);
+  }, [completedLessons, localCompletions]);
 
   // Show initial guidance when Quest Island loads
   useEffect(() => {
@@ -671,13 +696,21 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1 }}
       >
-        {/* Refresh Button for Testing */}
+        {/* Manual Test Button for "Counting Shells" */}
         <button
-          onClick={() => refetchLessons()}
-          className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 text-white rounded-full text-xs hover:bg-blue-600 transition-colors"
-          title="Refresh Progress"
+          onClick={() => {
+            const newCompletions = [...localCompletions];
+            if (!newCompletions.includes('beach-1')) {
+              newCompletions.push('beach-1');
+              setLocalCompletions(newCompletions);
+              localStorage.setItem('quest-island-completions', JSON.stringify(newCompletions));
+              console.log('Manually marked beach-1 as completed!');
+            }
+          }}
+          className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 text-white rounded-full text-xs hover:bg-green-600 transition-colors"
+          title="Test Counting Shells Completion"
         >
-          ↻
+          ✓
         </button>
         <div className="flex items-center space-x-4">
           <div className="text-2xl">🗺️</div>
