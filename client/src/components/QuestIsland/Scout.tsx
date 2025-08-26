@@ -1,27 +1,121 @@
 import { motion, useAnimation } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
+import type { AgeGroup } from "@/components/AgeSelector";
+
+// Import Scout character images
+import explorerDefault from '@assets/image_1756014874313.png';
+import explorerHappy from '@assets/generated_images/Happy_excited_explorer_buddy_f9c13ae1.png';
+import explorerThinking from '@assets/generated_images/Thinking_explorer_buddy_31d38867.png';
+import explorerSurprised from '@assets/generated_images/Surprised_explorer_buddy_3aeaa8d8.png';
+import explorerCelebrating from '@assets/generated_images/Celebrating_explorer_buddy_b6cc403f.png';
 
 interface ScoutProps {
   position: { x: number; y: number };
   target?: string | null;
   onReachTarget?: () => void;
+  ageGroup?: AgeGroup;
+  currentBiome?: string;
 }
 
-export function Scout({ position, target, onReachTarget }: ScoutProps) {
-  const controls = useAnimation();
+type ScoutMood = 'neutral' | 'excited' | 'thoughtful' | 'celebrating' | 'thinking' | 'surprised' | 'happy';
 
+export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary", currentBiome }: ScoutProps) {
+  const controls = useAnimation();
+  const [scoutMood, setScoutMood] = useState<ScoutMood>('neutral');
+  const [currentMessage, setCurrentMessage] = useState<string>("");
+  const [showMessage, setShowMessage] = useState(false);
+
+  // Get Scout image based on mood
+  const getScoutImage = () => {
+    switch (scoutMood) {
+      case 'celebrating': return explorerCelebrating;
+      case 'excited': 
+      case 'happy': return explorerHappy;
+      case 'thinking':
+      case 'thoughtful': return explorerThinking;
+      case 'surprised': return explorerSurprised;
+      default: return explorerDefault;
+    }
+  };
+
+  // Get personality-based messages for Quest Island
+  const getPersonalityMessage = useCallback(() => {
+    const personalities = {
+      "pre-primary": {
+        biomeMessages: {
+          beach: ["Ooh, shells! Let's count them!", "The waves are so pretty!", "I found something sparkly!"],
+          jungle: ["So many animals to meet!", "What sounds do they make?", "Look at all these leaves!"],
+          volcano: ["Wow, it's warm here!", "Pretty orange colors!", "Let's explore safely!"],
+          lagoon: ["The water is so blue!", "Look at the fish!", "This is magical!"],
+          general: ["G'day, mate! Ready to explore?", "This is so exciting!", "We're going on an adventure!"]
+        }
+      },
+      "primary": {
+        biomeMessages: {
+          beach: ["I wonder how many shells we can find?", "The waves follow patterns!", "Let's investigate this treasure!"],
+          jungle: ["There's so much to discover here!", "I hear different bird calls!", "Each leaf is unique!"],
+          volcano: ["The rocks tell a story!", "I can feel the warmth!", "Science happens here!"],
+          lagoon: ["This ecosystem is amazing!", "The water connects everything!", "Perfect for reflection!"],
+          general: ["Ready for our next discovery?", "We make a great exploring team!", "What should we learn today?"]
+        }
+      },
+      "upper-primary": {
+        biomeMessages: {
+          beach: ["Each tide brings new mathematical patterns", "Coastal ecosystems are fascinating", "Let's study these formations"],
+          jungle: ["Biodiversity creates complex systems", "Every sound has meaning here", "The relationships are intricate"],
+          volcano: ["Geological processes shape our world", "Heat creates transformation", "Science in action!"],
+          lagoon: ["Interconnected waterways support life", "Clear thinking comes from still waters", "Perfect for deep learning"],
+          general: ["Our learning journey continues", "Each challenge builds our skills", "Ready to explore systematically?"]
+        }
+      }
+    };
+    
+    const personality = personalities[ageGroup];
+    const messages = currentBiome ? personality.biomeMessages[currentBiome as keyof typeof personality.biomeMessages] : personality.biomeMessages.general;
+    return messages[Math.floor(Math.random() * messages.length)];
+  }, [ageGroup, currentBiome]);
+
+  // Handle movement to target
   useEffect(() => {
     if (target) {
+      setScoutMood('excited');
+      setCurrentMessage(getPersonalityMessage());
+      setShowMessage(true);
+      
       // Scout moves to target and points
       controls.start({
         x: position.x + "%",
         y: position.y + "%",
         transition: { duration: 2, ease: "easeInOut" }
       }).then(() => {
+        setScoutMood('thoughtful');
         onReachTarget?.();
+        
+        // Hide message after reaching target
+        setTimeout(() => {
+          setShowMessage(false);
+        }, 3000);
       });
     }
-  }, [target, position, controls, onReachTarget]);
+  }, [target, position, controls, onReachTarget, getPersonalityMessage]);
+
+  // Periodic friendly messages
+  useEffect(() => {
+    const messageInterval = setInterval(() => {
+      if (!target && !showMessage) {
+        setScoutMood(Math.random() > 0.7 ? 'happy' : 'neutral');
+        setCurrentMessage(getPersonalityMessage());
+        setShowMessage(true);
+        
+        setTimeout(() => {
+          setShowMessage(false);
+          setScoutMood('neutral');
+        }, 4000);
+      }
+    }, 12000); // Show message every 12 seconds
+
+    return () => clearInterval(messageInterval);
+  }, [target, showMessage, getPersonalityMessage]);
 
   return (
     <motion.div
@@ -36,33 +130,27 @@ export function Scout({ position, target, onReachTarget }: ScoutProps) {
     >
       {/* Scout Character */}
       <motion.div
-        className="relative w-12 h-12"
+        className="relative w-16 h-16"
         animate={{ 
-          y: [0, -2, 0],
-          rotate: [0, 2, -2, 0]
+          y: [0, -3, 0],
+          rotate: [0, 1, -1, 0]
         }}
         transition={{ 
-          duration: 3, 
+          duration: 4, 
           repeat: Infinity, 
           ease: "easeInOut" 
         }}
       >
-        {/* Scout Body */}
-        <div className="w-8 h-10 bg-gradient-to-b from-blue-400 to-blue-500 rounded-full mx-auto shadow-lg">
-          {/* Scout Face */}
-          <div className="w-6 h-6 bg-gradient-to-b from-amber-100 to-amber-200 rounded-full mx-auto mt-1 relative">
-            {/* Eyes */}
-            <div className="absolute top-2 left-1 w-1 h-1 bg-gray-800 rounded-full"></div>
-            <div className="absolute top-2 right-1 w-1 h-1 bg-gray-800 rounded-full"></div>
-            {/* Smile */}
-            <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-2 h-1 border-b-2 border-gray-700 rounded-full"></div>
-          </div>
+        {/* Scout Image */}
+        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-white/90 shadow-lg border-2 border-white/50">
+          <img
+            src={getScoutImage()}
+            alt="Scout Explorer"
+            className="w-full h-full object-cover"
+          />
           
-          {/* Scout Hat */}
-          <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-6 h-3 bg-gradient-to-b from-green-500 to-green-600 rounded-t-full"></div>
-          
-          {/* Scout Backpack */}
-          <div className="absolute top-3 -right-1 w-3 h-4 bg-gradient-to-b from-brown-400 to-brown-500 rounded-md"></div>
+          {/* Gentle glow effect */}
+          <div className="absolute inset-0 bg-gradient-radial from-transparent to-blue-200/20 rounded-full"></div>
         </div>
 
         {/* Pointing Animation when target is selected */}
@@ -72,35 +160,46 @@ export function Scout({ position, target, onReachTarget }: ScoutProps) {
             initial={{ opacity: 0, scale: 0 }}
             animate={{ 
               opacity: [0, 1, 1, 0],
-              scale: [0, 1.2, 1, 0],
-              rotate: [0, 10, -10, 0]
+              scale: [0, 1.3, 1, 0],
+              rotate: [0, 15, -15, 0]
             }}
-            transition={{ duration: 2, repeat: 3 }}
+            transition={{ duration: 2, repeat: 2 }}
           >
-            <i className="fas fa-hand-point-right text-lg"></i>
+            <div className="w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
+              <i className="fas fa-arrow-right text-white text-xs"></i>
+            </div>
           </motion.div>
         )}
 
-        {/* Scout Speech Bubble (optional) */}
+        {/* Quest Island Speech Bubble */}
+        {showMessage && currentMessage && (
+          <motion.div
+            className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-white/95 text-gray-800 text-xs px-4 py-2 rounded-2xl shadow-lg backdrop-blur-sm border border-white/20 whitespace-nowrap max-w-48"
+            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 10 }}
+            transition={{ type: "spring", damping: 15 }}
+          >
+            <p className="font-medium leading-tight">{currentMessage}</p>
+            <div className="text-xs text-gray-500 mt-1">Scout</div>
+            
+            {/* Speech bubble arrow */}
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2">
+              <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white/95"></div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Ambient sparkles around Scout */}
         <motion.div
-          className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-white/90 text-gray-800 text-xs px-2 py-1 rounded-lg shadow-md whitespace-nowrap"
-          initial={{ opacity: 0, scale: 0.8, y: 5 }}
-          animate={{ 
-            opacity: [0, 1, 1, 0],
-            scale: [0.8, 1, 1, 0.8],
-            y: [5, 0, 0, 5]
-          }}
-          transition={{ 
-            duration: 4, 
-            repeat: Infinity, 
-            repeatDelay: 6,
-            ease: "easeInOut" 
-          }}
+          className="absolute -inset-2"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
         >
-          Let's explore!
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
-            <div className="w-0 h-0 border-l-2 border-r-2 border-t-4 border-l-transparent border-r-transparent border-t-white/90"></div>
-          </div>
+          <div className="absolute top-0 left-1/2 w-1 h-1 bg-yellow-300/60 rounded-full"></div>
+          <div className="absolute bottom-0 right-1/4 w-1 h-1 bg-blue-300/60 rounded-full"></div>
+          <div className="absolute left-0 top-1/3 w-0.5 h-0.5 bg-purple-300/60 rounded-full"></div>
+          <div className="absolute right-0 bottom-1/4 w-0.5 h-0.5 bg-green-300/60 rounded-full"></div>
         </motion.div>
       </motion.div>
     </motion.div>

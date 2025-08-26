@@ -209,6 +209,8 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               position={scoutPosition}
               target={scoutTarget}
               onReachTarget={() => setScoutTarget(null)}
+              ageGroup="pre-primary"
+              currentBiome={scoutTarget}
             />
 
             {/* Ambient Elements */}
