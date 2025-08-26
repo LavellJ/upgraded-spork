@@ -4,9 +4,9 @@ import { useState } from "react";
 // Import biome illustrations
 import jungleBiome from '@assets/generated_images/Magical_jungle_biome_illustration_16fb319a.png';
 import lagoonBiome from '@assets/generated_images/Serene_lagoon_biome_illustration_312df41f.png';
-import volcanoBiome from '@assets/generated_images/Mystical_volcano_biome_illustration_3aac8f1e.png';
-import beachBiome from '@assets/generated_images/Peaceful_beach_biome_illustration_aeb91261.png';
-import meadowBiome from '@assets/generated_images/Peaceful_meadow_biome_illustration_ae2287cc.png';
+import volcanoBiome from '@assets/generated_images/Filled_volcano_biome_illustration_f5b2ae77.png';
+import beachBiome from '@assets/generated_images/Filled_beach_biome_illustration_1bd89ad0.png';
+import meadowBiome from '@assets/generated_images/Filled_meadow_biome_illustration_a58c4f2f.png';
 
 interface BiomeProps {
   id: string;
@@ -71,22 +71,6 @@ export function Biome({ id, name, subject, position, color, description, onClick
     }
   };
 
-  const getBiomeBackgroundColor = () => {
-    switch (id) {
-      case "volcano":
-        return "#8B4B3B"; // Warm brown-red to complement volcanic theme
-      case "beach":
-        return "#F4D4A7"; // Sandy beige to complement beach theme
-      case "meadow":
-        return "#9FBF7F"; // Soft green to complement meadow theme
-      case "jungle":
-        return "transparent"; // Already has solid background
-      case "lagoon":
-        return "transparent"; // Already has solid background
-      default:
-        return "transparent";
-    }
-  };
 
   const getBiomeElements = () => {
     switch (id) {
@@ -234,25 +218,15 @@ export function Biome({ id, name, subject, position, color, description, onClick
         }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       >
-        {/* Solid background layer for images with transparency */}
-        {getBiomeImage() && (
-          <div 
-            className="absolute inset-0 rounded-full"
-            style={{ backgroundColor: getBiomeBackgroundColor() }}
-          />
-        )}
-        
-        {/* Image layer */}
-        {getBiomeImage() && (
-          <div 
-            className="absolute inset-0 rounded-full"
-            style={{
-              backgroundImage: `url(${getBiomeImage()})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          />
-        )}
+        {/* Biome image background */}
+        <div 
+          className="absolute inset-0 rounded-full"
+          style={getBiomeImage() ? {
+            backgroundImage: `url(${getBiomeImage()})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          } : {}}
+        />
         
         {/* Fallback gradient background for biomes without images */}
         {!getBiomeImage() && (
