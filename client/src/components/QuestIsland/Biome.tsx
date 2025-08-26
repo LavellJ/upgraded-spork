@@ -2,11 +2,11 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 
 // Import biome illustrations
-import jungleBiome from "@assets/generated_images/Alto's_Adventure_jungle_biome_2f4b53b1.png";
-import lagoonBiome from "@assets/generated_images/Alto's_Adventure_lagoon_biome_29925324.png";
-import volcanoBiome from "@assets/generated_images/Alto's_Adventure_volcano_biome_17d185e5.png";
-import beachBiome from "@assets/generated_images/Alto's_Adventure_beach_biome_0ec668d9.png";
-import meadowBiome from "@assets/generated_images/Alto's_Adventure_meadow_biome_5e66838d.png";
+import jungleBiome from '@assets/generated_images/altos_jungle_biome.png';
+import lagoonBiome from '@assets/generated_images/altos_lagoon_biome.png';
+import volcanoBiome from '@assets/generated_images/altos_volcano_biome.png';
+import beachBiome from '@assets/generated_images/altos_beach_biome.png';
+import meadowBiome from '@assets/generated_images/altos_meadow_biome.png';
 
 interface BiomeProps {
   id: string;
