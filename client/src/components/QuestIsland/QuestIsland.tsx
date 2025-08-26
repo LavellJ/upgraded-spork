@@ -446,27 +446,27 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     }
   };
 
-  // Generate lesson nodes positioned at tree branch endpoints (convert SVG coords to percentage)
+  // Generate lesson nodes positioned exactly at tree branch endpoints (convert SVG coords to percentage)
   const lessonNodes: LessonNodeData[] = [
-    // Beach biome (Mathematics) - Lessons positioned at branch endpoints like leaves
-    { id: "beach-1", title: "Counting Shells", biome: "beach", position: { x: 80/12, y: 700/10 }, completed: lessonProgress["beach-1"]?.completed || false, locked: lessonProgress["beach-1"]?.locked === undefined ? false : lessonProgress["beach-1"].locked },
-    { id: "beach-2", title: "Ocean Wildlife", biome: "beach", position: { x: 180/12, y: 720/10 }, completed: lessonProgress["beach-2"]?.completed || false, locked: lessonProgress["beach-2"]?.locked === undefined ? true : lessonProgress["beach-2"].locked },
-    { id: "beach-3", title: "Treasure Sorting", biome: "beach", position: { x: 60/12, y: 600/10 }, completed: lessonProgress["beach-3"]?.completed || false, locked: lessonProgress["beach-3"]?.locked === undefined ? true : lessonProgress["beach-3"].locked },
+    // Beach biome - Lessons positioned exactly at branch endpoints
+    { id: "beach-1", title: "Counting Shells", biome: "beach", position: { x: treeBranches.beach.branches[0].endpoint.x/12, y: treeBranches.beach.branches[0].endpoint.y/10 }, completed: lessonProgress["beach-1"]?.completed || false, locked: lessonProgress["beach-1"]?.locked === undefined ? false : lessonProgress["beach-1"].locked },
+    { id: "beach-2", title: "Ocean Wildlife", biome: "beach", position: { x: treeBranches.beach.branches[1].endpoint.x/12, y: treeBranches.beach.branches[1].endpoint.y/10 }, completed: lessonProgress["beach-2"]?.completed || false, locked: lessonProgress["beach-2"]?.locked === undefined ? true : lessonProgress["beach-2"].locked },
+    { id: "beach-3", title: "Treasure Sorting", biome: "beach", position: { x: treeBranches.beach.branches[2].endpoint.x/12, y: treeBranches.beach.branches[2].endpoint.y/10 }, completed: lessonProgress["beach-3"]?.completed || false, locked: lessonProgress["beach-3"]?.locked === undefined ? true : lessonProgress["beach-3"].locked },
     
-    // Jungle biome (Literacy) - Lessons positioned at branch endpoints like leaves  
-    { id: "jungle-1", title: "Animal Sounds", biome: "jungle", position: { x: 360/12, y: 270/10 }, completed: lessonProgress["jungle-1"]?.completed || false, locked: lessonProgress["jungle-1"]?.locked === undefined ? true : lessonProgress["jungle-1"].locked },
-    { id: "jungle-2", title: "Story Vines", biome: "jungle", position: { x: 480/12, y: 280/10 }, completed: lessonProgress["jungle-2"]?.completed || false, locked: lessonProgress["jungle-2"]?.locked === undefined ? true : lessonProgress["jungle-2"].locked },
-    { id: "jungle-3", title: "Letter Hunt", biome: "jungle", position: { x: 380/12, y: 380/10 }, completed: lessonProgress["jungle-3"]?.completed || false, locked: lessonProgress["jungle-3"]?.locked === undefined ? true : lessonProgress["jungle-3"].locked },
+    // Jungle biome - Lessons positioned exactly at branch endpoints
+    { id: "jungle-1", title: "Animal Sounds", biome: "jungle", position: { x: treeBranches.jungle.branches[0].endpoint.x/12, y: treeBranches.jungle.branches[0].endpoint.y/10 }, completed: lessonProgress["jungle-1"]?.completed || false, locked: lessonProgress["jungle-1"]?.locked === undefined ? true : lessonProgress["jungle-1"].locked },
+    { id: "jungle-2", title: "Story Vines", biome: "jungle", position: { x: treeBranches.jungle.branches[1].endpoint.x/12, y: treeBranches.jungle.branches[1].endpoint.y/10 }, completed: lessonProgress["jungle-2"]?.completed || false, locked: lessonProgress["jungle-2"]?.locked === undefined ? true : lessonProgress["jungle-2"].locked },
+    { id: "jungle-3", title: "Letter Hunt", biome: "jungle", position: { x: treeBranches.jungle.branches[2].endpoint.x/12, y: treeBranches.jungle.branches[2].endpoint.y/10 }, completed: lessonProgress["jungle-3"]?.completed || false, locked: lessonProgress["jungle-3"]?.locked === undefined ? true : lessonProgress["jungle-3"].locked },
     
-    // Volcano biome (Science) - Lessons positioned at branch endpoints like leaves
-    { id: "volcano-1", title: "Rock Formation", biome: "volcano", position: { x: 820/12, y: 80/10 }, completed: lessonProgress["volcano-1"]?.completed || false, locked: lessonProgress["volcano-1"]?.locked === undefined ? true : lessonProgress["volcano-1"].locked },
-    { id: "volcano-2", title: "Heat & Cold", biome: "volcano", position: { x: 860/12, y: 120/10 }, completed: lessonProgress["volcano-2"]?.completed || false, locked: lessonProgress["volcano-2"]?.locked === undefined ? true : lessonProgress["volcano-2"].locked },
-    { id: "volcano-3", title: "Color Mixing", biome: "volcano", position: { x: 740/12, y: 180/10 }, completed: lessonProgress["volcano-3"]?.completed || false, locked: lessonProgress["volcano-3"]?.locked === undefined ? true : lessonProgress["volcano-3"].locked },
+    // Volcano biome - Lessons positioned exactly at branch endpoints
+    { id: "volcano-1", title: "Rock Formation", biome: "volcano", position: { x: treeBranches.volcano.branches[0].endpoint.x/12, y: treeBranches.volcano.branches[0].endpoint.y/10 }, completed: lessonProgress["volcano-1"]?.completed || false, locked: lessonProgress["volcano-1"]?.locked === undefined ? true : lessonProgress["volcano-1"].locked },
+    { id: "volcano-2", title: "Heat & Cold", biome: "volcano", position: { x: treeBranches.volcano.branches[1].endpoint.x/12, y: treeBranches.volcano.branches[1].endpoint.y/10 }, completed: lessonProgress["volcano-2"]?.completed || false, locked: lessonProgress["volcano-2"]?.locked === undefined ? true : lessonProgress["volcano-2"].locked },
+    { id: "volcano-3", title: "Color Mixing", biome: "volcano", position: { x: treeBranches.volcano.branches[2].endpoint.x/12, y: treeBranches.volcano.branches[2].endpoint.y/10 }, completed: lessonProgress["volcano-3"]?.completed || false, locked: lessonProgress["volcano-3"]?.locked === undefined ? true : lessonProgress["volcano-3"].locked },
     
-    // Lagoon biome (Social Studies) - Lessons positioned at branch endpoints like leaves
-    { id: "lagoon-1", title: "Community Pond", biome: "lagoon", position: { x: 660/12, y: 720/10 }, completed: lessonProgress["lagoon-1"]?.completed || false, locked: lessonProgress["lagoon-1"]?.locked === undefined ? true : lessonProgress["lagoon-1"].locked },
-    { id: "lagoon-2", title: "Helping Friends", biome: "lagoon", position: { x: 780/12, y: 700/10 }, completed: lessonProgress["lagoon-2"]?.completed || false, locked: lessonProgress["lagoon-2"]?.locked === undefined ? true : lessonProgress["lagoon-2"].locked },
-    { id: "lagoon-3", title: "Island Home", biome: "lagoon", position: { x: 760/12, y: 590/10 }, completed: lessonProgress["lagoon-3"]?.completed || false, locked: lessonProgress["lagoon-3"]?.locked === undefined ? true : lessonProgress["lagoon-3"].locked }
+    // Lagoon biome - Lessons positioned exactly at branch endpoints  
+    { id: "lagoon-1", title: "Community Pond", biome: "lagoon", position: { x: treeBranches.lagoon.branches[0].endpoint.x/12, y: treeBranches.lagoon.branches[0].endpoint.y/10 }, completed: lessonProgress["lagoon-1"]?.completed || false, locked: lessonProgress["lagoon-1"]?.locked === undefined ? true : lessonProgress["lagoon-1"].locked },
+    { id: "lagoon-2", title: "Helping Friends", biome: "lagoon", position: { x: treeBranches.lagoon.branches[1].endpoint.x/12, y: treeBranches.lagoon.branches[1].endpoint.y/10 }, completed: lessonProgress["lagoon-2"]?.completed || false, locked: lessonProgress["lagoon-2"]?.locked === undefined ? true : lessonProgress["lagoon-2"].locked },
+    { id: "lagoon-3", title: "Island Home", biome: "lagoon", position: { x: treeBranches.lagoon.branches[2].endpoint.x/12, y: treeBranches.lagoon.branches[2].endpoint.y/10 }, completed: lessonProgress["lagoon-3"]?.completed || false, locked: lessonProgress["lagoon-3"]?.locked === undefined ? true : lessonProgress["lagoon-3"].locked }
   ];
 
   const handleLessonComplete = useCallback((lessonId: string) => {
@@ -529,12 +529,20 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     
     if (nextLesson) {
       setScoutMessage(`Ready for an adventure? Try "${lessonTitles[nextLesson]}" next!`);
-      // Move Scout to suggest the next lesson (updated to tree branch leaf positions)
+      // Move Scout to suggest the next lesson (using exact branch endpoint positions)
       const lessonPositions: Record<string, { x: number; y: number }> = {
-        "beach-1": { x: 80/12, y: 700/10 }, "beach-2": { x: 180/12, y: 720/10 }, "beach-3": { x: 60/12, y: 600/10 },
-        "jungle-1": { x: 360/12, y: 270/10 }, "jungle-2": { x: 480/12, y: 280/10 }, "jungle-3": { x: 380/12, y: 380/10 },
-        "volcano-1": { x: 820/12, y: 80/10 }, "volcano-2": { x: 860/12, y: 120/10 }, "volcano-3": { x: 740/12, y: 180/10 },
-        "lagoon-1": { x: 660/12, y: 720/10 }, "lagoon-2": { x: 780/12, y: 700/10 }, "lagoon-3": { x: 760/12, y: 590/10 }
+        "beach-1": { x: treeBranches.beach.branches[0].endpoint.x/12, y: treeBranches.beach.branches[0].endpoint.y/10 },
+        "beach-2": { x: treeBranches.beach.branches[1].endpoint.x/12, y: treeBranches.beach.branches[1].endpoint.y/10 },
+        "beach-3": { x: treeBranches.beach.branches[2].endpoint.x/12, y: treeBranches.beach.branches[2].endpoint.y/10 },
+        "jungle-1": { x: treeBranches.jungle.branches[0].endpoint.x/12, y: treeBranches.jungle.branches[0].endpoint.y/10 },
+        "jungle-2": { x: treeBranches.jungle.branches[1].endpoint.x/12, y: treeBranches.jungle.branches[1].endpoint.y/10 },
+        "jungle-3": { x: treeBranches.jungle.branches[2].endpoint.x/12, y: treeBranches.jungle.branches[2].endpoint.y/10 },
+        "volcano-1": { x: treeBranches.volcano.branches[0].endpoint.x/12, y: treeBranches.volcano.branches[0].endpoint.y/10 },
+        "volcano-2": { x: treeBranches.volcano.branches[1].endpoint.x/12, y: treeBranches.volcano.branches[1].endpoint.y/10 },
+        "volcano-3": { x: treeBranches.volcano.branches[2].endpoint.x/12, y: treeBranches.volcano.branches[2].endpoint.y/10 },
+        "lagoon-1": { x: treeBranches.lagoon.branches[0].endpoint.x/12, y: treeBranches.lagoon.branches[0].endpoint.y/10 },
+        "lagoon-2": { x: treeBranches.lagoon.branches[1].endpoint.x/12, y: treeBranches.lagoon.branches[1].endpoint.y/10 },
+        "lagoon-3": { x: treeBranches.lagoon.branches[2].endpoint.x/12, y: treeBranches.lagoon.branches[2].endpoint.y/10 }
       };
       const targetPosition = lessonPositions[nextLesson];
       if (targetPosition) {
@@ -726,14 +734,14 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                     <motion.path
                       key={`branch-${lesson.id}`}
                       d={branchPath}
-                      stroke={isCompleted ? "url(#progressGradient)" : isUnlocked ? "url(#basePathGradient)" : "rgba(255,255,255,0.2)"}
-                      strokeWidth={isCompleted ? "5" : isUnlocked ? "4" : "3"}
+                      stroke={isCompleted ? "url(#progressGradient)" : isUnlocked ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.08)"}
+                      strokeWidth={isCompleted ? "4" : isUnlocked ? "3" : "2"}
                       fill="none"
                       strokeLinecap="round"
                       initial={{ pathLength: 0, opacity: 0 }}
                       animate={{ 
                         pathLength: 1, // Always show branches for all lessons like tree structure
-                        opacity: isCompleted ? 1.0 : isUnlocked ? 0.7 : 0.3
+                        opacity: isCompleted ? 0.9 : isUnlocked ? 0.4 : 0.2
                       }}
                       transition={{ 
                         duration: 2,
@@ -742,10 +750,10 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                       }}
                       style={{ 
                         filter: isCompleted 
-                          ? "drop-shadow(0 0 8px rgba(255,215,0,0.9))"
+                          ? "drop-shadow(0 0 6px rgba(255,215,0,0.7))"
                           : isUnlocked 
-                          ? "drop-shadow(0 0 4px rgba(255,255,255,0.6))"
-                          : "drop-shadow(0 0 2px rgba(255,255,255,0.3))"
+                          ? "drop-shadow(0 0 2px rgba(255,255,255,0.3))"
+                          : "drop-shadow(0 0 1px rgba(255,255,255,0.2))"
                       }}
                     />
                   );
