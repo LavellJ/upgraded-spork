@@ -670,7 +670,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             
             
             {/* Adventure Path with Progress */}
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 900" style={{ zIndex: 50 }}>
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 900" style={{ zIndex: 50, pointerEvents: "none" }}>
               {/* Base Path */}
               <motion.path
                 d="M 120 650 Q 250 500, 420 315 Q 580 200, 780 135 Q 900 100, 1020 135 Q 1100 160, 1050 250 Q 1000 340, 900 450 Q 800 560, 720 650 Q 640 740, 840 720"
