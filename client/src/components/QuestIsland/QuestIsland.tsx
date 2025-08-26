@@ -407,6 +407,31 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             {/* Island Shape */}
             <div className="absolute inset-0 bg-gradient-to-br from-sand-200 via-sand-100 to-green-200 rounded-full opacity-90 transform rotate-12 scale-110" />
             
+            {/* Biome Area Backgrounds */}
+            {/* Beach Biome Area - Southwest (Mathematics) */}
+            <div 
+              className="absolute w-80 h-72 rounded-full bg-gradient-to-br from-blue-300/30 to-cyan-400/25 blur-2xl" 
+              style={{ left: '2%', top: '55%', transform: 'rotate(-15deg)' }} 
+            />
+            
+            {/* Jungle Biome Area - Central West (Literacy) */}
+            <div 
+              className="absolute w-96 h-80 rounded-full bg-gradient-to-br from-green-400/30 to-emerald-500/25 blur-2xl" 
+              style={{ left: '20%', top: '20%', transform: 'rotate(25deg)' }} 
+            />
+            
+            {/* Volcano Biome Area - Northeast (Science) */}
+            <div 
+              className="absolute w-72 h-64 rounded-full bg-gradient-to-br from-red-400/30 to-orange-500/25 blur-2xl" 
+              style={{ left: '70%', top: '5%', transform: 'rotate(-20deg)' }} 
+            />
+            
+            {/* Lagoon Biome Area - Southeast (Social Studies) */}
+            <div 
+              className="absolute w-88 h-72 rounded-full bg-gradient-to-br from-teal-400/30 to-blue-500/25 blur-2xl" 
+              style={{ left: '55%', top: '65%', transform: 'rotate(10deg)' }} 
+            />
+            
             {/* Adventure Path with Progress */}
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 900">
               {/* Base Path */}
