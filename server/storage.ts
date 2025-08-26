@@ -145,13 +145,115 @@ export class MemStorage implements IStorage {
 
   private initializeSampleTopics() {
     const sampleTopics: Topic[] = [
-      // Pre-primary topics
+      // Quest Island specific topics for pre-primary (3-5 years)
+      // Beach biome (Mathematics)
+      {
+        id: "beach-1",
+        name: "Counting Shells",
+        subject: "mathematics",
+        ageGroup: "pre-primary",
+        level: 1,
+        isUnlocked: "true"
+      },
+      {
+        id: "beach-2", 
+        name: "Wave Patterns",
+        subject: "mathematics",
+        ageGroup: "pre-primary",
+        level: 2,
+        isUnlocked: "true"
+      },
+      {
+        id: "beach-3",
+        name: "Treasure Sorting", 
+        subject: "mathematics",
+        ageGroup: "pre-primary",
+        level: 3,
+        isUnlocked: "true"
+      },
+      // Jungle biome (Literacy)
+      {
+        id: "jungle-1",
+        name: "Animal Sounds",
+        subject: "literacy", 
+        ageGroup: "pre-primary",
+        level: 4,
+        isUnlocked: "true"
+      },
+      {
+        id: "jungle-2",
+        name: "Story Vines",
+        subject: "literacy",
+        ageGroup: "pre-primary", 
+        level: 5,
+        isUnlocked: "true"
+      },
+      {
+        id: "jungle-3",
+        name: "Letter Hunt",
+        subject: "literacy",
+        ageGroup: "pre-primary",
+        level: 6, 
+        isUnlocked: "true"
+      },
+      // Volcano biome (Science)
+      {
+        id: "volcano-1",
+        name: "Rock Formation",
+        subject: "science",
+        ageGroup: "pre-primary",
+        level: 7,
+        isUnlocked: "true"
+      },
+      {
+        id: "volcano-2",
+        name: "Heat & Cold",
+        subject: "science", 
+        ageGroup: "pre-primary",
+        level: 8,
+        isUnlocked: "true"
+      },
+      {
+        id: "volcano-3",
+        name: "Color Mixing",
+        subject: "science",
+        ageGroup: "pre-primary",
+        level: 9,
+        isUnlocked: "true"
+      },
+      // Lagoon biome (Social Studies)
+      {
+        id: "lagoon-1",
+        name: "Community Pond",
+        subject: "social studies",
+        ageGroup: "pre-primary", 
+        level: 10,
+        isUnlocked: "true"
+      },
+      {
+        id: "lagoon-2",
+        name: "Helping Friends",
+        subject: "social studies",
+        ageGroup: "pre-primary",
+        level: 11,
+        isUnlocked: "true"
+      },
+      {
+        id: "lagoon-3", 
+        name: "Island Home",
+        subject: "social studies",
+        ageGroup: "pre-primary",
+        level: 12,
+        isUnlocked: "true"
+      },
+
+      // Additional general pre-primary topics
       {
         id: randomUUID(),
         name: "Counting & Numbers",
         subject: "mathematics",
         ageGroup: "pre-primary",
-        level: 1,
+        level: 13,
         isUnlocked: "true"
       },
       {
