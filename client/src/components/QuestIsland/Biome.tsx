@@ -156,7 +156,7 @@ export function Biome({ id, name, subject, position, color, description, onClick
 
         {/* Hover Label */}
         <motion.div
-          className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-sm px-3 py-2 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50"
+          className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-sm px-3 py-2 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-[9999]"
           initial={{ y: 10 }}
           whileHover={{ y: 0 }}
         >
