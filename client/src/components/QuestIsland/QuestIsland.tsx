@@ -29,7 +29,7 @@ interface QuestIslandProps {
 
 export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   const [showJournal, setShowJournal] = useState(false);
-  const [scoutPosition, setScoutPosition] = useState({ x: 15, y: 80 });
+  const [scoutPosition, setScoutPosition] = useState({ x: 8, y: 85 });
   const [scoutTarget, setScoutTarget] = useState<string | null>(null);
   
   const collectibles: Collectible[] = [
@@ -76,25 +76,25 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   ];
 
   const lessonNodes: LessonNodeData[] = [
-    // Beach biome (Mathematics)
-    { id: "beach-1", title: "Counting Shells", biome: "beach", position: { x: 20, y: 75 }, completed: false, locked: false },
-    { id: "beach-2", title: "Wave Patterns", biome: "beach", position: { x: 25, y: 70 }, completed: false, locked: true },
-    { id: "beach-3", title: "Treasure Sorting", biome: "beach", position: { x: 30, y: 72 }, completed: false, locked: true },
+    // Beach biome (Mathematics) - Far southwest
+    { id: "beach-1", title: "Counting Shells", biome: "beach", position: { x: 12, y: 78 }, completed: false, locked: false },
+    { id: "beach-2", title: "Wave Patterns", biome: "beach", position: { x: 18, y: 75 }, completed: false, locked: true },
+    { id: "beach-3", title: "Treasure Sorting", biome: "beach", position: { x: 22, y: 80 }, completed: false, locked: true },
     
-    // Jungle biome (Literacy)
-    { id: "jungle-1", title: "Animal Sounds", biome: "jungle", position: { x: 45, y: 60 }, completed: false, locked: true },
-    { id: "jungle-2", title: "Story Vines", biome: "jungle", position: { x: 50, y: 55 }, completed: false, locked: true },
-    { id: "jungle-3", title: "Letter Hunt", biome: "jungle", position: { x: 55, y: 58 }, completed: false, locked: true },
+    // Jungle biome (Literacy) - Central west
+    { id: "jungle-1", title: "Animal Sounds", biome: "jungle", position: { x: 35, y: 45 }, completed: false, locked: true },
+    { id: "jungle-2", title: "Story Vines", biome: "jungle", position: { x: 42, y: 40 }, completed: false, locked: true },
+    { id: "jungle-3", title: "Letter Hunt", biome: "jungle", position: { x: 48, y: 42 }, completed: false, locked: true },
     
-    // Volcano biome (Science)
-    { id: "volcano-1", title: "Rock Formation", biome: "volcano", position: { x: 70, y: 40 }, completed: false, locked: true },
-    { id: "volcano-2", title: "Heat & Cold", biome: "volcano", position: { x: 75, y: 35 }, completed: false, locked: true },
-    { id: "volcano-3", title: "Color Mixing", biome: "volcano", position: { x: 80, y: 38 }, completed: false, locked: true },
+    // Volcano biome (Science) - Far northeast  
+    { id: "volcano-1", title: "Rock Formation", biome: "volcano", position: { x: 82, y: 18 }, completed: false, locked: true },
+    { id: "volcano-2", title: "Heat & Cold", biome: "volcano", position: { x: 88, y: 15 }, completed: false, locked: true },
+    { id: "volcano-3", title: "Color Mixing", biome: "volcano", position: { x: 85, y: 22 }, completed: false, locked: true },
     
-    // Lagoon biome (Social Studies)
-    { id: "lagoon-1", title: "Community Pond", biome: "lagoon", position: { x: 60, y: 80 }, completed: false, locked: true },
-    { id: "lagoon-2", title: "Helping Friends", biome: "lagoon", position: { x: 65, y: 75 }, completed: false, locked: true },
-    { id: "lagoon-3", title: "Island Home", biome: "lagoon", position: { x: 70, y: 78 }, completed: false, locked: true }
+    // Lagoon biome (Social Studies) - Southeast  
+    { id: "lagoon-1", title: "Community Pond", biome: "lagoon", position: { x: 68, y: 85 }, completed: false, locked: true },
+    { id: "lagoon-2", title: "Helping Friends", biome: "lagoon", position: { x: 75, y: 82 }, completed: false, locked: true },
+    { id: "lagoon-3", title: "Island Home", biome: "lagoon", position: { x: 72, y: 88 }, completed: false, locked: true }
   ];
 
   const handleLessonComplete = (lessonId: string) => {
@@ -107,7 +107,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "beach",
       name: "Seashell Beach",
       subject: "Mathematics",
-      position: { x: 15, y: 65 },
+      position: { x: 10, y: 72 }, // Far southwest corner
       color: "from-amber-200 to-orange-200",
       description: "Where numbers dance with the waves"
     },
@@ -115,7 +115,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "jungle",
       name: "Whisper Woods", 
       subject: "Literacy",
-      position: { x: 40, y: 45 },
+      position: { x: 35, y: 35 }, // Central-west
       color: "from-emerald-300 to-green-400",
       description: "Stories grow on every tree"
     },
@@ -123,7 +123,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "volcano",
       name: "Ember Peak",
       subject: "Science", 
-      position: { x: 70, y: 25 },
+      position: { x: 85, y: 15 }, // Far northeast peak
       color: "from-red-300 to-orange-400",
       description: "Discover how the world works"
     },
@@ -131,7 +131,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "lagoon",
       name: "Crystal Lagoon",
       subject: "Social Studies",
-      position: { x: 55, y: 70 },
+      position: { x: 70, y: 80 }, // Southeast waters
       color: "from-cyan-200 to-blue-300", 
       description: "Learn about our world together"
     }
@@ -156,22 +156,22 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         
         {/* Island Base */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-[800px] h-[600px]">
+          <div className="relative w-[1200px] h-[900px]">
             
             {/* Island Shape */}
             <div className="absolute inset-0 bg-gradient-to-br from-sand-200 via-sand-100 to-green-200 rounded-full opacity-90 transform rotate-12 scale-110" />
             
             {/* Glowing Path */}
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 600">
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 900">
               <motion.path
-                d="M 120 480 Q 200 400, 300 350 Q 400 300, 500 280 Q 600 260, 680 200 Q 720 180, 750 220 Q 780 260, 720 320 Q 660 380, 600 420 Q 540 460, 480 480"
+                d="M 120 650 Q 250 500, 420 315 Q 580 200, 780 135 Q 900 100, 1020 135 Q 1100 160, 1050 250 Q 1000 340, 900 450 Q 800 560, 720 650 Q 640 740, 840 720"
                 stroke="url(#pathGradient)"
-                strokeWidth="8"
+                strokeWidth="12"
                 fill="none"
                 strokeLinecap="round"
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 0.7 }}
-                transition={{ duration: 3, ease: "easeInOut" }}
+                transition={{ duration: 4, ease: "easeInOut" }}
               />
               <defs>
                 <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -213,9 +213,9 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               currentBiome={scoutTarget}
             />
 
-            {/* Ambient Elements */}
+            {/* Ambient Elements - Spread across the epic journey */}
             <motion.div
-              className="absolute top-32 left-80 w-3 h-3 bg-yellow-300 rounded-full opacity-70"
+              className="absolute top-48 left-96 w-3 h-3 bg-yellow-300 rounded-full opacity-70"
               animate={{ 
                 y: [0, -10, 0],
                 opacity: [0.4, 0.8, 0.4],
@@ -225,13 +225,43 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             />
             
             <motion.div
-              className="absolute bottom-40 right-32 w-2 h-2 bg-purple-300 rounded-full opacity-60"
+              className="absolute bottom-80 right-48 w-2 h-2 bg-purple-300 rounded-full opacity-60"
               animate={{ 
                 y: [0, -15, 0],
                 x: [0, 5, 0],
                 opacity: [0.3, 0.7, 0.3]
               }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            />
+            
+            <motion.div
+              className="absolute top-24 right-64 w-2 h-2 bg-blue-300 rounded-full opacity-50"
+              animate={{ 
+                y: [0, -8, 0],
+                x: [0, -3, 0],
+                opacity: [0.3, 0.6, 0.3]
+              }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            />
+            
+            <motion.div
+              className="absolute left-48 top-96 w-1 h-1 bg-green-300 rounded-full opacity-60"
+              animate={{ 
+                y: [0, -12, 0],
+                opacity: [0.4, 0.8, 0.4],
+                scale: [1, 1.3, 1]
+              }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            />
+            
+            <motion.div
+              className="absolute top-60 left-72 w-1.5 h-1.5 bg-orange-300 rounded-full opacity-40"
+              animate={{ 
+                y: [0, -6, 0],
+                rotate: [0, 180, 360],
+                opacity: [0.2, 0.5, 0.2]
+              }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 3 }}
             />
           </div>
         </div>
