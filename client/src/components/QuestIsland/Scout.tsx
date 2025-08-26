@@ -142,15 +142,15 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
         }}
       >
         {/* Scout Image */}
-        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-white/90 shadow-lg border-2 border-white/50">
+        <div className="relative w-16 h-16">
           <img
             src={getScoutImage()}
             alt="Scout Explorer"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain drop-shadow-lg"
           />
           
-          {/* Gentle glow effect */}
-          <div className="absolute inset-0 bg-gradient-radial from-transparent to-blue-200/20 rounded-full"></div>
+          {/* Subtle glow effect */}
+          <div className="absolute inset-0 bg-gradient-radial from-blue-200/10 via-transparent to-transparent pointer-events-none"></div>
         </div>
 
         {/* Pointing Animation when target is selected */}
