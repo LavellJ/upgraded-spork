@@ -227,12 +227,6 @@ export function Biome({ id, name, subject, position, color, description, onClick
         {!getBiomeImage() && (
           <div className={`absolute inset-0 bg-gradient-to-br ${color} rounded-full`} />
         )}
-        {/* Biome Icon - with subtle background for better visibility */}
-        <div className="absolute inset-0 flex items-center justify-center text-2xl">
-          <div className="bg-white/20 backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center">
-            {getBiomeIcon()}
-          </div>
-        </div>
 
         {/* Biome Elements */}
         {getBiomeElements()}
