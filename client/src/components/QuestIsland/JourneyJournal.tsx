@@ -18,6 +18,17 @@ const getCollectibleStyle = (biome: string) => {
   }
 };
 
+const getCollectibleGlow = (biome: string) => {
+  switch(biome) {
+    case 'beach': return 'bg-cyan-200';
+    case 'jungle': return 'bg-green-200';
+    case 'volcano': return 'bg-orange-200';
+    case 'meadow': return 'bg-purple-200';
+    case 'lagoon': return 'bg-blue-200';
+    default: return 'bg-yellow-200';
+  }
+};
+
 export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
   const collectedCount = collectibles.filter(c => c.collected).length;
   
@@ -85,12 +96,41 @@ export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
               data-testid={`collectible-${collectible.id}`}
             >
               <div className="flex items-center space-x-4">
-                {/* Collectible Orb - Match Quest Island styling */}
-                <div className={`relative w-16 h-16 rounded-full flex items-center justify-center ${
-                  collectible.collected ? "opacity-100" : "opacity-30"
-                }`}>
+                {/* Collectible Orb - Match Quest Island styling with animations */}
+                <motion.div 
+                  className={`relative w-16 h-16 rounded-full flex items-center justify-center ${
+                    collectible.collected ? "opacity-100" : "opacity-30"
+                  }`}
+                  animate={collectible.collected ? {
+                    y: [0, -6, 0],
+                    scale: [1, 1.05, 1]
+                  } : {}}
+                  transition={collectible.collected ? {
+                    duration: 2.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: index * 0.3
+                  } : {}}
+                >
                   {/* Main collectible orb */}
                   <div className={`w-full h-full rounded-full ${getCollectibleStyle(collectible.biome)} border-3 border-white shadow-lg`} />
+                  
+                  {/* Subtle glow effect for collected items */}
+                  {collectible.collected && (
+                    <motion.div
+                      className={`absolute inset-0 rounded-full ${getCollectibleGlow(collectible.biome)} opacity-60`}
+                      animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.4, 0.8, 0.4]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: index * 0.2
+                      }}
+                    />
+                  )}
                   
                   {/* Lock Overlay */}
                   {!collectible.collected && (
@@ -98,19 +138,7 @@ export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
                       <i className="fas fa-lock text-white text-lg"></i>
                     </div>
                   )}
-                  
-                  {/* Collected Glow */}
-                  {collectible.collected && (
-                    <motion.div
-                      className="absolute inset-0 bg-yellow-400/30 rounded-full"
-                      animate={{ 
-                        opacity: [0.3, 0.6, 0.3],
-                        scale: [1, 1.1, 1]
-                      }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    />
-                  )}
-                </div>
+                </motion.div>
 
                 {/* Collectible Info */}
                 <div className="flex-1">
