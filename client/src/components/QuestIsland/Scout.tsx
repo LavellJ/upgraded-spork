@@ -180,16 +180,14 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
         className="relative w-16 h-16"
         animate={scoutMood === 'excited' ? {
           y: [0, -6, 0],
-          rotate: [0, 3, -3, 0],
-          scale: [1, 1.05, 1]
+          rotate: [0, 3, -3, 0]
         } : scoutMood === 'thinking' ? {
           y: [0, -2, 0],
           rotate: [0, 2, -1, 1, 0],
           x: [0, 1, -1, 0]
         } : {
           y: [0, -3, 0],
-          rotate: [0, 1, -1, 0],
-          scale: [1, 1.02, 1] // Subtle breathing
+          rotate: [0, 1, -1, 0]
         }}
         transition={{ 
           duration: scoutMood === 'excited' ? 2.5 : scoutMood === 'thinking' ? 3.5 : 4, 
@@ -250,12 +248,10 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
         <motion.div
           className="absolute -inset-2"
           animate={{ 
-            rotate: 360,
-            scale: scoutMood === 'excited' ? [1, 1.2, 1] : [1, 1.05, 1]
+            rotate: 360
           }}
           transition={{ 
-            rotate: { duration: scoutMood === 'excited' ? 15 : 20, repeat: Infinity, ease: "linear" },
-            scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+            rotate: { duration: scoutMood === 'excited' ? 15 : 20, repeat: Infinity, ease: "linear" }
           }}
         >
           <motion.div 
@@ -283,13 +279,13 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
           {scoutMood === 'excited' && (
             <>
               <motion.div 
-                className="absolute top-1/4 right-1/2 w-0.5 h-0.5 bg-orange-300/70 rounded-full"
-                animate={{ opacity: [0, 1, 0], scale: [0.5, 1.5, 0.5] }}
+                className="absolute top-1/4 right-1/2 w-1 h-1 bg-orange-300/70 rounded-full"
+                animate={{ opacity: [0, 1, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
               />
               <motion.div 
-                className="absolute bottom-1/3 left-1/4 w-0.5 h-0.5 bg-pink-300/70 rounded-full"
-                animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5] }}
+                className="absolute bottom-1/3 left-1/4 w-1 h-1 bg-pink-300/70 rounded-full"
+                animate={{ opacity: [0, 1, 0] }}
                 transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
               />
             </>
@@ -303,7 +299,6 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
             initial={{ opacity: 0, scale: 0 }}
             animate={{ 
               opacity: [0, 1, 1, 0],
-              scale: [0, 1.2, 1, 0],
               y: [0, -5, 0]
             }}
             transition={{ duration: 2, repeat: Infinity }}
