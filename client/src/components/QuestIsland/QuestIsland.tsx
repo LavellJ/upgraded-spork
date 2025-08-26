@@ -816,6 +816,128 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         </div>
       </div>
 
+      {/* Treasure Map Progress Indicator */}
+      <motion.div
+        className="fixed top-8 right-8 z-40"
+        initial={{ opacity: 0, y: -20, rotate: -5 }}
+        animate={{ opacity: 1, y: 0, rotate: 0 }}
+        transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}
+      >
+        {/* Manual Test Button for "Counting Shells" */}
+        <button
+          onClick={() => {
+            const newCompletions = [...localCompletions];
+            if (!newCompletions.includes('beach-1')) {
+              newCompletions.push('beach-1');
+              setLocalCompletions(newCompletions);
+              localStorage.setItem('quest-island-completions', JSON.stringify(newCompletions));
+              console.log('Manually marked beach-1 as completed!');
+            }
+          }}
+          className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 text-white rounded-full text-xs hover:bg-green-600 transition-colors z-10"
+          title="Test Counting Shells Completion"
+        >
+          ✓
+        </button>
+        
+        {/* Treasure Map - Clean Style */}
+        <div className="relative">
+          <motion.img 
+            src="/attached_assets/925fba67-25bb-45e9-8e91-eb6e19d9394c_1756186426342.png" 
+            alt="Adventure Progress Map"
+            className="w-32 h-32 object-contain drop-shadow-lg hover:drop-shadow-2xl transition-all duration-300"
+            animate={{
+              y: [0, -2, 0],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          
+          {/* Adventure Trail Sparkles */}
+          {Object.values(lessonProgress).filter(p => p.completed).length > 0 && (
+            <>
+              <motion.div
+                className="absolute top-4 right-6 w-1.5 h-1.5 bg-yellow-400 rounded-full"
+                animate={{
+                  scale: [1, 1.5, 1],
+                  opacity: [0.6, 1, 0.6]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.div
+                className="absolute bottom-8 left-6 w-1 h-1 bg-amber-400 rounded-full"
+                animate={{
+                  scale: [1, 1.3, 1],
+                  opacity: [0.5, 0.9, 0.5]
+                }}
+                transition={{
+                  duration: 1.8,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.8
+                }}
+              />
+            </>
+          )}
+          
+          {/* Progress Counter */}
+          <motion.div 
+            className="absolute -bottom-2 -right-2 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 1.5, duration: 0.5, ease: "backOut" }}
+          >
+            <div className="flex items-center space-x-1">
+              <motion.span 
+                className="text-lg font-bold text-amber-600"
+                key={Object.values(lessonProgress).filter(p => p.completed).length}
+                initial={{ scale: 1.3 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                {Object.values(lessonProgress).filter(p => p.completed).length}
+              </motion.span>
+              <span className="text-sm text-amber-500 font-medium">/12</span>
+              <motion.div
+                animate={{ 
+                  rotate: [0, 15, -15, 0],
+                  scale: [1, 1.1, 1]
+                }}
+                transition={{ 
+                  duration: 3, 
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                ⭐
+              </motion.div>
+            </div>
+          </motion.div>
+          
+          {/* Completion Celebration */}
+          {Object.values(lessonProgress).filter(p => p.completed).length === 12 && (
+            <motion.div
+              className="absolute -inset-3 bg-gradient-to-r from-yellow-300 via-amber-300 to-orange-300 rounded-3xl opacity-40 blur-xl"
+              animate={{
+                scale: [1, 1.1, 1],
+                opacity: [0.3, 0.6, 0.3]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          )}
+        </div>
+      </motion.div>
 
       {/* Scout's Backpack Button - Just the backpack image */}
       <motion.div
