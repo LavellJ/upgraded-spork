@@ -243,7 +243,6 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
         <div className="floating-ui rounded-3xl p-8" data-testid="scout-try-phase">
           <div className="text-center space-y-6">
             <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center">
-              <div className="text-white text-3xl">🤝</div>
             </div>
             <div className="text-white text-xl font-bold">
               Let's try this together!
@@ -261,7 +260,7 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
             </div>
             <button
               onClick={() => handlePhaseComplete()}
-              className="px-6 py-3 bg-gradient-to-r from-purple-400 to-blue-400 text-white font-medium rounded-2xl hover:scale-105 transition-all"
+              className="px-6 py-3 bg-gradient-to-r from-purple-400 to-blue-400 text-white font-medium rounded-2xl hover:bg-gradient-to-r hover:from-purple-300 hover:to-blue-300 transition-all duration-500"
               data-testid="continue-button"
             >
               Let's keep exploring!
@@ -317,7 +316,6 @@ export function TryPhase({ content, ageGroup, teachPhaseData, onPhaseComplete, p
           <div className="floating-ui rounded-3xl p-8" data-testid="co-learning">
             <div className="text-center space-y-6">
               <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center">
-                <div className="text-white text-3xl">🤝</div>
               </div>
               
               <div className="text-white text-xl font-bold">
