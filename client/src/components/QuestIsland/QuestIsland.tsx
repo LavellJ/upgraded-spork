@@ -626,6 +626,59 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 />
               )}
 
+              {/* Lesson Vein Connections - Connect each lesson to the main pathway like veins to an artery */}
+              {lessonNodes.map(lesson => {
+                // Calculate nearest connection point on main pathway for each lesson
+                let connectionPoint = "";
+                let pathPoint = "";
+                
+                if (lesson.biome === "beach") {
+                  connectionPoint = `M ${lesson.position.x * 12} ${lesson.position.y * 10}`;
+                  pathPoint = "L 120 650";
+                } else if (lesson.biome === "jungle") {
+                  connectionPoint = `M ${lesson.position.x * 12} ${lesson.position.y * 10}`;
+                  pathPoint = "L 420 315";
+                } else if (lesson.biome === "volcano") {
+                  connectionPoint = `M ${lesson.position.x * 12} ${lesson.position.y * 10}`;
+                  pathPoint = "L 780 135";
+                } else if (lesson.biome === "lagoon") {
+                  connectionPoint = `M ${lesson.position.x * 12} ${lesson.position.y * 10}`;
+                  pathPoint = "L 720 650";
+                }
+
+                const veinPath = connectionPoint + " " + pathPoint;
+                const isUnlocked = !lesson.locked;
+                const isCompleted = lesson.completed;
+                
+                return (
+                  <motion.path
+                    key={`vein-${lesson.id}`}
+                    d={veinPath}
+                    stroke={isCompleted ? "url(#progressGradient)" : isUnlocked ? "url(#basePathGradient)" : "rgba(255,255,255,0.1)"}
+                    strokeWidth={isCompleted ? "4" : isUnlocked ? "3" : "2"}
+                    fill="none"
+                    strokeLinecap="round"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ 
+                      pathLength: isUnlocked ? 1 : 0,
+                      opacity: isCompleted ? 0.8 : isUnlocked ? 0.4 : 0.1
+                    }}
+                    transition={{ 
+                      duration: 2,
+                      delay: lesson.biome === "beach" ? 0 : lesson.biome === "jungle" ? 1 : lesson.biome === "volcano" ? 2 : 3,
+                      ease: "easeInOut" 
+                    }}
+                    style={{ 
+                      filter: isCompleted 
+                        ? "drop-shadow(0 0 4px rgba(255,215,0,0.6))"
+                        : isUnlocked 
+                        ? "drop-shadow(0 0 2px rgba(255,255,255,0.4))"
+                        : "none"
+                    }}
+                  />
+                );
+              })}
+
               {/* Energy Flow Pulses - Only on completed path sections */}
               {Object.values(lessonProgress).filter(p => p.completed).length > 0 && (
                 <>
