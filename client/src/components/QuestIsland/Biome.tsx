@@ -71,6 +71,23 @@ export function Biome({ id, name, subject, position, color, description, onClick
     }
   };
 
+  const getBiomeBackgroundColor = () => {
+    switch (id) {
+      case "volcano":
+        return "#8B4B3B"; // Warm brown-red to complement volcanic theme
+      case "beach":
+        return "#F4D4A7"; // Sandy beige to complement beach theme
+      case "meadow":
+        return "#9FBF7F"; // Soft green to complement meadow theme
+      case "jungle":
+        return "transparent"; // Already has solid background
+      case "lagoon":
+        return "transparent"; // Already has solid background
+      default:
+        return "transparent";
+    }
+  };
+
   const getBiomeElements = () => {
     switch (id) {
       case "beach":
@@ -212,7 +229,7 @@ export function Biome({ id, name, subject, position, color, description, onClick
           backgroundImage: getBiomeImage() ? `url(${getBiomeImage()})` : undefined,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundColor: getBiomeImage() ? 'transparent' : undefined
+          backgroundColor: getBiomeImage() ? getBiomeBackgroundColor() : undefined
         }}
         animate={{ 
           boxShadow: [
