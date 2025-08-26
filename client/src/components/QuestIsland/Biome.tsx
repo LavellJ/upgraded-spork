@@ -132,8 +132,6 @@ export function Biome({ id, name, subject, position, color, description, onClick
         transform: "translate(-50%, -50%)"
       }}
       onClick={onClick}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
       data-testid={`biome-${id}`}
     >
       {/* Biome Circle */}
