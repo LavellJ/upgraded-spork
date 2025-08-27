@@ -672,12 +672,12 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             {/* Clean Adventure Path */}
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 900">
               <path
-                d="M 300 350 C 500 300, 700 320, 900 380 C 950 400, 980 450, 950 520 C 920 590, 850 650, 750 680 C 650 710, 550 700, 450 650 C 350 600, 300 520, 280 450 C 260 380, 280 350, 300 350"
+                d="M 120 648 C 280 500, 360 400, 420 315 C 480 280, 720 200, 1020 135 C 980 280, 920 500, 840 720 C 700 680, 400 720, 120 648"
                 stroke="#FFD700"
-                strokeWidth="8"
+                strokeWidth="12"
                 fill="none"
                 strokeLinecap="round"
-                opacity="0.8"
+                opacity="0.9"
               />
               
               <defs>
