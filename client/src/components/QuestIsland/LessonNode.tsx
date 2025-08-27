@@ -79,11 +79,6 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
         <motion.div
           className={`relative w-12 h-12 bg-gradient-to-br ${getNodeColor()} rounded-full shadow-lg`}
           animate={{
-            boxShadow: [
-              "0 0 10px rgba(255, 193, 7, 0.5)",
-              "0 0 20px rgba(255, 193, 7, 0.8)",
-              "0 0 10px rgba(255, 193, 7, 0.5)"
-            ],
             scale: [1, 1.05, 1]
           }}
           whileHover={{ scale: 1.1 }}
