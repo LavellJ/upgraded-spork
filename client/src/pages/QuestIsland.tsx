@@ -35,20 +35,13 @@ export default function QuestIslandPage() {
         animate={{ opacity: 1, scale: 1, rotate: 0 }}
         transition={{ delay: 1.5, duration: 0.8, ease: "easeOut" }}
       >
-        <Button
+        <button
           onClick={handleOpenWorkbook}
-          className="group relative w-24 h-24 bg-gradient-to-br from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800 rounded-3xl shadow-2xl transform transition-all duration-300 hover:scale-110 hover:shadow-3xl border-4 border-amber-300 hover:border-amber-200"
-          style={{
-            boxShadow: `
-              0 10px 25px rgba(245, 158, 11, 0.4),
-              inset 0 1px 0 rgba(255, 255, 255, 0.3),
-              inset 0 -1px 0 rgba(217, 119, 6, 0.3)
-            `,
-          }}
+          className="group relative cursor-pointer transform transition-all duration-300 hover:scale-110"
           data-testid="button-open-workbook"
         >
           {/* Scout's Journal - Closed by default, Open on hover */}
-          <div className="relative w-16 h-16 transition-transform duration-200 group-hover:scale-110">
+          <div className="relative w-20 h-20">
             {/* Closed Journal (default state) */}
             <img 
               src="/attached_assets/6914ebbd-adcf-4dd8-bdc4-bd1ef3daaa23_1756264852126.png"
@@ -68,10 +61,7 @@ export default function QuestIslandPage() {
             <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-amber-900 rotate-45"></div>
             Scout's Journey Journal
           </div>
-          
-          {/* Pulsing glow effect */}
-          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-amber-400 to-amber-600 opacity-50 animate-pulse blur-sm -z-10 group-hover:opacity-70 transition-opacity duration-300"></div>
-        </Button>
+        </button>
       </motion.div>
 
       {/* Welcome Message */}
