@@ -669,236 +669,19 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             <div className="absolute inset-0 bg-gradient-to-br from-sand-200 via-sand-100 to-green-200 rounded-full opacity-90 transform rotate-12 scale-110" />
             
             
-            {/* Adventure Path with Progress */}
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 900" style={{ zIndex: 50, pointerEvents: "none" }}>
-              {/* Base Path */}
-              <motion.path
-                d="M 300 350 C 400 300, 600 280, 800 320 C 900 340, 950 380, 950 450 C 950 520, 900 600, 800 650 C 700 700, 600 720, 500 700 C 400 680, 350 620, 320 550 C 290 480, 280 420, 300 350"
-                stroke="url(#basePathGradient)"
-                strokeWidth="10"
+            {/* Clean Adventure Path */}
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 900">
+              <path
+                d="M 300 350 C 500 300, 700 320, 900 380 C 950 400, 980 450, 950 520 C 920 590, 850 650, 750 680 C 650 710, 550 700, 450 650 C 350 600, 300 520, 280 450 C 260 380, 280 350, 300 350"
+                stroke="#FFD700"
+                strokeWidth="8"
                 fill="none"
                 strokeLinecap="round"
-                pointerEvents="none"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 0.7 }}
-                transition={{ duration: 4, ease: "easeInOut" }}
-                style={{ filter: "drop-shadow(0 0 6px rgba(255,255,255,0.9))" }}
+                opacity="0.8"
               />
               
-              {/* Completed Progress Path - TEMPORARILY DISABLED FOR SHAPE DESIGN */}
-              {false && <motion.path
-                d="M 350 300 C 450 300, 550 350, 650 400 C 750 450, 850 500, 950 450 C 1000 425, 1020 380, 980 350 C 940 320, 880 340, 820 380 C 760 420, 700 480, 650 550 C 600 620, 550 680, 500 720 C 450 760, 400 780, 350 750 C 300 720, 280 660, 300 600 C 320 540, 350 480, 380 420 C 410 360, 400 320, 350 300"
-                stroke="url(#progressGradient)"
-                strokeWidth="14"
-                fill="none"
-                strokeLinecap="round"
-                pointerEvents="none"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ 
-                  pathLength: (Object.values(lessonProgress).filter(p => p.completed).length / 12) * 1,
-                  opacity: 1 
-                }}
-                transition={{ duration: 2, ease: "easeInOut" }}
-                style={{ filter: "drop-shadow(0 0 8px rgba(255,215,0,0.8))" }}
-              />}
-              
-              {/* Animated Sparkles along completed path */}
-              {Object.values(lessonProgress).filter(p => p.completed).length > 0 && (
-                <motion.path
-                  d="M 350 300 C 450 300, 550 350, 650 400 C 750 450, 850 500, 950 450 C 1000 425, 1020 380, 980 350 C 940 320, 880 340, 820 380 C 760 420, 700 480, 650 550 C 600 620, 550 680, 500 720 C 450 760, 400 780, 350 750 C 300 720, 280 660, 300 600 C 320 540, 350 480, 380 420 C 410 360, 400 320, 350 300"
-                  stroke="url(#sparkleGradient)"
-                  strokeWidth="18"
-                  fill="none"
-                  strokeLinecap="round"
-                  pointerEvents="none"
-                  pathLength={(Object.values(lessonProgress).filter(p => p.completed).length / 12) * 1}
-                  animate={{ 
-                    opacity: [0.4, 0.9, 0.4],
-                    strokeWidth: [16, 22, 16]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  style={{ filter: "drop-shadow(0 0 10px rgba(255,255,255,1))" }}
-                />
-              )}
-
-              {/* Tree Branch System - Direct branches from trunk to lesson leaves */}
-              {Object.entries(treeBranches).map(([biomeName, biomeData], biomeIndex) => 
-                biomeData.branches.map((branch, branchIndex) => {
-                  const lesson = lessonNodes.find(l => l.id === branch.lessonId);
-                  if (!lesson) return null;
-
-                  // Create direct branch path from trunk point to leaf endpoint
-                  const branchPath = `M ${biomeData.trunkPoint.x} ${biomeData.trunkPoint.y} L ${branch.endpoint.x} ${branch.endpoint.y}`;
-
-                  const isUnlocked = !lesson.locked;
-                  const isCompleted = lesson.completed;
-                  
-                  return (
-                    <motion.path
-                      key={`branch-${lesson.id}`}
-                      d={branchPath}
-                      stroke={isCompleted ? "rgba(255,215,0,0.6)" : isUnlocked ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.5)"}
-                      strokeWidth={isCompleted ? "6" : isUnlocked ? "5" : "4"}
-                      fill="none"
-                      strokeLinecap="round"
-                      pointerEvents="none"
-                      initial={{ pathLength: 0, opacity: 0 }}
-                      animate={{ 
-                        pathLength: 1, // Tree branches - ALL lessons get branches (locked, unlocked, completed)
-                        opacity: isCompleted ? 1.0 : isUnlocked ? 0.9 : 0.7
-                      }}
-                      transition={{ 
-                        duration: 2,
-                        delay: biomeIndex * 0.6 + branchIndex * 0.3,
-                        ease: "easeInOut" 
-                      }}
-                      style={{ 
-                        filter: isCompleted 
-                          ? "drop-shadow(0 0 4px rgba(255,215,0,0.5))"
-                          : isUnlocked 
-                          ? "drop-shadow(0 0 2px rgba(255,255,255,0.3))"
-                          : "drop-shadow(0 0 1px rgba(255,255,255,0.2))",
-                        pointerEvents: "none"
-                      }}
-                    />
-                  );
-                })
-              ).flat()}
-
-              {/* Branch Energy Pulses - Flow from trunk through completed branches to leaves */}
-              {Object.entries(treeBranches).map(([biomeName, biomeData], biomeIndex) => 
-                biomeData.branches.map((branch, branchIndex) => {
-                  const lesson = lessonNodes.find(l => l.id === branch.lessonId);
-                  if (!lesson || !lesson.completed) return null;
-
-                  const pathId = `branch-path-${lesson.id}`;
-                  const branchPath = `M ${biomeData.trunkPoint.x} ${biomeData.trunkPoint.y} L ${branch.endpoint.x} ${branch.endpoint.y}`;
-                  
-                  return (
-                    <g key={`branch-energy-${lesson.id}`}>
-                      {/* Hidden path for energy flow animation */}
-                      <path
-                        id={pathId}
-                        d={branchPath}
-                        fill="none"
-                        stroke="none"
-                      />
-                      
-                      {/* Energy pulse flowing from trunk to leaf */}
-                      <motion.circle
-                        r="4"
-                        fill="url(#energyPulseGradient)"
-                        opacity="0.95"
-                      >
-                        <animateMotion
-                          dur={`${2.5 + branchIndex * 0.5}s`}
-                          repeatCount="indefinite"
-                          begin={`${biomeIndex * 0.4}s`}
-                        >
-                          <mpath xlinkHref={`#${pathId}`} />
-                        </animateMotion>
-                        <animate
-                          attributeName="r"
-                          values="3;5;3"
-                          dur="1.8s"
-                          repeatCount="indefinite"
-                        />
-                      </motion.circle>
-                    </g>
-                  );
-                })
-              ).flat()}
-
-              {/* Energy Flow Pulses - Only on completed path sections */}
-              {Object.values(lessonProgress).filter(p => p.completed).length > 0 && (
-                <>
-                  {/* Hidden path for energy flow animation */}
-                  <path
-                    id="adventurePath"
-                    d="M 350 300 C 450 300, 550 350, 650 400 C 750 450, 850 500, 950 450 C 1000 425, 1020 380, 980 350 C 940 320, 880 340, 820 380 C 760 420, 700 480, 650 550 C 600 620, 550 680, 500 720 C 450 760, 400 780, 350 750 C 300 720, 280 660, 300 600 C 320 540, 350 480, 380 420 C 410 360, 400 320, 350 300"
-                    fill="none"
-                    stroke="none"
-                  />
-                  
-                  {/* Primary Energy Pulse */}
-                  <motion.circle
-                    r="6"
-                    fill="url(#energyPulseGradient)"
-                    opacity="0.8"
-                  >
-                    <animateMotion
-                      dur="8s"
-                      repeatCount="indefinite"
-                    >
-                      <mpath xlinkHref="#adventurePath" />
-                    </animateMotion>
-                    <animate
-                      attributeName="r"
-                      values="4;8;4"
-                      dur="2s"
-                      repeatCount="indefinite"
-                    />
-                    <animate
-                      attributeName="opacity"
-                      values="0.3;0.8;0.3"
-                      dur="2s"
-                      repeatCount="indefinite"
-                    />
-                  </motion.circle>
-                  
-                  {/* Secondary Energy Pulse (offset) */}
-                  <motion.circle
-                    r="4"
-                    fill="url(#energyPulse2Gradient)"
-                    opacity="0.6"
-                  >
-                    <animateMotion
-                      dur="12s"
-                      repeatCount="indefinite"
-                      begin="4s"
-                    >
-                      <mpath xlinkHref="#adventurePath" />
-                    </animateMotion>
-                    <animate
-                      attributeName="r"
-                      values="3;6;3"
-                      dur="3s"
-                      repeatCount="indefinite"
-                    />
-                  </motion.circle>
-                  
-                  {/* Trailing Sparkles */}
-                  {[...Array(3)].map((_, i) => (
-                    <motion.circle
-                      key={i}
-                      r="2"
-                      fill="rgba(255, 215, 0, 0.4)"
-                      opacity="0.5"
-                    >
-                      <animateMotion
-                        dur="10s"
-                        repeatCount="indefinite"
-                        begin={`${i * 2}s`}
-                      >
-                        <mpath xlinkHref="#adventurePath" />
-                      </animateMotion>
-                      <animate
-                        attributeName="opacity"
-                        values="0;0.6;0"
-                        dur="4s"
-                        repeatCount="indefinite"
-                      />
-                    </motion.circle>
-                  ))}
-                </>
-              )}
-              
               <defs>
-                <linearGradient id="basePathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#e5e7eb" stopOpacity="0.6" />
-                  <stop offset="50%" stopColor="#d1d5db" stopOpacity="0.7" />
-                  <stop offset="100%" stopColor="#9ca3af" stopOpacity="0.6" />
-                </linearGradient>
+                {/* Gradient definitions for progress effects */}
                 <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.9" />
                   <stop offset="50%" stopColor="#f59e0b" stopOpacity="1.0" />
@@ -933,7 +716,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               />
             ))}
 
-            {/* Biome Completion Effects - Positioned properly within map container */}
+            {/* Biome Completion Effects */}
             {biomes.map(biome => {
               const biomeLessons = lessonNodes.filter(node => node.biome === biome.id);
               const completedInBiome = biomeLessons.filter(node => node.completed).length;
@@ -942,7 +725,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               
               return (
                 <div key={`${biome.id}-effects`}>
-                  {/* Biome completion indicator - positioned within map container */}
+                  {/* Biome completion indicator */}
                   {isUnlocked && (
                     <motion.div
                       className="absolute z-10"
@@ -959,34 +742,10 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                         ${isFullyCompleted 
                           ? 'bg-green-500 text-white' 
                           : 'bg-blue-500 text-white opacity-80'
-                        }
-                      `}>
-                        {isFullyCompleted ? '🏆' : `${completedInBiome}/${biomeLessons.length}`}
+                        }`}
+                      >
+                        {completedInBiome}/{biomeLessons.length}
                       </div>
-                    </motion.div>
-                  )}
-                  
-                  {/* Biome completion celebration effect - positioned within map container */}
-                  {isFullyCompleted && (
-                    <motion.div
-                      className="absolute pointer-events-none z-0"
-                      style={{
-                        left: `calc(${biome.position.x}% - 64px)`,
-                        top: `calc(${biome.position.y}% - 64px)`,
-                        width: '128px',
-                        height: '128px',
-                      }}
-                      animate={{
-                        scale: [1, 1.2, 1],
-                        opacity: [0.3, 0.6, 0.3]
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                    >
-                      <div className="w-full h-full bg-yellow-300 rounded-full opacity-20 blur-xl" />
                     </motion.div>
                   )}
                 </div>
@@ -1002,358 +761,58 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               />
             ))}
 
-            {/* Scout Character - Now Clickable for Guidance */}
-            <div
-              className="cursor-pointer"
-              onClick={handleScoutClick}
-              data-testid="scout-clickable"
-            >
-              <Scout 
-                position={scoutPosition}
-                target={scoutTarget}
-                onReachTarget={() => setScoutTarget(null)}
-                ageGroup="pre-primary"
-                currentBiome={scoutTarget ?? undefined}
-              />
-            </div>
-            
-            {/* Scout Guidance Message */}
-            {showScoutMessage && scoutMessage && (
-              <motion.div
-                className="fixed top-48 left-4 bg-white/95 text-gray-800 rounded-2xl shadow-lg backdrop-blur-sm border border-white/20 max-w-xl w-[28rem] z-50"
-                initial={{ opacity: 0, scale: 0.8, y: -20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.8, y: -20 }}
-                transition={{ type: "spring", damping: 15 }}
-              >
-                <div className="flex items-start space-x-4 p-5">
-                  {/* Scout Image - Use thinking image for guidance */}
-                  <div className="flex-shrink-0">
-                    <img
-                      src={explorerThinking}
-                      alt="Scout"
-                      className="w-16 h-16 object-contain drop-shadow-lg"
-                    />
-                  </div>
-                  
-                  {/* Message Content */}
-                  <div className="flex-1 text-left">
-                    <p 
-                      className="font-medium leading-relaxed text-sm break-words hyphens-auto overflow-hidden"
-                      style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}
-                    >
-                      {scoutMessage}
-                    </p>
-                    <div className="text-sm text-gray-500 mt-2">Click me for guidance!</div>
-                  </div>
-                </div>
-                
-                {/* Speech bubble arrow */}
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2">
-                  <div className="w-0 h-0 border-l-6 border-r-6 border-t-6 border-l-transparent border-r-transparent border-t-white/95"></div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Interactive Collectibles - Only show uncollected ones */}
-            {collectibles.filter(c => !c.collected).map((collectible) => {
-              const isNewDiscovery = newDiscovery === collectible.id;
-              
-              return (
-                <motion.div
-                  key={collectible.id}
-                  className={`absolute cursor-pointer transform transition-all duration-300 hover:scale-110 ${
-                    isNewDiscovery ? 'w-10 h-10' : 'w-6 h-6'
-                  }`}
-                  style={{
-                    left: `${collectible.position.x}%`,
-                    top: `${collectible.position.y}%`,
-                  }}
-                  onClick={() => handleCollectibleClick(collectible)}
-                  data-testid={`collectible-${collectible.id}`}
-                  whileHover={{ scale: 1.3 }}
-                  whileTap={{ scale: 0.9 }}
-                  animate={isNewDiscovery ? {
-                    y: [0, -12, 0],
-                    scale: [1, 1.3, 1.1, 1],
-                    rotate: [0, 5, -5, 0]
-                  } : {
-                    y: [0, -6, 0],
-                    scale: [1, 1.05, 1]
-                  }}
-                  transition={isNewDiscovery ? {
-                    duration: 1.5,
-                    repeat: 3,
-                    ease: "easeInOut"
-                  } : {
-                    duration: 2.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: Math.random() * 2
-                  }}
-                  initial={isNewDiscovery ? { scale: 0, rotate: -180 } : undefined}
-                >
-                  {/* Simple geometric collectibles matching Alto's style */}
-                  <div className={`w-full h-full rounded-full ${getCollectibleStyle(collectible.biome)} border-2 border-white/50 shadow-lg`} />
-                  
-                  {/* Enhanced glow effect for discoveries */}
-                  <motion.div
-                    className={`absolute inset-0 rounded-full ${getCollectibleGlow(collectible.biome)} ${
-                      isNewDiscovery ? 'opacity-90' : 'opacity-60'
-                    }`}
-                    animate={isNewDiscovery ? {
-                      scale: [1, 1.8, 1.3, 1],
-                      opacity: [0.9, 0.3, 0.8, 0.6]
-                    } : {
-                      scale: [1, 1.2, 1],
-                      opacity: [0.4, 0.8, 0.4]
-                    }}
-                    transition={isNewDiscovery ? {
-                      duration: 2,
-                      repeat: 2,
-                      ease: "easeInOut"
-                    } : {
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
-                  
-                  {/* Special sparkle effects for new discoveries */}
-                  {isNewDiscovery && (
-                    <>
-                      <motion.div
-                        className="absolute -top-2 -right-2 w-3 h-3 bg-yellow-300 rounded-full"
-                        animate={{
-                          scale: [0, 1.5, 0],
-                          rotate: [0, 180, 360],
-                          opacity: [1, 0.5, 1]
-                        }}
-                        transition={{
-                          duration: 1,
-                          repeat: 4,
-                          ease: "easeInOut"
-                        }}
-                      />
-                      <motion.div
-                        className="absolute -bottom-2 -left-2 w-2 h-2 bg-white rounded-full"
-                        animate={{
-                          scale: [0, 1.2, 0],
-                          opacity: [1, 0.3, 1]
-                        }}
-                        transition={{
-                          duration: 0.8,
-                          repeat: 5,
-                          ease: "easeInOut",
-                          delay: 0.3
-                        }}
-                      />
-                      <motion.div
-                        className="absolute -top-3 left-1/2 w-1 h-1 bg-pink-300 rounded-full"
-                        animate={{
-                          scale: [0, 1.8, 0],
-                          y: [0, -10, 0]
-                        }}
-                        transition={{
-                          duration: 1.2,
-                          repeat: 3,
-                          ease: "easeInOut",
-                          delay: 0.6
-                        }}
-                      />
-                    </>
-                  )}
-                </motion.div>
-              );
-            })}
-
-            {/* Ambient Elements - Spread across the epic journey */}
-            <motion.div
-              className="absolute top-48 left-96 w-3 h-3 bg-yellow-300 rounded-full opacity-70"
-              animate={{ 
-                y: [0, -10, 0],
-                opacity: [0.4, 0.8, 0.4],
-                scale: [0.8, 1.2, 0.8]
-              }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            />
-            
-            <motion.div
-              className="absolute bottom-80 right-48 w-2 h-2 bg-purple-300 rounded-full opacity-60"
-              animate={{ 
-                y: [0, -15, 0],
-                x: [0, 5, 0],
-                opacity: [0.3, 0.7, 0.3]
-              }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            />
-            
-            <motion.div
-              className="absolute top-24 right-64 w-2 h-2 bg-blue-300 rounded-full opacity-50"
-              animate={{ 
-                y: [0, -8, 0],
-                x: [0, -3, 0],
-                opacity: [0.3, 0.6, 0.3]
-              }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-            />
-            
-            <motion.div
-              className="absolute left-48 top-96 w-1 h-1 bg-green-300 rounded-full opacity-60"
-              animate={{ 
-                y: [0, -12, 0],
-                opacity: [0.4, 0.8, 0.4],
-                scale: [1, 1.3, 1]
-              }}
-              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-            />
-            
-            <motion.div
-              className="absolute top-60 left-72 w-1.5 h-1.5 bg-orange-300 rounded-full opacity-40"
-              animate={{ 
-                y: [0, -6, 0],
-                rotate: [0, 180, 360],
-                opacity: [0.2, 0.5, 0.2]
-              }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-            />
           </div>
-        </div>
+        </div>  
       </div>
 
-      {/* Treasure Map Progress Indicator */}
-      <motion.div
-        className="fixed top-8 left-8 z-40"
-        initial={{ opacity: 0, y: -20, rotate: -5 }}
-        animate={{ opacity: 1, y: 0, rotate: 0 }}
-        transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}
+      {/* Scout Character - Now Clickable for Guidance */}
+      <div
+        className="cursor-pointer"
+        onClick={handleScoutClick}
+        data-testid="scout-clickable"
       >
-        
-        {/* Treasure Map - Clean Style */}
-        <div className="relative">
-          <motion.img 
-            src="/attached_assets/925fba67-25bb-45e9-8e91-eb6e19d9394c_1756186426342.png" 
-            alt="Adventure Progress Map"
-            className="w-32 h-32 object-contain drop-shadow-lg hover:drop-shadow-2xl transition-all duration-300"
-            animate={{
-              y: [0, -2, 0],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-          
-          {/* Adventure Trail Sparkles */}
-          {Object.values(lessonProgress).filter(p => p.completed).length > 0 && (
-            <>
-              <motion.div
-                className="absolute top-4 right-6 w-1.5 h-1.5 bg-yellow-400 rounded-full"
-                animate={{
-                  scale: [1, 1.5, 1],
-                  opacity: [0.6, 1, 0.6]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-              <motion.div
-                className="absolute bottom-8 left-6 w-1 h-1 bg-amber-400 rounded-full"
-                animate={{
-                  scale: [1, 1.3, 1],
-                  opacity: [0.5, 0.9, 0.5]
-                }}
-                transition={{
-                  duration: 1.8,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 0.8
-                }}
-              />
-            </>
-          )}
-          
-          {/* Progress Counter */}
-          <motion.div 
-            className="absolute -bottom-2 -right-2 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 1.5, duration: 0.5, ease: "backOut" }}
-          >
-            <div className="flex items-center space-x-1">
-              <motion.span 
-                className="text-lg font-bold text-amber-600"
-                key={Object.values(lessonProgress).filter(p => p.completed).length}
-                initial={{ scale: 1.3 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                {Object.values(lessonProgress).filter(p => p.completed).length}
-              </motion.span>
-              <span className="text-sm text-amber-500 font-medium">/12</span>
-              <motion.div
-                animate={{ 
-                  rotate: [0, 15, -15, 0],
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{ 
-                  duration: 3, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                ⭐
-              </motion.div>
-            </div>
-          </motion.div>
-          
-          {/* Completion Celebration */}
-          {Object.values(lessonProgress).filter(p => p.completed).length === 12 && (
-            <motion.div
-              className="absolute -inset-3 bg-gradient-to-r from-yellow-300 via-amber-300 to-orange-300 rounded-3xl opacity-40 blur-xl"
-              animate={{
-                scale: [1, 1.1, 1],
-                opacity: [0.3, 0.6, 0.3]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-          )}
-        </div>
-      </motion.div>
-
-      {/* Scout's Backpack Button - Just the backpack image */}
-      <motion.div
-        className="fixed bottom-8 right-8 cursor-pointer"
-        onClick={() => setShowJournal(true)}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
-        data-testid="button-scout-backpack"
-      >
-        <img 
-          src="/attached_assets/fd4dc3d1-ed79-4c91-a0b1-e71382387485_1756182003955.png"
-          alt="Scout's Backpack"
-          className="w-32 h-32 object-contain drop-shadow-lg hover:drop-shadow-2xl transition-all duration-300"
+        <Scout 
+          position={scoutPosition}
+          target={scoutTarget}
+          onReachTarget={() => setScoutTarget(null)}
+          ageGroup="pre-primary"
+          currentBiome={scoutTarget ?? undefined}
         />
-      </motion.div>
+      </div>
+            
+      {/* Scout Guidance Message */}
+      {showScoutMessage && scoutMessage && (
+        <motion.div
+          className="fixed top-48 left-4 bg-white/95 text-gray-800 rounded-2xl shadow-lg backdrop-blur-sm border border-white/20 max-w-xl w-[28rem] z-50"
+          initial={{ opacity: 0, scale: 0.8, y: -20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.8, y: -20 }}
+          transition={{ type: "spring", damping: 15 }}
+        >
+          <div className="flex items-start space-x-4 p-5">
+            {/* Scout Image */}
+            <div className="flex-shrink-0">
+              <img
+                src={explorerThinking}
+                alt="Scout"
+                className="w-16 h-16 object-contain drop-shadow-lg"
+              />
+            </div>
+            
+            {/* Message Content */}
+            <div className="flex-1 text-left">
+              <p 
+                className="font-medium leading-relaxed text-sm break-words hyphens-auto overflow-hidden"
+                style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}
+              >
+                {scoutMessage}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Journey Journal Modal */}
-      <AnimatePresence>
-        {showJournal && (
-          <JourneyJournal
-            collectibles={collectibles}
-            onClose={() => setShowJournal(false)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Collectible Story Modal */}
       <AnimatePresence>
         {showCollectibleStory && currentCollectible && (
           <motion.div
@@ -1361,18 +820,16 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setShowCollectibleStory(false)}
           >
             <motion.div
               className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl max-w-md mx-4 overflow-hidden"
-              initial={{ scale: 0.8, opacity: 0, y: 50 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.8, opacity: 0, y: 50 }}
+              initial={{ scale: 0.8, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.8, y: 20 }}
               transition={{ type: "spring", damping: 20 }}
-              onClick={(e) => e.stopPropagation()}
             >
-              {/* Header with collectible orb */}
-              <div className="bg-gradient-to-br from-yellow-200 via-amber-100 to-orange-200 p-6 text-center">
+              {/* Collectible Display */}
+              <div className="bg-gradient-to-br from-yellow-100 to-orange-100 p-8 text-center">
                 <motion.div
                   className="w-20 h-20 mx-auto mb-4"
                   initial={{ scale: 0, rotate: -180 }}
