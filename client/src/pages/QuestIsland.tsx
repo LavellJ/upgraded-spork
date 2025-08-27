@@ -60,11 +60,6 @@ export default function QuestIslandPage() {
               />
             </div>
             
-            {/* Floating tooltip */}
-            <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-amber-900 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap font-medium shadow-lg">
-              <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-amber-900 rotate-45"></div>
-              Scout's Journey Journal
-            </div>
           </button>
         </motion.div>
 
