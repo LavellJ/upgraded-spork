@@ -3,7 +3,7 @@ import { useState } from "react";
 
 // Import biome illustrations
 import jungleBiome from '@assets/generated_images/altos_jungle_biome.png';
-import lagoonBiome from '@assets/generated_images/altos_lagoon_biome.png';
+import lagoonBiome from '@assets/1596b76d-9d32-4f53-81cb-17b6a9d3f4c5_1756280188364.png';
 import volcanoBiome from '@assets/generated_images/altos_volcano_biome.png';
 import beachBiome from '@assets/generated_images/altos_beach_biome.png';
 import meadowBiome from '@assets/generated_images/altos_meadow_biome.png';
