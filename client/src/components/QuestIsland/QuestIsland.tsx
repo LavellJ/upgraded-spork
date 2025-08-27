@@ -694,30 +694,26 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       <div className="absolute bottom-4 right-4 z-40">
         <motion.button
           onClick={() => setShowJourneyJournal(true)}
-          className="bg-gradient-to-br from-green-500 to-emerald-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+          className="relative group"
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.9, type: "spring", stiffness: 200 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           data-testid="backpack-button"
         >
-          <div className="relative">
-            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-green-300 shadow-lg">
-              <img 
-                src={backpackIcon} 
-                alt="Backpack" 
-                className="w-full h-full object-cover"
-              />
+          <img 
+            src={backpackIcon} 
+            alt="Backpack" 
+            className="w-20 h-20 drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-300"
+          />
+          {collectibles.filter(c => c.collected).length > 0 && (
+            <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg">
+              <span className="text-white text-xs font-bold">
+                {collectibles.filter(c => c.collected).length}
+              </span>
             </div>
-            {collectibles.filter(c => c.collected).length > 0 && (
-              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center border-2 border-white">
-                <span className="text-white text-xs font-bold">
-                  {collectibles.filter(c => c.collected).length}
-                </span>
-              </div>
-            )}
-          </div>
+          )}
         </motion.button>
       </div>
 
