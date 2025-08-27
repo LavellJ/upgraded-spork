@@ -197,11 +197,15 @@ export function Biome({ id, name, subject, position, color, description, onClick
           className="absolute inset-0 rounded-full"
           style={getBiomeImage() ? {
             backgroundImage: `url(${getBiomeImage()})`,
-            backgroundSize: 'cover',
+            backgroundSize: '110%',
             backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
             imageRendering: 'auto',
-            filter: 'brightness(1.05) contrast(1.05)',
-            transform: 'scale(1.01)',
+            WebkitBackfaceVisibility: 'hidden' as any,
+            backfaceVisibility: 'hidden',
+            WebkitTransform: 'translateZ(0)' as any,
+            transform: 'translateZ(0)',
+            filter: 'blur(0px)',
           } : {}}
         />
         
