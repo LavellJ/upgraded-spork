@@ -612,6 +612,25 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
+      {/* Discreet Return to Home Button */}
+      <div className="absolute top-4 right-4 z-50">
+        <motion.button
+          onClick={() => setLocation("/")}
+          className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full w-10 h-10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-all duration-300 group"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          data-testid="button-return-home"
+          title="Return to LearnOz Home"
+        >
+          <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+          </svg>
+        </motion.button>
+      </div>
+
       {/* Floating Clouds */}
       <motion.div
         className="absolute top-10 left-10 w-32 h-16 bg-white/40 rounded-full blur-sm"
