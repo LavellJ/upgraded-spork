@@ -244,35 +244,6 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         reward: "Observation +1"
       }
     ],
-    meadow: [
-      {
-        id: "meadow-butterfly",
-        name: "Gentle Butterfly",
-        description: "A delicate butterfly wing that shimmers softly.",
-        image: "", biome: "meadow", collected: false,
-        position: { x: 55, y: 65 },
-        story: "This butterfly wing reminds us of transformation and growth. Like learning, it shows us that change can be beautiful and peaceful.",
-        reward: "Growth Mindset +1"
-      },
-      {
-        id: "meadow-dewdrop",
-        name: "Morning Dewdrop",
-        description: "A dewdrop that captures the morning light.",
-        image: "", biome: "meadow", collected: false,
-        position: { x: 58, y: 68 },
-        story: "Each morning, this dewdrop reflects the whole world in its tiny sphere. It teaches us to see beauty in small, quiet moments.",
-        reward: "Mindfulness +1"
-      },
-      {
-        id: "meadow-pebble",
-        name: "Harmony Pebble",
-        description: "A smooth pebble that brings inner calm.",
-        image: "", biome: "meadow", collected: false,
-        position: { x: 52, y: 62 },
-        story: "Worn smooth by wind and rain, this pebble holds peaceful energy. It reminds us that patience and kindness make everything better.",
-        reward: "Calm Wisdom +1"
-      }
-    ],
     lagoon: [
       {
         id: "lagoon-pearl",
@@ -327,7 +298,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     
     // Get biome from completed lesson
     const completedBiome = completedLessonId.split('-')[0];
-    const availableBiomes = ['beach', 'jungle', 'volcano', 'meadow', 'lagoon'];
+    const availableBiomes = ['beach', 'jungle', 'volcano', 'lagoon'];
     
     // 60% chance to find collectible from same biome, 40% chance from any biome
     const searchBiomes = Math.random() < 0.6 ? [completedBiome] : availableBiomes;
@@ -567,7 +538,6 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       case 'beach': return 'bg-gradient-to-br from-blue-300 to-cyan-400';
       case 'jungle': return 'bg-gradient-to-br from-green-300 to-emerald-400';
       case 'volcano': return 'bg-gradient-to-br from-red-300 to-orange-400';
-      case 'meadow': return 'bg-gradient-to-br from-pink-300 to-purple-400';
       case 'lagoon': return 'bg-gradient-to-br from-indigo-300 to-blue-400';
       default: return 'bg-gradient-to-br from-yellow-300 to-amber-400';
     }
@@ -578,7 +548,6 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       case 'beach': return 'bg-cyan-200';
       case 'jungle': return 'bg-green-200';
       case 'volcano': return 'bg-orange-200';
-      case 'meadow': return 'bg-purple-200';
       case 'lagoon': return 'bg-blue-200';
       default: return 'bg-yellow-200';
     }
@@ -639,14 +608,6 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       color: "from-cyan-200 to-blue-300", 
       description: "Learn about our world together"
     },
-    {
-      id: "meadow",
-      name: "Gentle Meadow",
-      subject: "Creativity & Art",
-      position: { x: 55, y: 58 }, // Central area
-      color: "from-green-200 to-yellow-200",
-      description: "Express yourself through art and music"
-    }
   ];
 
   return (

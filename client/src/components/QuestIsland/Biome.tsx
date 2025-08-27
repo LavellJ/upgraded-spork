@@ -6,7 +6,6 @@ import jungleBiome from '@assets/93d1f38d-b62e-45ff-ba28-513648083209_1756280426
 import lagoonBiome from '@assets/1596b76d-9d32-4f53-81cb-17b6a9d3f4c5_1756280188364.png';
 import volcanoBiome from '@assets/21ffafcd-859d-41f3-af58-d7eb82341f22_1756280344496.png';
 import beachBiome from '@assets/530f43b9-b747-4b3f-b133-32f866bee0fe_1756280261658.png';
-import meadowBiome from '@assets/generated_images/altos_meadow_biome.png';
 
 interface BiomeProps {
   id: string;
@@ -47,8 +46,6 @@ export function Biome({ id, name, subject, position, color, description, onClick
         return "🌋";
       case "lagoon":
         return "🌊";
-      case "meadow":
-        return "🌸";
       default:
         return "🏝️";
     }
@@ -64,8 +61,6 @@ export function Biome({ id, name, subject, position, color, description, onClick
         return volcanoBiome;
       case "lagoon":
         return lagoonBiome;
-      case "meadow":
-        return meadowBiome;
       default:
         return null;
     }
@@ -161,28 +156,6 @@ export function Biome({ id, name, subject, position, color, description, onClick
                 scale: [0.5, 1.2, 0.5]
               }}
               transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            />
-          </>
-        );
-      case "meadow":
-        return (
-          <>
-            {/* Floating petals */}
-            <motion.div
-              className="absolute top-1 left-3 w-2 h-2 bg-pink-300/60 rounded-full"
-              animate={{ 
-                y: [0, -5, 0],
-                opacity: [0.4, 0.8, 0.4]
-              }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div
-              className="absolute bottom-3 right-2 w-1.5 h-1.5 bg-yellow-300/50 rounded-full"
-              animate={{ 
-                rotate: [0, 360],
-                scale: [0.8, 1.2, 0.8]
-              }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
             />
           </>
         );
