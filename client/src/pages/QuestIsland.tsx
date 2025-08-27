@@ -30,7 +30,7 @@ export default function QuestIslandPage() {
 
       {/* Scout's Workbook Button */}
       <motion.div
-        className="fixed top-8 right-8 z-50"
+        className="fixed top-1/2 right-8 transform -translate-y-1/2 z-50"
         initial={{ opacity: 0, scale: 0, rotate: -180 }}
         animate={{ opacity: 1, scale: 1, rotate: 0 }}
         transition={{ delay: 1.5, duration: 0.8, ease: "easeOut" }}
