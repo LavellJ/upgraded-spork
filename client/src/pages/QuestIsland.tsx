@@ -37,7 +37,7 @@ export default function QuestIslandPage() {
       >
         <Button
           onClick={handleOpenWorkbook}
-          className="group relative w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800 rounded-2xl shadow-2xl transform transition-all duration-300 hover:scale-110 hover:shadow-3xl border-4 border-amber-300 hover:border-amber-200"
+          className="group relative w-24 h-24 bg-gradient-to-br from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800 rounded-3xl shadow-2xl transform transition-all duration-300 hover:scale-110 hover:shadow-3xl border-4 border-amber-300 hover:border-amber-200"
           style={{
             boxShadow: `
               0 10px 25px rgba(245, 158, 11, 0.4),
@@ -48,7 +48,7 @@ export default function QuestIslandPage() {
           data-testid="button-open-workbook"
         >
           {/* Scout's Backpack Icon */}
-          <span className="text-3xl group-hover:scale-110 transition-transform duration-200">
+          <span className="text-4xl group-hover:scale-110 transition-transform duration-200">
             🎒
           </span>
           
@@ -59,7 +59,7 @@ export default function QuestIslandPage() {
           </div>
           
           {/* Pulsing glow effect */}
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 opacity-50 animate-pulse blur-sm -z-10 group-hover:opacity-70 transition-opacity duration-300"></div>
+          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-amber-400 to-amber-600 opacity-50 animate-pulse blur-sm -z-10 group-hover:opacity-70 transition-opacity duration-300"></div>
         </Button>
       </motion.div>
 
