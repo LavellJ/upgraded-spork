@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { AtmosphericBackground } from "@/components/AtmosphericBackground";
-import { FloatingNavigation } from "@/components/FloatingNavigation";
 import { AgeSelector, type AgeGroup } from "@/components/AgeSelector";
 import { BreakActivities } from "@/components/BreakActivities";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,6 @@ export default function Home() {
   return (
     <>
       <AtmosphericBackground />
-      <FloatingNavigation />
       
       {/* Main Content */}
       <div className="relative z-10 min-h-screen flex flex-col">

@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { AtmosphericBackground } from "@/components/AtmosphericBackground";
-import { FloatingNavigation } from "@/components/FloatingNavigation";
 import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { LearningCycle } from "@/components/LearningCycle";
 import { BadgeNotification } from "@/components/BadgeNotification";
@@ -113,7 +112,6 @@ export default function Learning() {
     return (
       <>
         <AtmosphericBackground />
-        <FloatingNavigation />
         <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
           <div className="text-center">
             <h2 className="font-display text-3xl font-bold text-white mb-6">
@@ -132,7 +130,6 @@ export default function Learning() {
   return (
     <>
       <AtmosphericBackground />
-      <FloatingNavigation />
       
       <div className="relative z-10 min-h-screen pt-24 px-4">
         <div className="max-w-7xl mx-auto">
