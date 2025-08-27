@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import balloonIcon from '@assets/097fe560-b8ac-4192-b450-4f106e9ff693_1756279378478.png';
 
 interface LessonNodeProps {
   id: string;
@@ -18,7 +19,13 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
   };
 
   const getNodeIcon = () => {
-    if (completed) return "✓";
+    if (completed) return (
+      <img 
+        src={balloonIcon} 
+        alt="Completed" 
+        className="w-8 h-8 object-contain"
+      />
+    );
     if (locked) return "🔒";
     return "●";
   };
