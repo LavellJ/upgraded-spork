@@ -5,6 +5,7 @@ import { BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QuestIsland as QuestIslandMap } from "@/components/QuestIsland/QuestIsland";
 import { FloatingNavigation } from "@/components/FloatingNavigation";
+import { AtmosphericBackground } from "@/components/AtmosphericBackground";
 import { getLearnerName } from "@/utils/learnerName";
 
 export default function QuestIslandPage() {
@@ -22,8 +23,10 @@ export default function QuestIslandPage() {
   };
 
   return (
-    <div className="relative min-h-screen">
-      <FloatingNavigation />
+    <>
+      <AtmosphericBackground />
+      <div className="relative min-h-screen">
+        <FloatingNavigation />
 
       {/* Quest Island Map */}
       <QuestIslandMap onLessonSelect={handleLessonSelect} />
@@ -87,6 +90,7 @@ export default function QuestIslandPage() {
           Complete lessons to unlock new areas and collect amazing treasures!
         </p>
       </motion.div>
-    </div>
+      </div>
+    </>
   );
 }
