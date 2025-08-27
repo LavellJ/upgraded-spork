@@ -405,7 +405,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       ]
     },
     volcano: {
-      trunkPoint: { x: 780, y: 135 },
+      trunkPoint: { x: 1020, y: 135 },
       branches: [
         { 
           endpoint: { x: 820, y: 80 }, // Branch 1 - upward spread
@@ -425,7 +425,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       ]
     },
     lagoon: {
-      trunkPoint: { x: 720, y: 650 },
+      trunkPoint: { x: 840, y: 720 },
       branches: [
         { 
           endpoint: { x: 660, y: 720 }, // Branch 1 - left-down spread
