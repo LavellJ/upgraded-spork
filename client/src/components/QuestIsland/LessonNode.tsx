@@ -80,10 +80,12 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
         <motion.div
           className="relative"
           animate={{
-            y: [0, -4, 0],
+            y: [0, -8, 0],
+            rotate: [0, 2, -2, 0],
+            scale: [1, 1.1, 1]
           }}
           transition={{
-            duration: 4,
+            duration: 2.5,
             repeat: Infinity,
             ease: "easeInOut"
           }}
@@ -94,18 +96,31 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
           <motion.div
             className={`absolute inset-0 w-12 h-12 bg-gradient-to-br ${getNodeColor()} rounded-full shadow-lg -z-10`}
             animate={{
-              scale: [1, 1.05, 1]
+              scale: [1, 1.3, 1],
+              boxShadow: [
+                "0 4px 12px rgba(255, 193, 7, 0.4)",
+                "0 8px 25px rgba(255, 193, 7, 0.8)", 
+                "0 4px 12px rgba(255, 193, 7, 0.4)"
+              ]
             }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
             style={{ transform: 'translate(-50%, -50%)', left: '50%', top: '50%' }}
           />
           
           {/* Hot Air Balloon on top */}
-          <img 
+          <motion.img 
             src={balloonIcon} 
             alt="Available" 
             className="object-contain drop-shadow-lg relative z-10"
             style={{ width: '52.8px', height: '52.8px' }}
+            animate={{
+              filter: [
+                "drop-shadow(0 4px 8px rgba(0,0,0,0.3))",
+                "drop-shadow(0 6px 12px rgba(255, 193, 7, 0.5))",
+                "drop-shadow(0 4px 8px rgba(0,0,0,0.3))"
+              ]
+            }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           />
         </motion.div>
       )}
