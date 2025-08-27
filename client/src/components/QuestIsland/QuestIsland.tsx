@@ -1223,7 +1223,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
 
       {/* Treasure Map Progress Indicator */}
       <motion.div
-        className="fixed top-8 right-8 z-40"
+        className="fixed top-8 left-8 z-40"
         initial={{ opacity: 0, y: -20, rotate: -5 }}
         animate={{ opacity: 1, y: 0, rotate: 0 }}
         transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}
