@@ -5,7 +5,7 @@ import { useState } from "react";
 import jungleBiome from '@assets/generated_images/altos_jungle_biome.png';
 import lagoonBiome from '@assets/1596b76d-9d32-4f53-81cb-17b6a9d3f4c5_1756280188364.png';
 import volcanoBiome from '@assets/generated_images/altos_volcano_biome.png';
-import beachBiome from '@assets/generated_images/altos_beach_biome.png';
+import beachBiome from '@assets/530f43b9-b747-4b3f-b133-32f866bee0fe_1756280261658.png';
 import meadowBiome from '@assets/generated_images/altos_meadow_biome.png';
 
 interface BiomeProps {
