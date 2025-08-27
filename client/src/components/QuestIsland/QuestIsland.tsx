@@ -42,7 +42,7 @@ interface QuestIslandProps {
 export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   const [, setLocation] = useLocation();
   const [showJournal, setShowJournal] = useState(false);
-  const [scoutPosition, setScoutPosition] = useState({ x: 8, y: 85 });
+  const [scoutPosition, setScoutPosition] = useState({ x: 50, y: 75 }); // Starting on kidney trail path
   const [scoutTarget, setScoutTarget] = useState<string | null>(null);
   const [lessonProgress, setLessonProgress] = useState<Record<string, { completed: boolean; locked: boolean }>>(() => {
     // Initialize with first lesson unlocked
