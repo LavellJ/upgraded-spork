@@ -163,7 +163,7 @@ export default function JourneyJournal({ studentName, studentId }: JourneyJourna
             data-testid="button-back-to-map"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
-            Back to Quest Island
+            Back to Campfire learning trail
           </Button>
 
           {/* Page indicator dots */}

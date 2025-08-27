@@ -61,9 +61,9 @@ export default function Learning() {
       description: `Completed the full Teach → Try → Reflect → Create cycle for ${topic?.name}!`
     });
 
-    // Navigate back to Quest Island after celebrating the completion
+    // Navigate back to Campfire learning trail after celebrating the completion
     setTimeout(() => {
-      // Return to Quest Island to see progress and continue adventure
+      // Return to Campfire learning trail to see progress and continue adventure
       window.location.href = '/quest-island';
     }, 4000); // Give time for achievement celebration
   };
