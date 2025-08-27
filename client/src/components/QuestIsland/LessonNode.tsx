@@ -57,6 +57,14 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
         /* Lock Button for Locked Lessons */
         <motion.div
           className="relative"
+          animate={{
+            y: [0, -4, 0],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
