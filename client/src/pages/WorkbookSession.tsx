@@ -105,10 +105,10 @@ export default function WorkbookSession() {
       createSession.mutate({
         studentId,
         subject,
-        targetDuration: 900, // 15 minutes default
+        sessionType: 'focus', // "focus", "break", "meditation"
+        duration: 15, // in minutes
         difficultyLevel: 3,
-        ageGroup,
-        isCompleted: false,
+        completed: false,
       });
 
       // Generate questions
