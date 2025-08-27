@@ -401,20 +401,20 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       ]
     },
     lagoon: {
-      trunkPoint: { x: 600, y: 720 }, // Bottom center on kidney trail perimeter (Position 3/5)
+      trunkPoint: { x: 900, y: 720 }, // Bottom right on kidney trail perimeter, aligned with Ember Peak
       branches: [
         { 
-          endpoint: { x: 540, y: 675 }, // Branch 1 - northwest spread from trail
+          endpoint: { x: 840, y: 675 }, // Branch 1 - northwest spread from trail
           lessonId: "lagoon-1",
           angle: 135
         },
         { 
-          endpoint: { x: 660, y: 770 }, // Branch 2 - southeast spread from trail
+          endpoint: { x: 960, y: 770 }, // Branch 2 - southeast spread from trail
           lessonId: "lagoon-2",
           angle: 315
         },
         { 
-          endpoint: { x: 540, y: 780 }, // Branch 3 - southwest spread from trail
+          endpoint: { x: 840, y: 780 }, // Branch 3 - southwest spread from trail
           lessonId: "lagoon-3", 
           angle: 225
         }
@@ -604,7 +604,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "lagoon",
       name: "Crystal Lagoon",
       subject: "Social Studies",
-      position: { x: 50, y: 80 }, // Bottom center on kidney trail perimeter (Position 3/5)
+      position: { x: 75, y: 80 }, // Bottom right on kidney trail perimeter, aligned with Ember Peak
       color: "from-cyan-200 to-blue-300", 
       description: "Learn about our world together"
     },
