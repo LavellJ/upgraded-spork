@@ -9,6 +9,7 @@ import { LessonNode } from "./LessonNode";
 import { getLearnerName } from "@/utils/learnerName";
 import explorerDefault from '@assets/image_1756014874313.png';
 import explorerThinking from '@assets/scout-thinking.png';
+import trailImage from '@assets/a8b9d6f3-601b-4442-a3e9-4607ddbf907b_1756274158933.png';
 
 export interface Collectible {
   id: string;
@@ -671,7 +672,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             {/* Adventure Trail - Kidney Shape */}
             <div className="absolute inset-0 flex items-center justify-center">
               <img 
-                src="@assets/a8b9d6f3-601b-4442-a3e9-4607ddbf907b_1756274158933.png" 
+                src={trailImage} 
                 alt="Adventure Trail"
                 className="w-[800px] h-[600px] object-contain opacity-95"
                 style={{
