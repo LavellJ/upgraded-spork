@@ -65,6 +65,7 @@ export default function JourneyJournal({ studentName, studentId }: JourneyJourna
   const [currentPage, setCurrentPage] = useState(0); // Current journal page (0 = cover, 1-4 = subjects)
   const [scoutMessage, setScoutMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     // Generate Scout's welcome message
@@ -75,6 +76,7 @@ export default function JourneyJournal({ studentName, studentId }: JourneyJourna
       setScoutMessage(subject.scoutMessage);
     }
     setIsLoading(false);
+    setIsMounted(true);
   }, [studentName, currentPage]);
 
   const handleBackToMap = () => {
@@ -101,7 +103,7 @@ export default function JourneyJournal({ studentName, studentId }: JourneyJourna
     setCurrentPage(pageIndex);
   };
 
-  if (isLoading) {
+  if (isLoading || !isMounted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 flex items-center justify-center">
         <div className="text-center">
