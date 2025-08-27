@@ -1,7 +1,12 @@
-import { useTimeOfDay } from "@/hooks/useTimeOfDay";
+import { useTimeOfDay, type TimeOfDay } from "@/hooks/useTimeOfDay";
 
-export function AtmosphericBackground() {
-  const timeOfDay = useTimeOfDay();
+interface AtmosphericBackgroundProps {
+  manualTimeOverride?: TimeOfDay;
+}
+
+export function AtmosphericBackground({ manualTimeOverride }: AtmosphericBackgroundProps = {}) {
+  const autoTimeOfDay = useTimeOfDay();
+  const timeOfDay = manualTimeOverride || autoTimeOfDay;
 
   const getGradientClass = () => {
     switch (timeOfDay) {
