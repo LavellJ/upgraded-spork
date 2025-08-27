@@ -1228,22 +1228,6 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         animate={{ opacity: 1, y: 0, rotate: 0 }}
         transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}
       >
-        {/* Manual Test Button for "Counting Shells" */}
-        <button
-          onClick={() => {
-            const newCompletions = [...localCompletions];
-            if (!newCompletions.includes('beach-1')) {
-              newCompletions.push('beach-1');
-              setLocalCompletions(newCompletions);
-              localStorage.setItem('quest-island-completions', JSON.stringify(newCompletions));
-              // Manually marked beach-1 as completed!
-            }
-          }}
-          className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 text-white rounded-full text-xs hover:bg-green-600 transition-colors z-10"
-          title="Test Counting Shells Completion"
-        >
-          ✓
-        </button>
         
         {/* Treasure Map - Clean Style */}
         <div className="relative">
