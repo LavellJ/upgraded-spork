@@ -1,6 +1,6 @@
 # Overview
 
-This is a full-stack educational web application called "LearnOz" that provides AI-powered learning for the Australian curriculum. The application features an immersive, meditative design inspired by the visual style of Alto's Odyssey, with adaptive learning content tailored to different age groups (pre-primary, primary, upper-primary). The system includes AI-powered question generation, interactive progress showcase with animated skill trees, progress tracking, Pomodoro timer functionality for focused learning sessions, and beautiful animated UI components.
+This is a full-stack educational web application called "LearnOz" that provides AI-powered learning for the Australian curriculum. The application features an immersive, meditative design inspired by the visual style of Alto's Odyssey, with adaptive learning content tailored to different age groups (pre-primary, primary, upper-primary). Quest Island serves as the app's central dashboard, replacing traditional dashboard interfaces with an immersive learning hub featuring watercolor biome illustrations and animated skill trees. The system includes AI-powered question generation, interactive progress showcase, progress tracking, Pomodoro timer functionality for focused learning sessions, and beautiful animated UI components.
 
 # User Preferences
 
@@ -15,6 +15,7 @@ Preferred communication style: Simple, everyday language.
 - **UI Framework**: shadcn/ui components built on Radix UI primitives with Tailwind CSS
 - **Styling**: Tailwind CSS with custom CSS variables for theming, featuring atmospheric gradients and animations
 - **Component Structure**: Modular component architecture with reusable UI components, animated skill trees, and custom hooks
+- **Main Dashboard**: Quest Island serves as the primary app interface, featuring immersive biome-based navigation with watercolor illustrations, animated skill trees, and treasure map progress tracking
 - **Progress Visualization**: Interactive skill tree showcase with animated nodes showing topic progression, dependencies, and completion states
 
 ## Backend Architecture  

@@ -34,11 +34,11 @@ export function FloatingNavigation() {
         
         <div className="hidden md:flex items-center space-x-4 text-sm">
           <Link 
-            href="/dashboard" 
-            className={`transition-colors duration-300 ${location === "/dashboard" ? "text-white" : "text-white/80 hover:text-white"}`}
-            data-testid="link-dashboard"
+            href="/quest-island" 
+            className={`transition-colors duration-300 ${location === "/quest-island" ? "text-white" : "text-white/80 hover:text-white"}`}
+            data-testid="link-quest-island"
           >
-            Dashboard
+            Quest Island
           </Link>
           <Link 
             href="/progress" 
@@ -46,13 +46,6 @@ export function FloatingNavigation() {
             data-testid="link-progress"
           >
             Progress
-          </Link>
-          <Link 
-            href="/quest-island" 
-            className={`transition-colors duration-300 ${location === "/quest-island" ? "text-white" : "text-white/80 hover:text-white"}`}
-            data-testid="link-quest-island"
-          >
-            Quest Island
           </Link>
           <button className="text-white/80 hover:text-white transition-colors duration-300" data-testid="button-settings">
             Settings
