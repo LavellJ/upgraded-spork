@@ -9,8 +9,8 @@ export function FloatingNavigation() {
         className="w-auto object-contain"
         style={{
           filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
-          height: '120px',
-          maxWidth: '600px'
+          height: '240px',
+          maxWidth: '1200px'
         }}
       />
     </header>
