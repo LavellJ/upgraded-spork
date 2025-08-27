@@ -155,15 +155,15 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
     <motion.div
       className="absolute z-20"
       style={{ 
-        left: `calc(${position.x}% - 32px)`, 
-        top: `calc(${position.y}% - 32px)`
+        left: `calc(${position.x}% - 64px)`, 
+        top: `calc(${position.y}% - 64px)`
       }}
       animate={controls}
       data-testid="scout-character"
     >
       {/* Scout Character */}
       <motion.div
-        className="relative w-16 h-16"
+        className="relative w-32 h-32"
         animate={scoutMood === 'excited' ? {
           y: [0, -4, 0]
         } : scoutMood === 'thinking' ? {
@@ -178,7 +178,7 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
         }}
       >
         {/* Scout Image */}
-        <div className="relative w-16 h-16">
+        <div className="relative w-32 h-32">
           <img
             src={getScoutImage()}
             alt="Scout Explorer"
