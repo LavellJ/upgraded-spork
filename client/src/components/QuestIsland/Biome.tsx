@@ -199,6 +199,9 @@ export function Biome({ id, name, subject, position, color, description, onClick
             backgroundImage: `url(${getBiomeImage()})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
+            imageRendering: 'auto',
+            filter: 'brightness(1.05) contrast(1.05)',
+            transform: 'scale(1.01)',
           } : {}}
         />
         
