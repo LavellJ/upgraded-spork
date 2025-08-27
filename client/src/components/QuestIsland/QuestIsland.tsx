@@ -408,17 +408,17 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       trunkPoint: { x: 1020, y: 135 },
       branches: [
         { 
-          endpoint: { x: 820, y: 80 }, // Branch 1 - upward spread
+          endpoint: { x: 960, y: 90 }, // Branch 1 - northwest spread (like jungle pattern)
           lessonId: "volcano-1",
+          angle: 135
+        },
+        { 
+          endpoint: { x: 1080, y: 100 }, // Branch 2 - northeast spread  
+          lessonId: "volcano-2", 
           angle: 45
         },
         { 
-          endpoint: { x: 860, y: 120 }, // Branch 2 - right spread
-          lessonId: "volcano-2", 
-          angle: 0
-        },
-        { 
-          endpoint: { x: 740, y: 180 }, // Branch 3 - downward-left spread
+          endpoint: { x: 980, y: 200 }, // Branch 3 - southwest spread
           lessonId: "volcano-3",
           angle: 225
         }
@@ -428,19 +428,19 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       trunkPoint: { x: 840, y: 720 },
       branches: [
         { 
-          endpoint: { x: 660, y: 720 }, // Branch 1 - left-down spread
+          endpoint: { x: 780, y: 670 }, // Branch 1 - northwest spread (like beach pattern)
           lessonId: "lagoon-1",
-          angle: 225
+          angle: 135
         },
         { 
-          endpoint: { x: 780, y: 700 }, // Branch 2 - right-down spread
+          endpoint: { x: 900, y: 790 }, // Branch 2 - southeast spread
           lessonId: "lagoon-2",
           angle: 315
         },
         { 
-          endpoint: { x: 760, y: 590 }, // Branch 3 - upward spread for space
+          endpoint: { x: 780, y: 790 }, // Branch 3 - southwest spread  
           lessonId: "lagoon-3", 
-          angle: 90
+          angle: 225
         }
       ]
     }
