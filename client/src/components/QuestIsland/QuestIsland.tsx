@@ -662,15 +662,15 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       <div className="relative w-full h-full">
         
         {/* Island Base */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-[1200px] h-[900px]">
+        <div className="absolute top-8 left-8">
+          <div className="relative w-[800px] h-[600px]">
             
             {/* Island Shape */}
             <div className="absolute inset-0 bg-gradient-to-br from-sand-200 via-sand-100 to-green-200 rounded-full opacity-90 transform rotate-12 scale-110" />
             
             
             {/* Adventure Path with Progress */}
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 900" style={{ zIndex: 50, pointerEvents: "none" }}>
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 600" style={{ zIndex: 50, pointerEvents: "none" }}>
               {/* Base Path */}
               <motion.path
                 d="M 120 650 Q 250 500, 420 315 Q 580 200, 780 135 Q 900 100, 1020 135 Q 1100 160, 1050 250 Q 1000 340, 900 450 Q 800 560, 720 650 Q 640 740, 840 720"
