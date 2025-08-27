@@ -381,40 +381,40 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       ]
     },
     volcano: {
-      trunkPoint: { x: 600, y: 180 }, // Top center on kidney trail perimeter
+      trunkPoint: { x: 900, y: 315 }, // Upper right on kidney trail perimeter (Position 2/5)
       branches: [
         { 
-          endpoint: { x: 540, y: 135 }, // Branch 1 - northwest spread from trail
+          endpoint: { x: 840, y: 270 }, // Branch 1 - northwest spread from trail
           lessonId: "volcano-1",
           angle: 135
         },
         { 
-          endpoint: { x: 660, y: 145 }, // Branch 2 - northeast spread from trail
+          endpoint: { x: 960, y: 360 }, // Branch 2 - southeast spread from trail
           lessonId: "volcano-2", 
-          angle: 45
+          angle: 315
         },
         { 
-          endpoint: { x: 560, y: 245 }, // Branch 3 - southwest spread from trail
+          endpoint: { x: 840, y: 380 }, // Branch 3 - southwest spread from trail
           lessonId: "volcano-3",
           angle: 225
         }
       ]
     },
     lagoon: {
-      trunkPoint: { x: 900, y: 315 }, // Upper right on kidney trail perimeter
+      trunkPoint: { x: 600, y: 720 }, // Bottom center on kidney trail perimeter (Position 3/5)
       branches: [
         { 
-          endpoint: { x: 840, y: 270 }, // Branch 1 - northwest spread from trail
+          endpoint: { x: 540, y: 675 }, // Branch 1 - northwest spread from trail
           lessonId: "lagoon-1",
           angle: 135
         },
         { 
-          endpoint: { x: 960, y: 360 }, // Branch 2 - southeast spread from trail
+          endpoint: { x: 660, y: 770 }, // Branch 2 - southeast spread from trail
           lessonId: "lagoon-2",
           angle: 315
         },
         { 
-          endpoint: { x: 840, y: 380 }, // Branch 3 - southwest spread from trail
+          endpoint: { x: 540, y: 780 }, // Branch 3 - southwest spread from trail
           lessonId: "lagoon-3", 
           angle: 225
         }
@@ -596,7 +596,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "volcano",
       name: "Ember Peak",
       subject: "Science", 
-      position: { x: 50, y: 20 }, // Top center on kidney trail perimeter (Position 1/5)
+      position: { x: 75, y: 35 }, // Upper right on kidney trail perimeter (Position 2/5)
       color: "from-red-300 to-orange-400",
       description: "Discover how the world works"
     },
@@ -604,7 +604,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "lagoon",
       name: "Crystal Lagoon",
       subject: "Social Studies",
-      position: { x: 75, y: 35 }, // Upper right on kidney trail perimeter (Position 2/5)
+      position: { x: 50, y: 80 }, // Bottom center on kidney trail perimeter (Position 3/5)
       color: "from-cyan-200 to-blue-300", 
       description: "Learn about our world together"
     },
