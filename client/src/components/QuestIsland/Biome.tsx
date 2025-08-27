@@ -181,7 +181,8 @@ export function Biome({ id, name, subject, position, color, description, onClick
     >
       {/* Biome Circle */}
       <motion.div
-        className={`relative w-56 h-56 rounded-full shadow-lg overflow-hidden`}
+        className={`relative rounded-full shadow-lg overflow-hidden`}
+        style={{ width: '246.4px', height: '246.4px' }}
         animate={{ 
           boxShadow: [
             "0 4px 12px rgba(0,0,0,0.1)",
