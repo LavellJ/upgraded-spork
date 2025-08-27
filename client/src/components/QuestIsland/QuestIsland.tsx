@@ -673,7 +673,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 900" style={{ zIndex: 50, pointerEvents: "none" }}>
               {/* Base Path */}
               <motion.path
-                d="M 200 550 Q 250 350, 450 280 Q 650 220, 850 280 Q 950 320, 900 450 Q 850 580, 700 620 Q 600 640, 500 620 Q 450 600, 430 550 Q 410 500, 450 450 Q 500 400, 400 420 Q 300 440, 250 500 Q 200 520, 200 550 Z"
+                d="M 300 400 Q 400 300, 600 300 Q 800 300, 900 400 Q 950 500, 850 600 Q 750 650, 650 600 Q 600 580, 580 530 Q 560 480, 520 460 Q 480 440, 450 480 Q 420 520, 400 470 Q 380 420, 350 450 Q 320 480, 300 400 Z"
                 stroke="url(#basePathGradient)"
                 strokeWidth="10"
                 fill="none"
@@ -687,7 +687,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               
               {/* Completed Progress Path */}
               <motion.path
-                d="M 200 550 Q 250 350, 450 280 Q 650 220, 850 280 Q 950 320, 900 450 Q 850 580, 700 620 Q 600 640, 500 620 Q 450 600, 430 550 Q 410 500, 450 450 Q 500 400, 400 420 Q 300 440, 250 500 Q 200 520, 200 550 Z"
+                d="M 300 400 Q 400 300, 600 300 Q 800 300, 900 400 Q 950 500, 850 600 Q 750 650, 650 600 Q 600 580, 580 530 Q 560 480, 520 460 Q 480 440, 450 480 Q 420 520, 400 470 Q 380 420, 350 450 Q 320 480, 300 400 Z"
                 stroke="url(#progressGradient)"
                 strokeWidth="14"
                 fill="none"
@@ -705,7 +705,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               {/* Animated Sparkles along completed path */}
               {Object.values(lessonProgress).filter(p => p.completed).length > 0 && (
                 <motion.path
-                  d="M 200 550 Q 250 350, 450 280 Q 650 220, 850 280 Q 950 320, 900 450 Q 850 580, 700 620 Q 600 640, 500 620 Q 450 600, 430 550 Q 410 500, 450 450 Q 500 400, 400 420 Q 300 440, 250 500 Q 200 520, 200 550 Z"
+                  d="M 300 400 Q 400 300, 600 300 Q 800 300, 900 400 Q 950 500, 850 600 Q 750 650, 650 600 Q 600 580, 580 530 Q 560 480, 520 460 Q 480 440, 450 480 Q 420 520, 400 470 Q 380 420, 350 450 Q 320 480, 300 400 Z"
                   stroke="url(#sparkleGradient)"
                   strokeWidth="18"
                   fill="none"
@@ -815,7 +815,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                   {/* Hidden path for energy flow animation */}
                   <path
                     id="adventurePath"
-                    d="M 200 550 Q 250 350, 450 280 Q 650 220, 850 280 Q 950 320, 900 450 Q 850 580, 700 620 Q 600 640, 500 620 Q 450 600, 430 550 Q 410 500, 450 450 Q 500 400, 400 420 Q 300 440, 250 500 Q 200 520, 200 550 Z"
+                    d="M 300 400 Q 400 300, 600 300 Q 800 300, 900 400 Q 950 500, 850 600 Q 750 650, 650 600 Q 600 580, 580 530 Q 560 480, 520 460 Q 480 440, 450 480 Q 420 520, 400 470 Q 380 420, 350 450 Q 320 480, 300 400 Z"
                     fill="none"
                     stroke="none"
                   />
