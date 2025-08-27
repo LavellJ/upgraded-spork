@@ -678,7 +678,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
           <img 
             src={progressIcon} 
             alt="Treasure Map Progress" 
-            className="w-20 h-20 drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-300"
+            className="w-72 h-72 drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-300"
           />
           {/* Progress overlay */}
           <div className="absolute -bottom-2 -right-2 bg-white/95 backdrop-blur-sm rounded-full px-2 py-1 shadow-lg border border-white/50">
@@ -705,7 +705,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
           <img 
             src={backpackIcon} 
             alt="Backpack" 
-            className="w-20 h-20 drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-300"
+            className="w-72 h-72 drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-300"
           />
           {collectibles.filter(c => c.collected).length > 0 && (
             <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg">
