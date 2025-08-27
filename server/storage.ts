@@ -22,7 +22,17 @@ import {
   type LessonCompletion,
   type InsertLessonCompletion,
   type Asset,
-  type InsertAsset
+  type InsertAsset,
+  type WorkbookSession,
+  type InsertWorkbookSession,
+  type WorkbookQuestion,
+  type InsertWorkbookQuestion,
+  type WorkbookResponse,
+  type InsertWorkbookResponse,
+  type WorkbookProgress,
+  type InsertWorkbookProgress,
+  type WorkbookAchievement,
+  type InsertWorkbookAchievement
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { databaseStorage } from "./databaseStorage";
@@ -103,6 +113,34 @@ export interface IStorage {
   createAsset(asset: InsertAsset): Promise<Asset>;
   createAssets(assets: InsertAsset[]): Promise<Asset[]>;
   updateAsset(id: string, updates: Partial<Asset>): Promise<Asset>;
+
+  // Workbook Sessions
+  getWorkbookSession(id: string): Promise<WorkbookSession | undefined>;
+  getWorkbookSessionsByStudent(studentId: string): Promise<WorkbookSession[]>;
+  createWorkbookSession(session: InsertWorkbookSession): Promise<WorkbookSession>;
+  updateWorkbookSession(id: string, updates: Partial<WorkbookSession>): Promise<WorkbookSession>;
+
+  // Workbook Questions
+  getWorkbookQuestion(id: string): Promise<WorkbookQuestion | undefined>;
+  getWorkbookQuestionsBySubject(subject: string, ageGroup: string, difficulty?: number): Promise<WorkbookQuestion[]>;
+  createWorkbookQuestion(question: InsertWorkbookQuestion): Promise<WorkbookQuestion>;
+  createWorkbookQuestions(questions: InsertWorkbookQuestion[]): Promise<WorkbookQuestion[]>;
+
+  // Workbook Responses
+  getWorkbookResponse(id: string): Promise<WorkbookResponse | undefined>;
+  getWorkbookResponsesBySession(sessionId: string): Promise<WorkbookResponse[]>;
+  createWorkbookResponse(response: InsertWorkbookResponse): Promise<WorkbookResponse>;
+
+  // Workbook Progress
+  getWorkbookProgress(studentId: string, subject: string): Promise<WorkbookProgress | undefined>;
+  getWorkbookProgressByStudent(studentId: string): Promise<WorkbookProgress[]>;
+  createWorkbookProgress(progress: InsertWorkbookProgress): Promise<WorkbookProgress>;
+  updateWorkbookProgress(id: string, updates: Partial<WorkbookProgress>): Promise<WorkbookProgress>;
+
+  // Workbook Achievements
+  getWorkbookAchievement(id: string): Promise<WorkbookAchievement | undefined>;
+  getWorkbookAchievementsByStudent(studentId: string): Promise<WorkbookAchievement[]>;
+  createWorkbookAchievement(achievement: InsertWorkbookAchievement): Promise<WorkbookAchievement>;
 }
 
 export class MemStorage implements IStorage {
@@ -120,6 +158,12 @@ export class MemStorage implements IStorage {
   private learningSessions: Map<string, any>;
   private studentArtifacts: Map<string, any>;
   private assets: Map<string, Asset>;
+  // Workbook data structures
+  private workbookSessions: Map<string, WorkbookSession>;
+  private workbookQuestions: Map<string, WorkbookQuestion>;
+  private workbookResponses: Map<string, WorkbookResponse>;
+  private workbookProgress: Map<string, WorkbookProgress>;
+  private workbookAchievements: Map<string, WorkbookAchievement>;
 
   constructor() {
     this.parents = new Map();
@@ -136,6 +180,12 @@ export class MemStorage implements IStorage {
     this.learningSessions = new Map();
     this.studentArtifacts = new Map();
     this.assets = new Map();
+    // Initialize workbook storage
+    this.workbookSessions = new Map();
+    this.workbookQuestions = new Map();
+    this.workbookResponses = new Map();
+    this.workbookProgress = new Map();
+    this.workbookAchievements = new Map();
     
     // Initialize with sample topics and questions
     this.initializeSampleTopics();
@@ -3218,6 +3268,149 @@ export class MemStorage implements IStorage {
       this.assets.set(id, updatedAsset);
       return updatedAsset;
     }
+  }
+
+  // Workbook Sessions
+  async getWorkbookSession(id: string): Promise<WorkbookSession | undefined> {
+    return this.workbookSessions.get(id);
+  }
+
+  async getWorkbookSessionsByStudent(studentId: string): Promise<WorkbookSession[]> {
+    return Array.from(this.workbookSessions.values()).filter(session => session.studentId === studentId);
+  }
+
+  async createWorkbookSession(session: InsertWorkbookSession): Promise<WorkbookSession> {
+    const id = randomUUID();
+    const newSession: WorkbookSession = {
+      ...session,
+      id,
+      startedAt: new Date(),
+      completedAt: null
+    };
+    this.workbookSessions.set(id, newSession);
+    return newSession;
+  }
+
+  async updateWorkbookSession(id: string, updates: Partial<WorkbookSession>): Promise<WorkbookSession> {
+    const existingSession = this.workbookSessions.get(id);
+    if (!existingSession) {
+      throw new Error('Workbook session not found');
+    }
+    const updatedSession = { ...existingSession, ...updates };
+    this.workbookSessions.set(id, updatedSession);
+    return updatedSession;
+  }
+
+  // Workbook Questions
+  async getWorkbookQuestion(id: string): Promise<WorkbookQuestion | undefined> {
+    return this.workbookQuestions.get(id);
+  }
+
+  async getWorkbookQuestionsBySubject(subject: string, ageGroup: string, difficulty?: number): Promise<WorkbookQuestion[]> {
+    return Array.from(this.workbookQuestions.values()).filter(question => 
+      question.subject === subject && 
+      question.ageGroup === ageGroup &&
+      (difficulty === undefined || question.difficultyLevel === difficulty) &&
+      question.isActive
+    );
+  }
+
+  async createWorkbookQuestion(question: InsertWorkbookQuestion): Promise<WorkbookQuestion> {
+    const id = randomUUID();
+    const newQuestion: WorkbookQuestion = {
+      ...question,
+      id,
+      createdAt: new Date()
+    };
+    this.workbookQuestions.set(id, newQuestion);
+    return newQuestion;
+  }
+
+  async createWorkbookQuestions(questions: InsertWorkbookQuestion[]): Promise<WorkbookQuestion[]> {
+    const newQuestions: WorkbookQuestion[] = questions.map(question => {
+      const id = randomUUID();
+      const newQuestion: WorkbookQuestion = {
+        ...question,
+        id,
+        createdAt: new Date()
+      };
+      this.workbookQuestions.set(id, newQuestion);
+      return newQuestion;
+    });
+    return newQuestions;
+  }
+
+  // Workbook Responses
+  async getWorkbookResponse(id: string): Promise<WorkbookResponse | undefined> {
+    return this.workbookResponses.get(id);
+  }
+
+  async getWorkbookResponsesBySession(sessionId: string): Promise<WorkbookResponse[]> {
+    return Array.from(this.workbookResponses.values()).filter(response => response.sessionId === sessionId);
+  }
+
+  async createWorkbookResponse(response: InsertWorkbookResponse): Promise<WorkbookResponse> {
+    const id = randomUUID();
+    const newResponse: WorkbookResponse = {
+      ...response,
+      id,
+      answeredAt: new Date()
+    };
+    this.workbookResponses.set(id, newResponse);
+    return newResponse;
+  }
+
+  // Workbook Progress
+  async getWorkbookProgress(studentId: string, subject: string): Promise<WorkbookProgress | undefined> {
+    return Array.from(this.workbookProgress.values()).find(progress => 
+      progress.studentId === studentId && progress.subject === subject
+    );
+  }
+
+  async getWorkbookProgressByStudent(studentId: string): Promise<WorkbookProgress[]> {
+    return Array.from(this.workbookProgress.values()).filter(progress => progress.studentId === studentId);
+  }
+
+  async createWorkbookProgress(progress: InsertWorkbookProgress): Promise<WorkbookProgress> {
+    const id = randomUUID();
+    const newProgress: WorkbookProgress = {
+      ...progress,
+      id,
+      lastSession: null,
+      updatedAt: new Date()
+    };
+    this.workbookProgress.set(id, newProgress);
+    return newProgress;
+  }
+
+  async updateWorkbookProgress(id: string, updates: Partial<WorkbookProgress>): Promise<WorkbookProgress> {
+    const existingProgress = this.workbookProgress.get(id);
+    if (!existingProgress) {
+      throw new Error('Workbook progress not found');
+    }
+    const updatedProgress = { ...existingProgress, ...updates, updatedAt: new Date() };
+    this.workbookProgress.set(id, updatedProgress);
+    return updatedProgress;
+  }
+
+  // Workbook Achievements
+  async getWorkbookAchievement(id: string): Promise<WorkbookAchievement | undefined> {
+    return this.workbookAchievements.get(id);
+  }
+
+  async getWorkbookAchievementsByStudent(studentId: string): Promise<WorkbookAchievement[]> {
+    return Array.from(this.workbookAchievements.values()).filter(achievement => achievement.studentId === studentId);
+  }
+
+  async createWorkbookAchievement(achievement: InsertWorkbookAchievement): Promise<WorkbookAchievement> {
+    const id = randomUUID();
+    const newAchievement: WorkbookAchievement = {
+      ...achievement,
+      id,
+      earnedAt: new Date()
+    };
+    this.workbookAchievements.set(id, newAchievement);
+    return newAchievement;
   }
 }
 

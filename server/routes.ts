@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateQuestions, generateSmartHint, generatePersonalizedExplanation, calculateAdaptiveDifficulty, generateLearningPathRecommendations, generateBuddyMessage } from "./services/openai";
+import { generateQuestions, generateSmartHint, generatePersonalizedExplanation, calculateAdaptiveDifficulty, generateLearningPathRecommendations, generateBuddyMessage, generateWorkbookQuestions } from "./services/openai";
 import { generateLearningContent } from "./aiServices/learningContent";
 import { badgeSystem, BADGE_DEFINITIONS } from "./badgeSystem";
 import { ElevenLabsService } from "./services/elevenlabs";
@@ -12,8 +12,13 @@ import {
   insertParentSchema,
   insertParentControlsSchema,
   insertLessonCompletionSchema,
+  insertWorkbookSessionSchema,
+  insertWorkbookResponseSchema,
+  insertWorkbookProgressSchema,
   type Question,
-  type Progress
+  type Progress,
+  type WorkbookQuestion,
+  type WorkbookSession
 } from "@shared/schema";
 import { z } from "zod";
 import { 
@@ -1172,6 +1177,202 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching voices:", error);
       res.status(500).json({ error: "Failed to fetch voices" });
+    }
+  });
+
+  // ========================================
+  // WORKBOOK API ROUTES - Scout's Workbook
+  // ========================================
+
+  // Start a new workbook session
+  app.post("/api/workbook/sessions", async (req, res) => {
+    try {
+      const sessionData = insertWorkbookSessionSchema.parse(req.body);
+      const session = await storage.createWorkbookSession(sessionData);
+      res.json(session);
+    } catch (error) {
+      console.error("Error creating workbook session:", error);
+      res.status(400).json({ error: "Failed to create workbook session" });
+    }
+  });
+
+  // Update workbook session (complete, add responses, etc.)
+  app.patch("/api/workbook/sessions/:sessionId", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      const updates = req.body;
+      const session = await storage.updateWorkbookSession(sessionId, updates);
+      res.json(session);
+    } catch (error) {
+      console.error("Error updating workbook session:", error);
+      res.status(400).json({ error: "Failed to update workbook session" });
+    }
+  });
+
+  // Get student's workbook sessions
+  app.get("/api/workbook/sessions/:studentId", async (req, res) => {
+    try {
+      const { studentId } = req.params;
+      const sessions = await storage.getWorkbookSessionsByStudent(studentId);
+      res.json(sessions);
+    } catch (error) {
+      console.error("Error fetching workbook sessions:", error);
+      res.status(500).json({ error: "Failed to fetch workbook sessions" });
+    }
+  });
+
+  // Generate AI workbook questions
+  app.post("/api/workbook/questions/generate", async (req, res) => {
+    try {
+      const { subject, ageGroup, difficulty = 3, count = 5, questionTypes, focusAreas } = req.body;
+      
+      if (!subject || !ageGroup) {
+        return res.status(400).json({ error: "Subject and ageGroup are required" });
+      }
+
+      // Generate questions using AI
+      const generatedQuestions = await generateWorkbookQuestions({
+        subject,
+        ageGroup,
+        difficulty,
+        count,
+        questionTypes,
+        focusAreas
+      });
+
+      // Save questions to database
+      const dbQuestions = generatedQuestions.map(q => ({
+        subject,
+        ageGroup,
+        difficultyLevel: difficulty,
+        questionType: q.questionType,
+        question: q.question,
+        options: q.options || null,
+        correctAnswer: q.correctAnswer,
+        explanation: q.explanation || null,
+        aiGenerated: true,
+        tags: q.tags || [],
+        isActive: true
+      }));
+
+      const savedQuestions = await storage.createWorkbookQuestions(dbQuestions);
+      res.json(savedQuestions);
+    } catch (error) {
+      console.error("Error generating workbook questions:", error);
+      res.status(500).json({ error: "Failed to generate workbook questions" });
+    }
+  });
+
+  // Get workbook questions by subject and difficulty
+  app.get("/api/workbook/questions", async (req, res) => {
+    try {
+      const { subject, ageGroup, difficulty } = req.query;
+      
+      if (!subject || !ageGroup) {
+        return res.status(400).json({ error: "Subject and ageGroup are required" });
+      }
+
+      const questions = await storage.getWorkbookQuestionsBySubject(
+        subject as string, 
+        ageGroup as string, 
+        difficulty ? parseInt(difficulty as string) : undefined
+      );
+      res.json(questions);
+    } catch (error) {
+      console.error("Error fetching workbook questions:", error);
+      res.status(500).json({ error: "Failed to fetch workbook questions" });
+    }
+  });
+
+  // Submit workbook response
+  app.post("/api/workbook/responses", async (req, res) => {
+    try {
+      const responseData = insertWorkbookResponseSchema.parse(req.body);
+      const response = await storage.createWorkbookResponse(responseData);
+      
+      // Update session progress
+      const responses = await storage.getWorkbookResponsesBySession(responseData.sessionId);
+      const correctCount = responses.filter(r => r.isCorrect).length;
+      
+      await storage.updateWorkbookSession(responseData.sessionId, {
+        questionsAsked: responses.length,
+        questionsCorrect: correctCount
+      });
+
+      res.json(response);
+    } catch (error) {
+      console.error("Error saving workbook response:", error);
+      res.status(400).json({ error: "Failed to save workbook response" });
+    }
+  });
+
+  // Get workbook progress for student
+  app.get("/api/workbook/progress/:studentId", async (req, res) => {
+    try {
+      const { studentId } = req.params;
+      const { subject } = req.query;
+      
+      if (subject) {
+        const progress = await storage.getWorkbookProgress(studentId, subject as string);
+        res.json(progress || null);
+      } else {
+        const allProgress = await storage.getWorkbookProgressByStudent(studentId);
+        res.json(allProgress);
+      }
+    } catch (error) {
+      console.error("Error fetching workbook progress:", error);
+      res.status(500).json({ error: "Failed to fetch workbook progress" });
+    }
+  });
+
+  // Create or update workbook progress
+  app.post("/api/workbook/progress", async (req, res) => {
+    try {
+      const { studentId, subject } = req.body;
+      
+      // Check if progress exists
+      const existingProgress = await storage.getWorkbookProgress(studentId, subject);
+      
+      if (existingProgress) {
+        // Update existing progress
+        const updates = req.body;
+        delete updates.studentId;
+        delete updates.subject;
+        const updatedProgress = await storage.updateWorkbookProgress(existingProgress.id, updates);
+        res.json(updatedProgress);
+      } else {
+        // Create new progress
+        const progressData = insertWorkbookProgressSchema.parse(req.body);
+        const progress = await storage.createWorkbookProgress(progressData);
+        res.json(progress);
+      }
+    } catch (error) {
+      console.error("Error saving workbook progress:", error);
+      res.status(400).json({ error: "Failed to save workbook progress" });
+    }
+  });
+
+  // Adaptive difficulty recommendation
+  app.post("/api/workbook/adaptive-difficulty", async (req, res) => {
+    try {
+      const { studentId, subject, recentAccuracy } = req.body;
+      
+      if (!studentId || !subject || recentAccuracy === undefined) {
+        return res.status(400).json({ error: "studentId, subject, and recentAccuracy are required" });
+      }
+
+      // Simple adaptive algorithm
+      let newDifficulty = 3; // default
+      if (recentAccuracy >= 0.8) {
+        newDifficulty = Math.min(5, Math.ceil(recentAccuracy * 5) + 1);
+      } else if (recentAccuracy < 0.6) {
+        newDifficulty = Math.max(1, Math.floor(recentAccuracy * 5));
+      }
+
+      res.json({ recommendedDifficulty: newDifficulty });
+    } catch (error) {
+      console.error("Error calculating adaptive difficulty:", error);
+      res.status(500).json({ error: "Failed to calculate difficulty" });
     }
   });
 

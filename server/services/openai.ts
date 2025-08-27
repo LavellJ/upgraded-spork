@@ -635,3 +635,119 @@ Generate a single, natural message that feels like it's coming from a peer explo
     return "Let's keep exploring together!"; // Fallback message
   }
 }
+
+// Workbook-specific question generation
+export interface WorkbookQuestionRequest {
+  subject: string;
+  ageGroup: "pre-primary" | "primary" | "upper-primary";
+  difficulty: number; // 1-5
+  count: number;
+  questionTypes?: string[]; // ["multiple_choice", "true_false", "counting", "fill_blank"]
+  previousCorrect?: number; // For adaptive difficulty
+  focusAreas?: string[]; // Specific skills to focus on
+}
+
+export interface GeneratedWorkbookQuestion {
+  question: string;
+  questionType: string;
+  options?: string[];
+  correctAnswer: any;
+  explanation?: string;
+  tags: string[];
+}
+
+export async function generateWorkbookQuestions(request: WorkbookQuestionRequest): Promise<GeneratedWorkbookQuestion[]> {
+  const ageDescriptions = {
+    "pre-primary": "ages 3-5 years old, very simple concepts, picture-based learning",
+    "primary": "ages 6-8 years old, basic literacy and numeracy",
+    "upper-primary": "ages 9-12 years old, more complex problem-solving"
+  };
+
+  const questionTypes = request.questionTypes || ["multiple_choice", "true_false", "counting"];
+  
+  const prompt = `Generate ${request.count} interactive questions for Scout's Workbook - a learning journal for ${ageDescriptions[request.ageGroup]}.
+
+Subject: ${request.subject}
+Difficulty Level: ${request.difficulty}/5
+Question Types: ${questionTypes.join(", ")}
+${request.focusAreas ? `Focus Areas: ${request.focusAreas.join(", ")}` : ""}
+
+Requirements:
+- Age-appropriate language and concepts for ${request.ageGroup}
+- Mix different question types from the allowed list
+- For 3-5 year olds: Very simple, visual concepts, single-step problems
+- Include practice tags for tracking (e.g., "counting", "colors", "shapes", "letters")
+- Make questions engaging and relevant to young children
+- Provide brief, encouraging explanations
+
+Question Type Guidelines:
+- multiple_choice: 3-4 simple options, clear correct answer
+- true_false: Simple statements they can verify
+- counting: Count objects, numbers 1-10 for pre-primary, higher for older
+- fill_blank: Complete simple words or number sequences
+
+Respond with JSON in this format:
+{
+  "questions": [
+    {
+      "question": "Question text here",
+      "questionType": "multiple_choice",
+      "options": ["Option 1", "Option 2", "Option 3"],
+      "correctAnswer": 0,
+      "explanation": "Brief encouraging explanation",
+      "tags": ["relevant", "skill", "tags"]
+    }
+  ]
+}`;
+
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "You are an AI that generates educational questions for young children in Scout's Workbook. Focus on making learning fun, achievable, and encouraging."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.7
+    });
+
+    const result = JSON.parse(completion.choices[0].message.content || '{"questions":[]}');
+    return result.questions || [];
+  } catch (error) {
+    console.error("Failed to generate workbook questions:", error);
+    // Return fallback questions based on subject and age
+    return generateFallbackWorkbookQuestions(request);
+  }
+}
+
+function generateFallbackWorkbookQuestions(request: WorkbookQuestionRequest): GeneratedWorkbookQuestion[] {
+  const fallbackQuestions: GeneratedWorkbookQuestion[] = [];
+  
+  // Simple fallback questions based on subject
+  if (request.subject === "mathematics" && request.ageGroup === "pre-primary") {
+    fallbackQuestions.push({
+      question: "How many stars do you see? ⭐⭐⭐",
+      questionType: "counting",
+      correctAnswer: 3,
+      explanation: "Great counting! There are 3 stars.",
+      tags: ["counting", "numbers", "basic"]
+    });
+  } else if (request.subject === "literacy") {
+    fallbackQuestions.push({
+      question: "Which letter comes after A?",
+      questionType: "multiple_choice", 
+      options: ["B", "C", "Z"],
+      correctAnswer: 0,
+      explanation: "Excellent! B comes after A in the alphabet.",
+      tags: ["alphabet", "letters", "sequence"]
+    });
+  }
+
+  return fallbackQuestions.slice(0, request.count);
+}
