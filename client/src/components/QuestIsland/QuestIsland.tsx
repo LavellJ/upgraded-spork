@@ -674,7 +674,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               <img 
                 src={trailImage} 
                 alt="Adventure Trail"
-                className="w-[1100px] h-[850px] object-contain opacity-95"
+                className="w-[1650px] h-[1275px] object-contain opacity-95"
                 style={{
                   filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.3))',
                   transform: 'rotate(90deg)'
