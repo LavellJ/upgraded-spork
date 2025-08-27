@@ -50,7 +50,8 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
           <img 
             src={balloonIcon} 
             alt="Completed" 
-            className="w-12 h-12 object-contain drop-shadow-lg"
+            className="object-contain drop-shadow-lg"
+            style={{ width: '52.8px', height: '52.8px' }}
           />
         </motion.div>
       ) : locked ? (
