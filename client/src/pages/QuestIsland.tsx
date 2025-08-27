@@ -47,10 +47,21 @@ export default function QuestIslandPage() {
           }}
           data-testid="button-open-workbook"
         >
-          {/* Scout's Backpack Icon */}
-          <span className="text-4xl group-hover:scale-110 transition-transform duration-200">
-            🎒
-          </span>
+          {/* Scout's Journal - Closed by default, Open on hover */}
+          <div className="relative w-16 h-16 transition-transform duration-200 group-hover:scale-110">
+            {/* Closed Journal (default state) */}
+            <img 
+              src="/attached_assets/6914ebbd-adcf-4dd8-bdc4-bd1ef3daaa23_1756264852126.png"
+              alt="Scout's Closed Journal" 
+              className="absolute inset-0 w-full h-full object-contain opacity-100 group-hover:opacity-0 transition-opacity duration-300"
+            />
+            {/* Open Journal (hover state) */}
+            <img 
+              src="/attached_assets/66288809-4cbc-4a05-bdf5-1e2308c1401d_1756264857142.png"
+              alt="Scout's Open Journal"
+              className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            />
+          </div>
           
           {/* Floating tooltip */}
           <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-amber-900 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap font-medium shadow-lg">
