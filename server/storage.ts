@@ -176,7 +176,7 @@ export class MemStorage implements IStorage {
     this.progress = new Map();
     this.pomodoroSessions = new Map();
     this.achievements = new Map();
-    this.lessonCompletions = new Map();
+    this.lessonCompletions = new Map(); // Reset to empty
     this.learningSessions = new Map();
     this.studentArtifacts = new Map();
     this.assets = new Map();

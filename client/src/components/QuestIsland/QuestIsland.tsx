@@ -673,7 +673,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 900" style={{ zIndex: 50, pointerEvents: "none" }}>
               {/* Base Path */}
               <motion.path
-                d="M 350 300 C 450 300, 550 350, 650 400 C 750 450, 850 500, 950 450 C 1000 425, 1020 380, 980 350 C 940 320, 880 340, 820 380 C 760 420, 700 480, 650 550 C 600 620, 550 680, 500 720 C 450 760, 400 780, 350 750 C 300 720, 280 660, 300 600 C 320 540, 350 480, 380 420 C 410 360, 400 320, 350 300"
+                d="M 300 350 C 400 300, 600 280, 800 320 C 900 340, 950 380, 950 450 C 950 520, 900 600, 800 650 C 700 700, 600 720, 500 700 C 400 680, 350 620, 320 550 C 290 480, 280 420, 300 350"
                 stroke="url(#basePathGradient)"
                 strokeWidth="10"
                 fill="none"
@@ -685,8 +685,8 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 style={{ filter: "drop-shadow(0 0 6px rgba(255,255,255,0.9))" }}
               />
               
-              {/* Completed Progress Path */}
-              <motion.path
+              {/* Completed Progress Path - TEMPORARILY DISABLED FOR SHAPE DESIGN */}
+              {false && <motion.path
                 d="M 350 300 C 450 300, 550 350, 650 400 C 750 450, 850 500, 950 450 C 1000 425, 1020 380, 980 350 C 940 320, 880 340, 820 380 C 760 420, 700 480, 650 550 C 600 620, 550 680, 500 720 C 450 760, 400 780, 350 750 C 300 720, 280 660, 300 600 C 320 540, 350 480, 380 420 C 410 360, 400 320, 350 300"
                 stroke="url(#progressGradient)"
                 strokeWidth="14"
@@ -700,7 +700,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 }}
                 transition={{ duration: 2, ease: "easeInOut" }}
                 style={{ filter: "drop-shadow(0 0 8px rgba(255,215,0,0.8))" }}
-              />
+              />}
               
               {/* Animated Sparkles along completed path */}
               {Object.values(lessonProgress).filter(p => p.completed).length > 0 && (
