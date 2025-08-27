@@ -94,7 +94,7 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
         >
           {/* Yellow Circle Background to indicate current progress */}
           <motion.div
-            className={`absolute inset-0 w-12 h-12 bg-gradient-to-br ${getNodeColor()} rounded-full shadow-lg -z-10`}
+            className={`absolute top-1/2 left-1/2 w-12 h-12 bg-gradient-to-br ${getNodeColor()} rounded-full shadow-lg -z-10`}
             animate={{
               scale: [1, 1.3, 1],
               boxShadow: [
@@ -104,7 +104,7 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
               ]
             }}
             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            style={{ transform: 'translate(-50%, -50%)', left: '50%', top: '50%' }}
+            style={{ transform: 'translate(-50%, -50%)' }}
           />
           
           {/* Hot Air Balloon on top */}
