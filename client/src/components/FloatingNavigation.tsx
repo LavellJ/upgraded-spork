@@ -6,10 +6,10 @@ export function FloatingNavigation() {
       <img 
         src={campfireHeaderImage}
         alt="Campfire Learning Trail"
-        className="h-16 w-auto object-contain"
+        className="h-24 w-auto object-contain"
         style={{
           filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
-          maxWidth: '400px'
+          maxWidth: '600px'
         }}
       />
     </header>
