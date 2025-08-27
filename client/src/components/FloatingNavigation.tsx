@@ -2,7 +2,7 @@ import campfireHeaderImage from "@assets/2099b094-0d20-474a-9c0c-067c38a47fe7_17
 
 export function FloatingNavigation() {
   return (
-    <header className="fixed top-4 left-4 z-50" data-testid="campfire-header">
+    <header className="fixed top-0 left-4 z-50" data-testid="campfire-header">
       <img 
         src={campfireHeaderImage}
         alt="Campfire Learning Trail"
