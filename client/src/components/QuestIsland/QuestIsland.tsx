@@ -645,7 +645,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   ];
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-gradient-to-b from-sky-200 via-blue-100 to-sand-100">
+    <div className="relative w-full h-screen overflow-hidden">
       {/* Floating Clouds */}
       <motion.div
         className="absolute top-10 left-10 w-32 h-16 bg-white/40 rounded-full blur-sm"
