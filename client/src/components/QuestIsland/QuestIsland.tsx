@@ -661,7 +661,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             className="w-72 h-72 drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-300"
           />
           {/* Progress overlay - Lesson completion count */}
-          <div className="absolute -bottom-2 -right-2 bg-gradient-to-br from-amber-600 to-orange-700 rounded-full px-3 py-1.5 shadow-xl border-2 border-amber-400/80 backdrop-blur-sm">
+          <div className="absolute -bottom-2 -right-2 bg-gradient-to-br from-amber-400/90 to-orange-500/90 rounded-full px-3 py-1.5 shadow-xl border-2 border-amber-300/70 backdrop-blur-sm">
             <span className="text-xs font-bold text-white drop-shadow-sm">
               {lessonNodes.filter(node => node.completed).length}/{lessonNodes.length}
             </span>
