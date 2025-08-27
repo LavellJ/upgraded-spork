@@ -14,7 +14,6 @@ const getCollectibleStyle = (biome: string) => {
     case 'beach': return 'bg-gradient-to-br from-blue-300 to-cyan-400';
     case 'jungle': return 'bg-gradient-to-br from-green-300 to-emerald-400';
     case 'volcano': return 'bg-gradient-to-br from-red-300 to-orange-400';
-    case 'meadow': return 'bg-gradient-to-br from-pink-300 to-purple-400';
     case 'lagoon': return 'bg-gradient-to-br from-indigo-300 to-blue-400';
     default: return 'bg-gradient-to-br from-yellow-300 to-amber-400';
   }
@@ -25,7 +24,6 @@ const getCollectibleGlow = (biome: string) => {
     case 'beach': return 'bg-cyan-200';
     case 'jungle': return 'bg-green-200';
     case 'volcano': return 'bg-orange-200';
-    case 'meadow': return 'bg-purple-200';
     case 'lagoon': return 'bg-blue-200';
     default: return 'bg-yellow-200';
   }
@@ -128,7 +126,7 @@ export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
 
         {/* Collectibles by Biome Categories */}
         <div className="space-y-4">
-          {['beach', 'jungle', 'volcano', 'meadow', 'lagoon'].map((biome, biomeIndex) => {
+          {['beach', 'jungle', 'volcano', 'lagoon'].map((biome, biomeIndex) => {
             const biomeCollectibles = collectibles.filter(c => c.biome === biome);
             const collectedInBiome = biomeCollectibles.filter(c => c.collected).length;
             
@@ -145,7 +143,7 @@ export function JourneyJournal({ collectibles, onClose }: JourneyJournalProps) {
                   <h3 className="text-lg font-bold text-amber-800 capitalize flex items-center gap-2">
                     <div className={`w-4 h-4 rounded-full ${getCollectibleStyle(biome)}`} />
                     {biome === 'beach' && '🏖️'} {biome === 'jungle' && '🌿'} {biome === 'volcano' && '🌋'} 
-                    {biome === 'meadow' && '🌸'} {biome === 'lagoon' && '🏞️'} {biome.charAt(0).toUpperCase() + biome.slice(1)} Collection
+                    {biome === 'lagoon' && '🏞️'} {biome.charAt(0).toUpperCase() + biome.slice(1)} Collection
                   </h3>
                   <div className="text-sm text-amber-700 font-medium">
                     {collectedInBiome > 0 ? `${collectedInBiome} discovered` : 'Explore to discover'}
