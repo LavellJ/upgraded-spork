@@ -57,7 +57,7 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
       ) : (
         /* Node Circle for Locked/Available Lessons */
         <motion.div
-          className={`relative w-12 h-12 bg-gradient-to-br ${getNodeColor()} rounded-full shadow-lg border-2 border-white/50`}
+          className={`relative w-12 h-12 bg-gradient-to-br ${getNodeColor()} rounded-full shadow-lg`}
           animate={!locked ? {
             boxShadow: [
               "0 0 10px rgba(255, 193, 7, 0.5)",
