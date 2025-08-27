@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Sun, Sunset, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QuestIsland as QuestIslandMap } from "@/components/QuestIsland/QuestIsland";
 import { FloatingNavigation } from "@/components/FloatingNavigation";
 import { AtmosphericBackground } from "@/components/AtmosphericBackground";
 import { getLearnerName } from "@/utils/learnerName";
+import type { TimeOfDay } from "@/hooks/useTimeOfDay";
 
 export default function QuestIslandPage() {
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [, setLocation] = useLocation();
+  const [manualTimeOfDay, setManualTimeOfDay] = useState<TimeOfDay | null>(null);
 
   const handleLessonSelect = (lessonId: string) => {
     setSelectedLesson(lessonId);
@@ -22,14 +24,56 @@ export default function QuestIslandPage() {
     setLocation('/journey-journal');
   };
 
+  const cycleTimeOfDay = () => {
+    const timeOrder: TimeOfDay[] = ['morning', 'afternoon', 'evening'];
+    const currentIndex = manualTimeOfDay ? timeOrder.indexOf(manualTimeOfDay) : -1;
+    const nextIndex = (currentIndex + 1) % timeOrder.length;
+    setManualTimeOfDay(timeOrder[nextIndex]);
+  };
+
+  const getTimeIcon = () => {
+    switch (manualTimeOfDay) {
+      case 'morning':
+        return Sun;
+      case 'afternoon':
+        return Sunset;
+      case 'evening':
+        return Moon;
+      default:
+        return Sun;
+    }
+  };
+
   return (
     <>
-      <AtmosphericBackground />
+      <AtmosphericBackground manualTimeOverride={manualTimeOfDay || undefined} />
       <div className="relative min-h-screen">
         <FloatingNavigation />
 
       {/* Quest Island Map */}
       <QuestIslandMap onLessonSelect={handleLessonSelect} />
+
+      {/* Manual Time Toggle Button */}
+      <motion.div
+        className="fixed top-36 left-8 z-50"
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.5, duration: 0.5 }}
+      >
+        <Button
+          onClick={cycleTimeOfDay}
+          className="bg-white/90 hover:bg-white text-gray-800 shadow-lg backdrop-blur-sm border border-white/20 px-4 py-2 rounded-xl flex items-center gap-2 transition-all duration-300 hover:scale-105"
+          data-testid="button-time-toggle"
+        >
+          {(() => {
+            const IconComponent = getTimeIcon();
+            return <IconComponent className="w-4 h-4" />;
+          })()}
+          <span className="text-sm font-medium">
+            {manualTimeOfDay ? manualTimeOfDay.charAt(0).toUpperCase() + manualTimeOfDay.slice(1) : 'Auto'}
+          </span>
+        </Button>
+      </motion.div>
 
       {/* Scout's Workbook Button */}
       <motion.div
