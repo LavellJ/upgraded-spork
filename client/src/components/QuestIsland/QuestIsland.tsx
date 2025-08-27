@@ -669,50 +669,6 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             <div className="absolute inset-0 bg-gradient-to-br from-sand-200 via-sand-100 to-green-200 rounded-full opacity-90 transform rotate-12 scale-110" />
             
             
-            {/* Clean Adventure Path */}
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 900">
-              <path
-                d="M 350 250 
-                   C 200 220, 150 300, 200 450 
-                   C 250 600, 400 650, 550 620 
-                   C 700 590, 800 500, 750 350 
-                   C 700 200, 550 180, 450 220 
-                   C 550 240, 620 320, 580 400 
-                   C 540 480, 450 450, 420 380 
-                   C 390 310, 420 250, 350 250 Z"
-                stroke="#FFD700"
-                strokeWidth="18"
-                fill="none"
-                strokeLinecap="round"
-                opacity="0.95"
-              />
-              
-              <defs>
-                {/* Gradient definitions for progress effects */}
-                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.9" />
-                  <stop offset="50%" stopColor="#f59e0b" stopOpacity="1.0" />
-                  <stop offset="100%" stopColor="#d97706" stopOpacity="0.9" />
-                </linearGradient>
-                <linearGradient id="sparkleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#fef3c7" stopOpacity="0.8" />
-                  <stop offset="50%" stopColor="#fbbf24" stopOpacity="0.9" />
-                  <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.8" />
-                </linearGradient>
-                
-                {/* Energy Flow Gradients */}
-                <radialGradient id="energyPulseGradient" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="#fbbf24" stopOpacity="1.0" />
-                  <stop offset="50%" stopColor="#f59e0b" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="#d97706" stopOpacity="0.4" />
-                </radialGradient>
-                <radialGradient id="energyPulse2Gradient" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="#fef3c7" stopOpacity="0.9" />
-                  <stop offset="50%" stopColor="#fbbf24" stopOpacity="0.6" />
-                  <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.3" />
-                </radialGradient>
-              </defs>
-            </svg>
 
             {/* Biomes */}
             {biomes.map(biome => (
