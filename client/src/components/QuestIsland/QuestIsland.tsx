@@ -689,30 +689,6 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         </motion.button>
       </div>
 
-      {/* Treasure Map Button */}
-      <div className="absolute top-4 right-4 z-40">
-        <motion.button
-          onClick={() => setShowJourneyJournal(true)}
-          className="bg-gradient-to-br from-amber-500 to-orange-500 text-white p-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          data-testid="treasure-map-button"
-        >
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg overflow-hidden">
-              <img 
-                src={treasureMapIcon} 
-                alt="Treasure Map" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <span className="font-medium">Treasure Map</span>
-          </div>
-        </motion.button>
-      </div>
 
       {/* Backpack/Inventory Button */}
       <div className="absolute bottom-4 right-4 z-40">
