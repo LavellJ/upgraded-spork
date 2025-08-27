@@ -41,7 +41,7 @@ export default function QuestIslandPage() {
           data-testid="button-open-workbook"
         >
           {/* Scout's Journal - Closed by default, Open on hover */}
-          <div className="relative w-20 h-20">
+          <div className="relative w-32 h-32">
             {/* Closed Journal (default state) */}
             <img 
               src="/attached_assets/6914ebbd-adcf-4dd8-bdc4-bd1ef3daaa23_1756264852126.png"
