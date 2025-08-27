@@ -37,6 +37,14 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
         /* Hot Air Balloon Button for Completed Lessons */
         <motion.div
           className="relative"
+          animate={{
+            y: [0, -4, 0],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
@@ -45,24 +53,6 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
             alt="Completed" 
             className="w-12 h-12 object-contain drop-shadow-lg"
           />
-          
-          {/* Completion Sparkle */}
-          <motion.div
-            className="absolute -inset-2"
-            animate={{
-              rotate: [0, 360],
-              scale: [0.8, 1.2, 0.8]
-            }}
-            transition={{ 
-              rotate: { duration: 8, repeat: Infinity, ease: "linear" },
-              scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
-            }}
-          >
-            <div className="absolute top-0 left-1/2 w-1 h-1 bg-yellow-300 rounded-full transform -translate-x-1/2"></div>
-            <div className="absolute bottom-0 left-1/2 w-1 h-1 bg-yellow-300 rounded-full transform -translate-x-1/2"></div>
-            <div className="absolute left-0 top-1/2 w-1 h-1 bg-yellow-300 rounded-full transform -translate-y-1/2"></div>
-            <div className="absolute right-0 top-1/2 w-1 h-1 bg-yellow-300 rounded-full transform -translate-x-1/2"></div>
-          </motion.div>
         </motion.div>
       ) : (
         /* Node Circle for Locked/Available Lessons */
