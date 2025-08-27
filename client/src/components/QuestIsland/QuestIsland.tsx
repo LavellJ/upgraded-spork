@@ -10,8 +10,8 @@ import { getLearnerName } from "@/utils/learnerName";
 import explorerDefault from '@assets/image_1756014874313.png';
 import explorerThinking from '@assets/scout-thinking.png';
 import trailImage from '@assets/a493b3ae-451b-48a1-b634-c3720d692e77_1756275137722.png';
-import progressIcon from '@assets/generated_images/Scout_math_counting_activity_6b76e197.png';
-import treasureMapIcon from '@assets/925fba67-25bb-45e9-8e91-eb6e19d9394c_1756186426342_1756275909668.png';
+import progressIcon from '@assets/925fba67-25bb-45e9-8e91-eb6e19d9394c_1756186426342_1756275909668.png';
+import treasureMapIcon from '@assets/generated_images/Scout_general_exploration_5819cb00.png';
 import backpackIcon from '@assets/fd4dc3d1-ed79-4c91-a0b1-e71382387485_1756182003955_1756275864806.png';
 
 export interface Collectible {
@@ -663,30 +663,30 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Progress Counter */}
+      {/* Progress Counter - Treasure Map */}
       <div className="absolute top-4 left-4 z-40">
-        <motion.div
-          className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-white/30 p-4"
+        <motion.button
+          onClick={() => setShowJourneyJournal(true)}
+          className="relative group"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          data-testid="treasure-map-progress-button"
         >
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-blue-300 shadow-lg">
-              <img 
-                src={progressIcon} 
-                alt="Progress Counter" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600 uppercase tracking-wide">Progress</p>
-              <p className="text-lg font-bold text-gray-800">
-                {collectibles.filter(c => c.collected).length}/{collectibles.length} Items
-              </p>
-            </div>
+          <img 
+            src={progressIcon} 
+            alt="Treasure Map Progress" 
+            className="w-20 h-20 drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-300"
+          />
+          {/* Progress overlay */}
+          <div className="absolute -bottom-2 -right-2 bg-white/95 backdrop-blur-sm rounded-full px-2 py-1 shadow-lg border border-white/50">
+            <span className="text-xs font-bold text-gray-800">
+              {collectibles.filter(c => c.collected).length}/{collectibles.length}
+            </span>
           </div>
-        </motion.div>
+        </motion.button>
       </div>
 
       {/* Treasure Map Button */}
