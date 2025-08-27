@@ -338,83 +338,83 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     }
   }, [newDiscovery]);
 
-  // Tree structure - main trunk with branches radiating from each biome point
+  // Tree structure - main trunk with branches radiating from each biome point along kidney trail perimeter
   const treeBranches = {
     beach: {
-      trunkPoint: { x: 120, y: 650 }, // Point where branches connect to main trunk
+      trunkPoint: { x: 300, y: 585 }, // Lower left on kidney trail perimeter
       branches: [
         { 
-          endpoint: { x: 80, y: 700 }, // Branch 1 - spreading outward like leaves seeking space
+          endpoint: { x: 240, y: 630 }, // Branch 1 - spreading outward from trail
           lessonId: "beach-1",
-          angle: 225 // degrees from trunk
+          angle: 225
         },
         { 
-          endpoint: { x: 180, y: 720 }, // Branch 2 - positioned for maximum space
+          endpoint: { x: 360, y: 620 }, // Branch 2 - positioned for space along trail
           lessonId: "beach-2", 
           angle: 315
         },
         { 
-          endpoint: { x: 60, y: 600 }, // Branch 3 - avoiding overlap with other lessons
+          endpoint: { x: 220, y: 530 }, // Branch 3 - avoiding trail overlap
           lessonId: "beach-3",
           angle: 135
         }
       ]
     },
     jungle: {
-      trunkPoint: { x: 420, y: 315 },
+      trunkPoint: { x: 300, y: 315 }, // Upper left on kidney trail perimeter
       branches: [
         { 
-          endpoint: { x: 360, y: 270 }, // Branch spreading upward-left
+          endpoint: { x: 240, y: 270 }, // Branch spreading from trail upward-left
           lessonId: "jungle-1",
           angle: 135
         },
         { 
-          endpoint: { x: 480, y: 280 }, // Branch spreading upward-right  
+          endpoint: { x: 360, y: 280 }, // Branch spreading from trail upward-right  
           lessonId: "jungle-2",
           angle: 45
         },
         { 
-          endpoint: { x: 380, y: 380 }, // Branch spreading downward
+          endpoint: { x: 260, y: 380 }, // Branch spreading from trail downward
           lessonId: "jungle-3", 
           angle: 225
         }
       ]
     },
     volcano: {
-      trunkPoint: { x: 600, y: 100 },
+      trunkPoint: { x: 600, y: 180 }, // Top center on kidney trail perimeter
       branches: [
         { 
-          endpoint: { x: 540, y: 55 }, // Branch 1 - northwest spread (adjusted for new trunk position)
+          endpoint: { x: 540, y: 135 }, // Branch 1 - northwest spread from trail
           lessonId: "volcano-1",
           angle: 135
         },
         { 
-          endpoint: { x: 660, y: 65 }, // Branch 2 - northeast spread  
+          endpoint: { x: 660, y: 145 }, // Branch 2 - northeast spread from trail
           lessonId: "volcano-2", 
           angle: 45
         },
         { 
-          endpoint: { x: 560, y: 165 }, // Branch 3 - southwest spread
+          endpoint: { x: 560, y: 245 }, // Branch 3 - southwest spread from trail
           lessonId: "volcano-3",
           angle: 225
         }
       ]
     },
     lagoon: {
-      trunkPoint: { x: 1000, y: 400 },
+      trunkPoint: { x: 900, y: 315 }, // Upper right on kidney trail perimeter
       branches: [
         { 
-          endpoint: { x: 940, y: 355 }, // Branch 1 - northwest spread (adjusted for new trunk position)
+          endpoint: { x: 840, y: 270 }, // Branch 1 - northwest spread from trail
           lessonId: "lagoon-1",
           angle: 135
         },
         { 
-          endpoint: { x: 1060, y: 470 }, // Branch 2 - southeast spread
+          endpoint: { x: 960, y: 360 }, // Branch 2 - southeast spread from trail
           lessonId: "lagoon-2",
           angle: 315
         },
         { 
-          endpoint: { x: 940, y: 470 }, // Branch 3 - southwest spread  
+          endpoint: { x: 840, y: 380 }, // Branch 3 - southwest spread from trail
           lessonId: "lagoon-3", 
           angle: 225
         }
@@ -580,7 +580,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "beach",
       name: "Seashell Beach",
       subject: "Mathematics",
-      position: { x: (120/1200)*100, y: (650/900)*100 }, // Lower left on trail - using beach trunk point
+      position: { x: 25, y: 65 }, // Lower left on kidney trail perimeter (Position 4/5)
       color: "from-amber-200 to-orange-200",
       description: "Where numbers dance with the waves"
     },
@@ -588,7 +588,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "jungle",
       name: "Whisper Woods", 
       subject: "Literacy",
-      position: { x: (420/1200)*100, y: (315/900)*100 }, // Upper left on trail - using jungle trunk point
+      position: { x: 25, y: 35 }, // Upper left on kidney trail perimeter (Position 5/5)
       color: "from-emerald-300 to-green-400",
       description: "Stories grow on every tree"
     },
@@ -596,7 +596,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "volcano",
       name: "Ember Peak",
       subject: "Science", 
-      position: { x: (600/1200)*100, y: (100/900)*100 }, // Top center on trail - repositioned for even spacing
+      position: { x: 50, y: 20 }, // Top center on kidney trail perimeter (Position 1/5)
       color: "from-red-300 to-orange-400",
       description: "Discover how the world works"
     },
@@ -604,7 +604,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "lagoon",
       name: "Crystal Lagoon",
       subject: "Social Studies",
-      position: { x: (1000/1200)*100, y: (400/900)*100 }, // Upper right on trail - repositioned for even spacing
+      position: { x: 75, y: 35 }, // Upper right on kidney trail perimeter (Position 2/5)
       color: "from-cyan-200 to-blue-300", 
       description: "Learn about our world together"
     },
