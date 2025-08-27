@@ -682,11 +682,20 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
           whileTap={{ scale: 0.95 }}
           data-testid="backpack-button"
         >
-          <img 
-            src={backpackIcon} 
-            alt="Backpack" 
-            className="w-72 h-72 drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-300"
-          />
+          <div className="relative w-72 h-72">
+            {/* Default Backpack (normal state) */}
+            <img 
+              src={backpackIcon} 
+              alt="Backpack" 
+              className="absolute inset-0 w-full h-full drop-shadow-lg group-hover:drop-shadow-xl opacity-100 group-hover:opacity-0 transition-all duration-300"
+            />
+            {/* Hover Backpack (hover state) */}
+            <img 
+              src="/attached_assets/b6342ccf-f378-4db5-84a1-5f2509a39eb0_1756299357065.png" 
+              alt="Backpack Hover"
+              className="absolute inset-0 w-full h-full drop-shadow-lg group-hover:drop-shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300"
+            />
+          </div>
           {collectibles.filter(c => c.collected).length > 0 && (
             <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg">
               <span className="text-white text-xs font-bold">
