@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -6,7 +6,6 @@ import { Scout } from "./Scout";
 import { Biome } from "./Biome";
 import { JourneyJournal } from "./JourneyJournal";
 import { LessonNode } from "./LessonNode";
-import { QuestPath } from "./QuestPath";
 import { getLearnerName } from "@/utils/learnerName";
 import explorerDefault from '@assets/image_1756014874313.png';
 import explorerThinking from '@assets/scout-thinking.png';
@@ -602,118 +601,51 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     setTimeout(() => setShowScoutMessage(false), 3000);
   }, []);
 
-  // Biomes in S-curve progression path for quest-style learning
   const biomes = [
     {
       id: "beach",
       name: "Seashell Beach",
       subject: "Mathematics",
-      position: { x: 20, y: 75 }, // Start of journey - bottom left
+      position: { x: 10, y: 72 }, // Far southwest corner
       color: "from-amber-200 to-orange-200",
-      description: "Where numbers dance with the waves",
-      order: 0
+      description: "Where numbers dance with the waves"
     },
     {
       id: "jungle",
       name: "Whisper Woods", 
       subject: "Literacy",
-      position: { x: 25, y: 30 }, // S-curve: top left
+      position: { x: 35, y: 35 }, // Central-west
       color: "from-emerald-300 to-green-400",
-      description: "Stories grow on every tree",
-      order: 1
+      description: "Stories grow on every tree"
     },
     {
       id: "volcano",
       name: "Ember Peak",
       subject: "Science", 
-      position: { x: 70, y: 20 }, // S-curve: top right
+      position: { x: 85, y: 15 }, // Far northeast peak
       color: "from-red-300 to-orange-400",
-      description: "Discover how the world works",
-      order: 2
+      description: "Discover how the world works"
     },
     {
       id: "lagoon",
       name: "Crystal Lagoon",
       subject: "Social Studies",
-      position: { x: 70, y: 70 }, // S-curve: bottom right
+      position: { x: 70, y: 80 }, // Southeast waters
       color: "from-cyan-200 to-blue-300", 
-      description: "Learn about our world together",
-      order: 3
+      description: "Learn about our world together"
     },
     {
       id: "meadow",
       name: "Gentle Meadow",
       subject: "Creativity & Art",
-      position: { x: 45, y: 45 }, // S-curve: center
+      position: { x: 55, y: 58 }, // Central area
       color: "from-green-200 to-yellow-200",
-      description: "Express yourself through art and music",
-      order: 4
+      description: "Express yourself through art and music"
     }
   ];
 
-  // Enhanced biome progression system with quest-style unlocking (memoized)
-  const biomeProgresses = useMemo(() => {
-    const progressMap: Record<string, any> = {};
-    
-    // First, calculate basic progress for all biomes
-    biomes.forEach(biome => {
-      const biomeLessons = lessonNodes.filter(lesson => lesson.biome === biome.id);
-      const completedCount = biomeLessons.filter(lesson => lessonProgress[lesson.id]?.completed).length;
-      const totalCount = biomeLessons.length;
-      
-      progressMap[biome.id] = {
-        completed: completedCount,
-        total: totalCount,
-        percentage: totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0,
-        isCompleted: completedCount === totalCount && totalCount > 0,
-        order: biome.order
-      };
-    });
-    
-    // Then, add lock status based on progression
-    biomes.forEach(biome => {
-      const isLocked = (() => {
-        if (biome.order === 0) return false; // First biome always unlocked
-        
-        // Check if previous biome is completed
-        const prevBiome = biomes.find(b => b.order === biome.order - 1);
-        if (!prevBiome) return false;
-        
-        return !progressMap[prevBiome.id]?.isCompleted;
-      })();
-      
-      progressMap[biome.id].isLocked = isLocked;
-    });
-    
-    return progressMap;
-  }, [lessonProgress, lessonNodes]);
-
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      {/* Progress Counter - top left */}
-      <motion.div
-        className="fixed top-4 left-4 z-30"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.8, duration: 0.5 }}
-      >
-        <div className="bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-2 shadow-lg">
-          <div className="text-sm font-bold text-gray-800 flex items-center gap-2">
-            <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-            </svg>
-            {(() => {
-              const totalCompleted = Object.values(lessonProgress).filter(p => p.completed).length;
-              const totalLessons = Object.keys(lessonProgress).length;
-              return `${totalCompleted}/${totalLessons}`;
-            })()}
-          </div>
-        </div>
-      </motion.div>
-      
-      {/* Quest Path connecting biomes */}
-      <QuestPath biomes={biomes} />
-
       {/* Floating Clouds */}
       <motion.div
         className="absolute top-10 left-10 w-32 h-16 bg-white/40 rounded-full blur-sm"
@@ -998,7 +930,6 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 key={biome.id}
                 {...biome}
                 onClick={() => setScoutTarget(biome.id)}
-                progress={biomeProgresses[biome.id]}
               />
             ))}
 
