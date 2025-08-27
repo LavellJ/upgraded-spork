@@ -10,6 +10,9 @@ import { getLearnerName } from "@/utils/learnerName";
 import explorerDefault from '@assets/image_1756014874313.png';
 import explorerThinking from '@assets/scout-thinking.png';
 import trailImage from '@assets/a493b3ae-451b-48a1-b634-c3720d692e77_1756275137722.png';
+import progressIcon from '@assets/generated_images/Scout_math_counting_activity_6b76e197.png';
+import treasureMapIcon from '@assets/generated_images/Scout_general_exploration_5819cb00.png';
+import backpackIcon from '@assets/generated_images/Scout_general_exploration_5819cb00.png';
 
 export interface Collectible {
   id: string;
@@ -669,8 +672,12 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
           transition={{ delay: 0.5 }}
         >
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">📊</span>
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-blue-300 shadow-lg">
+              <img 
+                src={progressIcon} 
+                alt="Progress Counter" 
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <p className="text-xs text-gray-600 uppercase tracking-wide">Progress</p>
@@ -694,8 +701,14 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
           whileTap={{ scale: 0.95 }}
           data-testid="treasure-map-button"
         >
-          <div className="flex items-center space-x-2">
-            <span className="text-2xl">🗺️</span>
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-lg overflow-hidden">
+              <img 
+                src={treasureMapIcon} 
+                alt="Treasure Map" 
+                className="w-full h-full object-cover"
+              />
+            </div>
             <span className="font-medium">Treasure Map</span>
           </div>
         </motion.button>
@@ -714,9 +727,15 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
           data-testid="backpack-button"
         >
           <div className="relative">
-            <span className="text-2xl">🎒</span>
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-green-300 shadow-lg">
+              <img 
+                src={backpackIcon} 
+                alt="Backpack" 
+                className="w-full h-full object-cover"
+              />
+            </div>
             {collectibles.filter(c => c.collected).length > 0 && (
-              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center border-2 border-white">
                 <span className="text-white text-xs font-bold">
                   {collectibles.filter(c => c.collected).length}
                 </span>
