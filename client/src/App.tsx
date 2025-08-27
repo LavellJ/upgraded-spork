@@ -14,6 +14,8 @@ import AddChild from "@/pages/AddChild";
 import { VoiceSetup } from "@/pages/VoiceSetup";
 import LessonSkeleton from "@/pages/LessonSkeleton";
 import QuestIslandPage from "@/pages/QuestIsland";
+import JourneyJournal from "@/pages/JourneyJournal";
+import WorkbookSession from "@/pages/WorkbookSession";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -30,6 +32,10 @@ function Router() {
       <Route path="/voice-setup" component={VoiceSetup} />
       <Route path="/lesson-skeleton" component={LessonSkeleton} />
       <Route path="/quest-island" component={QuestIslandPage} />
+      <Route path="/journey-journal">
+        {() => <JourneyJournal studentName="Explorer" studentId="student-1" />}
+      </Route>
+      <Route path="/journey-journal/session/:subject" component={WorkbookSession} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -178,6 +178,84 @@ export const assets = pgTable("assets", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Scout's Workbook tables - second pillar of learning
+
+// Workbook sessions - Pomodoro-timed practice sessions
+export const workbookSessions = pgTable("workbook_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  studentId: varchar("student_id").notNull(),
+  subject: text("subject").notNull(), // "mathematics", "literacy", "science", "creative"
+  sessionType: text("session_type").notNull(), // "focus", "break", "meditation"
+  duration: integer("duration").notNull(), // in minutes  
+  questionsAsked: integer("questions_asked").default(0),
+  questionsCorrect: integer("questions_correct").default(0),
+  completed: boolean("completed").default(false),
+  interrupted: boolean("interrupted").default(false), // if session was stopped early
+  difficultyLevel: integer("difficulty_level").default(3), // 1-5, adapts based on performance
+  sessionData: jsonb("session_data").default({}), // store session-specific info
+  startedAt: timestamp("started_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+});
+
+// AI-generated workbook questions - separate from map questions
+export const workbookQuestions = pgTable("workbook_questions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  subject: text("subject").notNull(),
+  ageGroup: text("age_group").notNull(),
+  difficultyLevel: integer("difficulty_level").notNull(), // 1-5
+  questionType: text("question_type").notNull(), // "multiple_choice", "true_false", "fill_blank", "counting", "matching"
+  question: text("question").notNull(),
+  options: jsonb("options"), // for multiple choice - array of strings
+  correctAnswer: jsonb("correct_answer").notNull(), // flexible format based on question type
+  explanation: text("explanation"),
+  aiGenerated: boolean("ai_generated").default(true),
+  tags: jsonb("tags").default([]), // topical tags like "counting", "shapes", "letters"
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Student workbook responses - track individual question attempts
+export const workbookResponses = pgTable("workbook_responses", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  sessionId: varchar("session_id").notNull(),
+  studentId: varchar("student_id").notNull(),
+  questionId: varchar("question_id").notNull(),
+  studentAnswer: jsonb("student_answer").notNull(),
+  isCorrect: boolean("is_correct").notNull(),
+  timeSpent: integer("time_spent"), // seconds spent on question
+  hintsUsed: integer("hints_used").default(0),
+  answeredAt: timestamp("answered_at").defaultNow(),
+});
+
+// Workbook progress by subject - independent from map progress
+export const workbookProgress = pgTable("workbook_progress", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  studentId: varchar("student_id").notNull(),
+  subject: text("subject").notNull(),
+  totalSessions: integer("total_sessions").default(0),
+  totalQuestions: integer("total_questions").default(0),
+  totalCorrect: integer("total_correct").default(0),
+  currentDifficulty: integer("current_difficulty").default(3), // AI adapts this
+  averageAccuracy: integer("average_accuracy").default(0), // percentage
+  longestStreak: integer("longest_streak").default(0),
+  currentStreak: integer("current_streak").default(0),
+  totalFocusTime: integer("total_focus_time").default(0), // minutes
+  lastSession: timestamp("last_session"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Workbook badges and achievements - separate from map achievements  
+export const workbookAchievements = pgTable("workbook_achievements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  studentId: varchar("student_id").notNull(),
+  subject: text("subject").notNull(),
+  achievementType: text("achievement_type").notNull(), // "streak", "accuracy", "focus_time", "sessions"
+  achievementLevel: text("achievement_level").notNull(), // "bronze", "silver", "gold" 
+  criteria: jsonb("criteria").notNull(), // what was needed to earn this
+  metadata: jsonb("metadata"), // additional data like streak length, accuracy percentage
+  earnedAt: timestamp("earned_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertStudentSchema = createInsertSchema(students).omit({
   id: true,
@@ -256,6 +334,34 @@ export const insertAssetSchema = createInsertSchema(assets).omit({
   createdAt: true,
 });
 
+// Workbook insert schemas
+export const insertWorkbookSessionSchema = createInsertSchema(workbookSessions).omit({
+  id: true,
+  startedAt: true,
+  completedAt: true,
+});
+
+export const insertWorkbookQuestionSchema = createInsertSchema(workbookQuestions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertWorkbookResponseSchema = createInsertSchema(workbookResponses).omit({
+  id: true,
+  answeredAt: true,
+});
+
+export const insertWorkbookProgressSchema = createInsertSchema(workbookProgress).omit({
+  id: true,
+  lastSession: true,
+  updatedAt: true,
+});
+
+export const insertWorkbookAchievementSchema = createInsertSchema(workbookAchievements).omit({
+  id: true,
+  earnedAt: true,
+});
+
 // Types
 export type Parent = typeof parents.$inferSelect;
 export type InsertParent = z.infer<typeof insertParentSchema>;
@@ -301,3 +407,19 @@ export type InsertStudentArtifact = z.infer<typeof insertStudentArtifactSchema>;
 
 export type Asset = typeof assets.$inferSelect;
 export type InsertAsset = z.infer<typeof insertAssetSchema>;
+
+// Workbook types
+export type WorkbookSession = typeof workbookSessions.$inferSelect;
+export type InsertWorkbookSession = z.infer<typeof insertWorkbookSessionSchema>;
+
+export type WorkbookQuestion = typeof workbookQuestions.$inferSelect;
+export type InsertWorkbookQuestion = z.infer<typeof insertWorkbookQuestionSchema>;
+
+export type WorkbookResponse = typeof workbookResponses.$inferSelect;
+export type InsertWorkbookResponse = z.infer<typeof insertWorkbookResponseSchema>;
+
+export type WorkbookProgress = typeof workbookProgress.$inferSelect;
+export type InsertWorkbookProgress = z.infer<typeof insertWorkbookProgressSchema>;
+
+export type WorkbookAchievement = typeof workbookAchievements.$inferSelect;
+export type InsertWorkbookAchievement = z.infer<typeof insertWorkbookAchievementSchema>;
