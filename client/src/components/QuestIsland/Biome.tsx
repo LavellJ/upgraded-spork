@@ -16,9 +16,18 @@ interface BiomeProps {
   color: string;
   description: string;
   onClick: () => void;
+  // New quest-style progression props
+  progress?: {
+    completed: number;
+    total: number;
+    percentage: number;
+    isCompleted: boolean;
+    isLocked: boolean;
+    order: number;
+  };
 }
 
-export function Biome({ id, name, subject, position, color, description, onClick }: BiomeProps) {
+export function Biome({ id, name, subject, position, color, description, onClick, progress }: BiomeProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -200,17 +209,65 @@ export function Biome({ id, name, subject, position, color, description, onClick
         top: position.y + "%",
         transform: "translate(-50%, -50%)"
       }}
-      onClick={onClick}
+      onClick={progress?.isLocked ? undefined : onClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
       data-testid={`biome-${id}`}
     >
+      {/* Progress Ring */}
+      <div className="absolute inset-0 w-64 h-64 -m-4 rounded-full">
+        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+          {/* Background Ring */}
+          <circle
+            cx="50"
+            cy="50"
+            r="45"
+            fill="none"
+            stroke="rgba(255,255,255,0.2)"
+            strokeWidth="2"
+          />
+          {/* Progress Ring */}
+          <motion.circle
+            cx="50"
+            cy="50"
+            r="45"
+            fill="none"
+            stroke={progress?.isCompleted ? "#10b981" : progress?.isLocked ? "#6b7280" : "#f59e0b"}
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeDasharray={`${2 * Math.PI * 45}`}
+            initial={{ strokeDashoffset: 2 * Math.PI * 45 }}
+            animate={{ 
+              strokeDashoffset: 2 * Math.PI * 45 * (1 - (progress?.percentage || 0) / 100)
+            }}
+            transition={{ duration: 2, ease: "easeInOut" }}
+          />
+        </svg>
+      </div>
+
+      {/* Status Badge */}
+      <motion.div
+        className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full shadow-lg z-10 flex items-center justify-center"
+        style={{
+          backgroundColor: progress?.isCompleted ? "#10b981" : progress?.isLocked ? "#6b7280" : "#f59e0b"
+        }}
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 1, duration: 0.5, type: "spring" }}
+      >
+        <span className="text-white text-lg font-bold">
+          {progress?.isCompleted ? "✓" : progress?.isLocked ? "🔒" : progress?.completed || ""}
+        </span>
+      </motion.div>
+
       {/* Biome Circle */}
       <motion.div
-        className={`relative w-56 h-56 rounded-full shadow-lg overflow-hidden`}
+        className={`relative w-56 h-56 rounded-full shadow-lg overflow-hidden ${progress?.isLocked ? 'opacity-60 grayscale' : ''}`}
         animate={{ 
-          boxShadow: [
+          boxShadow: progress?.isLocked ? [
+            "0 4px 12px rgba(0,0,0,0.1)"
+          ] : [
             "0 4px 12px rgba(0,0,0,0.1)",
             "0 6px 20px rgba(0,0,0,0.2)", 
             "0 4px 12px rgba(0,0,0,0.1)"
