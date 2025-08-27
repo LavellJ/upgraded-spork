@@ -9,7 +9,7 @@ import { LessonNode } from "./LessonNode";
 import { getLearnerName } from "@/utils/learnerName";
 import explorerDefault from '@assets/image_1756014874313.png';
 import explorerThinking from '@assets/scout-thinking.png';
-import trailImage from '@assets/a8b9d6f3-601b-4442-a3e9-4607ddbf907b_1756274158933.png';
+import trailImage from '@assets/a493b3ae-451b-48a1-b634-c3720d692e77_1756275137722.png';
 
 export interface Collectible {
   id: string;
@@ -676,7 +676,8 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 alt="Adventure Trail"
                 className="w-[800px] h-[600px] object-contain opacity-95"
                 style={{
-                  filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.3))'
+                  filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.3))',
+                  transform: 'rotate(90deg)'
                 }}
               />
             </div>
