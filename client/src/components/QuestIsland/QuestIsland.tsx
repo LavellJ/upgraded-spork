@@ -381,40 +381,40 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       ]
     },
     volcano: {
-      trunkPoint: { x: 1020, y: 135 },
+      trunkPoint: { x: 600, y: 100 },
       branches: [
         { 
-          endpoint: { x: 960, y: 90 }, // Branch 1 - northwest spread (like jungle pattern)
+          endpoint: { x: 540, y: 55 }, // Branch 1 - northwest spread (adjusted for new trunk position)
           lessonId: "volcano-1",
           angle: 135
         },
         { 
-          endpoint: { x: 1080, y: 100 }, // Branch 2 - northeast spread  
+          endpoint: { x: 660, y: 65 }, // Branch 2 - northeast spread  
           lessonId: "volcano-2", 
           angle: 45
         },
         { 
-          endpoint: { x: 980, y: 200 }, // Branch 3 - southwest spread
+          endpoint: { x: 560, y: 165 }, // Branch 3 - southwest spread
           lessonId: "volcano-3",
           angle: 225
         }
       ]
     },
     lagoon: {
-      trunkPoint: { x: 840, y: 720 },
+      trunkPoint: { x: 1000, y: 400 },
       branches: [
         { 
-          endpoint: { x: 780, y: 670 }, // Branch 1 - northwest spread (like beach pattern)
+          endpoint: { x: 940, y: 355 }, // Branch 1 - northwest spread (adjusted for new trunk position)
           lessonId: "lagoon-1",
           angle: 135
         },
         { 
-          endpoint: { x: 900, y: 790 }, // Branch 2 - southeast spread
+          endpoint: { x: 1060, y: 470 }, // Branch 2 - southeast spread
           lessonId: "lagoon-2",
           angle: 315
         },
         { 
-          endpoint: { x: 780, y: 790 }, // Branch 3 - southwest spread  
+          endpoint: { x: 940, y: 470 }, // Branch 3 - southwest spread  
           lessonId: "lagoon-3", 
           angle: 225
         }
@@ -580,7 +580,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "beach",
       name: "Seashell Beach",
       subject: "Mathematics",
-      position: { x: 15, y: 70 }, // Lower left position (4/5 around trail)
+      position: { x: (120/1200)*100, y: (650/900)*100 }, // Lower left on trail - using beach trunk point
       color: "from-amber-200 to-orange-200",
       description: "Where numbers dance with the waves"
     },
@@ -588,7 +588,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "jungle",
       name: "Whisper Woods", 
       subject: "Literacy",
-      position: { x: 15, y: 30 }, // Upper left position (5/5 around trail)
+      position: { x: (420/1200)*100, y: (315/900)*100 }, // Upper left on trail - using jungle trunk point
       color: "from-emerald-300 to-green-400",
       description: "Stories grow on every tree"
     },
@@ -596,7 +596,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "volcano",
       name: "Ember Peak",
       subject: "Science", 
-      position: { x: 50, y: 15 }, // Top position (1/5 around trail)
+      position: { x: (600/1200)*100, y: (100/900)*100 }, // Top center on trail - repositioned for even spacing
       color: "from-red-300 to-orange-400",
       description: "Discover how the world works"
     },
@@ -604,7 +604,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "lagoon",
       name: "Crystal Lagoon",
       subject: "Social Studies",
-      position: { x: 85, y: 30 }, // Upper right position (2/5 around trail)
+      position: { x: (1000/1200)*100, y: (400/900)*100 }, // Upper right on trail - repositioned for even spacing
       color: "from-cyan-200 to-blue-300", 
       description: "Learn about our world together"
     },
