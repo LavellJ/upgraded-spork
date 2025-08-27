@@ -12,7 +12,7 @@ import explorerThinking from '@assets/scout-thinking.png';
 import trailImage from '@assets/a493b3ae-451b-48a1-b634-c3720d692e77_1756275137722.png';
 import progressIcon from '@assets/generated_images/Scout_math_counting_activity_6b76e197.png';
 import treasureMapIcon from '@assets/generated_images/Scout_general_exploration_5819cb00.png';
-import backpackIcon from '@assets/generated_images/Scout_general_exploration_5819cb00.png';
+import backpackIcon from '@assets/fd4dc3d1-ed79-4c91-a0b1-e71382387485_1756182003955_1756275864806.png';
 
 export interface Collectible {
   id: string;
