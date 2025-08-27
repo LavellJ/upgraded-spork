@@ -668,6 +668,17 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             {/* Island Shape */}
             <div className="absolute inset-0 bg-gradient-to-br from-sand-200 via-sand-100 to-green-200 rounded-full opacity-90 transform rotate-12 scale-110" />
             
+            {/* Adventure Trail - Kidney Shape */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <img 
+                src="@assets/a8b9d6f3-601b-4442-a3e9-4607ddbf907b_1756274158933.png" 
+                alt="Adventure Trail"
+                className="w-96 h-96 object-contain opacity-90"
+                style={{
+                  filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))'
+                }}
+              />
+            </div>
             
 
             {/* Biomes */}
