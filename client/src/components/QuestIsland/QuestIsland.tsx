@@ -580,7 +580,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "beach",
       name: "Seashell Beach",
       subject: "Mathematics",
-      position: { x: 10, y: 72 }, // Far southwest corner
+      position: { x: 15, y: 70 }, // Lower left position (4/5 around trail)
       color: "from-amber-200 to-orange-200",
       description: "Where numbers dance with the waves"
     },
@@ -588,7 +588,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "jungle",
       name: "Whisper Woods", 
       subject: "Literacy",
-      position: { x: 35, y: 35 }, // Central-west
+      position: { x: 15, y: 30 }, // Upper left position (5/5 around trail)
       color: "from-emerald-300 to-green-400",
       description: "Stories grow on every tree"
     },
@@ -596,7 +596,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "volcano",
       name: "Ember Peak",
       subject: "Science", 
-      position: { x: 85, y: 15 }, // Far northeast peak
+      position: { x: 50, y: 15 }, // Top position (1/5 around trail)
       color: "from-red-300 to-orange-400",
       description: "Discover how the world works"
     },
@@ -604,7 +604,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       id: "lagoon",
       name: "Crystal Lagoon",
       subject: "Social Studies",
-      position: { x: 70, y: 80 }, // Southeast waters
+      position: { x: 85, y: 30 }, // Upper right position (2/5 around trail)
       color: "from-cyan-200 to-blue-300", 
       description: "Learn about our world together"
     },
