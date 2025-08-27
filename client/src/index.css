@@ -54,8 +54,8 @@
   --radius: 1.3rem;
   
   /* Alto's Odyssey Color Palette */
-  --sunset-orange: hsl(15.7895 100% 60.3922%);
-  --warm-orange: hsl(37.3469 94.5946% 55.0980%);
+  --sunset-orange: hsl(15.7895 50% 70%);
+  --warm-orange: hsl(37.3469 40% 75%);
   --deep-purple: hsl(271.9298 36.7257% 42.9412%);
   --soft-purple: hsl(282.9268 25.6410% 59.2157%);
   --sky-blue: hsl(194.7368 57.7465% 73.5294%);
@@ -136,13 +136,13 @@
 
 /* Gradient backgrounds */
 .gradient-bg-morning {
-  background: linear-gradient(135deg, hsl(43.6364 70.8661% 85.0980%) 0%, hsl(37.3469 94.5946% 55.0980%) 30%, hsl(194.7368 57.7465% 73.5294%) 70%, hsl(192.4138 39.0244% 46.4706%) 100%);
+  background: linear-gradient(135deg, hsl(43.6364 60% 88%) 0%, hsl(37.3469 35% 80%) 30%, hsl(194.7368 40% 78%) 70%, hsl(192.4138 35% 55%) 100%);
   animation: gradient-shift 20s ease infinite;
   background-size: 400% 400%;
 }
 
 .gradient-bg-afternoon {
-  background: linear-gradient(135deg, hsl(15.7895 100% 60.3922%) 0%, hsl(37.3469 94.5946% 55.0980%) 30%, hsl(42.0290 92.8251% 56.2745%) 70%, hsl(37.3469 94.5946% 55.0980%) 100%);
+  background: linear-gradient(135deg, hsl(15.7895 45% 75%) 0%, hsl(37.3469 40% 75%) 30%, hsl(42.0290 50% 70%) 70%, hsl(37.3469 35% 80%) 100%);
   animation: gradient-shift 25s ease infinite;
   background-size: 400% 400%;
 }
