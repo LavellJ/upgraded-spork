@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import balloonIcon from '@assets/097fe560-b8ac-4192-b450-4f106e9ff693_1756279378478.png';
+import lockIcon from '@assets/9252541e-bdfc-4bfa-ab60-c69c63a4297e_1756279935456.png';
 
 interface LessonNodeProps {
   id: string;
@@ -13,12 +14,10 @@ interface LessonNodeProps {
 
 export function LessonNode({ id, title, biome, position, completed, locked, onClick }: LessonNodeProps) {
   const getNodeColor = () => {
-    if (locked) return "from-gray-400 to-gray-500";
     return "from-yellow-400 to-amber-500";
   };
 
   const getNodeIcon = () => {
-    if (locked) return "🔒";
     return "●";
   };
 
@@ -54,20 +53,33 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
             className="w-12 h-12 object-contain drop-shadow-lg"
           />
         </motion.div>
+      ) : locked ? (
+        /* Lock Button for Locked Lessons */
+        <motion.div
+          className="relative"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <img 
+            src={lockIcon} 
+            alt="Locked" 
+            className="w-12 h-12 object-contain drop-shadow-lg opacity-80"
+          />
+        </motion.div>
       ) : (
-        /* Node Circle for Locked/Available Lessons */
+        /* Node Circle for Available Lessons */
         <motion.div
           className={`relative w-12 h-12 bg-gradient-to-br ${getNodeColor()} rounded-full shadow-lg`}
-          animate={!locked ? {
+          animate={{
             boxShadow: [
               "0 0 10px rgba(255, 193, 7, 0.5)",
               "0 0 20px rgba(255, 193, 7, 0.8)",
               "0 0 10px rgba(255, 193, 7, 0.5)"
             ],
             scale: [1, 1.05, 1]
-          } : {}}
-          whileHover={!locked ? { scale: 1.1 } : {}}
-          whileTap={!locked ? { scale: 0.9 } : {}}
+          }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
           {/* Node Icon */}
