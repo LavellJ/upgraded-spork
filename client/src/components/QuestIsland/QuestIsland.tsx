@@ -315,6 +315,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   const [showCollectibleStory, setShowCollectibleStory] = useState(false);
   const [currentCollectible, setCurrentCollectible] = useState<Collectible | null>(null);
   const [newDiscovery, setNewDiscovery] = useState<string | null>(null);
+  const [showJourneyJournal, setShowJourneyJournal] = useState(false);
 
   // Dynamic collectible discovery system
   const discoverNewCollectible = useCallback((completedLessonId: string) => {
@@ -659,6 +660,72 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
       />
 
+      {/* Progress Counter */}
+      <div className="absolute top-4 left-4 z-40">
+        <motion.div
+          className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-white/30 p-4"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-sm">📊</span>
+            </div>
+            <div>
+              <p className="text-xs text-gray-600 uppercase tracking-wide">Progress</p>
+              <p className="text-lg font-bold text-gray-800">
+                {collectibles.filter(c => c.collected).length}/{collectibles.length} Items
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Treasure Map Button */}
+      <div className="absolute top-4 right-4 z-40">
+        <motion.button
+          onClick={() => setShowJourneyJournal(true)}
+          className="bg-gradient-to-br from-amber-500 to-orange-500 text-white p-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          data-testid="treasure-map-button"
+        >
+          <div className="flex items-center space-x-2">
+            <span className="text-2xl">🗺️</span>
+            <span className="font-medium">Treasure Map</span>
+          </div>
+        </motion.button>
+      </div>
+
+      {/* Backpack/Inventory Button */}
+      <div className="absolute bottom-4 right-4 z-40">
+        <motion.button
+          onClick={() => setShowJourneyJournal(true)}
+          className="bg-gradient-to-br from-green-500 to-emerald-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.9, type: "spring", stiffness: 200 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          data-testid="backpack-button"
+        >
+          <div className="relative">
+            <span className="text-2xl">🎒</span>
+            {collectibles.filter(c => c.collected).length > 0 && (
+              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">
+                  {collectibles.filter(c => c.collected).length}
+                </span>
+              </div>
+            )}
+          </div>
+        </motion.button>
+      </div>
+
       {/* Quest Island Map Container */}
       <div className="relative w-full h-full">
         
@@ -840,6 +907,16 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               </div>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Journey Journal Modal */}
+      <AnimatePresence>
+        {showJourneyJournal && (
+          <JourneyJournal 
+            collectibles={collectibles}
+            onClose={() => setShowJourneyJournal(false)}
+          />
         )}
       </AnimatePresence>
     </div>
