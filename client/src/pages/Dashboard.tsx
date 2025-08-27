@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { AtmosphericBackground } from "@/components/AtmosphericBackground";
-import { FloatingNavigation } from "@/components/FloatingNavigation";
 import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { ProgressLandscape } from "@/components/ProgressLandscape";
 import { BadgeDisplay } from "@/components/BadgeDisplay";
@@ -47,7 +46,6 @@ export default function Dashboard() {
     return (
       <>
         <AtmosphericBackground />
-        <FloatingNavigation />
         <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
           <div className="text-center">
             <h2 className="font-display text-3xl font-bold text-white mb-6">
@@ -67,7 +65,6 @@ export default function Dashboard() {
   return (
     <>
       <AtmosphericBackground />
-      <FloatingNavigation />
       
       <div className="relative z-10 min-h-screen pt-24 px-4">
         <div className="max-w-7xl mx-auto">
