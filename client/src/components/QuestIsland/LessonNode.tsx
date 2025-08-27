@@ -76,20 +76,37 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
           />
         </motion.div>
       ) : (
-        /* Node Circle for Available Lessons */
+        /* Hot Air Balloon with Yellow Circle Background for Available Lessons */
         <motion.div
-          className={`relative w-12 h-12 bg-gradient-to-br ${getNodeColor()} rounded-full shadow-lg`}
+          className="relative"
           animate={{
-            scale: [1, 1.05, 1]
+            y: [0, -4, 0],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
           }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-          {/* Node Icon */}
-          <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-lg">
-            {getNodeIcon()}
-          </div>
+          {/* Yellow Circle Background to indicate current progress */}
+          <motion.div
+            className={`absolute inset-0 w-12 h-12 bg-gradient-to-br ${getNodeColor()} rounded-full shadow-lg -z-10`}
+            animate={{
+              scale: [1, 1.05, 1]
+            }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transform: 'translate(-50%, -50%)', left: '50%', top: '50%' }}
+          />
+          
+          {/* Hot Air Balloon on top */}
+          <img 
+            src={balloonIcon} 
+            alt="Available" 
+            className="object-contain drop-shadow-lg relative z-10"
+            style={{ width: '52.8px', height: '52.8px' }}
+          />
         </motion.div>
       )}
 
