@@ -693,7 +693,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             <img 
               src="/attached_assets/b6342ccf-f378-4db5-84a1-5f2509a39eb0_1756299357065.png" 
               alt="Backpack Hover"
-              className="absolute inset-0 w-full h-full object-contain drop-shadow-lg group-hover:drop-shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300"
+              className="absolute inset-0 w-full h-full object-contain drop-shadow-lg group-hover:drop-shadow-xl opacity-0 group-hover:opacity-100 scale-110 transition-all duration-300"
             />
           </div>
           {collectibles.filter(c => c.collected).length > 0 && (
