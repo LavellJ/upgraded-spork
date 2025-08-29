@@ -1,0 +1,8 @@
+{
+  "id": "travel-001-quizA",
+  "timeLimitSec": 120,
+  "questions": [
+    { "id": "q1", "type": "mc", "q": "A map shows...", "choices": ["Music", "Places", "Food"], "answer": 1 },
+    { "id": "q2", "type": "open", "q": "What direction starts with the letter N?" }
+  ]
+}

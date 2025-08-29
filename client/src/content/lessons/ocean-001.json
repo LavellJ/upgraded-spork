@@ -1,0 +1,10 @@
+{
+  "id": "ocean-001",
+  "title": "Ocean Animals",
+  "ageBand": "5-7",
+  "steps": [
+    { "type": "read", "text": "The ocean is home to fish, whales, and dolphins." },
+    { "type": "activity", "prompt": "Pretend to swim like a dolphin!" },
+    { "type": "quiz", "questionSetId": "ocean-001-quizA" }
+  ]
+}

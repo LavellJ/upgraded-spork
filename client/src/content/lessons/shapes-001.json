@@ -1,0 +1,10 @@
+{
+  "id": "shapes-001",
+  "title": "Basic Shapes",
+  "ageBand": "5-7",
+  "steps": [
+    { "type": "read", "text": "A circle is round. A square has four equal sides. A triangle has three corners." },
+    { "type": "activity", "prompt": "Find a circle near you (a cup, a lid, a wheel)." },
+    { "type": "quiz", "questionSetId": "shapes-001-quizA" }
+  ]
+}
