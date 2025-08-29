@@ -1,0 +1,8 @@
+{
+  "id": "shapes-001-quizA",
+  "timeLimitSec": 120,
+  "questions": [
+    { "id": "q1", "type": "mc", "q": "How many corners does a triangle have?", "choices": ["2", "3", "4"], "answer": 1 },
+    { "id": "q2", "type": "open", "q": "Name a shape you can draw in the air." }
+  ]
+}

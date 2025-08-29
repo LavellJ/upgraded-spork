@@ -1,0 +1,10 @@
+{
+  "id": "numbers-001",
+  "title": "Counting 1 to 5",
+  "ageBand": "3-5",
+  "steps": [
+    { "type": "read", "text": "Let’s count from 1 to 5 together." },
+    { "type": "activity", "prompt": "Clap your hands 5 times!" },
+    { "type": "quiz", "questionSetId": "numbers-001-quizA" }
+  ]
+}

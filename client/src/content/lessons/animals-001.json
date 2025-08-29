@@ -1,0 +1,10 @@
+{
+  "id": "animals-001",
+  "title": "Forest Friends",
+  "ageBand": "3-5",
+  "steps": [
+    { "type": "read", "text": "Foxes are clever animals that live in forests." },
+    { "type": "activity", "prompt": "Can you pretend to be a fox and creep quietly?" },
+    { "type": "quiz", "questionSetId": "animals-001-quizA" }
+  ]
+}

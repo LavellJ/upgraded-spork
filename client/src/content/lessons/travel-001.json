@@ -1,0 +1,10 @@
+{
+  "id": "travel-001",
+  "title": "Travel Pack — Map Basics",
+  "ageBand": "5-7",
+  "steps": [
+    { "type": "read", "text": "A map shows places from above. A legend explains symbols." },
+    { "type": "activity", "prompt": "Point to the letter N on anything you see around you!" },
+    { "type": "quiz", "questionSetId": "travel-001-quizA" }
+  ]
+}

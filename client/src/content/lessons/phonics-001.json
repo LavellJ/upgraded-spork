@@ -1,0 +1,10 @@
+{
+  "id": "phonics-001",
+  "title": "Phonics: Starting Sounds",
+  "ageBand": "5-7",
+  "steps": [
+    { "type": "read", "text": "Words start with sounds. Sun starts with sss. Map starts with mmm." },
+    { "type": "activity", "prompt": "Make the 'sss' sound like a snake, then the 'mmm' sound like you love food." },
+    { "type": "quiz", "questionSetId": "phonics-001-quizA" }
+  ]
+}

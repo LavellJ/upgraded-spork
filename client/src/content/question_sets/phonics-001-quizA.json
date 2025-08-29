@@ -1,0 +1,8 @@
+{
+  "id": "phonics-001-quizA",
+  "timeLimitSec": 120,
+  "questions": [
+    { "id": "q1", "type": "mc", "q": "Which letter does 'sun' start with?", "choices": ["S", "M", "B"], "answer": 0 },
+    { "id": "q2", "type": "mc", "q": "Which letter does 'map' start with?", "choices": ["S", "M", "T"], "answer": 1 }
+  ]
+}
