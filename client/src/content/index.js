@@ -67,11 +67,10 @@ const rawQuestionSets = {
 export const lessons = vetLessons(rawLessons);
 export const questionSets = vetQuestionSets(rawQuestionSets);
 
-// Optional: quick summary in the console
-console.info(
-  `✅ Content loaded: ${lessons.length} lessons, ${Object.keys(questionSets).length} question sets`
-  let contentErrors = [];
+// ---- Track validation errors ----
+let contentErrors = [];
 
+// ---- Validate helpers (soft-fail: log and skip bad files) ----
 function vetLessons(rawList) {
   const good = [];
   for (const l of rawList) {
@@ -109,8 +108,7 @@ export const questionSets = vetQuestionSets(rawQuestionSets);
 // ---- Export any errors ----
 export const validationErrors = contentErrors;
 
+// Optional: quick summary in the console
 console.info(
   `✅ Content loaded: ${lessons.length} lessons, ${Object.keys(questionSets).length} question sets`
-);
-
 );
