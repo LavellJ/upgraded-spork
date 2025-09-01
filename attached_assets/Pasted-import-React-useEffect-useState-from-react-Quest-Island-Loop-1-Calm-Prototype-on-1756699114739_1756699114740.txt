@@ -1,0 +1,608 @@
+import React, { useEffect, useState } from "react";
+
+// Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
+// - Prototype-only Mode (default ON):
+//   • Hides any external lesson hints
+//   • Start never says “opens tab”
+//   • Player always uses the calm in-app prototype
+//   • Toggle in Teacher Mode (persists to localStorage)
+// - Import/Export Progress (no backend):
+//   • “Copy progress link” → packs state into ?qi= token
+//   • “Import” → paste link or token to restore
+// - Resume last lesson
+//   • When you hit Start on any lesson, we remember it and show a “Resume” button in the header.
+//   • Works across refreshes via localStorage.
+
+// --------------------------------------
+// Generic utilities & small UI primitives
+// --------------------------------------
+const KEYS = { loop:'qi_loop', comp:'qi_comp', bpItems:'qi_bp_items', bpEq:'qi_bp_equipped', teacher:'qi_teacher', framework:'qi_framework', calm:'qi_calm', proto:'qi_proto_only', last:'qi_last' };
+const cx = (...s) => s.filter(Boolean).join(" ");
+
+// Simple bottom sheet used across Backpack / Lessons / Teacher Panel
+function BottomSheet({open,onClose,children}){
+  useEffect(()=>{
+    if(!open) return;
+    const onKey = (e)=>{ if(e.key==='Escape') onClose?.(); };
+    window.addEventListener('keydown', onKey);
+    return ()=> window.removeEventListener('keydown', onKey);
+  },[open,onClose]);
+  if(!open) return null;
+  return (
+    <div className="fixed inset-0 z-40">
+      <div className="absolute inset-0 bg-stone-900/40" onClick={onClose} />
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[min(96vw,42rem)] max-h-[88vh] overflow-auto rounded-t-3xl bg-white/95 backdrop-blur border border-stone-900/10 shadow-2xl p-4">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// --------------------------------------
+// Backpack state & UI
+// --------------------------------------
+function useBackpack(){
+  const [items,setItems]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.bpItems)||'[]');}catch{return[]} });
+  const [equipped,setEquipped]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.bpEq)||'[]');}catch{return[]} });
+  const equipLimit=3;
+  const award=(it)=> setItems(p=> p.some(x=>x.id===it.id)? p : [...p,it]);
+  const toggleEquip=(id)=> setEquipped(p=> p.includes(id)? p.filter(x=>x!==id) : (p.length<equipLimit?[...p,id]:p));
+  useEffect(()=>{ try{localStorage.setItem(KEYS.bpItems,JSON.stringify(items));}catch{} },[items]);
+  useEffect(()=>{ try{localStorage.setItem(KEYS.bpEq,JSON.stringify(equipped));}catch{} },[equipped]);
+  return {items,equipped,toggleEquip,award,equipLimit,setItems,setEquipped};
+}
+
+function BackpackSheet({open,onClose,bp}){
+  const {items,equipped,toggleEquip,equipLimit}=bp;
+  const equippedSet = new Set(equipped);
+  return (
+    <BottomSheet open={open} onClose={onClose}>
+      <div className="text-stone-800">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">🎒</div>
+          <div className="font-extrabold">Scout's Backpack</div>
+          <button onClick={onClose} className="ml-auto text-xs px-2 py-1 rounded-full border bg-white hover:bg-stone-50">Close</button>
+        </div>
+        <div className="mt-2 text-xs text-stone-600">Equip up to {equipLimit} items.</div>
+        {items.length===0 && <div className="mt-4 text-sm text-stone-600">No items yet. Complete lessons to earn collectibles.</div>}
+        <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {items.map(it=> (
+            <div key={it.id} className="rounded-xl border bg-white/80 p-3 flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">{it.kind==='tool'? '🧰' : it.kind==='badge'? '🏅' : '🖋️'}</div>
+              <div className="min-w-0"><div className="font-semibold text-sm truncate">{it.name}</div><div className="text-[11px] text-stone-500 truncate">{it.kind}</div></div>
+              <button onClick={()=>toggleEquip(it.id)} className={cx("ml-auto text-xs px-2 py-1 rounded-full border transition ease-out", equippedSet.has(it.id)?"bg-emerald-600 text-white border-emerald-700":"bg-white hover:bg-stone-50")}>{equippedSet.has(it.id)? 'Equipped' : 'Equip'}</button>
+            </div>
+          ))}
+        </div>
+        {items.length>0 && (
+          <div className="mt-2 text-[11px] text-stone-600">Equipped: {equipped.length}/{equipLimit}</div>
+        )}
+      </div>
+    </BottomSheet>
+  );
+}
+
+// --------------------------------------
+// Subjects, Standards, Lessons
+// --------------------------------------
+const SUBJECTS = {
+  forest: { label: "Literacy", color: "#3B7D44" },
+  desert: { label: "Math", color: "#C96A2B" },
+  ocean:  { label: "Science", color: "#3BA7B6" },
+  night:  { label: "HASS", color: "#404A73" },
+};
+const STANDARDS = {
+  frameworkOptions: ["Generic","ACARA","NZC"],
+  Generic: { forest: "Foundational phonics & fluency", desert: "Number sense & operations", ocean: "Physical forces & inquiry", night: "Human geography basics" },
+  ACARA:   { forest: "ACARA F–2: Phonics & Fluency", desert: "ACARA F–2: Number (add within 10)", ocean: "ACARA F–2: Physical sciences", night: "ACARA F–2: HASS — Places & spaces" },
+  NZC:     { forest: "NZC L1: Phonics/Decoding", desert: "NZC L1: Number (to 10)", ocean: "NZC L1: Physical World", night: "NZC L1: Place & Environment" },
+};
+
+const LOOP1 = {
+  forest: [
+    { id: "f1", title: "First sounds (phonemic)" },
+    { id: "f2", title: "CVC blending" },
+    { id: "f3", title: "Sight words A" },
+    { id: "f4", title: "Build a sentence" },
+    { id: "f5", title: "Rhyme pairs" },
+  ],
+  desert: [
+    { id: "d1", title: "Add within 5" },
+    { id: "d2", title: "Number bonds to 5" },
+    { id: "d3", title: "Add within 10" },
+    { id: "d4", title: "Doubles 1–5" },
+    { id: "d5", title: "Mini word problems" },
+  ],
+  ocean: [
+    { id: "o1", title: "Push vs Pull" },
+    { id: "o2", title: "Gravity goes down" },
+    { id: "o3", title: "Friction (smooth vs rough)" },
+    { id: "o4", title: "Sound = vibrations" },
+    { id: "o5", title: "Light & shadows" },
+  ],
+  night: [
+    { id: "n1", title: "What is a map?" },
+    { id: "n2", title: "Symbols & legend" },
+    { id: "n3", title: "My place / street" },
+    { id: "n4", title: "Directions (N/E/S/W)" },
+    { id: "n5", title: "Land vs water" },
+  ],
+};
+
+// ---- Lesson Registry (per-loop → biome → lessonId)
+const REGISTRY = {
+  1: {
+    forest: {
+      f1: { url: "", est: "5–7 min" },
+      f2: { url: "https://replit.com/@your-org/lit-cvc-blending", est: "6–8 min" },
+      f3: { url: "", est: "6–8 min" },
+      f4: { url: "", est: "6–8 min" },
+      f5: { url: "", est: "6–8 min" },
+    },
+    desert: {
+      d1: { url: "", est: "5–7 min" },
+      d2: { url: "https://replit.com/@your-org/math-bonds-5", est: "6–8 min" },
+      d3: { url: "", est: "6–8 min" },
+      d4: { url: "", est: "6–8 min" },
+      d5: { url: "", est: "6–8 min" },
+    },
+    ocean: { o1: { url: "", est: "5–7 min" }, o2: { url: "", est: "5–7 min" }, o3: { url: "", est: "5–7 min" }, o4: { url: "", est: "5–7 min" }, o5: { url: "", est: "5–7 min" } },
+    night: { n1: { url: "", est: "5–7 min" }, n2: { url: "", est: "5–7 min" }, n3: { url: "", est: "5–7 min" }, n4: { url: "", est: "5–7 min" }, n5: { url: "", est: "5–7 min" } },
+  },
+};
+
+let CURRENT_LOOP = 1;
+const registryEntry = (biome, lessonId) => {
+  const current = REGISTRY?.[CURRENT_LOOP]?.[biome]?.[lessonId];
+  if (current) return current;
+  const loops = Object.keys(REGISTRY || {}).map(Number).sort((a,b)=>b-a);
+  for (const L of loops) {
+    const e = REGISTRY?.[L]?.[biome]?.[lessonId];
+    if (e) return e;
+  }
+  return null;
+};
+
+const findLesson = (biome,id)=> (LOOP1[biome]||[]).find(l=>l.id===id)||null;
+
+// Time of day background
+const BG_BY_TOD = {
+  morning: "from-amber-50 via-rose-50 to-sky-100",
+  afternoon: "from-amber-100 via-amber-50 to-stone-200",
+  evening: "from-slate-800 via-stone-800 to-slate-900",
+};
+const inferTimeOfDay = (d = new Date()) => { const h = d.getHours(); return h<5||h>=17?"evening": (h<12?"morning":"afternoon"); };
+
+// Ambient FX (calm-aware)
+const AMBIENT_STYLES = `
+@keyframes moteFloat {0%{transform:translateY(0);opacity:0}20%{opacity:.55}100%{transform:translateY(-60px);opacity:0}}
+@keyframes firefly {0%,100%{opacity:.25;transform:translate(0,0)}50%{opacity:1;transform:translate(6px,-8px)}}
+@keyframes shimmer {0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-6px) scaleY(1.03)}}
+@keyframes campGlow {0%,100%{opacity:.6}50%{opacity:1}}
+.mote{position:absolute;width:6px;height:6px;border-radius:9999px;background:rgba(255,243,200,.6);filter:blur(1px)}
+.fly{position:absolute;width:4px;height:4px;border-radius:9999px;background:#ffd35a;box-shadow:0 0 10px 3px rgba(255,211,90,.75)}
+.haze{position:absolute;left:0;right:0;bottom:12%;height:34%;background:radial-gradient(100% 60% at 50% 100%, rgba(255,190,90,.12), rgba(255,190,90,.05) 40%, rgba(255,190,90,0) 70%);filter:blur(2px) saturate(110%)}
+.glow{position:absolute;left:50%;transform:translateX(-50%);bottom:70px;width:280px;height:280px;border-radius:9999px;background:radial-gradient(closest-side, rgba(255,160,60,.35), rgba(255,110,0,.18), rgba(255,140,0,0) 70%);filter:blur(12px)}
+.texture{position:absolute;inset:0;opacity:.12;background-image:radial-gradient(rgba(0,0,0,.06) 1px, transparent 1px);background-size:4px 4px;mix-blend:multiply;pointer-events:none}`;
+const DustMotes = () => { const dots = Array.from({length:12},(_,i)=>({l:`${(i*7)%100}%`,b:`${(i*9)%88+6}%`,d:`${i*.6}s`,u:`${8+(i%5)}s`})); return <div aria-hidden className="absolute inset-0">{dots.map((d,i)=><span key={i} className="mote" style={{left:d.l,bottom:d.b,animation:`moteFloat ${d.u} linear ${d.d} infinite alternate`}}/>)}</div>; };
+const Fireflies = () => { const dots = Array.from({length:10},(_,i)=>({l:`${(i*11)%100}%`,t:`${10+(i*7)%60}%`,d:`${i*.4}s`,u:`${2+(i%4)*.5}s`})); return <div aria-hidden className="absolute inset-0">{dots.map((d,i)=><span key={i} className="fly" style={{left:d.l,top:d.t,animation:`firefly ${d.u} ease-in-out ${d.d} infinite`}}/>)}</div>; };
+const HeatHaze = ({calm=false}) => <div aria-hidden className="haze" style={{animation: calm? 'none' : 'shimmer 5s ease-in-out infinite'}}/>;
+const CampfireGlow = ({intensity=.75, calm=false}) => <div aria-hidden className="glow" style={{opacity:intensity,animation: calm? 'none' : 'campGlow 3s ease-in-out infinite'}}/>;
+const AmbientLayer = ({tod, calm=false}) => (
+  <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+    {tod==='morning'&&!calm&&<DustMotes/>}
+    {tod==='afternoon'&&!calm&&<HeatHaze calm={calm}/>}
+    {tod==='evening'&&!calm&&<Fireflies/>}
+    <CampfireGlow intensity={tod==='evening'?1:.7} calm={calm}/>
+    <div className="texture"/>
+    <style>{AMBIENT_STYLES}</style>
+  </div>
+);
+
+// Meta helpers
+function getLessonMeta(biome,id){ const base={
+  forest:{icon:"📘",est:"5–7 min",objectives:["Identify sounds","Blend simple words","Read aloud"],standard:"Foundational phonics & fluency"},
+  desert:{icon:"➕",est:"6–8 min",objectives:["Add within 10","Use number bonds","Apply to word problems"],standard:"Number sense & operations"},
+  ocean:{icon:"⚙️",est:"5–7 min",objectives:["Observe forces","Use simple terms","Predict outcomes"],standard:"Physical forces & inquiry"},
+  night:{icon:"🧭",est:"5–7 min",objectives:["Read symbols","Use directions","Locate places"],standard:"Human geography basics"},
+}[biome] || {icon:"📘",est:"5–7 min",objectives:["Learn"],standard:"Core skill"};
+  const reg = registryEntry(biome,id);
+  return {...base, est: reg?.est || base.est, standard: reg?.standard || base.standard, id, biome};
+}
+// Activity URL (respects Prototype-only mode)
+const resolveActivityUrl = (biome,lessonId, protoOnly) => {
+  if (protoOnly) return `https://player.example/${biome}/${lessonId}`;
+  const reg = registryEntry(biome,lessonId);
+  const url = (reg && typeof reg.url==='string' && reg.url.trim().length>0) ? reg.url : `https://player.example/${biome}/${lessonId}`;
+  return url;
+};
+
+// Progress encode/decode helpers (URL-safe Base64)
+const b64urlEncode = (s)=>{ const bytes=new TextEncoder().encode(s); let bin=''; bytes.forEach(b=>bin+=String.fromCharCode(b)); return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); };
+const b64urlDecode = (s)=>{ const n=s.replace(/-/g,'+').replace(/_/g,'/'); const pad = n.length%4? '='.repeat(4-(n.length%4)) : ''; const str=atob(n+pad); const bytes=new Uint8Array(str.length); for(let i=0;i<str.length;i++) bytes[i]=str.charCodeAt(i); return new TextDecoder().decode(bytes); };
+const buildProgressPayload = (loop,comp,bp,framework,protoOnly)=> ({
+  v:1,
+  loop,
+  comp:{
+    forest:Array.from(comp.forest||[]),
+    desert:Array.from(comp.desert||[]),
+    ocean:Array.from(comp.ocean||[]),
+    night:Array.from(comp.night||[]),
+  },
+  bp:{ items: bp.items||[], equipped: bp.equipped||[] },
+  framework, protoOnly
+});
+const makeProgressLink = (payload)=>{ const base=(typeof window!=='undefined')?(window.location.origin+window.location.pathname):'https://example.com/quest'; const token=b64urlEncode(JSON.stringify(payload)); return `${base}?qi=${token}`; };
+const extractQiFromInput = (input)=>{ try{ const url=new URL(input); const q=url.searchParams.get('qi'); if(q) return q; }catch{} const m=String(input||'').match(/[?&#]qi=([A-Za-z0-9_-]+)/); return m? m[1] : String(input||'').trim(); };
+
+// --------------------------------------
+// Prototype Activities (per-lesson templates)
+// --------------------------------------
+const TEMPLATES={
+  forest:{
+    f1:{q:"Pick the word that starts with /m/:",options:["mat","sun","dog"],correct:0,explain:"/m/ as in mat"},
+    f2:{q:"Blend c-a-t:",options:["cat","cap","cot"],correct:0,explain:"c+a+t = cat"},
+    f3:{q:"Tap the sight word 'the':",options:["the","cat","dog"],correct:0,explain:"'the' is a common sight word"},
+    f4:{q:"Complete: 'I ___ a book'",options:["read","blue","happy"],correct:0,explain:"'read' completes the sentence"},
+    f5:{q:"Which rhymes with 'log'?",options:["frog","sun","cup"],correct:0,explain:"frog / log"}
+  },
+  desert:{
+    d1:{q:"Which makes 5?",options:["2+3","1+1","4+4"],correct:0,explain:"2 and 3 make 5"},
+    d2:{q:"Number bond to 5 — pick a pair:",options:["4 & 1","3 & 3","5 & 5"],correct:0,explain:"4 and 1"},
+    d3:{q:"Which equals 9?",options:["7+2","4+1","3+3"],correct:0,explain:"7+2=9"},
+    d4:{q:"Which is a double?",options:["4+4","3+5","2+3"],correct:0,explain:"A double is the same number twice"},
+    d5:{q:"You have 2 apples and get 3 more. How many?",options:["4","5","6"],correct:1,explain:"2+3=5"}
+  },
+  ocean:{
+    o1:{q:"Push or pull opens a door?",options:["push","pull","neither"],correct:1,explain:"You pull most doors open"},
+    o2:{q:"Gravity pulls objects ___",options:["down","sideways","up"],correct:0,explain:"Gravity pulls toward Earth"},
+    o3:{q:"Which has MORE friction?",options:["carpet","ice","glass"],correct:0,explain:"Rough surfaces have more friction"},
+    o4:{q:"Sound is made by ___",options:["vibrations","light","colors"],correct:0,explain:"Vibrations make sound"},
+    o5:{q:"A shadow forms when light is ___",options:["blocked","made louder","only reflected"],correct:0,explain:"Blocking light creates a shadow"}
+  },
+  night:{
+    n1:{q:"Which symbol means school on a map legend?",options:["🏫","🌳","🏠"],correct:0,explain:"🏫 usually marks a school"},
+    n2:{q:"What is a legend used for?",options:["explaining map symbols","finding treasure","telling a story"],correct:0,explain:"A legend explains symbols"},
+    n3:{q:"Which shows your street best?",options:["local map","world map","weather map"],correct:0,explain:"Local maps show streets"},
+    n4:{q:"Which direction is opposite East?",options:["West","North","South"],correct:0,explain:"West is opposite East"},
+    n5:{q:"Which is water on a map?",options:["lake","forest","mountain"],correct:0,explain:"A lake is water"}
+  }
+};
+const getTemplate=(biome,id)=> TEMPLATES[biome]?.[id] || {q:"Prototype — placeholder:",options:["Option A","Option B"],correct:0,explain:"We'll replace this later."};
+
+function MCActivity({biome,lesson,onSolved}){
+  const accent=SUBJECTS[biome].color; const tpl=getTemplate(biome,lesson.id); const [sel,setSel]=useState(-1); const [checked,setChecked]=useState(false); const ok=checked&&sel===tpl.correct;
+  return (
+    <div className="p-3">
+      <div className="text-sm text-stone-700 mb-2">Prototype activity</div>
+      <div className="text-lg font-bold mb-3" style={{color:accent}}>{tpl.q}</div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">{tpl.options.map((opt,i)=> (
+        <button key={i} onClick={()=>{setSel(i);setChecked(false);}} className={cx("text-left px-3 py-2 rounded-xl border bg-white hover:bg-stone-50 transition ease-out", sel===i&&"ring-2 ring-amber-500")}>{String.fromCharCode(65+i)}. {opt}</button>
+      ))}</div>
+      <div className="mt-3 flex items-center gap-2">
+        <button disabled={sel<0} onClick={()=>setChecked(true)} className={cx("px-3 py-2 rounded-full transition ease-out", sel<0?"bg-stone-200 text-stone-500":"bg-amber-700/90 text-white hover:bg-amber-700")}>Check answer</button>
+        {checked&&(<span className={cx("text-sm", ok?"text-emerald-700":"text-rose-700")}>{ok?"Correct!":"Try again"}</span>)}
+      </div>
+      {checked&&!ok&&<div className="mt-1 text-xs text-stone-600">Hint: {tpl.explain}</div>}
+      {ok&&<div className="mt-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-sm text-emerald-800">Nice! Mark complete when you're ready.</div>}
+      {ok&&<div className="mt-3"><button onClick={onSolved} className="px-3 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition ease-out">Mark complete</button></div>}
+    </div>
+  );
+}
+
+// --------------------------------------
+// Activity Player, Lesson Detail/Sheet, Nodes
+// --------------------------------------
+function ActivityPlayer({open,onClose,biome,lesson,onMarkComplete, protoOnly}){
+  if(!open||!lesson) return null; const url=resolveActivityUrl(biome,lesson.id, protoOnly); const accent=SUBJECTS[biome].color; const external= !protoOnly && typeof url==='string' && !url.includes('player.example');
+  return (
+    <BottomSheet open={open} onClose={onClose}>
+      <div className="text-stone-800">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background:accent+"22"}}>▶️</div>
+          <div className="font-extrabold" style={{color:accent}}>{lesson.title}</div>
+          {external? <a href={url} target="_blank" rel="noreferrer" className="ml-auto text-xs px-2 py-1 rounded-full bg-white border hover:bg-stone-50 transition ease-out">Open in new tab</a> : <span className="ml-auto text-[11px] px-2 py-1 rounded-full bg-white/70 border">Using in-app prototype</span>}
+        </div>
+        <div className="mt-3 rounded-xl overflow-hidden border bg-white">
+          <MCActivity biome={biome} lesson={lesson} onSolved={()=>{ onMarkComplete(lesson.id); onClose(); }} />
+        </div>
+        <div className="mt-3 flex items-center justify-end"><button onClick={onClose} className="px-3 py-2 rounded-full border bg-white hover:bg-stone-50 text-stone-700 transition ease-out">Close</button></div>
+      </div>
+    </BottomSheet>
+  );
+}
+
+function LessonDetail({open,onClose,biome,lesson,onMarkComplete,onStart,teacherMode,standardText, protoOnly}){
+  if(!open||!lesson) return null; const meta=getLessonMeta(biome,lesson.id); const accent=SUBJECTS[biome].color; const hasLink = !protoOnly && !!registryEntry(biome,lesson.id)?.url?.trim();
+  return (
+    <div className="fixed inset-0 z-40 flex items-center justify-center">
+      <div className="absolute inset-0 bg-stone-900/40" onClick={onClose}/>
+      <div className="relative z-10 w-[min(92vw,36rem)] rounded-3xl bg-white/95 backdrop-blur border border-stone-900/10 shadow-2xl p-5">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{background:accent+"22"}}>{meta.icon}</div>
+          <div><div className="text-lg font-extrabold" style={{color:accent}}>{lesson.title}</div><div className="text-xs text-stone-600">Est. {meta.est} • {SUBJECTS[biome].label}</div></div>
+          <button onClick={onClose} className="ml-auto text-stone-600 hover:text-stone-900 text-lg">×</button>
+        </div>
+        <div className="mt-3 text-sm">
+          <div className="font-semibold mb-1">Objectives</div>
+          <ul className="list-disc pl-5 space-y-1 text-stone-700">{meta.objectives.map((o,i)=> <li key={i}>{o}</li>)}</ul>
+          <div className="mt-3 text-xs text-stone-600">Aligned to: {standardText||meta.standard}</div>
+          {teacherMode&&<div className="mt-2 text-xs text-stone-600">Teacher tools: Quick-complete available.</div>}
+        </div>
+        <div className="mt-4 flex items-center justify-end gap-2">
+          <button onClick={()=>onStart(lesson)} className="px-3 py-2 rounded-full bg-amber-700/90 hover:bg-amber-700 text-amber-50 transition ease-out">{hasLink ? 'Start (opens tab)' : 'Start'}</button>
+          <button onClick={()=>{ onMarkComplete(lesson.id); onClose(); }} className="px-3 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition ease-out">Mark complete</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LessonSheet({open,onClose,biome,lessons,completed,onComplete,canPreview,teacherMode,framework,onStart, protoOnly}){
+  const subject=SUBJECTS[biome]; const [detail,setDetail]=useState(null); const allDone= completed.size===lessons.length && lessons.length>0; const standardText= STANDARDS[framework]?.[biome] || getLessonMeta(biome, lessons[0]?.id||'x').standard;
+  return (
+    <BottomSheet open={open} onClose={()=>{setDetail(null); onClose();}}>
+      <div className="text-stone-800">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2"><span className="text-xl">📍</span><h3 className="text-xl font-extrabold" style={{color:subject.color}}>{subject.label}</h3></div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs px-2 py-1 rounded-full bg-stone-900/5">{completed.size}/{lessons.length} complete</span>
+            {teacherMode&&<button onClick={()=>{ lessons.forEach(l=>{ if(!completed.has(l.id)) onComplete(l.id); }); }} disabled={allDone} className={cx("text-xs px-2 py-1 rounded-full border transition ease-out", allDone?"bg-stone-100 text-stone-400":"bg-white hover:bg-stone-50")}>Complete all</button>}
+          </div>
+        </div>
+        {teacherMode&&<div className="mt-2 text-[11px] text-stone-600">Standards ({framework}): <b>{standardText}</b></div>}
+        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {lessons.map((l,i)=>{ const isDone= completed?.has?.(l.id)||false; const hasDeepLink = !!(!protoOnly && registryEntry(biome,l.id)?.url?.trim()); return (
+            <div key={l.id} className={cx("rounded-xl border border-amber-900/20 bg-white/70 p-3 flex items-center gap-3 transition-colors ease-out", isDone&&"opacity-70")}> 
+              <button onClick={()=>setDetail(l)} className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{background:subject.color+"22"}} aria-label="Open lesson details">{isDone?"✅":"📘"}</button>
+              <div className="min-w-0">
+                <div className="font-semibold truncate">{i+1}. {l.title}</div>
+                {canPreview&&!isDone&&<div className="text-[11px] text-stone-600">👀 Preview unlocked</div>}
+                {hasDeepLink&&!protoOnly&&<div className="text-[10px] text-stone-500">🔗 External lesson available</div>}
+              </div>
+              <div className="ml-auto flex items-center gap-2">
+                <button onClick={()=>onStart(l)} className="text-xs px-2 py-1 rounded-full bg-amber-700/90 hover:bg-amber-700 text-white transition ease-out">Start</button>
+                <button disabled={isDone} onClick={(e)=>{e.stopPropagation?.(); onComplete(l.id);}} className={cx("text-xs px-2 py-1 rounded-full transition ease-out", isDone?"bg-stone-200":"bg-emerald-600 text-white hover:bg-emerald-700")}>{isDone?"Done":"Complete"}</button>
+              </div>
+            </div>
+          );})}
+        </div>
+        <LessonDetail open={!!detail} onClose={()=>setDetail(null)} biome={biome} lesson={detail} onMarkComplete={(id)=>onComplete(id)} onStart={(lesson)=>{ onStart(lesson); setDetail(null); }} teacherMode={teacherMode} standardText={standardText} protoOnly={protoOnly} />
+      </div>
+    </BottomSheet>
+  );
+}
+
+function Node({biome,status,onClick,count}){
+  const subject=SUBJECTS[biome]; const base={forest:"from-green-200 to-green-300",desert:"from-orange-200 to-amber-300",ocean:"from-cyan-200 to-sky-300",night:"from-indigo-300 to-slate-400"}[biome];
+  const ringUnlocked = 'ring-2 ring-amber-200/60';
+  const ringDone = 'ring-2 ring-emerald-300/70';
+  return (
+    <button onClick={onClick} disabled={status==='locked'} className={cx("relative w-36 h-36 sm:w-40 sm:h-40 rounded-full shadow-xl border-2 bg-gradient-to-br overflow-hidden transition-shadow ease-out", base, status==='locked'&&'opacity-60 grayscale', status==='unlocked'&&ringUnlocked, status==='done'&&ringDone)} style={{borderColor:subject.color+'80'}}>
+      <div className="absolute inset-0 opacity-20" style={{backgroundImage:'radial-gradient(rgba(255,255,255,.6) 2px, transparent 2px)',backgroundSize:'6px 6px'}}/>
+      <svg className="absolute inset-0" viewBox="0 0 100 100" aria-hidden>
+        <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(0,0,0,.08)" strokeWidth="8"/>
+        <circle cx="50" cy="50" r="46" fill="none" stroke={subject.color} strokeWidth="8" strokeLinecap="round" strokeDasharray={`${Math.min(count,5)/5*289} 289`} transform="rotate(-90 50 50)"/>
+      </svg>
+      <span className="absolute left-2 bottom-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-white/70 text-stone-700">{subject.label}</span>
+      <span className="absolute right-2 top-2 text-[11px] px-2 py-0.5 rounded-full bg-white/80 text-stone-700 shadow-sm">{count}/5</span>
+      {status==='locked'&&<span className="absolute -right-2 -bottom-2 text-[11px] px-2 py-1 rounded-full bg-stone-800 text-white shadow">🔒</span>}
+      {status==='done'&&<span className="absolute -right-2 -bottom-2 text-[11px] px-2 py-1 rounded-full bg-emerald-600 text-white shadow">✓</span>}
+    </button>
+  );
+}
+
+const Toggle = ({checked,onChange,label}) => (
+  <button onClick={()=>onChange(!checked)} className={cx("inline-flex items-center gap-2 px-2 py-1 rounded-full border transition-colors ease-out", checked?"bg-emerald-600 text-white border-emerald-700":"bg-white/60 hover:bg-white text-stone-700 border-stone-300")} aria-pressed={checked}>
+    <span className={cx("inline-block w-6 h-3 rounded-full", checked?"bg-emerald-300":"bg-stone-300")}></span>
+    <span className="text-xs font-semibold">{label}{checked?': On':': Off'}</span>
+  </button>
+);
+
+function computeStatuses(c){
+  return {
+    forest: c.forest===5?'done':'unlocked',
+    desert: c.forest>=3? (c.desert===5?'done':'unlocked'):'locked',
+    ocean:  c.desert>=3? (c.ocean===5?'done':'unlocked'):'locked',
+    night:  c.ocean>=3 ? (c.night===5?'done':'unlocked'):'locked',
+  };
+}
+const serializeComp = (comp) => JSON.stringify(Object.fromEntries(Object.entries(comp).map(([k,v])=>[k,Array.from(v||[])])));
+function deserializeComp(json){ try{ const o=JSON.parse(json); return {forest:new Set(o?.forest||[]),desert:new Set(o?.desert||[]),ocean:new Set(o?.ocean||[]),night:new Set(o?.night||[])}; }catch{ return {forest:new Set(),desert:new Set(),ocean:new Set(),night:new Set()}; } }
+
+function TeacherPanel({open,onClose,comp,loop,framework,onCopyLink,onImport}){
+  const counts={forest:comp.forest.size,desert:comp.desert.size,ocean:comp.ocean.size,night:comp.night.size}; const statuses=computeStatuses(counts);
+  function downloadCSV(){ const rows=[["Loop",loop],["Standards Framework",framework],["Biome","Completed","Status"],["Literacy",counts.forest,statuses.forest],["Math",counts.desert,statuses.desert],["Science",counts.ocean,statuses.ocean],["HASS",counts.night,statuses.night],[],["Completed IDs (forest)",...Array.from(comp.forest)],["Completed IDs (desert)",...Array.from(comp.desert)],["Completed IDs (ocean)",...Array.from(comp.ocean)],["Completed IDs (night)",...Array.from(comp.night)]]; const csv=rows.map(r=>r.map(x=>(x==null?"":String(x)).replaceAll('\"','\"\"')).join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`quest_island_loop${loop}_progress.csv`; a.click(); URL.revokeObjectURL(url); }
+  return (
+    <BottomSheet open={open} onClose={onClose}>
+      <div className="text-stone-800">
+        <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-lg font-extrabold"><span>👩‍🏫</span> Teacher Dashboard</div><div className="flex items-center gap-2 text-xs"><button onClick={downloadCSV} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out">Export CSV</button><button onClick={onCopyLink} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out">Copy progress link</button><button onClick={onImport} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out">Import</button></div></div>
+        <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">{(['forest','desert','ocean','night']).map(b=> (
+          <div key={b} className="rounded-xl border border-amber-900/20 bg-white/80 p-3"><div className="text-xs text-stone-600">{SUBJECTS[b].label}</div><div className="text-2xl font-extrabold" style={{color:SUBJECTS[b].color}}>{counts[b]}/5</div><div className="text-[11px] mt-1 px-2 py-0.5 inline-block rounded-full bg-stone-900/5">{statuses[b]}</div></div>
+        ))}</div>
+      </div>
+    </BottomSheet>
+  );
+}
+
+// --------------------------------------
+// Main App
+// --------------------------------------
+export default function QuestIslandLoop1(){
+  const [mode,setMode]=useState('auto'); const [tod,setTod]=useState(inferTimeOfDay()); useEffect(()=>{ if(mode==='auto'){ setTod(inferTimeOfDay()); const id=setInterval(()=>setTod(inferTimeOfDay()),300000); return()=>clearInterval(id);} else setTod(mode); },[mode]);
+  const prefersReduced = typeof window!=='undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const [calm,setCalm]=useState(()=>{ try{ const saved=localStorage.getItem(KEYS.calm); return saved? JSON.parse(saved) : !!prefersReduced; }catch{return !!prefersReduced} }); useEffect(()=>{ try{localStorage.setItem(KEYS.calm,JSON.stringify(calm));}catch{} },[calm]);
+  const [teacherMode,setTeacherMode]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.teacher)||'false');}catch{return false} }); useEffect(()=>{ try{localStorage.setItem(KEYS.teacher,JSON.stringify(teacherMode));}catch{} },[teacherMode]);
+  const [framework,setFramework]=useState(()=>{ try{return localStorage.getItem(KEYS.framework)||'Generic';}catch{return 'Generic'} }); useEffect(()=>{ try{localStorage.setItem(KEYS.framework,framework);}catch{} },[framework]);
+  const [loop,setLoop]=useState(()=>{ try{return Number(localStorage.getItem(KEYS.loop)||'1');}catch{return 1} }); useEffect(()=>{ try{localStorage.setItem(KEYS.loop,String(loop));}catch{} },[loop]);
+  const [comp,setComp]=useState(()=>{ try{const saved=localStorage.getItem(KEYS.comp); return saved?deserializeComp(saved):{forest:new Set(),desert:new Set(),ocean:new Set(),night:new Set()};}catch{return {forest:new Set(),desert:new Set(),ocean:new Set(),night:new Set()}} }); useEffect(()=>{ try{localStorage.setItem(KEYS.comp,serializeComp(comp));}catch{} },[comp]);
+  const [backpackOpen,setBackpackOpen]=useState(false); const [teacherOpen,setTeacherOpen]=useState(false); const [player,setPlayer]=useState(null); const [openBiome,setOpenBiome]=useState(null);
+  const [protoOnly, setProtoOnly] = useState(()=>{ try{ const saved=localStorage.getItem(KEYS.proto); return saved? JSON.parse(saved) : true; }catch{return true} });
+  useEffect(()=>{ try{localStorage.setItem(KEYS.proto, JSON.stringify(protoOnly));}catch{} },[protoOnly]);
+  const [last,setLast]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.last)||'null');}catch{return null} });
+  useEffect(()=>{ try{ if(last) localStorage.setItem(KEYS.last, JSON.stringify(last)); else localStorage.removeItem(KEYS.last);}catch{} },[last]);
+  const bp=useBackpack();
+
+  // Update loop bridge for registry helpers
+  useEffect(()=>{ CURRENT_LOOP = loop; },[loop]);
+
+  // Progress link actions
+  const [toast,setToast] = useState('');
+  useEffect(()=>{ if(!toast) return; const t=setTimeout(()=>setToast(''),1600); return()=>clearTimeout(t); },[toast]);
+  const buildProgress = ()=> buildProgressPayload(loop,comp,bp,framework,protoOnly);
+  const copyProgressLink = async ()=>{ try{ const link = makeProgressLink(buildProgress()); await navigator.clipboard?.writeText(link); setToast('Progress link copied'); }catch(e){ console.error(e); setToast('Could not copy link'); } };
+  const applyImported = (p)=>{ if(!p||p.v!==1) throw new Error('Bad payload');
+    setLoop(Number(p.loop||1));
+    setComp({
+      forest:new Set(Array.isArray(p.comp?.forest)?p.comp.forest:[]),
+      desert:new Set(Array.isArray(p.comp?.desert)?p.comp.desert:[]),
+      ocean:new Set(Array.isArray(p.comp?.ocean)?p.comp.ocean:[]),
+      night:new Set(Array.isArray(p.comp?.night)?p.comp.night:[]),
+    });
+    if(Array.isArray(p.bp?.items)) bp.setItems(p.bp.items);
+    if(Array.isArray(p.bp?.equipped)) bp.setEquipped(p.bp.equipped.slice(0,3));
+    if(p.framework) setFramework(p.framework);
+    if(typeof p.protoOnly==='boolean') setProtoOnly(p.protoOnly);
+  };
+  const importProgressPrompt = async ()=>{ const input = window.prompt('Paste a progress link or code:'); if(!input) return; try{ const token = extractQiFromInput(input); const json = b64urlDecode(token); const payload = JSON.parse(json); applyImported(payload); setToast('Progress imported'); }catch(e){ console.error(e); alert('Import failed.'); } };
+
+  // Auto-import on URL param (?qi=...)
+  useEffect(()=>{ try{ const url=new URL(window.location.href); const qi=url.searchParams.get('qi'); if(qi){ const json=b64urlDecode(qi); const payload=JSON.parse(json); applyImported(payload); setToast('Progress imported'); url.searchParams.delete('qi'); window.history.replaceState({},'',url.pathname+url.search); } }catch(e){ console.error('Auto-import failed',e);} },[]);
+
+  // Awards on milestones
+  useEffect(()=>{ const give=(c,it)=>{ if(c) bp.award(it); };
+    const doneCounts={forest:comp.forest.size,desert:comp.desert.size,ocean:comp.ocean.size,night:comp.night.size};
+    give(doneCounts.forest===3,{id:'stamp_forest',name:'Forest Stamp',kind:'stamp',biome:'forest'});
+    give(doneCounts.desert===3,{id:'tool_compass',name:'Compass',kind:'tool'});
+    give(doneCounts.ocean===3,{id:'tool_binocs',name:'Binoculars',kind:'tool'});
+    give(doneCounts.forest===5,{id:'badge_feather',name:'Story Feather',kind:'badge',biome:'forest'});
+    give(doneCounts.desert===5,{id:'badge_logic',name:'Logic Laurel',kind:'badge',biome:'desert'});
+    give(doneCounts.ocean===5,{id:'badge_spark',name:'Science Spark',kind:'badge',biome:'ocean'});
+    give(doneCounts.night===5,{id:'badge_pathfinder',name:'Pathfinder',kind:'badge',biome:'night'});
+  },[comp.forest.size,comp.desert.size,comp.ocean.size,comp.night.size]);
+
+  // Loop-up (gentle toast)
+  const [celebrate,setCelebrate]=useState(false);
+  useEffect(()=>{ const doneCounts={forest:comp.forest.size,desert:comp.desert.size,ocean:comp.ocean.size,night:comp.night.size}; if(Object.values(doneCounts).every(v=>v===5)){ setCelebrate(true); const t=setTimeout(()=>{ setCelebrate(false); setLoop(l=>l+1); setComp({forest:new Set(),desert:new Set(),ocean:new Set(),night:new Set()}); },1500); return()=>clearTimeout(t);} },[comp.forest.size,comp.desert.size,comp.ocean.size,comp.night.size]);
+
+  // Compass hint & statuses
+  const doneCounts={forest:comp.forest.size,desert:comp.desert.size,ocean:comp.ocean.size,night:comp.night.size};
+  const statuses=computeStatuses(doneCounts);
+  const hasCompass=bp.items.some(i=>i.id==='tool_compass'); const nextTarget= statuses.desert==='locked'? 'desert' : statuses.ocean==='locked'? 'ocean' : statuses.night==='locked'? 'night' : null;
+
+  // DEV smoke tests
+  useEffect(()=>{
+    // TOD
+    console.assert(inferTimeOfDay(new Date('2020-01-01T08:00:00'))==='morning','Morning TOD failed');
+    console.assert(inferTimeOfDay(new Date('2020-01-01T13:00:00'))==='afternoon','Afternoon TOD failed');
+    console.assert(inferTimeOfDay(new Date('2020-01-01T20:00:00'))==='evening','Evening TOD failed');
+    // unlock rules
+    const s0 = computeStatuses({forest:0,desert:0,ocean:0,night:0});
+    const s1 = computeStatuses({forest:3,desert:0,ocean:0,night:0});
+    console.assert(s0.desert==='locked' && s1.desert==='unlocked','Desert unlock rule failed');
+    const s2 = computeStatuses({forest:5,desert:3,ocean:0,night:0});
+    console.assert(s2.ocean==='unlocked','Ocean unlock rule failed');
+    const s3 = computeStatuses({forest:5,desert:5,ocean:3,night:0});
+    console.assert(s3.night==='unlocked','Night unlock rule failed');
+    const sAll = computeStatuses({forest:5,desert:5,ocean:5,night:5});
+    console.assert(Object.values(sAll).every(v=>v==='done'), 'All-done status failed');
+    // url + b64 roundtrips
+    console.assert(resolveActivityUrl('forest','f1', true).includes('/forest/f1'),'Prototype-only fallback pattern failed');
+    const t='hello'; const rt=b64urlDecode(b64urlEncode(t)); console.assert(rt==='hello','b64url roundtrip failed');
+    const p={v:1,loop:2,comp:{forest:['f1'],desert:[],ocean:[],night:[]},bp:{items:[],equipped:[]},framework:'Generic',protoOnly:true};
+    const x=b64urlEncode(JSON.stringify(p)); const y=JSON.parse(b64urlDecode(x)); console.assert(y.v===1&&y.loop===2,'progress roundtrip failed');
+    console.assert(extractQiFromInput('https://example.com/quest?qi=abc123')==='abc123','extractQiFromInput failed');
+    console.assert(extractQiFromInput('https://example.com/quest#qi=xyz')==='xyz','extractQiFromInput hash failed');
+    // findLesson
+    console.assert(findLesson('forest','f2')?.title==='CVC blending','findLesson failed for forest/f2');
+    // additional: registry fallback and statuses edge
+    console.assert(registryEntry('forest','f2')?.est==='6–8 min','registry fallback failed');
+    const sEdge = computeStatuses({forest:2,desert:0,ocean:0,night:0});
+    console.assert(sEdge.desert==='locked','edge unlock rule failed');
+    // link builder contains qi
+    console.assert(makeProgressLink({v:1,loop:1,comp:{forest:[],desert:[],ocean:[],night:[]},bp:{items:[],equipped:[]},framework:'Generic',protoOnly:true}).includes('?qi='),'link builder missing qi');
+  },[]);
+
+  // Resume handler
+  const resume = ()=>{
+    if(!last) return;
+    const {biome,id}=last; const lesson = findLesson(biome,id) || {id, title:'Lesson'};
+    setOpenBiome(biome);
+    setPlayer({biome, lesson});
+  };
+
+  return (
+    <div className={cx("relative min-h-[88vh] w-full p-4","bg-gradient-to-b", BG_BY_TOD[tod])}>
+      <AmbientLayer tod={tod} calm={calm}/>
+
+      {/* Header */}
+      <div className="relative z-10 max-w-6xl mx-auto flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-amber-900/20 flex items-center justify-center shadow-inner"><span>🗺️</span></div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900/90 drop-shadow">Quest Island — Loop {loop}</h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-1 bg-white/40 backdrop-blur px-1 py-1 rounded-full border border-amber-900/20 text-xs">{["auto","morning","afternoon","evening"].map(opt=> <button key={opt} onClick={()=>setMode(opt)} className={cx("px-2 py-1 rounded-full capitalize transition-colors ease-out", mode===opt?"bg-white shadow":"text-stone-700/80 hover:text-stone-900")}>{opt}</button>)}</div>
+          <Toggle checked={calm} onChange={setCalm} label="Calm Mode"/>
+          <Toggle checked={teacherMode} onChange={setTeacherMode} label="Teacher Mode"/>
+          {teacherMode&& (
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-stone-700">Framework</label>
+              <select value={framework} onChange={(e)=>setFramework(e.target.value)} className="text-xs px-2 py-1 rounded-lg border bg-white/80 transition ease-out">{STANDARDS.frameworkOptions.map(opt=> <option key={opt} value={opt}>{opt}</option>)}</select>
+              <Toggle checked={protoOnly} onChange={setProtoOnly} label="Prototype-only"/>
+              <button onClick={()=>setTeacherOpen(true)} className="text-xs px-3 py-1 rounded-full bg-white/60 hover:bg-white shadow border transition ease-out">Open dashboard</button>
+            </div>
+          )}
+          {last && (
+            <button onClick={resume} className="text-xs px-3 py-1 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition ease-out">
+              Resume {SUBJECTS[last.biome]?.label || ''} • {findLesson(last.biome,last.id)?.title || last.id}
+            </button>
+          )}
+          <button onClick={()=>{ [KEYS.loop,KEYS.comp,KEYS.bpItems,KEYS.bpEq,KEYS.last].forEach(k=>localStorage.removeItem(k)); setLoop(1); setComp({forest:new Set(),desert:new Set(),ocean:new Set(),night:new Set()}); setLast(null); }} className="text-xs px-3 py-1 rounded-full bg-white/60 hover:bg-white shadow border transition ease-out">Reset progress</button>
+        </div>
+      </div>
+
+      {/* Map */}
+      <div className="relative z-10 max-w-6xl mx-auto mt-6">
+        <div className="absolute left-1/2 -translate-x-1/2 top-20 w-[90%] h-72 -z-10">
+          <div className="absolute inset-0 rounded-[3rem] bg-yellow-300/30 blur-xl"/>
+          <div className="absolute inset-6 rounded-[3rem] bg-yellow-200/30 blur-xl"/>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 place-items-center">
+          <Node biome="forest" status={statuses.forest} count={doneCounts.forest} onClick={()=>setOpenBiome('forest')} />
+          <Node biome="desert" status={statuses.desert} count={doneCounts.desert} onClick={()=>setOpenBiome('desert')} />
+          <Node biome="night"  status={statuses.night}  count={doneCounts.night}  onClick={()=>setOpenBiome('night')} />
+          <Node biome="ocean"  status={statuses.ocean}  count={doneCounts.ocean}  onClick={()=>setOpenBiome('ocean')} />
+        </div>
+        {hasCompass&&nextTarget&&<div className="mt-2 text-center text-xs text-stone-700">🧭 Try the <b>{SUBJECTS[nextTarget].label}</b> circle next!</div>}
+        <div className="mt-8 flex items-center justify-center gap-6">
+          <div className="relative"><div className="w-14 h-14 rounded-full bg-orange-400 shadow-[0_0_40px_10px_rgba(255,160,60,.35)]"/><div className="absolute inset-0 flex items-center justify-center text-2xl">🔥</div></div>
+          <button onClick={()=>setBackpackOpen(true)} className="px-4 py-2 rounded-full bg-amber-700/90 hover:bg-amber-700 text-amber-50 font-semibold shadow-lg flex items-center gap-2 transition ease-out"><span>🎒</span> Scout's Backpack ({bp.items.length})</button>
+        </div>
+      </div>
+
+      {/* Sheets */}
+      <BackpackSheet open={backpackOpen} onClose={()=>setBackpackOpen(false)} bp={bp}/>
+      <TeacherPanel open={teacherOpen} onClose={()=>setTeacherOpen(false)} comp={comp} loop={loop} framework={framework} onCopyLink={copyProgressLink} onImport={importProgressPrompt}/>
+      <LessonSheet open={!!openBiome} onClose={()=>setOpenBiome(null)} biome={openBiome??'forest'} lessons={openBiome?LOOP1[openBiome]:[]} completed={openBiome?comp[openBiome]:new Set()} onComplete={(id)=>{ if(!openBiome) return; setComp(prev=>{ const next={...prev,[openBiome]:new Set(prev[openBiome])}; next[openBiome].add(id); return next; });} } canPreview={bp.items.some(i=>i.id==='tool_binocs')} teacherMode={teacherMode} framework={framework} onStart={(lesson)=> { setPlayer({biome:openBiome,lesson}); setLast({biome:openBiome, id: lesson.id}); } } protoOnly={protoOnly}/>
+      <ActivityPlayer open={!!player} onClose={()=>setPlayer(null)} biome={player?.biome} lesson={player?.lesson} onMarkComplete={(id)=>{ const b=player?.biome; if(!b) return; setComp(prev=>{ const next={...prev,[b]:new Set(prev[b])}; next[b].add(id); return next; }); }} protoOnly={protoOnly} />
+
+      {/* Calm celebration toast + utils toast */}
+      {celebrate&& (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
+          <div className="px-4 py-2 rounded-full bg-white/90 backdrop-blur border shadow text-sm text-stone-800">
+            <span className="mr-2">✓</span> Loop {loop} complete — Loop {loop+1} unlocked
+          </div>
+        </div>
+      )}
+      {toast && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40">
+          <div className="px-4 py-2 rounded-full bg-white/90 backdrop-blur border shadow text-sm text-stone-800">{toast}</div>
+        </div>
+      )}
+
+      {/* End-of-file sentinel to avoid accidental truncation */}
+      <div style={{display:'none'}} data-sentinel="eof"/>
+    </div>
+  );
+}
