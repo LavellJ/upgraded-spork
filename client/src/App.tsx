@@ -6,6 +6,7 @@ import { ActivityPlayer } from "./components/ActivityPlayer";
 import { LessonSheet } from "./components/LessonSheet";
 import { TeacherPanel } from "./components/TeacherPanel";
 import LOOP2 from "./data/loop2.json";
+import { logEvent } from "./lib/analytics";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -355,6 +356,7 @@ export default function App(){
       const t=setTimeout(()=>{
         setCelebrate(false);
         setLoop(l=>l+1); // show Loop 2 in header
+        logEvent({ ts: new Date().toISOString(), loop: loop + 1, action: 'loop_up' });
         // reset per-loop progress for the next loop
         setComp({forest:new Set<string>(),desert:new Set<string>(),ocean:new Set<string>(),night:new Set<string>()});
         setOpenBiome(null);
@@ -373,14 +375,14 @@ export default function App(){
   },[]);
 
   // ---- Import/Export helpers ----
-  const exportProgress = ()=> makeProgressLink(buildProgressPayload(loop,comp,bp,framework,protoOnly));
-  const importFromToken = (token)=>{ try{ const payload=JSON.parse(b64urlDecode(token)); if(payload.v!==1) return; setLoop(payload.loop||1); setComp({ forest: new Set(payload.comp?.forest||[]), desert: new Set(payload.comp?.desert||[]), ocean: new Set(payload.comp?.ocean||[]), night: new Set(payload.comp?.night||[]) }); if(payload.bp){ bp.setItems(payload.bp.items||[]); bp.setEquipped(payload.bp.equipped||[]); } if(payload.framework) setFramework(payload.framework); if(typeof payload.protoOnly==='boolean') setProtoOnly(payload.protoOnly); }catch{} };
+  const exportProgress = ()=> { const link = makeProgressLink(buildProgressPayload(loop,comp,bp,framework,protoOnly)); logEvent({ ts: new Date().toISOString(), loop, action: 'export' }); return link; };
+  const importFromToken = (token)=>{ try{ const payload=JSON.parse(b64urlDecode(token)); if(payload.v!==1) return; setLoop(payload.loop||1); setComp({ forest: new Set(payload.comp?.forest||[]), desert: new Set(payload.comp?.desert||[]), ocean: new Set(payload.comp?.ocean||[]), night: new Set(payload.comp?.night||[]) }); if(payload.bp){ bp.setItems(payload.bp.items||[]); bp.setEquipped(payload.bp.equipped||[]); } if(payload.framework) setFramework(payload.framework); if(typeof payload.protoOnly==='boolean') setProtoOnly(payload.protoOnly); logEvent({ ts: new Date().toISOString(), loop: payload.loop ?? loop, action: 'import' }); }catch{} };
 
   // ---- Event handlers ----
-  const markComplete = (biome,lessonId)=>{ const collectibles = ['🧰','🏅','🖋️','🎨','🔍']; const items = ['Field Kit','Merit Badge','Quill Pen','Sketch Pad','Looking Glass']; const kinds = ['tool','badge','tool','tool','tool'] as const; const rnd = Math.floor(Math.random()*collectibles.length); setComp(p=>({...p,[biome]:new Set([...p[biome],lessonId])})); bp.award({id:`${biome}-${lessonId}`,name:items[rnd],kind:kinds[rnd],icon:collectibles[rnd]}); setToast(`Collected ${items[rnd]}!`); setTimeout(()=>setToast(null),2000); };
+  const markComplete = (biome,lessonId)=>{ const collectibles = ['🧰','🏅','🖋️','🎨','🔍']; const items = ['Field Kit','Merit Badge','Quill Pen','Sketch Pad','Looking Glass']; const kinds = ['tool','badge','tool','tool','tool'] as const; const rnd = Math.floor(Math.random()*collectibles.length); const awardId = `${biome}-${lessonId}`; setComp(p=>({...p,[biome]:new Set([...p[biome],lessonId])})); bp.award({id:awardId,name:items[rnd],kind:kinds[rnd],icon:collectibles[rnd]}); logEvent({ ts: new Date().toISOString(), loop, biome, lessonId, action: 'award', meta: { awardId, name: items[rnd] } }); setToast(`Collected ${items[rnd]}!`); setTimeout(()=>setToast(null),2000); };
   const openLessonSheet = (biome)=> setOpenBiome(biome);
   const startLesson = (lesson,biome)=>{ setLast({biome,lesson}); setPlayer({biome,lesson}); };
-  const resumeLesson = ()=>{ if(last) { const lesson = findLesson(last.biome,last.id,LESSONS); if(lesson) startLesson(lesson,last.biome); } };
+  const resumeLesson = ()=>{ if(last) { const lesson = findLesson(last.biome,last.id,LESSONS); if(lesson) { logEvent({ ts: new Date().toISOString(), loop, biome: last.biome, lessonId: last.id, action: 'resume' }); startLesson(lesson,last.biome); } } };
 
   // ---- Layout helpers ----
   const biomePos = { forest:{x:25,y:25}, desert:{x:65,y:30}, ocean:{x:70,y:70}, night:{x:20,y:65} };
@@ -468,6 +470,7 @@ export default function App(){
         framework={framework}
         onStart={(lesson) => {
           if (!openBiome) return;
+          logEvent({ ts: new Date().toISOString(), loop, biome: openBiome, lessonId: lesson.id, action: 'start' });
           setPlayer({ biome: openBiome, lesson });
           setLast({ biome: openBiome, id: lesson.id });   // ← save last
         }}
@@ -482,6 +485,7 @@ export default function App(){
         onMarkComplete={(id) => {
           if (!player?.biome) return;
           const biome = player.biome;
+          logEvent({ ts: new Date().toISOString(), loop, biome, lessonId: id, action: 'complete' });
           setComp(prev => {
             const nextSet = new Set(prev[biome]);
             nextSet.add(id);
