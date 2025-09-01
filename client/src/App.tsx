@@ -427,12 +427,12 @@ function TeacherPanel({open,onClose,frameworks,framework,setFramework,protoOnly,
 export default function App(){
   // ---- Global state (localStorage-backed) ----
   const [loop,setLoop]=useState(()=>{ try{return parseInt(localStorage.getItem(KEYS.loop)||'1');}catch{return 1;} });
-  const [completed,setCompleted]=useState(()=>{ try{const raw=JSON.parse(localStorage.getItem(KEYS.comp)||'{}'); return { forest: new Set(raw.forest||[]), desert: new Set(raw.desert||[]), ocean: new Set(raw.ocean||[]), night: new Set(raw.night||[]) };}catch{return { forest: new Set(), desert: new Set(), ocean: new Set(), night: new Set() };} });
+  const [comp,setComp]=useState(()=>{ try{const raw=JSON.parse(localStorage.getItem(KEYS.comp)||'{}'); return { forest: new Set(raw.forest||[]), desert: new Set(raw.desert||[]), ocean: new Set(raw.ocean||[]), night: new Set(raw.night||[]) };}catch{return { forest: new Set(), desert: new Set(), ocean: new Set(), night: new Set() };} });
   const [teacherMode,setTeacherMode]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.teacher)||'false');}catch{return false;} });
   const [framework,setFramework]=useState(()=>{ try{return localStorage.getItem(KEYS.framework)||'Generic';}catch{return 'Generic';} });
   const [calm,setCalm]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.calm)||'false');}catch{return false;} });
   const [protoOnly,setProtoOnly]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.proto)||'true');}catch{return true;} });
-  const [lastStarted,setLastStarted]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.last)||'null');}catch{return null;} });
+  const [last,setLast]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.last)||'null');}catch{return null;} });
 
   // ---- UI state ----
   const [openBiome,setOpenBiome]=useState<string | null>(null); const [showBP,setShowBP]=useState(false); const [showTeacher,setShowTeacher]=useState(false); const [player,setPlayer]=useState<{biome:string,lesson:any} | null>(null); const [toast,setToast]=useState<string | null>(null);
@@ -445,12 +445,12 @@ export default function App(){
 
   // ---- Sync to localStorage ----
   useEffect(()=>{ try{localStorage.setItem(KEYS.loop,loop.toString());}catch{} },[loop]);
-  useEffect(()=>{ try{localStorage.setItem(KEYS.comp,JSON.stringify({ forest:Array.from(completed.forest), desert:Array.from(completed.desert), ocean:Array.from(completed.ocean), night:Array.from(completed.night) }));}catch{} },[completed]);
+  useEffect(()=>{ try{localStorage.setItem(KEYS.comp,JSON.stringify({ forest:Array.from(comp.forest), desert:Array.from(comp.desert), ocean:Array.from(comp.ocean), night:Array.from(comp.night) }));}catch{} },[comp]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.teacher,JSON.stringify(teacherMode));}catch{} },[teacherMode]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.framework,framework);}catch{} },[framework]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.calm,JSON.stringify(calm));}catch{} },[calm]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.proto,JSON.stringify(protoOnly));}catch{} },[protoOnly]);
-  useEffect(()=>{ try{localStorage.setItem(KEYS.last,JSON.stringify(lastStarted));}catch{} },[lastStarted]);
+  useEffect(()=>{ try{localStorage.setItem(KEYS.last,JSON.stringify(last));}catch{} },[last]);
 
   // ---- URL import on mount ----
   useEffect(()=>{
@@ -460,14 +460,14 @@ export default function App(){
   },[]);
 
   // ---- Import/Export helpers ----
-  const exportProgress = ()=> makeProgressLink(buildProgressPayload(loop,completed,bp,framework,protoOnly));
-  const importFromToken = (token)=>{ try{ const payload=JSON.parse(b64urlDecode(token)); if(payload.v!==1) return; setLoop(payload.loop||1); setCompleted({ forest: new Set(payload.comp?.forest||[]), desert: new Set(payload.comp?.desert||[]), ocean: new Set(payload.comp?.ocean||[]), night: new Set(payload.comp?.night||[]) }); if(payload.bp){ bp.setItems(payload.bp.items||[]); bp.setEquipped(payload.bp.equipped||[]); } if(payload.framework) setFramework(payload.framework); if(typeof payload.protoOnly==='boolean') setProtoOnly(payload.protoOnly); }catch{} };
+  const exportProgress = ()=> makeProgressLink(buildProgressPayload(loop,comp,bp,framework,protoOnly));
+  const importFromToken = (token)=>{ try{ const payload=JSON.parse(b64urlDecode(token)); if(payload.v!==1) return; setLoop(payload.loop||1); setComp({ forest: new Set(payload.comp?.forest||[]), desert: new Set(payload.comp?.desert||[]), ocean: new Set(payload.comp?.ocean||[]), night: new Set(payload.comp?.night||[]) }); if(payload.bp){ bp.setItems(payload.bp.items||[]); bp.setEquipped(payload.bp.equipped||[]); } if(payload.framework) setFramework(payload.framework); if(typeof payload.protoOnly==='boolean') setProtoOnly(payload.protoOnly); }catch{} };
 
   // ---- Event handlers ----
-  const markComplete = (biome,lessonId)=>{ const collectibles = ['🧰','🏅','🖋️','🎨','🔍']; const items = ['Field Kit','Merit Badge','Quill Pen','Sketch Pad','Looking Glass']; const kinds = ['tool','badge','pen','art','tool']; const rnd = Math.floor(Math.random()*collectibles.length); setCompleted(p=>({...p,[biome]:new Set([...p[biome],lessonId])})); bp.award({id:`${biome}-${lessonId}`,name:items[rnd],kind:kinds[rnd],icon:collectibles[rnd]}); setToast(`Collected ${items[rnd]}!`); setTimeout(()=>setToast(null),2000); };
+  const markComplete = (biome,lessonId)=>{ const collectibles = ['🧰','🏅','🖋️','🎨','🔍']; const items = ['Field Kit','Merit Badge','Quill Pen','Sketch Pad','Looking Glass']; const kinds = ['tool','badge','pen','art','tool']; const rnd = Math.floor(Math.random()*collectibles.length); setComp(p=>({...p,[biome]:new Set([...p[biome],lessonId])})); bp.award({id:`${biome}-${lessonId}`,name:items[rnd],kind:kinds[rnd],icon:collectibles[rnd]}); setToast(`Collected ${items[rnd]}!`); setTimeout(()=>setToast(null),2000); };
   const openLessonSheet = (biome)=> setOpenBiome(biome);
-  const startLesson = (lesson,biome)=>{ setLastStarted({biome,lesson}); setPlayer({biome,lesson}); };
-  const resumeLesson = ()=>{ if(lastStarted) startLesson(lastStarted.lesson,lastStarted.biome); };
+  const startLesson = (lesson,biome)=>{ setLast({biome,lesson}); setPlayer({biome,lesson}); };
+  const resumeLesson = ()=>{ if(last) startLesson(last.lesson,last.biome); };
 
   // ---- Layout helpers ----
   const biomePos = { forest:{x:25,y:25}, desert:{x:65,y:30}, ocean:{x:70,y:70}, night:{x:20,y:65} };
@@ -484,7 +484,7 @@ export default function App(){
         <header className="flex items-center justify-between p-4 bg-white/20 backdrop-blur-sm border-b border-white/30">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-extrabold text-stone-900">Quest Island — Loop {loop}</h1>
-            {lastStarted&&<button onClick={resumeLesson} className="px-3 py-2 rounded-full bg-amber-600 text-white hover:bg-amber-700 transition ease-out text-sm">Resume: {lastStarted.lesson.title}</button>}
+            {last&&<button onClick={resumeLesson} className="px-3 py-2 rounded-full bg-amber-600 text-white hover:bg-amber-700 transition ease-out text-sm">Resume: {last.lesson.title}</button>}
           </div>
           <div className="flex items-center gap-2">
             <button onClick={()=>setCalm(p=>!p)} className={cx("w-10 h-10 rounded-full border transition ease-out", calm?"bg-blue-100 border-blue-300":"bg-white/50 border-white/70")} title={calm?"Disable calm mode":"Enable calm mode"}>😌</button>
@@ -496,7 +496,7 @@ export default function App(){
 
         {/* Quest Island Map */}
         <main className="flex-1 relative p-8">
-          <div className="max-w-6xl mx-auto h-full relative">
+          <div className="max-w-6xl mx-auto h-full relative min-h-[560px]">
             
             {/* Central Campfire */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
@@ -507,7 +507,7 @@ export default function App(){
 
             {/* Biome Regions */}
             {Object.entries(biomePos).map(([biome,pos])=>{
-              const subject=SUBJECTS[biome]; const lessons=LOOP1[biome]||[]; const biomeDone=completed[biome]; const canPreview=teacherMode;
+              const subject=SUBJECTS[biome]; const lessons=LOOP1[biome]||[]; const biomeDone=comp[biome]; const canPreview=teacherMode;
               return (
                 <div key={biome} className="absolute cursor-pointer" style={{left:pos.x+'%',top:pos.y+'%'}} onClick={()=>openLessonSheet(biome)}>
                   <div className={cx("relative flex items-center justify-center w-20 h-20 rounded-full shadow-lg transition-all duration-300 ease-out border-2 hover:scale-110 hover:shadow-xl", biomeDone.size===lessons.length?"bg-emerald-100/90 border-emerald-300 shadow-emerald-200":"bg-white/90 border-amber-300 hover:bg-amber-50/95")} style={{borderColor:subject.color}}>
@@ -527,7 +527,7 @@ export default function App(){
 
             {/* Lesson Nodes */}
             {Object.entries(lessonPos).map(([biome,positions])=>{
-              const lessons=LOOP1[biome]||[]; const biomeDone=completed[biome];
+              const lessons=LOOP1[biome]||[]; const biomeDone=comp[biome];
               return lessons.map((lesson,i)=>{
                 const pos=positions[i]; const locked=i>0&&!biomeDone.has(lessons[i-1].id)&&!teacherMode;
                 return <LessonNode key={lesson.id} biome={biome} lesson={lesson} completed={biomeDone} onSelect={(b,l)=>startLesson(l,b)} pos={pos} locked={locked}/>;
@@ -541,7 +541,7 @@ export default function App(){
 
       {/* UI Overlays */}
       <BackpackSheet open={showBP} onClose={()=>setShowBP(false)} bp={bp}/>
-      <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={completed} onExport={exportProgress} onImport={importFromToken}/>
+      <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={comp} onExport={exportProgress} onImport={importFromToken}/>
       
       {/* Lesson Sheet */}
       <LessonSheet
@@ -549,14 +549,14 @@ export default function App(){
         onClose={() => setOpenBiome(null)}
         biome={openBiome ?? 'forest'}
         lessons={openBiome ? LOOP1[openBiome as keyof typeof LOOP1] : []}
-        completed={openBiome ? completed[openBiome as keyof typeof completed] : new Set()}
+        completed={openBiome ? comp[openBiome as keyof typeof comp] : new Set()}
         onComplete={(id) => {
           if (!openBiome) return;
           setCompleted(prev => {
             const next = { ...prev, [openBiome]: new Set(prev[openBiome]) } as any;
             (next[openBiome] as Set<string>).add(id);
             return next;
-          });
+         });
         }}
         canPreview={teacherMode}
         teacherMode={teacherMode}
@@ -564,7 +564,7 @@ export default function App(){
         onStart={(lesson) => {
           if (!openBiome) return;
           setPlayer({ biome: openBiome, lesson });
-          setLastStarted({ biome: openBiome, lesson });
+          setLast({ biome: openBiome, lesson });
         }}
         protoOnly={protoOnly}
       />
@@ -576,7 +576,7 @@ export default function App(){
         lesson={player?.lesson}
         onMarkComplete={(id) => {
           if (!player?.biome) return;
-          setCompleted(prev => {
+          setComp(prev => {
             const next = { ...prev, [player.biome]: new Set(prev[player.biome]) } as any;
             (next[player.biome] as Set<string>).add(id);
             return next;
