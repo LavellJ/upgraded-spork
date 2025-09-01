@@ -32,9 +32,11 @@ interface TeacherPanelProps {
   onImport: (token: string) => void;
   onExport: () => string;
   lessons: any;
+  onResetCurrentLoop: () => void;
+  onFactoryReset: () => void;
 }
 
-export function TeacherPanel({ open, onClose, frameworks, framework, setFramework, protoOnly, setProtoOnly, completed, onImport, onExport, lessons }: TeacherPanelProps) {
+export function TeacherPanel({ open, onClose, frameworks, framework, setFramework, protoOnly, setProtoOnly, completed, onImport, onExport, lessons, onResetCurrentLoop, onFactoryReset }: TeacherPanelProps) {
   const [importValue, setImportValue] = useState('');
   const [exportLink, setExportLink] = useState('');
   const handleExport = () => { const link = onExport(); setExportLink(link); };
@@ -90,6 +92,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
           <div><div className="text-sm font-semibold mb-2">Export Progress</div><button onClick={handleExport} className="w-full px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out">Copy progress link</button>{exportLink && <div className="mt-2 p-2 bg-stone-100 rounded-lg text-xs break-all">{exportLink}</div>}</div>
           <div><div className="text-sm font-semibold mb-2">Import Progress</div><div className="flex gap-2 mb-2"><input value={importValue} onChange={(e) => setImportValue(e.target.value)} placeholder="Paste progress link or token" className="flex-1 px-3 py-2 border rounded-lg" /><button onClick={handlePaste} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 text-xs">Paste</button><button onClick={handleImport} className="px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition ease-out">Import</button></div></div>
           <div className="mt-4 border-t pt-3"><div className="text-sm font-semibold mb-2">Analytics (local)</div><div className="flex items-center gap-2 mb-3"><button onClick={() => downloadEventsCSV()} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs">Export events CSV</button><button onClick={() => { clearEvents(); alert('Cleared local analytics buffer'); }} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs">Clear buffer</button><span className="text-[11px] text-stone-600">{getEvents().length} event(s) captured</span></div><div><div className="text-sm font-semibold mb-2">Recent activity</div>{recent.length === 0 ? (<div className="text-xs text-stone-500">No events yet.</div>) : (<ul className="space-y-1 text-xs text-stone-700">{recent.map((e, i) => (<li key={`${e.ts}-${e.action}-${i}`} className="flex items-center gap-2"><span>⏺</span><span className="opacity-70">{new Date(e.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span><span className="font-semibold">{e.action}</span><span className="opacity-70">{e.biome ?? ''} {e.lessonId ?? ''}</span></li>))}</ul>)}</div></div>
+          <div className="mt-5 border-t pt-3"><div className="text-sm font-semibold mb-2 text-red-700">Danger zone</div><div className="grid grid-cols-1 sm:grid-cols-2 gap-2"><button onClick={() => { if (confirm('Reset progress for the current loop? This keeps your loop number and backpack.')) { onResetCurrentLoop(); alert('Current loop progress has been reset.'); } }} className="px-3 py-2 rounded-lg border bg-white hover:bg-stone-50 text-red-700">Reset current loop</button><button onClick={() => { if (confirm('Factory reset everything? This sets Loop to 1 and clears progress and backpack.')) { onFactoryReset(); alert('All progress reset. Back to Loop 1.'); } }} className="px-3 py-2 rounded-lg border bg-white hover:bg-stone-50 text-red-700">Factory reset (all)</button></div><div className="mt-2 text-[11px] text-stone-600">Tip: Use Export to snapshot progress before you reset.</div></div>
         </div>
       </div>
     </BottomSheet>

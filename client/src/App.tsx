@@ -323,6 +323,50 @@ export default function App(){
   // ---- Time of day ----
   const tod = inferTimeOfDay();
 
+  // ---- Reset handlers for testing ----
+  const resetCurrentLoop = () => {
+    setComp({ forest: new Set(), desert: new Set(), ocean: new Set(), night: new Set() });
+    setLast(null);
+
+    try {
+      localStorage.removeItem(KEYS.comp);
+      localStorage.removeItem(KEYS.last);
+    } catch {}
+
+    // close overlays
+    setPlayer(null);
+    setOpenBiome(null);
+    setShowBP(false);
+    setShowTeacher(false);
+  };
+
+  const factoryReset = () => {
+    // reset loop index
+    setLoop(1);
+
+    // clear per-loop progress and resume
+    setComp({ forest: new Set(), desert: new Set(), ocean: new Set(), night: new Set() });
+    setLast(null);
+
+    // clear backpack
+    if (bp?.setItems) bp.setItems([]);
+    if (bp?.setEquipped) bp.setEquipped([]);
+
+    try {
+      localStorage.setItem(KEYS.loop, '1');
+      localStorage.removeItem(KEYS.comp);
+      localStorage.removeItem(KEYS.last);
+      localStorage.removeItem(KEYS.bpItems);
+      localStorage.removeItem(KEYS.bpEq);
+    } catch {}
+
+    // close overlays
+    setPlayer(null);
+    setOpenBiome(null);
+    setShowBP(false);
+    setShowTeacher(false);
+  };
+
   // ---- Dynamic biome status computation ----
   function computeStatuses(c){
     const lenF=(LESSONS.forest||[]).length||5;
@@ -459,7 +503,7 @@ export default function App(){
 
       {/* UI Overlays */}
       <BackpackSheet open={showBP} onClose={()=>setShowBP(false)} bp={bp}/>
-      <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={comp} onExport={exportProgress} onImport={importFromToken} lessons={LESSONS}/>
+      <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={comp} onExport={exportProgress} onImport={importFromToken} lessons={LESSONS} onResetCurrentLoop={resetCurrentLoop} onFactoryReset={factoryReset}/>
       
       {/* Lesson Sheet */}
       <LessonSheet
