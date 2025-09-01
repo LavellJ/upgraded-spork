@@ -380,7 +380,7 @@ function LessonSheet({open,onClose,biome,lessons,completed,onComplete,canPreview
 function LessonNode({biome,lesson,completed,onSelect,pos,locked}){
   const {label,color}=SUBJECTS[biome]; const isDone= completed?.has?.(lesson.id)||false; const accent=color;
   return (
-    <div className="absolute cursor-pointer" style={{left:pos.x+'%',top:pos.y+'%'}} onClick={()=>onSelect(biome,lesson)}>
+    <div className="absolute cursor-pointer z-10" style={{left:pos.x+'%',top:pos.y+'%'}} onClick={()=>onSelect(biome,lesson)}>
       <div className={cx("relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg transition-all duration-300 ease-out border border-amber-900/20", isDone ? "bg-emerald-100/90 shadow-emerald-200 scale-110" : locked ? "bg-stone-200/70 shadow-stone-200" : "bg-white/95 hover:scale-110 hover:shadow-xl hover:bg-amber-50/95")}>
         <span className="text-xl" style={{color: locked ? '#999' : accent}}>{isDone ? '✅' : '📘'}</span>
         {!isDone && !locked && (
@@ -509,7 +509,7 @@ export default function App(){
             {Object.entries(biomePos).map(([biome,pos])=>{
               const subject=SUBJECTS[biome]; const lessons=LOOP1[biome]||[]; const biomeDone=comp[biome]; const canPreview=teacherMode;
               return (
-                <div key={biome} className="absolute cursor-pointer" style={{left:pos.x+'%',top:pos.y+'%'}} onClick={()=>openLessonSheet(biome)}>
+                <div key={biome} className="absolute cursor-pointer z-20" style={{left:pos.x+'%',top:pos.y+'%'}} onClick={()=>openLessonSheet(biome)}>
                   <div className={cx("relative flex items-center justify-center w-20 h-20 rounded-full shadow-lg transition-all duration-300 ease-out border-2 hover:scale-110 hover:shadow-xl", biomeDone.size===lessons.length?"bg-emerald-100/90 border-emerald-300 shadow-emerald-200":"bg-white/90 border-amber-300 hover:bg-amber-50/95")} style={{borderColor:subject.color}}>
                     <div className="text-center">
                       <div className="text-2xl">{biome==='forest'?'🌲':biome==='desert'?'🏜️':biome==='ocean'?'🌊':'🌙'}</div>
@@ -552,7 +552,7 @@ export default function App(){
         completed={openBiome ? comp[openBiome as keyof typeof comp] : new Set()}
         onComplete={(id) => {
           if (!openBiome) return;
-          setCompleted(prev => {
+          setComp(prev => {
             const next = { ...prev, [openBiome]: new Set(prev[openBiome]) } as any;
             (next[openBiome] as Set<string>).add(id);
             return next;
