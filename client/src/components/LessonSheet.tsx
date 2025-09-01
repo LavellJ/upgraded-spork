@@ -106,9 +106,11 @@ interface LessonSheetProps {
   onStart: (lesson: { id: string; title: string }) => void;
   protoOnly: boolean;
   calmTip?: boolean;
+  isLocked: (id: string) => boolean;
+  onLocked: () => void;
 }
 
-export function LessonSheet({ open, onClose, biome, lessons, completed, onComplete, canPreview, teacherMode, framework, onStart, protoOnly, calmTip }: LessonSheetProps) {
+export function LessonSheet({ open, onClose, biome, lessons, completed, onComplete, canPreview, teacherMode, framework, onStart, protoOnly, calmTip, isLocked, onLocked }: LessonSheetProps) {
   const subject = SUBJECTS[biome];
   const [detail, setDetail] = useState<{ id: string; title: string } | null>(null);
   const allDone = completed.size === lessons.length && lessons.length > 0;
@@ -127,18 +129,39 @@ export function LessonSheet({ open, onClose, biome, lessons, completed, onComple
         <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
           {lessons.map((l, i) => {
             const isDone = completed?.has?.(l.id) || false;
+            const locked = isLocked(l.id);
             const hasDeepLink = !!(!protoOnly && registryEntry(biome, l.id)?.url?.trim());
+            const startDisabled = locked && !teacherMode;
+            const completeDisabled = isDone || (locked && !teacherMode);
+            
             return (
               <div key={l.id} className={cx("rounded-xl border border-amber-900/20 bg-white/70 p-3 flex items-center gap-3 transition-colors ease-out", isDone && "opacity-70")}>
-                <button onClick={() => setDetail(l)} className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: subject.color + "22" }} aria-label="Open lesson details">{isDone ? "✅" : "📘"}</button>
+                <button onClick={() => setDetail(l)} className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: subject.color + "22" }} aria-label="Open lesson details">{isDone ? "✅" : (locked ? "🔒" : "📘")}</button>
                 <div className="min-w-0">
                   <div className="font-semibold truncate">{i + 1}. {l.title}</div>
-                  {canPreview && !isDone && <div className="text-[11px] text-stone-600">👀 Preview unlocked</div>}
+                  {locked && !isDone && !teacherMode && (
+                    <div className="text-[11px] text-stone-500">🔒 Locked — complete previous lesson</div>
+                  )}
+                  {canPreview && !isDone && (
+                    <div className="text-[11px] text-stone-600">👀 Preview unlocked</div>
+                  )}
                   {hasDeepLink && !protoOnly && <div className="text-[10px] text-stone-500">🔗 External lesson available</div>}
                 </div>
                 <div className="ml-auto flex items-center gap-2">
-                  <button onClick={() => onStart(l)} className="text-xs px-2 py-1 rounded-full bg-amber-700/90 hover:bg-amber-700 text-white transition ease-out">Start</button>
-                  <button disabled={isDone} onClick={(e) => { e.stopPropagation?.(); onComplete(l.id); }} className={cx("text-xs px-2 py-1 rounded-full transition ease-out", isDone ? "bg-stone-200" : "bg-emerald-600 text-white hover:bg-emerald-700")}>{isDone ? "Done" : "Complete"}</button>
+                  <button 
+                    disabled={startDisabled} 
+                    onClick={() => startDisabled ? onLocked() : onStart(l)} 
+                    className={cx("text-xs px-2 py-1 rounded-full transition ease-out", startDisabled ? "bg-stone-200 text-stone-500" : "bg-amber-700/90 hover:bg-amber-700 text-white")}
+                  >
+                    Start
+                  </button>
+                  <button 
+                    disabled={completeDisabled} 
+                    onClick={(e) => { e.stopPropagation?.(); onComplete(l.id); }} 
+                    className={cx("text-xs px-2 py-1 rounded-full transition ease-out", completeDisabled ? "bg-stone-200" : "bg-emerald-600 text-white hover:bg-emerald-700")}
+                  >
+                    {isDone ? "Done" : "Complete"}
+                  </button>
                 </div>
               </div>
             );

@@ -480,8 +480,25 @@ export default function App(){
 
   // ---- Event handlers ----
   const markComplete = (biome,lessonId)=>{ const collectibles = ['🧰','🏅','🖋️','🎨','🔍']; const items = ['Field Kit','Merit Badge','Quill Pen','Sketch Pad','Looking Glass']; const kinds = ['tool','badge','tool','tool','tool'] as const; const rnd = Math.floor(Math.random()*collectibles.length); const awardId = `${biome}-${lessonId}`; setComp(p=>({...p,[biome]:new Set([...p[biome],lessonId])})); bp.award({id:awardId,name:items[rnd],kind:kinds[rnd],icon:collectibles[rnd]}); logEvent({ ts: new Date().toISOString(), loop, biome, lessonId, action: 'award', meta: { awardId, name: items[rnd] } }); setToast(`Collected ${items[rnd]}!`); setTimeout(()=>setToast(null),2000); };
+  // Is this lesson locked (sequential gating)?
+  const isLessonLocked = (biome: string, lessonId: string) => {
+    if (teacherMode) return false; // override
+    const arr = (LESSONS as any)[biome] || [];
+    const idx = arr.findIndex((l: any) => l.id === lessonId);
+    if (idx <= 0) return false; // first lesson in biome is always unlocked
+    const prevId = arr[idx - 1].id;
+    return !(comp[biome as keyof typeof comp] as Set<string>).has(prevId);
+  };
+  
   const openLessonSheet = (biome)=> setOpenBiome(biome);
-  const startLesson = (lesson,biome)=>{ setLast({biome,lesson}); setPlayer({biome,lesson}); };
+  const startLesson = (lesson,biome)=>{ 
+    if (isLessonLocked(biome, lesson.id)) {
+      flash('Finish the previous lesson to unlock this one');
+      return;
+    }
+    setLast({biome,lesson}); 
+    setPlayer({biome,lesson}); 
+  };
   const resumeLesson = ()=>{ if(last) { const lesson = findLesson(last.biome,last.id,LESSONS); if(lesson) { logEvent({ ts: new Date().toISOString(), loop, biome: last.biome, lessonId: last.id, action: 'resume' }); startLesson(lesson,last.biome); } } };
 
   // ---- Layout helpers ----
@@ -586,12 +603,18 @@ export default function App(){
         framework={framework}
         onStart={(lesson) => {
           if (!openBiome) return;
+          if (isLessonLocked(openBiome, lesson.id)) {
+            flash('Finish the previous lesson to unlock this one');
+            return;
+          }
           logEvent({ ts: new Date().toISOString(), loop, biome: openBiome, lessonId: lesson.id, action: 'start' });
           setPlayer({ biome: openBiome, lesson });
           setLast({ biome: openBiome, id: lesson.id });   // ← save last
         }}
         protoOnly={protoOnly}
         calmTip={hasEquipped(bp, 'charm_feather')}
+        isLocked={(id: string) => isLessonLocked(openBiome!, id)}
+        onLocked={() => flash('Finish the previous lesson to unlock this one')}
       />
 
       <ActivityPlayer
