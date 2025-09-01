@@ -23,13 +23,22 @@ interface TeacherPanelProps {
   };
   onImport: (token: string) => void;
   onExport: () => string;
+  lessons: any;
 }
 
-export function TeacherPanel({ open, onClose, frameworks, framework, setFramework, protoOnly, setProtoOnly, completed, onImport, onExport }: TeacherPanelProps) {
+export function TeacherPanel({ open, onClose, frameworks, framework, setFramework, protoOnly, setProtoOnly, completed, onImport, onExport, lessons }: TeacherPanelProps) {
   const [importValue, setImportValue] = useState('');
   const [exportLink, setExportLink] = useState('');
   const handleExport = () => { const link = onExport(); setExportLink(link); };
   const handleImport = () => { if (importValue.trim()) { onImport(extractQiFromInput(importValue)); setImportValue(''); } };
+  
+  // Dynamic totals from current loop lessons
+  const totals = {
+    forest: (lessons.forest || []).length,
+    desert: (lessons.desert || []).length,
+    ocean:  (lessons.ocean  || []).length,
+    night:  (lessons.night  || []).length,
+  };
   return (
     <BottomSheet open={open} onClose={onClose}>
       <div className="text-stone-800">
@@ -41,7 +50,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
         <div className="space-y-4">
           <div><label className="block text-sm font-semibold mb-2">Standards Framework</label><select value={framework} onChange={(e) => setFramework(e.target.value)} className="w-full px-3 py-2 border rounded-lg bg-white">{frameworks.map(f => <option key={f} value={f}>{f}</option>)}</select></div>
           <div><label className="flex items-center gap-2"><input type="checkbox" checked={protoOnly} onChange={(e) => setProtoOnly(e.target.checked)} className="rounded" />Use prototype-only mode</label><div className="text-xs text-stone-600 mt-1">When enabled, all activities use in-app prototypes instead of external links.</div></div>
-          <div><div className="text-sm font-semibold mb-2">Progress Overview</div><div className="text-xs text-stone-600 space-y-1"><div>Forest (Literacy): {completed.forest?.size || 0}/5</div><div>Desert (Math): {completed.desert?.size || 0}/5</div><div>Ocean (Science): {completed.ocean?.size || 0}/5</div><div>Night (HASS): {completed.night?.size || 0}/5</div></div></div>
+          <div><div className="text-sm font-semibold mb-2">Progress Overview</div><div className="text-xs text-stone-600 space-y-1"><div>Forest (Literacy): {completed.forest?.size || 0}/{totals.forest}</div><div>Desert (Math): {completed.desert?.size || 0}/{totals.desert}</div><div>Ocean (Science): {completed.ocean?.size || 0}/{totals.ocean}</div><div>Night (HASS): {completed.night?.size || 0}/{totals.night}</div></div></div>
           <div><div className="text-sm font-semibold mb-2">Export Progress</div><button onClick={handleExport} className="w-full px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out">Copy progress link</button>{exportLink && <div className="mt-2 p-2 bg-stone-100 rounded-lg text-xs break-all">{exportLink}</div>}</div>
           <div><div className="text-sm font-semibold mb-2">Import Progress</div><div className="flex gap-2"><input value={importValue} onChange={(e) => setImportValue(e.target.value)} placeholder="Paste progress link or token" className="flex-1 px-3 py-2 border rounded-lg" /><button onClick={handleImport} className="px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition ease-out">Import</button></div></div>
         </div>
