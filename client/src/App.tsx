@@ -25,7 +25,7 @@ import { logEvent } from "./lib/analytics";
 // --------------------------------------
 // Generic utilities & small UI primitives
 // --------------------------------------
-const KEYS = { loop:'qi_loop', comp:'qi_comp', bpItems:'qi_bp_items', bpEq:'qi_bp_equipped', teacher:'qi_teacher', framework:'qi_framework', calm:'qi_calm', proto:'qi_proto_only', last:'qi_last' };
+const KEYS = { loop:'qi_loop', comp:'qi_comp', bpItems:'qi_bp_items', bpEq:'qi_bp_equipped', teacher:'qi_teacher', framework:'qi_framework', calm:'qi_calm', proto:'qi_proto_only', last:'qi_last', pins:'qi_teacher_pins' };
 const cx = (...s) => s.filter(Boolean).join(" ");
 
 // Components extracted to separate files
@@ -321,6 +321,7 @@ export default function App(){
   const LESSONS: any = loop === 2 ? LOOP2 : LOOP1;
   const [comp,setComp]=useState(()=>{ try{const raw=JSON.parse(localStorage.getItem(KEYS.comp)||'{}'); return { forest: new Set(raw.forest||[]), desert: new Set(raw.desert||[]), ocean: new Set(raw.ocean||[]), night: new Set(raw.night||[]) };}catch{return { forest: new Set(), desert: new Set(), ocean: new Set(), night: new Set() };} });
   const [teacherMode,setTeacherMode]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.teacher)||'false');}catch{return false;} });
+  const [teacherPins,setTeacherPins]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.pins)||'false');}catch{return false;} });
   const [framework,setFramework]=useState(()=>{ try{return localStorage.getItem(KEYS.framework)||'Generic';}catch{return 'Generic';} });
   const [calm,setCalm]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.calm)||'false');}catch{return false;} });
   const [protoOnly,setProtoOnly]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.proto)||'true');}catch{return true;} });
@@ -405,6 +406,7 @@ export default function App(){
   useEffect(()=>{ try{localStorage.setItem(KEYS.loop,loop.toString());}catch{} },[loop]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.comp,JSON.stringify({ forest:Array.from(comp.forest), desert:Array.from(comp.desert), ocean:Array.from(comp.ocean), night:Array.from(comp.night) }));}catch{} },[comp]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.teacher,JSON.stringify(teacherMode));}catch{} },[teacherMode]);
+  useEffect(()=>{ try{localStorage.setItem(KEYS.pins,JSON.stringify(teacherPins));}catch{} },[teacherPins]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.framework,framework);}catch{} },[framework]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.calm,JSON.stringify(calm));}catch{} },[calm]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.proto,JSON.stringify(protoOnly));}catch{} },[protoOnly]);
@@ -513,6 +515,12 @@ export default function App(){
   // ---- Layout helpers ----
   const biomePos = { forest:{x:25,y:25}, desert:{x:65,y:30}, ocean:{x:70,y:70}, night:{x:20,y:65} };
   const lessonPos = { forest:[ {x:22,y:18},{x:28,y:22},{x:24,y:28},{x:30,y:25},{x:26,y:32} ], desert:[ {x:62,y:23},{x:68,y:27},{x:65,y:33},{x:71,y:30},{x:67,y:37} ], ocean:[ {x:67,y:63},{x:73,y:67},{x:70,y:73},{x:76,y:70},{x:72,y:77} ], night:[ {x:17,y:58},{x:23,y:62},{x:20,y:68},{x:26,y:65},{x:22,y:72} ] };
+  
+  // ---- Pin visibility helpers ----
+  const nextUnfinishedId = (biome: string, done: Set<string>) =>
+    (LESSONS[biome] || []).find((l:any) => !done.has(l.id))?.id ?? null;
+  
+  const showAnyPins = (teacherMode && teacherPins) || hasEquipped(bp, 'tool_compass');
 
   return (
     <div className={cx("relative min-h-screen bg-gradient-to-br overflow-hidden", BG_BY_TOD[tod])}>
@@ -582,7 +590,7 @@ export default function App(){
 
       {/* UI Overlays */}
       <BackpackSheet open={showBP} onClose={()=>setShowBP(false)} bp={bp}/>
-      <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={comp} onExport={exportProgress} onImport={importFromToken} lessons={LESSONS} loop={loop} onResetCurrentLoop={resetCurrentLoop} onFactoryReset={factoryReset}/>
+      <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={comp} onExport={exportProgress} onImport={importFromToken} lessons={LESSONS} loop={loop} onResetCurrentLoop={resetCurrentLoop} onFactoryReset={factoryReset} teacherPins={teacherPins} setTeacherPins={setTeacherPins}/>
       
       {/* Lesson Sheet */}
       <LessonSheet
