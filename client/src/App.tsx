@@ -441,7 +441,7 @@ export default function App(){
 
             {/* Lesson Nodes */}
             {Object.entries(lessonPos).map(([biome,positions])=>{
-              const lessons=LESSONS[biome]||[]; const biomeDone=comp[biome];
+              const lessons=LESSONS[biome]||[]; const biomeDone=comp[biome as keyof typeof comp];
               const nextUnfinishedId = hasEquipped(bp, 'tool_compass') 
                 ? lessons.find(l => !biomeDone.has(l.id))?.id ?? null
                 : null;
@@ -471,16 +471,19 @@ export default function App(){
         onComplete={(id) => {
           if (!openBiome) return;
           setComp(prev => {
-            const next = { ...prev, [openBiome]: new Set(prev[openBiome]) } as any;
-            (next[openBiome] as Set<string>).add(id);
+            const nextSet = new Set(prev[openBiome as keyof typeof prev]);
+            nextSet.add(id);
+            const next = { ...prev, [openBiome]: nextSet };
             
             // Milestones: first completion in each biome
-            const firstOfBiome = (prevComp: any, biome: string) => 
-              (prevComp[biome] instanceof Set ? prevComp[biome].size : (prevComp[biome]?.size || 0)) === 0;
+            const wasEmptyBefore = (prevComp: any, biome: string) => {
+              const s = prevComp[biome];
+              return !(s && s.size && s.size > 0);
+            };
             
-            if (firstOfBiome(prev, 'forest'))  bp.award({ id:'tool_binocs',   name:'Binoculars', kind:'tool',  icon:'🔭' });
-            if (firstOfBiome(prev, 'desert'))  bp.award({ id:'tool_compass',  name:'Compass',    kind:'tool',  icon:'🧭' });
-            if (firstOfBiome(prev, 'ocean'))   bp.award({ id:'charm_feather', name:'Feather',    kind:'charm', icon:'🪶' });
+            if (wasEmptyBefore(prev, 'forest'))  bp.award({ id:'tool_binocs',   name:'Binoculars', kind:'tool',  icon:'🔭' });
+            if (wasEmptyBefore(prev, 'desert'))  bp.award({ id:'tool_compass',  name:'Compass',    kind:'tool',  icon:'🧭' });
+            if (wasEmptyBefore(prev, 'ocean'))   bp.award({ id:'charm_feather', name:'Feather',    kind:'charm', icon:'🪶' });
             
             return next;
          });
@@ -508,21 +511,23 @@ export default function App(){
           const biome = player.biome;
           logEvent({ ts: new Date().toISOString(), loop, biome, lessonId: id, action: 'complete' });
           setComp(prev => {
-            const nextSet = new Set(prev[biome]);
+            const nextSet = new Set(prev[biome as keyof typeof prev]);
             nextSet.add(id);
             
             // Milestones: first completion in each biome
-            const firstOfBiome = (prevComp: any, biome: string) => 
-              (prevComp[biome] instanceof Set ? prevComp[biome].size : (prevComp[biome]?.size || 0)) === 0;
+            const wasEmptyBefore = (prevComp: any, biome: string) => {
+              const s = prevComp[biome];
+              return !(s && s.size && s.size > 0);
+            };
             
-            if (firstOfBiome(prev, 'forest'))  bp.award({ id:'tool_binocs',   name:'Binoculars', kind:'tool',  icon:'🔭' });
-            if (firstOfBiome(prev, 'desert'))  bp.award({ id:'tool_compass',  name:'Compass',    kind:'tool',  icon:'🧭' });
-            if (firstOfBiome(prev, 'ocean'))   bp.award({ id:'charm_feather', name:'Feather',    kind:'charm', icon:'🪶' });
+            if (wasEmptyBefore(prev, 'forest'))  bp.award({ id:'tool_binocs',   name:'Binoculars', kind:'tool',  icon:'🔭' });
+            if (wasEmptyBefore(prev, 'desert'))  bp.award({ id:'tool_compass',  name:'Compass',    kind:'tool',  icon:'🧭' });
+            if (wasEmptyBefore(prev, 'ocean'))   bp.award({ id:'charm_feather', name:'Feather',    kind:'charm', icon:'🪶' });
             
             // pick the next unfinished lesson in this biome
             const nextLesson = (LESSONS[biome] || []).find(l => !nextSet.has(l.id));
             setLast(nextLesson ? { biome, id: nextLesson.id } : null);
-            return { ...prev, [biome]: nextSet } as typeof prev;
+            return { ...prev, [biome]: nextSet };
           });
         }}
         protoOnly={protoOnly}
