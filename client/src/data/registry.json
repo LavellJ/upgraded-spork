@@ -1,0 +1,32 @@
+{
+  "1": {
+    "forest": {
+      "f1": { "url": "", "est": "5–7 min" },
+      "f2": { "url": "https://replit.com/@your-org/lit-cvc-blending", "est": "6–8 min" },
+      "f3": { "url": "", "est": "6–8 min" },
+      "f4": { "url": "", "est": "6–8 min" },
+      "f5": { "url": "", "est": "6–8 min" }
+    },
+    "desert": {
+      "d1": { "url": "", "est": "5–7 min" },
+      "d2": { "url": "https://replit.com/@your-org/math-bonds-5", "est": "6–8 min" },
+      "d3": { "url": "", "est": "6–8 min" },
+      "d4": { "url": "", "est": "6–8 min" },
+      "d5": { "url": "", "est": "6–8 min" }
+    },
+    "ocean": {
+      "o1": { "url": "", "est": "5–7 min" },
+      "o2": { "url": "", "est": "5–7 min" },
+      "o3": { "url": "", "est": "5–7 min" },
+      "o4": { "url": "", "est": "5–7 min" },
+      "o5": { "url": "", "est": "5–7 min" }
+    },
+    "night": {
+      "n1": { "url": "", "est": "5–7 min" },
+      "n2": { "url": "", "est": "5–7 min" },
+      "n3": { "url": "", "est": "5–7 min" },
+      "n4": { "url": "", "est": "5–7 min" },
+      "n5": { "url": "", "est": "5–7 min" }
+    }
+  }
+}
