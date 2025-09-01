@@ -18,6 +18,12 @@ interface BackpackSheetProps {
 export function BackpackSheet({ open, onClose, bp }: BackpackSheetProps) {
   const { items, equipped, toggleEquip, equipLimit } = bp;
   const equippedSet = new Set(equipped);
+  
+  const byId: Record<string, string> = {
+    tool_binocs:   'Preview lessons in the sheet.',
+    tool_compass:  'Highlights the next lesson on the map.',
+    charm_feather: 'Shows a calm tip before you start.',
+  };
   return (
     <BottomSheet open={open} onClose={onClose}>
       <div className="text-stone-800">
@@ -32,7 +38,7 @@ export function BackpackSheet({ open, onClose, bp }: BackpackSheetProps) {
           {items.map(it => (
             <div key={it.id} className="rounded-xl border bg-white/80 p-3 flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">{it.kind === 'tool' ? '🧰' : it.kind === 'badge' ? '🏅' : '🖋️'}</div>
-              <div className="min-w-0"><div className="font-semibold text-sm truncate">{it.name}</div><div className="text-[11px] text-stone-500 truncate">{it.kind}</div></div>
+              <div className="min-w-0"><div className="font-semibold text-sm truncate">{it.name}</div><div className="text-[11px] text-stone-500 truncate">{byId[it.id] || it.kind}</div></div>
               <button onClick={() => toggleEquip(it.id)} className={cx("ml-auto text-xs px-2 py-1 rounded-full border transition ease-out", equippedSet.has(it.id) ? "bg-emerald-600 text-white border-emerald-700" : "bg-white hover:bg-stone-50")}>{equippedSet.has(it.id) ? 'Equipped' : 'Equip'}</button>
             </div>
           ))}

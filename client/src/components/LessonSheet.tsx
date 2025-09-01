@@ -105,9 +105,10 @@ interface LessonSheetProps {
   framework: string;
   onStart: (lesson: { id: string; title: string }) => void;
   protoOnly: boolean;
+  calmTip?: boolean;
 }
 
-export function LessonSheet({ open, onClose, biome, lessons, completed, onComplete, canPreview, teacherMode, framework, onStart, protoOnly }: LessonSheetProps) {
+export function LessonSheet({ open, onClose, biome, lessons, completed, onComplete, canPreview, teacherMode, framework, onStart, protoOnly, calmTip }: LessonSheetProps) {
   const subject = SUBJECTS[biome];
   const [detail, setDetail] = useState<{ id: string; title: string } | null>(null);
   const allDone = completed.size === lessons.length && lessons.length > 0;
@@ -143,7 +144,7 @@ export function LessonSheet({ open, onClose, biome, lessons, completed, onComple
             );
           })}
         </div>
-        <LessonDetail open={!!detail} onClose={() => setDetail(null)} biome={biome} lesson={detail} onMarkComplete={onComplete} onStart={onStart} teacherMode={teacherMode} standardText={standardText} protoOnly={protoOnly} />
+        <LessonDetail open={!!detail} onClose={() => setDetail(null)} biome={biome} lesson={detail} onMarkComplete={onComplete} onStart={onStart} teacherMode={teacherMode} standardText={standardText} protoOnly={protoOnly} calmTip={calmTip} />
       </div>
     </BottomSheet>
   );

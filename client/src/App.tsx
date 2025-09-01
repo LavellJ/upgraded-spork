@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BottomSheet } from "./components/BottomSheet";
-import { useBackpack } from "./hooks/useBackpack";
+import { useBackpack, hasEquipped } from "./hooks/useBackpack";
 import { BackpackSheet } from "./components/BackpackSheet";
 import { ActivityPlayer } from "./components/ActivityPlayer";
 import { LessonSheet } from "./components/LessonSheet";
@@ -264,7 +264,7 @@ function Node({biome,status,onClick,count,total}){
   );
 }
 
-function LessonNode({biome,lesson,completed,onSelect,pos,locked}){
+function LessonNode({biome,lesson,completed,onSelect,pos,locked,isNext}){
   const {label,color}=SUBJECTS[biome]; const isDone= completed?.has?.(lesson.id)||false; const accent=color;
   return (
     <div className="absolute cursor-pointer z-10" style={{left:pos.x+'%',top:pos.y+'%'}} onClick={()=>onSelect(biome,lesson)}>
@@ -272,6 +272,13 @@ function LessonNode({biome,lesson,completed,onSelect,pos,locked}){
         <span className="text-xl" style={{color: locked ? '#999' : accent}}>{isDone ? '✅' : '📘'}</span>
         {!isDone && !locked && (
           <div className="absolute -inset-2 rounded-full border-2 opacity-30 animate-pulse" style={{borderColor:accent}}/>
+        )}
+        {isNext && !isDone && !locked && (
+          <div
+            className="absolute -inset-3 rounded-full ring-2 animate-pulse"
+            style={{ boxShadow: `0 0 0 2px ${color}22` }}
+            aria-hidden
+          />
         )}
       </div>
       <div className="absolute mt-2 left-1/2 -translate-x-1/2 w-max">
@@ -435,9 +442,13 @@ export default function App(){
             {/* Lesson Nodes */}
             {Object.entries(lessonPos).map(([biome,positions])=>{
               const lessons=LESSONS[biome]||[]; const biomeDone=comp[biome];
+              const nextUnfinishedId = hasEquipped(bp, 'tool_compass') 
+                ? lessons.find(l => !biomeDone.has(l.id))?.id ?? null
+                : null;
               return lessons.map((lesson,i)=>{
                 const pos=positions[i]; const locked=i>0&&!biomeDone.has(lessons[i-1].id)&&!teacherMode;
-                return <LessonNode key={lesson.id} biome={biome} lesson={lesson} completed={biomeDone} onSelect={(b,l)=>startLesson(l,b)} pos={pos} locked={locked}/>;
+                const isNext = nextUnfinishedId === lesson.id;
+                return <LessonNode key={lesson.id} biome={biome} lesson={lesson} completed={biomeDone} onSelect={(b,l)=>startLesson(l,b)} pos={pos} locked={locked} isNext={isNext}/>;
               });
             })}
 
@@ -462,10 +473,19 @@ export default function App(){
           setComp(prev => {
             const next = { ...prev, [openBiome]: new Set(prev[openBiome]) } as any;
             (next[openBiome] as Set<string>).add(id);
+            
+            // Milestones: first completion in each biome
+            const firstOfBiome = (prevComp: any, biome: string) => 
+              (prevComp[biome] instanceof Set ? prevComp[biome].size : (prevComp[biome]?.size || 0)) === 0;
+            
+            if (firstOfBiome(prev, 'forest'))  bp.award({ id:'tool_binocs',   name:'Binoculars', kind:'tool',  icon:'🔭' });
+            if (firstOfBiome(prev, 'desert'))  bp.award({ id:'tool_compass',  name:'Compass',    kind:'tool',  icon:'🧭' });
+            if (firstOfBiome(prev, 'ocean'))   bp.award({ id:'charm_feather', name:'Feather',    kind:'charm', icon:'🪶' });
+            
             return next;
          });
         }}
-        canPreview={teacherMode}
+        canPreview={teacherMode || hasEquipped(bp, 'tool_binocs')}
         teacherMode={teacherMode}
         framework={framework}
         onStart={(lesson) => {
@@ -475,6 +495,7 @@ export default function App(){
           setLast({ biome: openBiome, id: lesson.id });   // ← save last
         }}
         protoOnly={protoOnly}
+        calmTip={hasEquipped(bp, 'charm_feather')}
       />
 
       <ActivityPlayer
@@ -489,6 +510,15 @@ export default function App(){
           setComp(prev => {
             const nextSet = new Set(prev[biome]);
             nextSet.add(id);
+            
+            // Milestones: first completion in each biome
+            const firstOfBiome = (prevComp: any, biome: string) => 
+              (prevComp[biome] instanceof Set ? prevComp[biome].size : (prevComp[biome]?.size || 0)) === 0;
+            
+            if (firstOfBiome(prev, 'forest'))  bp.award({ id:'tool_binocs',   name:'Binoculars', kind:'tool',  icon:'🔭' });
+            if (firstOfBiome(prev, 'desert'))  bp.award({ id:'tool_compass',  name:'Compass',    kind:'tool',  icon:'🧭' });
+            if (firstOfBiome(prev, 'ocean'))   bp.award({ id:'charm_feather', name:'Feather',    kind:'charm', icon:'🪶' });
+            
             // pick the next unfinished lesson in this biome
             const nextLesson = (LESSONS[biome] || []).find(l => !nextSet.has(l.id));
             setLast(nextLesson ? { biome, id: nextLesson.id } : null);
