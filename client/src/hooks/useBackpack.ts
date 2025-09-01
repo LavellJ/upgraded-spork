@@ -6,6 +6,7 @@ export interface BackpackItem {
   id: string;
   name: string;
   kind: 'tool' | 'badge' | 'charm';
+  icon?: string;
 }
 
 export function useBackpack() {
@@ -37,4 +38,8 @@ export function useBackpack() {
     } catch { }
   }, [equipped]);
   return { items, equipped, toggleEquip, award, equipLimit, setItems, setEquipped };
+}
+
+export function hasEquipped(bp: ReturnType<typeof useBackpack>, id: string) {
+  return bp.equipped?.includes?.(id);
 }

@@ -61,9 +61,10 @@ interface LessonDetailProps {
   teacherMode: boolean;
   standardText?: string;
   protoOnly: boolean;
+  calmTip?: boolean;
 }
 
-export function LessonDetail({ open, onClose, biome, lesson, onMarkComplete, onStart, teacherMode, standardText, protoOnly }: LessonDetailProps) {
+export function LessonDetail({ open, onClose, biome, lesson, onMarkComplete, onStart, teacherMode, standardText, protoOnly, calmTip }: LessonDetailProps) {
   if (!open || !lesson) return null;
   const meta = getLessonMeta(biome, lesson.id);
   const accent = SUBJECTS[biome].color;
@@ -79,6 +80,11 @@ export function LessonDetail({ open, onClose, biome, lesson, onMarkComplete, onS
         </div>
         <div className="mt-3 text-sm">
           <div className="font-semibold mb-1">Objectives</div>
+          {calmTip && (
+            <div className="mt-2 mb-2 text-[11px] text-stone-500">
+              🪶 Tip: Take a slow breath. You can preview or start when ready.
+            </div>
+          )}
           <ul className="list-disc pl-5 space-y-1 text-stone-700">{meta.objectives.map((o, i) => <li key={i}>{o}</li>)}</ul>
           <div className="mt-3 text-xs text-stone-600">Aligned to: {standardText || meta.standard}</div>
           {teacherMode && <div className="mt-2 text-xs text-stone-600">Teacher tools: Quick-complete available.</div>}
