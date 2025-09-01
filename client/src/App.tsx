@@ -1,4 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { BottomSheet } from "./components/BottomSheet";
+import { useBackpack } from "./hooks/useBackpack";
+import { BackpackSheet } from "./components/BackpackSheet";
+import { ActivityPlayer } from "./components/ActivityPlayer";
+import { LessonSheet } from "./components/LessonSheet";
+import { TeacherPanel } from "./components/TeacherPanel";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -19,68 +25,11 @@ import React, { useEffect, useState } from "react";
 const KEYS = { loop:'qi_loop', comp:'qi_comp', bpItems:'qi_bp_items', bpEq:'qi_bp_equipped', teacher:'qi_teacher', framework:'qi_framework', calm:'qi_calm', proto:'qi_proto_only', last:'qi_last' };
 const cx = (...s) => s.filter(Boolean).join(" ");
 
-// Simple bottom sheet used across Backpack / Lessons / Teacher Panel
-function BottomSheet({open,onClose,children}){
-  useEffect(()=>{
-    if(!open) return;
-    const onKey = (e)=>{ if(e.key==='Escape') onClose?.(); };
-    window.addEventListener('keydown', onKey);
-    return ()=> window.removeEventListener('keydown', onKey);
-  },[open,onClose]);
-  if(!open) return null;
-  return (
-    <div className="fixed inset-0 z-40">
-      <div className="absolute inset-0 bg-stone-900/40" onClick={onClose} />
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[min(96vw,42rem)] max-h-[88vh] overflow-auto rounded-t-3xl bg-white/95 backdrop-blur border border-stone-900/10 shadow-2xl p-4">
-        {children}
-      </div>
-    </div>
-  );
-}
+// Components extracted to separate files
 
-// --------------------------------------
-// Backpack state & UI
-// --------------------------------------
-function useBackpack(){
-  const [items,setItems]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.bpItems)||'[]');}catch{return[]} });
-  const [equipped,setEquipped]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.bpEq)||'[]');}catch{return[]} });
-  const equipLimit=3;
-  const award=(it)=> setItems(p=> p.some(x=>x.id===it.id)? p : [...p,it]);
-  const toggleEquip=(id)=> setEquipped(p=> p.includes(id)? p.filter(x=>x!==id) : (p.length<equipLimit?[...p,id]:p));
-  useEffect(()=>{ try{localStorage.setItem(KEYS.bpItems,JSON.stringify(items));}catch{} },[items]);
-  useEffect(()=>{ try{localStorage.setItem(KEYS.bpEq,JSON.stringify(equipped));}catch{} },[equipped]);
-  return {items,equipped,toggleEquip,award,equipLimit,setItems,setEquipped};
-}
+// Backpack hook extracted to separate file
 
-function BackpackSheet({open,onClose,bp}){
-  const {items,equipped,toggleEquip,equipLimit}=bp;
-  const equippedSet = new Set(equipped);
-  return (
-    <BottomSheet open={open} onClose={onClose}>
-      <div className="text-stone-800">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">🎒</div>
-          <div className="font-extrabold">Scout's Backpack</div>
-          <button onClick={onClose} className="ml-auto text-xs px-2 py-1 rounded-full border bg-white hover:bg-stone-50">Close</button>
-        </div>
-        <div className="mt-2 text-xs text-stone-600">Equip up to {equipLimit} items.</div>
-        {items.length===0 && <div className="mt-4 text-sm text-stone-600">No items yet. Complete lessons to earn collectibles.</div>}
-        <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {items.map(it=> (
-            <div key={it.id} className="rounded-xl border bg-white/80 p-3 flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">{it.kind==='tool'? '🧰' : it.kind==='badge'? '🏅' : '🖋️'}</div>
-              <div className="min-w-0"><div className="font-semibold text-sm truncate">{it.name}</div><div className="text-[11px] text-stone-500 truncate">{it.kind}</div></div>
-              <button onClick={()=>toggleEquip(it.id)} className={cx("ml-auto text-xs px-2 py-1 rounded-full border transition ease-out", equippedSet.has(it.id)?"bg-emerald-600 text-white border-emerald-700":"bg-white hover:bg-stone-50")}>{equippedSet.has(it.id)? 'Equipped' : 'Equip'}</button>
-            </div>
-          ))}
-        </div>
-        {items.length>0 && (
-          <div className="mt-2 text-[11px] text-stone-600">Equipped: {equipped.length}/{equipLimit}</div>
-        )}
-      </div>
-    </BottomSheet>
-  );
-}
+// BackpackSheet component extracted to separate file
 
 // --------------------------------------
 // Subjects, Standards, Lessons
@@ -274,108 +223,16 @@ const TEMPLATES={
 };
 const getTemplate=(biome,id)=> TEMPLATES[biome]?.[id] || {q:"Prototype — placeholder:",options:["Option A","Option B"],correct:0,explain:"We'll replace this later."};
 
-function MCActivity({biome,lesson,onSolved}){
-  const accent=SUBJECTS[biome].color; const tpl=getTemplate(biome,lesson.id); const [sel,setSel]=useState(-1); const [checked,setChecked]=useState(false); const ok=checked&&sel===tpl.correct;
-  return (
-    <div className="p-3">
-      <div className="text-sm text-stone-700 mb-2">Prototype activity</div>
-      <div className="text-lg font-bold mb-3" style={{color:accent}}>{tpl.q}</div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">{tpl.options.map((opt,i)=> (
-        <button key={i} onClick={()=>{setSel(i);setChecked(false);}} className={cx("text-left px-3 py-2 rounded-xl border bg-white hover:bg-stone-50 transition ease-out", sel===i&&"ring-2 ring-amber-500")}>{String.fromCharCode(65+i)}. {opt}</button>
-      ))}</div>
-      <div className="mt-3 flex items-center gap-2">
-        <button disabled={sel<0} onClick={()=>setChecked(true)} className={cx("px-3 py-2 rounded-full transition ease-out", sel<0?"bg-stone-200 text-stone-500":"bg-amber-700/90 text-white hover:bg-amber-700")}>Check answer</button>
-        {checked&&(<span className={cx("text-sm", ok?"text-emerald-700":"text-rose-700")}>{ok?"Correct!":"Try again"}</span>)}
-      </div>
-      {checked&&!ok&&<div className="mt-1 text-xs text-stone-600">Hint: {tpl.explain}</div>}
-      {ok&&<div className="mt-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-sm text-emerald-800">Nice! Mark complete when you're ready.</div>}
-      {ok&&<div className="mt-3"><button onClick={onSolved} className="px-3 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition ease-out">Mark complete</button></div>}
-    </div>
-  );
-}
+// MCActivity component moved to ActivityPlayer.tsx
 
 // --------------------------------------
 // Activity Player, Lesson Detail/Sheet, Nodes
 // --------------------------------------
-function ActivityPlayer({open,onClose,biome,lesson,onMarkComplete, protoOnly}){
-  if(!open||!lesson) return null; const url=resolveActivityUrl(biome,lesson.id, protoOnly); const accent=SUBJECTS[biome].color; const external= !protoOnly && typeof url==='string' && !url.includes('player.example');
-  return (
-    <BottomSheet open={open} onClose={onClose}>
-      <div className="text-stone-800">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background:accent+"22"}}>▶️</div>
-          <div className="font-extrabold" style={{color:accent}}>{lesson.title}</div>
-          {external? <a href={url} target="_blank" rel="noreferrer" className="ml-auto text-xs px-2 py-1 rounded-full bg-white border hover:bg-stone-50 transition ease-out">Open in new tab</a> : <span className="ml-auto text-[11px] px-2 py-1 rounded-full bg-white/70 border">Using in-app prototype</span>}
-        </div>
-        <div className="mt-3 rounded-xl overflow-hidden border bg-white">
-          <MCActivity biome={biome} lesson={lesson} onSolved={()=>{ onMarkComplete(lesson.id); onClose(); }} />
-        </div>
-        <div className="mt-3 flex items-center justify-end"><button onClick={onClose} className="px-3 py-2 rounded-full border bg-white hover:bg-stone-50 text-stone-700 transition ease-out">Close</button></div>
-      </div>
-    </BottomSheet>
-  );
-}
+// ActivityPlayer component moved to ActivityPlayer.tsx
 
-function LessonDetail({open,onClose,biome,lesson,onMarkComplete,onStart,teacherMode,standardText, protoOnly}){
-  if(!open||!lesson) return null; const meta=getLessonMeta(biome,lesson.id); const accent=SUBJECTS[biome].color; const hasLink = !protoOnly && !!registryEntry(biome,lesson.id)?.url?.trim();
-  return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center">
-      <div className="absolute inset-0 bg-stone-900/40" onClick={onClose}/>
-      <div className="relative z-10 w-[min(92vw,36rem)] rounded-3xl bg-white/95 backdrop-blur border border-stone-900/10 shadow-2xl p-5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{background:accent+"22"}}>{meta.icon}</div>
-          <div><div className="text-lg font-extrabold" style={{color:accent}}>{lesson.title}</div><div className="text-xs text-stone-600">Est. {meta.est} • {SUBJECTS[biome].label}</div></div>
-          <button onClick={onClose} className="ml-auto text-stone-600 hover:text-stone-900 text-lg">×</button>
-        </div>
-        <div className="mt-3 text-sm">
-          <div className="font-semibold mb-1">Objectives</div>
-          <ul className="list-disc pl-5 space-y-1 text-stone-700">{meta.objectives.map((o,i)=> <li key={i}>{o}</li>)}</ul>
-          <div className="mt-3 text-xs text-stone-600">Aligned to: {standardText||meta.standard}</div>
-          {teacherMode&&<div className="mt-2 text-xs text-stone-600">Teacher tools: Quick-complete available.</div>}
-        </div>
-        <div className="mt-4 flex items-center justify-end gap-2">
-          <button onClick={()=>onStart(lesson)} className="px-3 py-2 rounded-full bg-amber-700/90 hover:bg-amber-700 text-amber-50 transition ease-out">{hasLink ? 'Start (opens tab)' : 'Start'}</button>
-          <button onClick={()=>{ onMarkComplete(lesson.id); onClose(); }} className="px-3 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition ease-out">Mark complete</button>
-        </div>
-      </div>
-    </div>
-  );
-}
+// LessonDetail component moved to separate file
 
-function LessonSheet({open,onClose,biome,lessons,completed,onComplete,canPreview,teacherMode,framework,onStart, protoOnly}){
-  const subject=SUBJECTS[biome]; const [detail,setDetail]=useState(null); const allDone= completed.size===lessons.length && lessons.length>0; const standardText= STANDARDS[framework]?.[biome] || getLessonMeta(biome, lessons[0]?.id||'x').standard;
-  return (
-    <BottomSheet open={open} onClose={()=>{setDetail(null); onClose();}}>
-      <div className="text-stone-800">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-2"><span className="text-xl">📍</span><h3 className="text-xl font-extrabold" style={{color:subject.color}}>{subject.label}</h3></div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs px-2 py-1 rounded-full bg-stone-900/5">{completed.size}/{lessons.length} complete</span>
-            {teacherMode&&<button onClick={()=>{ lessons.forEach(l=>{ if(!completed.has(l.id)) onComplete(l.id); }); }} disabled={allDone} className={cx("text-xs px-2 py-1 rounded-full border transition ease-out", allDone?"bg-stone-100 text-stone-400":"bg-white hover:bg-stone-50")}>Complete all</button>}
-          </div>
-        </div>
-        {teacherMode&&<div className="mt-2 text-[11px] text-stone-600">Standards ({framework}): <b>{standardText}</b></div>}
-        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {lessons.map((l,i)=>{ const isDone= completed?.has?.(l.id)||false; const hasDeepLink = !!(!protoOnly && registryEntry(biome,l.id)?.url?.trim()); return (
-            <div key={l.id} className={cx("rounded-xl border border-amber-900/20 bg-white/70 p-3 flex items-center gap-3 transition-colors ease-out", isDone&&"opacity-70")}> 
-              <button onClick={()=>setDetail(l)} className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{background:subject.color+"22"}} aria-label="Open lesson details">{isDone?"✅":"📘"}</button>
-              <div className="min-w-0">
-                <div className="font-semibold truncate">{i+1}. {l.title}</div>
-                {canPreview&&!isDone&&<div className="text-[11px] text-stone-600">👀 Preview unlocked</div>}
-                {hasDeepLink&&!protoOnly&&<div className="text-[10px] text-stone-500">🔗 External lesson available</div>}
-              </div>
-              <div className="ml-auto flex items-center gap-2">
-                <button onClick={()=>onStart(l)} className="text-xs px-2 py-1 rounded-full bg-amber-700/90 hover:bg-amber-700 text-white transition ease-out">Start</button>
-                <button disabled={isDone} onClick={(e)=>{e.stopPropagation?.(); onComplete(l.id);}} className={cx("text-xs px-2 py-1 rounded-full transition ease-out", isDone?"bg-stone-200":"bg-emerald-600 text-white hover:bg-emerald-700")}>{isDone?"Done":"Complete"}</button>
-              </div>
-            </div>
-          );})}
-        </div>
-        <LessonDetail open={!!detail} onClose={()=>setDetail(null)} biome={biome} lesson={detail} onMarkComplete={onComplete} onStart={onStart} teacherMode={teacherMode} standardText={standardText} protoOnly={protoOnly}/>
-      </div>
-    </BottomSheet>
-  );
-}
+// LessonSheet component moved to separate file
 
 function LessonNode({biome,lesson,completed,onSelect,pos,locked}){
   const {label,color}=SUBJECTS[biome]; const isDone= completed?.has?.(lesson.id)||false; const accent=color;
@@ -399,27 +256,7 @@ function LessonNode({biome,lesson,completed,onSelect,pos,locked}){
 // --------------------------------------
 // Teacher Panel UI
 // --------------------------------------
-function TeacherPanel({open,onClose,frameworks,framework,setFramework,protoOnly,setProtoOnly,completed,onImport,onExport}){
-  const [importValue,setImportValue]=useState(''); const [exportLink,setExportLink]=useState(''); const handleExport=()=>{const link=onExport(); setExportLink(link);}; const handleImport=()=>{ if(importValue.trim()){ onImport(extractQiFromInput(importValue)); setImportValue(''); } };
-  return (
-    <BottomSheet open={open} onClose={onClose}>
-      <div className="text-stone-800">
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-lg">⚙️</span>
-          <h3 className="font-extrabold text-lg">Teacher Panel</h3>
-          <button onClick={onClose} className="ml-auto text-xs px-2 py-1 rounded-full border bg-white hover:bg-stone-50">Close</button>
-        </div>
-        <div className="space-y-4">
-          <div><label className="block text-sm font-semibold mb-2">Standards Framework</label><select value={framework} onChange={(e)=>setFramework(e.target.value)} className="w-full px-3 py-2 border rounded-lg bg-white">{frameworks.map(f=><option key={f} value={f}>{f}</option>)}</select></div>
-          <div><label className="flex items-center gap-2"><input type="checkbox" checked={protoOnly} onChange={(e)=>setProtoOnly(e.target.checked)} className="rounded"/>Use prototype-only mode</label><div className="text-xs text-stone-600 mt-1">When enabled, all activities use in-app prototypes instead of external links.</div></div>
-          <div><div className="text-sm font-semibold mb-2">Progress Overview</div><div className="text-xs text-stone-600 space-y-1"><div>Forest (Literacy): {completed.forest?.size||0}/5</div><div>Desert (Math): {completed.desert?.size||0}/5</div><div>Ocean (Science): {completed.ocean?.size||0}/5</div><div>Night (HASS): {completed.night?.size||0}/5</div></div></div>
-          <div><div className="text-sm font-semibold mb-2">Export Progress</div><button onClick={handleExport} className="w-full px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out">Copy progress link</button>{exportLink&&<div className="mt-2 p-2 bg-stone-100 rounded-lg text-xs break-all">{exportLink}</div>}</div>
-          <div><div className="text-sm font-semibold mb-2">Import Progress</div><div className="flex gap-2"><input value={importValue} onChange={(e)=>setImportValue(e.target.value)} placeholder="Paste progress link or token" className="flex-1 px-3 py-2 border rounded-lg"/><button onClick={handleImport} className="px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition ease-out">Import</button></div></div>
-        </div>
-      </div>
-    </BottomSheet>
-  );
-}
+// TeacherPanel component moved to separate file
 
 // --------------------------------------
 // Main App Component
