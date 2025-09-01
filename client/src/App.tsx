@@ -570,16 +570,37 @@ export default function App(){
               );
             })}
 
-            {/* Lesson Nodes */}
-            {Object.entries(lessonPos).map(([biome,positions])=>{
-              const lessons=LESSONS[biome]||[]; const biomeDone=comp[biome as keyof typeof comp];
-              const nextUnfinishedId = hasEquipped(bp, 'tool_compass') 
-                ? lessons.find(l => !biomeDone.has(l.id))?.id ?? null
-                : null;
-              return lessons.map((lesson,i)=>{
-                const pos=positions[i]; const locked=i>0&&!biomeDone.has(lessons[i-1].id)&&!teacherMode;
-                const isNext = nextUnfinishedId === lesson.id;
-                return <LessonNode key={lesson.id} biome={biome} lesson={lesson} completed={biomeDone} onSelect={(b,l)=>startLesson(l,b)} pos={pos} locked={locked} isNext={isNext} onLocked={() => flash('Finish the previous lesson to unlock this one')}/>;
+            {/* Lesson Pins on Map (guarded) */}
+            {showAnyPins && Object.entries(lessonPos).map(([biome, positions]) => {
+              const lessons = LESSONS[biome] || [];
+              const doneSet = comp[biome] as Set<string>;
+              const nextId = hasEquipped(bp, 'tool_compass') ? nextUnfinishedId(biome, doneSet) : null;
+
+              return lessons.map((lesson, i) => {
+                // If compass is the only reason pins are visible, show *only* the next unfinished pin.
+                if (!teacherMode || !teacherPins) {
+                  if (nextId == null || lesson.id !== nextId) return null;
+                }
+                const pos = positions[i];
+                const locked = i > 0 && !doneSet.has(lessons[i-1].id) && !teacherMode;
+
+                return (
+                  <div key={lesson.id} className="absolute z-[5] pointer-events-none"
+                       style={{ left: pos.x + '%', top: pos.y + '%' }}>
+                    <div className="pointer-events-auto">
+                      <LessonNode
+                        biome={biome}
+                        lesson={lesson}
+                        completed={doneSet}
+                        locked={locked}
+                        onSelect={(b,l)=>startLesson(l,b)}
+                        pos={pos}
+                        isNext={lesson.id === nextId}
+                        onLocked={() => flash('Finish the previous lesson to unlock this one')}
+                      />
+                    </div>
+                  </div>
+                );
               });
             })}
 
