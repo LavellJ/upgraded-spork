@@ -435,7 +435,7 @@ export default function App(){
   const [lastStarted,setLastStarted]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.last)||'null');}catch{return null;} });
 
   // ---- UI state ----
-  const [activeSheet,setActiveSheet]=useState<string | null>(null); const [lessonDetail,setLessonDetail]=useState<{biome: string, lesson: any} | null>(null); const [showBP,setShowBP]=useState(false); const [showTeacher,setShowTeacher]=useState(false); const [activityPlayer,setActivityPlayer]=useState<{open:boolean,biome:string | null,lesson:any | null}>({open:false,biome:null,lesson:null});
+  const [openBiome,setOpenBiome]=useState<string | null>(null); const [showBP,setShowBP]=useState(false); const [showTeacher,setShowTeacher]=useState(false); const [player,setPlayer]=useState<{biome:string,lesson:any} | null>(null); const [toast,setToast]=useState<string | null>(null);
 
   // ---- Backpack ----
   const bp = useBackpack();
@@ -464,9 +464,9 @@ export default function App(){
   const importFromToken = (token)=>{ try{ const payload=JSON.parse(b64urlDecode(token)); if(payload.v!==1) return; setLoop(payload.loop||1); setCompleted({ forest: new Set(payload.comp?.forest||[]), desert: new Set(payload.comp?.desert||[]), ocean: new Set(payload.comp?.ocean||[]), night: new Set(payload.comp?.night||[]) }); if(payload.bp){ bp.setItems(payload.bp.items||[]); bp.setEquipped(payload.bp.equipped||[]); } if(payload.framework) setFramework(payload.framework); if(typeof payload.protoOnly==='boolean') setProtoOnly(payload.protoOnly); }catch{} };
 
   // ---- Event handlers ----
-  const markComplete = (biome,lessonId)=>{ const collectibles = ['🧰','🏅','🖋️','🎨','🔍']; const items = ['Field Kit','Merit Badge','Quill Pen','Sketch Pad','Looking Glass']; const kinds = ['tool','badge','pen','art','tool']; const rnd = Math.floor(Math.random()*collectibles.length); setCompleted(p=>({...p,[biome]:new Set([...p[biome],lessonId])})); bp.award({id:`${biome}-${lessonId}`,name:items[rnd],kind:kinds[rnd],icon:collectibles[rnd]}); };
-  const openLessonSheet = (biome)=> setActiveSheet(biome);
-  const startLesson = (lesson,biome)=>{ setLastStarted({biome,lesson}); setActivityPlayer({open:true,biome,lesson}); };
+  const markComplete = (biome,lessonId)=>{ const collectibles = ['🧰','🏅','🖋️','🎨','🔍']; const items = ['Field Kit','Merit Badge','Quill Pen','Sketch Pad','Looking Glass']; const kinds = ['tool','badge','pen','art','tool']; const rnd = Math.floor(Math.random()*collectibles.length); setCompleted(p=>({...p,[biome]:new Set([...p[biome],lessonId])})); bp.award({id:`${biome}-${lessonId}`,name:items[rnd],kind:kinds[rnd],icon:collectibles[rnd]}); setToast(`Collected ${items[rnd]}!`); setTimeout(()=>setToast(null),2000); };
+  const openLessonSheet = (biome)=> setOpenBiome(biome);
+  const startLesson = (lesson,biome)=>{ setLastStarted({biome,lesson}); setPlayer({biome,lesson}); };
   const resumeLesson = ()=>{ if(lastStarted) startLesson(lastStarted.lesson,lastStarted.biome); };
 
   // ---- Layout helpers ----
@@ -530,7 +530,7 @@ export default function App(){
               const lessons=LOOP1[biome]||[]; const biomeDone=completed[biome];
               return lessons.map((lesson,i)=>{
                 const pos=positions[i]; const locked=i>0&&!biomeDone.has(lessons[i-1].id)&&!teacherMode;
-                return <LessonNode key={lesson.id} biome={biome} lesson={lesson} completed={biomeDone} onSelect={(b,l)=>setLessonDetail({biome:b,lesson:l})} pos={pos} locked={locked}/>;
+                return <LessonNode key={lesson.id} biome={biome} lesson={lesson} completed={biomeDone} onSelect={(b,l)=>startLesson(l,b)} pos={pos} locked={locked}/>;
               });
             })}
 
@@ -543,58 +543,53 @@ export default function App(){
       <BackpackSheet open={showBP} onClose={()=>setShowBP(false)} bp={bp}/>
       <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={completed} onExport={exportProgress} onImport={importFromToken}/>
       
-      {/* Lesson Sheets */}
-     <LessonSheet
-  open={!!activeSheet}
-  onClose={() => setActiveSheet(null)}
-  biome={activeSheet ?? 'forest'}
-  lessons={activeSheet ? LOOP1[activeSheet as keyof typeof LOOP1] : []}
-  completed={activeSheet ? completed[activeSheet as keyof typeof completed] : new Set()}
-  onComplete={(id) => {
-    if (!activeSheet) return;
-    setCompleted((prev: any) => ({
-      ...prev,
-      [activeSheet]: new Set([...(prev[activeSheet] as Set<string>), id]),
-    }));
-  }}
-  canPreview={teacherMode}
-  teacherMode={teacherMode}
-  framework={framework}
-  onStart={(lesson) => {
-    if (!activeSheet) return;
-    startLesson(lesson, activeSheet);
-  }}
-  protoOnly={protoOnly}
-/>
+      {/* Lesson Sheet */}
+      <LessonSheet
+        open={!!openBiome}
+        onClose={() => setOpenBiome(null)}
+        biome={openBiome ?? 'forest'}
+        lessons={openBiome ? LOOP1[openBiome as keyof typeof LOOP1] : []}
+        completed={openBiome ? completed[openBiome as keyof typeof completed] : new Set()}
+        onComplete={(id) => {
+          if (!openBiome) return;
+          setCompleted(prev => {
+            const next = { ...prev, [openBiome]: new Set(prev[openBiome]) } as any;
+            (next[openBiome] as Set<string>).add(id);
+            return next;
+          });
+        }}
+        canPreview={teacherMode}
+        teacherMode={teacherMode}
+        framework={framework}
+        onStart={(lesson) => {
+          if (!openBiome) return;
+          setPlayer({ biome: openBiome, lesson });
+          setLastStarted({ biome: openBiome, lesson });
+        }}
+        protoOnly={protoOnly}
+      />
 
-{/* Lesson Detail Modal (for when a node is tapped) */}
-{lessonDetail && (
-  <LessonDetail
-    open={!!lessonDetail}
-    onClose={() => setLessonDetail(null)}
-    biome={lessonDetail.biome}
-    lesson={lessonDetail.lesson}
-    onMarkComplete={(id) => markComplete(lessonDetail.biome, id)}
-    onStart={(l) => startLesson(l, lessonDetail.biome)}
-    teacherMode={teacherMode}
-    standardText={STANDARDS[framework]?.[lessonDetail.biome]}
-    protoOnly={protoOnly}
-  />
-)}
+      <ActivityPlayer
+        open={!!player}
+        onClose={() => setPlayer(null)}
+        biome={player?.biome}
+        lesson={player?.lesson}
+        onMarkComplete={(id) => {
+          if (!player?.biome) return;
+          setCompleted(prev => {
+            const next = { ...prev, [player.biome]: new Set(prev[player.biome]) } as any;
+            (next[player.biome] as Set<string>).add(id);
+            return next;
+          });
+        }}
+        protoOnly={protoOnly}
+      />
 
-{/* Activity Player */}
-<ActivityPlayer
-  open={activityPlayer.open}
-  onClose={() => setActivityPlayer({ open: false, biome: null, lesson: null })}
-  biome={activityPlayer.biome}
-  lesson={activityPlayer.lesson}
-  onMarkComplete={(id) => {
-    if (!activityPlayer.biome) return;
-    markComplete(activityPlayer.biome, id);
-  }}
-  protoOnly={protoOnly}
-/>
-
-</div>
-);
+      {toast && (
+        <div className="fixed left-1/2 -translate-x-1/2 bottom-4 z-[60] px-3 py-1.5 rounded-full bg-stone-900 text-white text-xs shadow-lg">
+          {toast}
+        </div>
+      )}
+    </div>
+  );
 }
