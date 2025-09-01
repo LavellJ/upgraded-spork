@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { SUBJECTS, STANDARDS } from "./data/meta";
+import LOOP1 from "./data/loop1.json";
+import REGISTRY from "./data/registry.json";
+import TEMPLATES from "./data/prototypes.json";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -85,71 +89,10 @@ function BackpackSheet({open,onClose,bp}){
 // --------------------------------------
 // Subjects, Standards, Lessons
 // --------------------------------------
-const SUBJECTS = {
-  forest: { label: "Literacy", color: "#3B7D44" },
-  desert: { label: "Math", color: "#C96A2B" },
-  ocean:  { label: "Science", color: "#3BA7B6" },
-  night:  { label: "HASS", color: "#404A73" },
-};
-const STANDARDS = {
-  frameworkOptions: ["Generic","ACARA","NZC"],
-  Generic: { forest: "Foundational phonics & fluency", desert: "Number sense & operations", ocean: "Physical forces & inquiry", night: "Human geography basics" },
-  ACARA:   { forest: "ACARA F–2: Phonics & Fluency", desert: "ACARA F–2: Number (add within 10)", ocean: "ACARA F–2: Physical sciences", night: "ACARA F–2: HASS — Places & spaces" },
-  NZC:     { forest: "NZC L1: Phonics/Decoding", desert: "NZC L1: Number (to 10)", ocean: "NZC L1: Physical World", night: "NZC L1: Place & Environment" },
-};
 
-const LOOP1 = {
-  forest: [
-    { id: "f1", title: "First sounds (phonemic)" },
-    { id: "f2", title: "CVC blending" },
-    { id: "f3", title: "Sight words A" },
-    { id: "f4", title: "Build a sentence" },
-    { id: "f5", title: "Rhyme pairs" },
-  ],
-  desert: [
-    { id: "d1", title: "Add within 5" },
-    { id: "d2", title: "Number bonds to 5" },
-    { id: "d3", title: "Add within 10" },
-    { id: "d4", title: "Doubles 1–5" },
-    { id: "d5", title: "Mini word problems" },
-  ],
-  ocean: [
-    { id: "o1", title: "Push vs Pull" },
-    { id: "o2", title: "Gravity goes down" },
-    { id: "o3", title: "Friction (smooth vs rough)" },
-    { id: "o4", title: "Sound = vibrations" },
-    { id: "o5", title: "Light & shadows" },
-  ],
-  night: [
-    { id: "n1", title: "What is a map?" },
-    { id: "n2", title: "Symbols & legend" },
-    { id: "n3", title: "My place / street" },
-    { id: "n4", title: "Directions (N/E/S/W)" },
-    { id: "n5", title: "Land vs water" },
-  ],
-};
 
 // ---- Lesson Registry (per-loop → biome → lessonId)
-const REGISTRY = {
-  1: {
-    forest: {
-      f1: { url: "", est: "5–7 min" },
-      f2: { url: "https://replit.com/@your-org/lit-cvc-blending", est: "6–8 min" },
-      f3: { url: "", est: "6–8 min" },
-      f4: { url: "", est: "6–8 min" },
-      f5: { url: "", est: "6–8 min" },
-    },
-    desert: {
-      d1: { url: "", est: "5–7 min" },
-      d2: { url: "https://replit.com/@your-org/math-bonds-5", est: "6–8 min" },
-      d3: { url: "", est: "6–8 min" },
-      d4: { url: "", est: "6–8 min" },
-      d5: { url: "", est: "6–8 min" },
-    },
-    ocean: { o1: { url: "", est: "5–7 min" }, o2: { url: "", est: "5–7 min" }, o3: { url: "", est: "5–7 min" }, o4: { url: "", est: "5–7 min" }, o5: { url: "", est: "5–7 min" } },
-    night: { n1: { url: "", est: "5–7 min" }, n2: { url: "", est: "5–7 min" }, n3: { url: "", est: "5–7 min" }, n4: { url: "", est: "5–7 min" }, n5: { url: "", est: "5–7 min" } },
-  },
-};
+
 
 let CURRENT_LOOP = 1;
 const registryEntry = (biome, lessonId) => {
@@ -238,57 +181,7 @@ const extractQiFromInput = (input)=>{ try{ const url=new URL(input); const q=url
 // --------------------------------------
 // Prototype Activities (per-lesson templates)
 // --------------------------------------
-const TEMPLATES={
-  forest:{
-    f1:{q:"Pick the word that starts with /m/:",options:["mat","sun","dog"],correct:0,explain:"/m/ as in mat"},
-    f2:{q:"Blend c-a-t:",options:["cat","cap","cot"],correct:0,explain:"c+a+t = cat"},
-    f3:{q:"Tap the sight word 'the':",options:["the","cat","dog"],correct:0,explain:"'the' is a common sight word"},
-    f4:{q:"Complete: 'I ___ a book'",options:["read","blue","happy"],correct:0,explain:"'read' completes the sentence"},
-    f5:{q:"Which rhymes with 'log'?",options:["frog","sun","cup"],correct:0,explain:"frog / log"}
-  },
-  desert:{
-    d1:{q:"Which makes 5?",options:["2+3","1+1","4+4"],correct:0,explain:"2 and 3 make 5"},
-    d2:{q:"Number bond to 5 — pick a pair:",options:["4 & 1","3 & 3","5 & 5"],correct:0,explain:"4 and 1"},
-    d3:{q:"Which equals 9?",options:["7+2","4+1","3+3"],correct:0,explain:"7+2=9"},
-    d4:{q:"Which is a double?",options:["4+4","3+5","2+3"],correct:0,explain:"A double is the same number twice"},
-    d5:{q:"You have 2 apples and get 3 more. How many?",options:["4","5","6"],correct:1,explain:"2+3=5"}
-  },
-  ocean:{
-    o1:{q:"Push or pull opens a door?",options:["push","pull","neither"],correct:1,explain:"You pull most doors open"},
-    o2:{q:"Gravity pulls objects ___",options:["down","sideways","up"],correct:0,explain:"Gravity pulls toward Earth"},
-    o3:{q:"Which has MORE friction?",options:["carpet","ice","glass"],correct:0,explain:"Rough surfaces have more friction"},
-    o4:{q:"Sound is made by ___",options:["vibrations","light","colors"],correct:0,explain:"Vibrations make sound"},
-    o5:{q:"A shadow forms when light is ___",options:["blocked","made louder","only reflected"],correct:0,explain:"Blocking light creates a shadow"}
-  },
-  night:{
-    n1:{q:"Which symbol means school on a map legend?",options:["🏫","🌳","🏠"],correct:0,explain:"🏫 usually marks a school"},
-    n2:{q:"What is a legend used for?",options:["explaining map symbols","finding treasure","telling a story"],correct:0,explain:"A legend explains symbols"},
-    n3:{q:"Which shows your street best?",options:["local map","world map","weather map"],correct:0,explain:"Local maps show streets"},
-    n4:{q:"Which direction is opposite East?",options:["West","North","South"],correct:0,explain:"West is opposite East"},
-    n5:{q:"Which is water on a map?",options:["lake","forest","mountain"],correct:0,explain:"A lake is water"}
-  }
-};
-const getTemplate=(biome,id)=> TEMPLATES[biome]?.[id] || {q:"Prototype — placeholder:",options:["Option A","Option B"],correct:0,explain:"We'll replace this later."};
 
-function MCActivity({biome,lesson,onSolved}){
-  const accent=SUBJECTS[biome].color; const tpl=getTemplate(biome,lesson.id); const [sel,setSel]=useState(-1); const [checked,setChecked]=useState(false); const ok=checked&&sel===tpl.correct;
-  return (
-    <div className="p-3">
-      <div className="text-sm text-stone-700 mb-2">Prototype activity</div>
-      <div className="text-lg font-bold mb-3" style={{color:accent}}>{tpl.q}</div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">{tpl.options.map((opt,i)=> (
-        <button key={i} onClick={()=>{setSel(i);setChecked(false);}} className={cx("text-left px-3 py-2 rounded-xl border bg-white hover:bg-stone-50 transition ease-out", sel===i&&"ring-2 ring-amber-500")}>{String.fromCharCode(65+i)}. {opt}</button>
-      ))}</div>
-      <div className="mt-3 flex items-center gap-2">
-        <button disabled={sel<0} onClick={()=>setChecked(true)} className={cx("px-3 py-2 rounded-full transition ease-out", sel<0?"bg-stone-200 text-stone-500":"bg-amber-700/90 text-white hover:bg-amber-700")}>Check answer</button>
-        {checked&&(<span className={cx("text-sm", ok?"text-emerald-700":"text-rose-700")}>{ok?"Correct!":"Try again"}</span>)}
-      </div>
-      {checked&&!ok&&<div className="mt-1 text-xs text-stone-600">Hint: {tpl.explain}</div>}
-      {ok&&<div className="mt-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-sm text-emerald-800">Nice! Mark complete when you're ready.</div>}
-      {ok&&<div className="mt-3"><button onClick={onSolved} className="px-3 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition ease-out">Mark complete</button></div>}
-    </div>
-  );
-}
 
 // --------------------------------------
 // Activity Player, Lesson Detail/Sheet, Nodes
@@ -541,8 +434,52 @@ export default function App(){
       
       {/* Lesson Sheets */}
       {Object.keys(SUBJECTS).map(biome=> (
-        <LessonSheet key={biome} open={activeSheet===biome} onClose={()=>setActiveSheet(null)} biome={biome} lessons={LOOP1[biome]||[]} completed={completed[biome]} onComplete={(id)=>markComplete(biome,id)} canPreview={teacherMode} teacherMode={teacherMode} framework={framework} onStart={(l)=>startLesson(l,biome)} protoOnly={protoOnly}/>
-      ))}
+        <LessonSheet key={biome} open={activeSheet===biome} onClose={()=>setActiveSheet(null)} biome={biome} lessons={LOOP1[biome]||[]} completed={completed[biome]} onComplete={(id) => {
+    if (!openBiome) return;
+    setComp(prev => {
+      const next = { ...prev, [openBiome]: new Set(prev[openBiome]) } as any;
+      (next[openBiome] as Set<string>).add(id);
+      return next;
+    });
+  }}
+  canPreview={bp.items.some(i => i.id === 'tool_binocs')}
+  teacherMode={teacherMode}
+  framework={framework}
+  onStart={(lesson) => {
+    if (!openBiome) return;
+    setPlayer({ biome: openBiome, lesson });
+    setLast({ biome: openBiome, id: lesson.id });
+  }}
+  protoOnly={protoOnly}
+/>
+
+{/* Activity Player (prototype or external) */}
+<ActivityPlayer
+  open={!!player}
+  onClose={() => setPlayer(null)}
+  biome={player?.biome}
+  lesson={player?.lesson}
+  onMarkComplete={(id) => {
+    if (!player?.biome) return;
+    setComp(prev => {
+      const next = { ...prev, [player.biome]: new Set(prev[player.biome]) } as any;
+      (next[player.biome] as Set<string>).add(id);
+      return next;
+    });
+  }}
+  protoOnly={protoOnly}
+/>
+
+{/* Toast */}
+{toast && (
+  <div className="fixed left-1/2 -translate-x-1/2 bottom-4 z-[60] px-3 py-1.5 rounded-full bg-stone-900 text-white text-xs shadow-lg">
+    {toast}
+  </div>
+)}
+
+</div>  {/* closes the main wrapper */}
+);
+}
 
       {/* Lesson Detail Modal */}
       {lessonDetail&&<LessonDetail open={!!lessonDetail} onClose={()=>setLessonDetail(null)} biome={lessonDetail.biome} lesson={lessonDetail.lesson} onMarkComplete={(id)=>markComplete(lessonDetail.biome,id)} onStart={(l)=>startLesson(l,lessonDetail.biome)} teacherMode={teacherMode} standardText={STANDARDS[framework]?.[lessonDetail.biome]} protoOnly={protoOnly}/>}
