@@ -28,5 +28,35 @@
       "n4": { "est": "6–8 min", "standard": "Human geography basics", "url": "" },
       "n5": { "est": "6–8 min", "standard": "Human geography basics", "url": "" }
     }
+  },
+  "2": {
+    "forest": {
+      "f6":  { "est": "7–9 min", "standard": "Phonics: digraphs", "url": "" },
+      "f7":  { "est": "7–9 min", "standard": "Phonics: blends", "url": "" },
+      "f8":  { "est": "6–8 min", "standard": "Sight words set B", "url": "" },
+      "f9":  { "est": "6–8 min", "standard": "Conventions: punctuation", "url": "" },
+      "f10": { "est": "7–9 min", "standard": "Vowels: long vs short", "url": "" }
+    },
+    "desert": {
+      "d6":  { "est": "7–9 min", "standard": "Add within 20", "url": "" },
+      "d7":  { "est": "6–8 min", "standard": "Make 10 / bonds to 10", "url": "" },
+      "d8":  { "est": "6–8 min", "standard": "Subtract within 10", "url": "" },
+      "d9":  { "est": "6–8 min", "standard": "Make 10 strategy", "url": "" },
+      "d10": { "est": "8–10 min", "standard": "Two-step problems", "url": "" }
+    },
+    "ocean": {
+      "o6":  { "est": "6–8 min", "standard": "Magnetism intro", "url": "" },
+      "o7":  { "est": "6–8 min", "standard": "Material properties", "url": "" },
+      "o8":  { "est": "6–8 min", "standard": "States of matter", "url": "" },
+      "o9":  { "est": "6–8 min", "standard": "Simple machines: lever", "url": "" },
+      "o10": { "est": "6–8 min", "standard": "Weather patterns", "url": "" }
+    },
+    "night": {
+      "n6":  { "est": "6–8 min", "standard": "Map scale", "url": "" },
+      "n7":  { "est": "6–8 min", "standard": "Grid references", "url": "" },
+      "n8":  { "est": "6–8 min", "standard": "Landforms", "url": "" },
+      "n9":  { "est": "6–8 min", "standard": "Routes & directions", "url": "" },
+      "n10": { "est": "6–8 min", "standard": "Continents & oceans", "url": "" }
+    }
   }
 }
