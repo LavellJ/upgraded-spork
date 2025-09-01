@@ -246,8 +246,11 @@ function Node({biome,status,onClick,count,total,calm=false}){
   const arc = (Math.min(count, len) / len) * 289;            // ← dynamic dash
   const wiggleClass = calm ? '' : 'qi-bob';
   
+  const biomeLabel = {forest: 'Literacy', desert: 'Math', ocean: 'Science', night: 'HASS'}[biome];
+  const ariaLabel = `Open ${biomeLabel} lessons (${count}/${total} completed)`;
+  
   return (
-    <button onClick={onClick} disabled={status==='locked'} className={cx(
+    <button onClick={onClick} disabled={status==='locked'} aria-label={ariaLabel} className={cx(
       "relative w-36 h-36 sm:w-40 sm:h-40 rounded-full shadow-xl border-2 bg-gradient-to-br overflow-hidden transition-shadow ease-out",
       base, status==='locked'&&'opacity-60 grayscale', status==='unlocked'&&ringUnlocked, status==='done'&&ringDone
     )} style={{borderColor:subject.color+'80'}}>
@@ -275,12 +278,32 @@ function Node({biome,status,onClick,count,total,calm=false}){
 
 function LessonNode({biome,lesson,completed,onSelect,pos,locked,isNext,onLocked}){
   const {label,color}=SUBJECTS[biome]; const isDone= completed?.has?.(lesson.id)||false; const accent=color;
+  const ariaLabel = locked 
+    ? `${lesson.title} lesson is locked - complete the previous lesson first`
+    : isDone 
+    ? `${lesson.title} lesson completed in ${label}`
+    : `Start ${lesson.title} lesson in ${label}`;
+  
+  const handleClick = () => {
+    if (locked) { onLocked?.(); return; }
+    onSelect(biome,lesson);
+  };
+  
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleClick();
+    }
+  };
+  
   return (
-    <div className="absolute cursor-pointer z-10" style={{left:pos.x+'%',top:pos.y+'%'}} onClick={()=>{
-      if (locked) { onLocked?.(); return; }
-      onSelect(biome,lesson);
-    }}>
-      <div className={cx("relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg transition-all duration-300 ease-out border border-amber-900/20", isDone ? "bg-emerald-100/90 shadow-emerald-200 scale-110" : locked ? "bg-stone-200/70 shadow-stone-200" : "bg-white/95 hover:scale-110 hover:shadow-xl hover:bg-amber-50/95")}>
+    <div className="absolute z-10" style={{left:pos.x+'%',top:pos.y+'%'}}>
+      <button 
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        aria-label={ariaLabel}
+        disabled={locked}
+        className={cx("relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg transition-all duration-300 ease-out border border-amber-900/20 cursor-pointer disabled:cursor-not-allowed", isDone ? "bg-emerald-100/90 shadow-emerald-200 scale-110" : locked ? "bg-stone-200/70 shadow-stone-200" : "bg-white/95 hover:scale-110 hover:shadow-xl hover:bg-amber-50/95")}>
         <span className="text-xl" style={{color: locked ? '#999' : accent}}>{isDone ? '✅' : '📘'}</span>
         {!isDone && !locked && (
           <div className="absolute -inset-2 rounded-full border-2 opacity-30 animate-pulse" style={{borderColor:accent}}/>
@@ -292,7 +315,7 @@ function LessonNode({biome,lesson,completed,onSelect,pos,locked,isNext,onLocked}
             aria-hidden
           />
         )}
-      </div>
+      </button>
       <div className="absolute mt-2 left-1/2 -translate-x-1/2 w-max">
         <div className={cx("text-xs font-semibold px-2 py-1 rounded-lg shadow-sm backdrop-blur border", isDone ? "bg-emerald-100/90 text-emerald-800 border-emerald-200" : locked ? "bg-stone-200/80 text-stone-600 border-stone-300" : "bg-white/95 border-amber-900/20")} style={{color: locked ? '#999' : accent}}>
           {lesson.title}
@@ -524,6 +547,14 @@ export default function App(){
 
   return (
     <div className={cx("relative min-h-screen bg-gradient-to-br overflow-hidden", BG_BY_TOD[tod])}>
+      {/* Skip link for keyboard navigation */}
+      <a 
+        href="#main" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:bg-white focus:text-black focus:px-4 focus:py-2 focus:rounded focus:z-[70] focus:shadow-lg"
+      >
+        Skip to content
+      </a>
+      
       {/* Place the decorative island backdrop behind UI */}
       <IslandBackdrop tod={tod as any} calm={calm} />
 
@@ -548,7 +579,7 @@ export default function App(){
         </header>
 
         {/* Quest Island Map */}
-        <main className="flex-1 relative p-8">
+        <main id="main" className="flex-1 relative p-8">
           <div className="max-w-6xl mx-auto h-full relative min-h-[560px]">
             
             {/* Central Campfire */}
@@ -691,11 +722,19 @@ export default function App(){
         protoOnly={protoOnly}
       />
 
-      {toast && (
-        <div className="fixed left-1/2 -translate-x-1/2 bottom-4 z-[60] px-3 py-1.5 rounded-full bg-stone-900 text-white text-xs shadow-lg">
-          {toast}
-        </div>
-      )}
+      {/* Toast region for accessibility */}
+      <div 
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="fixed left-1/2 -translate-x-1/2 bottom-4 z-[60] pointer-events-none"
+      >
+        {toast && (
+          <div className="px-3 py-1.5 rounded-full bg-stone-900 text-white text-xs shadow-lg pointer-events-auto">
+            {toast}
+          </div>
+        )}
+      </div>
       
       {/* Bob animation keyframes */}
       <style>{`
