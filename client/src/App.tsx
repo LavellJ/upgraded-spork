@@ -5,6 +5,7 @@ import { BackpackSheet } from "./components/BackpackSheet";
 import { ActivityPlayer } from "./components/ActivityPlayer";
 import { LessonSheet } from "./components/LessonSheet";
 import { TeacherPanel } from "./components/TeacherPanel";
+import IslandBackdrop from "./components/IslandBackdrop";
 import LOOP2 from "./data/loop2.json";
 import { logEvent } from "./lib/analytics";
 
@@ -236,13 +237,15 @@ const getTemplate=(biome,id)=> TEMPLATES[biome]?.[id] || {q:"Prototype — place
 
 // LessonSheet component moved to separate file
 
-function Node({biome,status,onClick,count,total}){
+function Node({biome,status,onClick,count,total,calm=false}){
   const subject=SUBJECTS[biome];
   const base={forest:"from-green-200 to-green-300",desert:"from-orange-200 to-amber-300",ocean:"from-cyan-200 to-sky-300",night:"from-indigo-300 to-slate-400"}[biome];
   const ringUnlocked = 'ring-2 ring-amber-200/60';
   const ringDone = 'ring-2 ring-emerald-300/70';
   const len = total || 5;              // ← dynamic total
   const arc = (Math.min(count, len) / len) * 289;            // ← dynamic dash
+  const wiggleClass = calm ? '' : 'qi-bob';
+  
   return (
     <button onClick={onClick} disabled={status==='locked'} className={cx(
       "relative w-36 h-36 sm:w-40 sm:h-40 rounded-full shadow-xl border-2 bg-gradient-to-br overflow-hidden transition-shadow ease-out",
@@ -254,6 +257,12 @@ function Node({biome,status,onClick,count,total}){
         <circle cx="50" cy="50" r="46" fill="none" stroke={subject.color} strokeWidth="8" strokeLinecap="round"
                 strokeDasharray={`${arc} 289`} transform="rotate(-90 50 50)"/>
       </svg>
+      
+      {/* Biome emoji icon with bob animation */}
+      <div className={cx("absolute inset-0 flex items-center justify-center text-4xl", wiggleClass)}>
+        {biome==='forest'?'🌲':biome==='desert'?'🏜️':biome==='ocean'?'🌊':'🌙'}
+      </div>
+      
       <span className="absolute left-2 bottom-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-white/70 text-stone-700">{subject.label}</span>
       <span className="absolute right-2 top-2 text-[11px] px-2 py-0.5 rounded-full bg-white/80 text-stone-700 shadow-sm">
         {count}/{total}                                         {/* ← dynamic fraction */}
@@ -507,6 +516,10 @@ export default function App(){
 
   return (
     <div className={cx("relative min-h-screen bg-gradient-to-br overflow-hidden", BG_BY_TOD[tod])}>
+      {/* Place the decorative island backdrop behind UI */}
+      <IslandBackdrop tod={tod as any} calm={calm} />
+
+      {/* Ambient particles/glow you already have */}
       <AmbientLayer tod={tod} calm={calm}/>
       
       {/* Main UI Layer */}
@@ -544,7 +557,7 @@ export default function App(){
               const total = (LESSONS[biome] || []).length;
               return (
                 <div key={biome} className="absolute z-20" style={{left:pos.x+'%',top:pos.y+'%'}}>
-                  <Node biome={biome} status={status} onClick={()=>openLessonSheet(biome)} count={count} total={total}/>
+                  <Node biome={biome} status={status} onClick={()=>openLessonSheet(biome)} count={count} total={total} calm={calm}/>
                 </div>
               );
             })}
@@ -654,6 +667,15 @@ export default function App(){
           {toast}
         </div>
       )}
+      
+      {/* Bob animation keyframes */}
+      <style>{`
+        @keyframes qiBob {
+          0%,100% { transform: translateY(0); }
+          50%     { transform: translateY(-2px); }
+        }
+        .qi-bob { animation: qiBob 3.5s ease-in-out infinite; }
+      `}</style>
     </div>
   );
 }
