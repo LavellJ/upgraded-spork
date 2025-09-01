@@ -1,30 +1,30 @@
 {
   "forest": {
-    "f1": { "q": "Pick the word that starts with /m/:", "options": ["mat","sun","dog"], "correct": 0, "explain": "/m/ as in mat" },
-    "f2": { "q": "Blend c-a-t:", "options": ["cat","cap","cot"], "correct": 0, "explain": "c+a+t = cat" },
-    "f3": { "q": "Tap the sight word 'the':", "options": ["the","cat","dog"], "correct": 0, "explain": "'the' is a common sight word" },
-    "f4": { "q": "Complete: 'I ___ a book'", "options": ["read","blue","happy"], "correct": 0, "explain": "'read' completes the sentence" },
-    "f5": { "q": "Which rhymes with 'log'?", "options": ["frog","sun","cup"], "correct": 0, "explain": "frog / log" }
+    "f1": { "q": "Blend CVC: c-a-t → ?", "options": ["cat","cot","cut","cap"], "correct": 0, "explain": "Blend the /c/ /a/ /t/ sounds." },
+    "f2": { "q": "Pick the short-a word", "options": ["map","mop","mule","meet"], "correct": 0, "explain": "Short-a like 'cat' and 'map'." },
+    "f3": { "q": "Rhyming with 'pin'", "options": ["fin","fan","fun","phone"], "correct": 0, "explain": "'fin' shares the /-in/ rhyme." },
+    "f4": { "q": "Sight word: 'the' is…", "options": ["function word","noun","verb","adjective"], "correct": 0, "explain": "High-frequency function word." },
+    "f5": { "q": "Sentence makes sense?", "options": ["The sun is hot.","The sun is cold."], "correct": 0, "explain": "Basic comprehension." }
   },
   "desert": {
-    "d1": { "q": "Which makes 5?", "options": ["2+3","1+1","4+4"], "correct": 0, "explain": "2 and 3 make 5" },
-    "d2": { "q": "Number bond to 5 — pick a pair:", "options": ["4 & 1","3 & 3","5 & 5"], "correct": 0, "explain": "4 and 1" },
-    "d3": { "q": "Which equals 9?", "options": ["7+2","4+1","3+3"], "correct": 0, "explain": "7+2=9" },
-    "d4": { "q": "Which is a double?", "options": ["4+4","3+5","2+3"], "correct": 0, "explain": "A double is the same number twice" },
-    "d5": { "q": "You have 2 apples and get 3 more. How many?", "options": ["4","5","6"], "correct": 1, "explain": "2+3=5" }
+    "d1": { "q": "5 + 3 = ?", "options": ["7","8","9","10"], "correct": 1, "explain": "Use number bonds within 10." },
+    "d2": { "q": "Make 10 with 6", "options": ["+2","+3","+4","+5"], "correct": 3, "explain": "6 + 4 = 10." },
+    "d3": { "q": "Which shows 7?", "options": ["⚫⚫⚫⚫⚫⚫","⚫⚫⚫⚫⚫⚫⚫","⚫⚫⚫⚫","⚫⚫"], "correct": 1, "explain": "Count the dots." },
+    "d4": { "q": "9 − 4 = ?", "options": ["3","4","5","6"], "correct": 2, "explain": "Think: 9 → 4 more to 9 is 5." },
+    "d5": { "q": "True statement", "options": ["7 < 5","6 = 6","9 < 8","2 > 3"], "correct": 1, "explain": "Equality/inequality within 10." }
   },
   "ocean": {
-    "o1": { "q": "Push or pull opens a door?", "options": ["push","pull","neither"], "correct": 1, "explain": "You pull most doors open" },
-    "o2": { "q": "Gravity pulls objects ___", "options": ["down","sideways","up"], "correct": 0, "explain": "Gravity pulls toward Earth" },
-    "o3": { "q": "Which has MORE friction?", "options": ["carpet","ice","glass"], "correct": 0, "explain": "Rough surfaces have more friction" },
-    "o4": { "q": "Sound is made by ___", "options": ["vibrations","light","colors"], "correct": 0, "explain": "Vibrations make sound" },
-    "o5": { "q": "A shadow forms when light is ___", "options": ["blocked","made louder","only reflected"], "correct": 0, "explain": "Blocking light creates a shadow" }
+    "o1": { "q": "Push/pull are…", "options": ["forces","states of matter","energies","weights"], "correct": 0, "explain": "Push/pull change motion." },
+    "o2": { "q": "Object rolls easier on…", "options": ["rough","smooth","sticky","foam"], "correct": 1, "explain": "Less friction on smooth surfaces." },
+    "o3": { "q": "Magnet attracts…", "options": ["plastic spoon","paper clip","wood stick","glass bead"], "correct": 1, "explain": "Iron/steel are magnetic." },
+    "o4": { "q": "Sun's energy helps plants…", "options": ["sleep","photosynthesize","breathe","evaporate"], "correct": 1, "explain": "Basic life science tie-in." },
+    "o5": { "q": "Heavy box moves easier if you…", "options": ["push gently","increase force","stand still","pull upward lightly"], "correct": 1, "explain": "Greater force → more acceleration." }
   },
   "night": {
-    "n1": { "q": "Which symbol means school on a map legend?", "options": ["🏫","🌳","🏠"], "correct": 0, "explain": "🏫 usually marks a school" },
-    "n2": { "q": "What is a legend used for?", "options": ["explaining map symbols","finding treasure","telling a story"], "correct": 0, "explain": "A legend explains symbols" },
-    "n3": { "q": "Which shows your street best?", "options": ["local map","world map","weather map"], "correct": 0, "explain": "Local maps show streets" },
-    "n4": { "q": "Which direction is opposite East?", "options": ["West","North","South"], "correct": 0, "explain": "West is opposite East" },
-    "n5": { "q": "Which is water on a map?", "options": ["lake","forest","mountain"], "correct": 0, "explain": "A lake is water" }
+    "n1": { "q": "Map symbol '★' often means…", "options": ["school","park","capital city","lake"], "correct": 2, "explain": "Many legends use a star for capitals." },
+    "n2": { "q": "Compass: opposite of North", "options": ["South","East","West","Northeast"], "correct": 0, "explain": "North ↔ South." },
+    "n3": { "q": "Which is a continent?", "options": ["Pacific","Australia","Sahara","Amazon"], "correct": 1, "explain": "Australia is a continent." },
+    "n4": { "q": "Human geography studies…", "options": ["rocks","oceans","people & places","weather only"], "correct": 2, "explain": "People, cultures, settlements." },
+    "n5": { "q": "Using a map key helps you…", "options": ["breathe","read symbols","dig soil","predict weather"], "correct": 1, "explain": "Decode symbols via the legend." }
   }
 }

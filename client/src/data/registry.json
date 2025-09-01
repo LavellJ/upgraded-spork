@@ -1,32 +1,32 @@
 {
   "1": {
     "forest": {
-      "f1": { "url": "", "est": "5–7 min" },
-      "f2": { "url": "https://replit.com/@your-org/lit-cvc-blending", "est": "6–8 min" },
-      "f3": { "url": "", "est": "6–8 min" },
-      "f4": { "url": "", "est": "6–8 min" },
-      "f5": { "url": "", "est": "6–8 min" }
+      "f1": { "est": "6–8 min", "standard": "Foundational phonics & fluency", "url": "" },
+      "f2": { "est": "6–8 min", "standard": "Foundational phonics & fluency", "url": "" },
+      "f3": { "est": "6–8 min", "standard": "Foundational phonics & fluency", "url": "" },
+      "f4": { "est": "6–8 min", "standard": "Foundational phonics & fluency", "url": "" },
+      "f5": { "est": "6–8 min", "standard": "Foundational phonics & fluency", "url": "" }
     },
     "desert": {
-      "d1": { "url": "", "est": "5–7 min" },
-      "d2": { "url": "https://replit.com/@your-org/math-bonds-5", "est": "6–8 min" },
-      "d3": { "url": "", "est": "6–8 min" },
-      "d4": { "url": "", "est": "6–8 min" },
-      "d5": { "url": "", "est": "6–8 min" }
+      "d1": { "est": "6–8 min", "standard": "Number sense within 10", "url": "" },
+      "d2": { "est": "6–8 min", "standard": "Number sense within 10", "url": "" },
+      "d3": { "est": "6–8 min", "standard": "Number sense within 10", "url": "" },
+      "d4": { "est": "6–8 min", "standard": "Number sense within 10", "url": "" },
+      "d5": { "est": "6–8 min", "standard": "Number sense within 10", "url": "" }
     },
     "ocean": {
-      "o1": { "url": "", "est": "5–7 min" },
-      "o2": { "url": "", "est": "5–7 min" },
-      "o3": { "url": "", "est": "5–7 min" },
-      "o4": { "url": "", "est": "5–7 min" },
-      "o5": { "url": "", "est": "5–7 min" }
+      "o1": { "est": "6–8 min", "standard": "Physical forces (intro)", "url": "" },
+      "o2": { "est": "6–8 min", "standard": "Physical forces (intro)", "url": "" },
+      "o3": { "est": "6–8 min", "standard": "Physical forces (intro)", "url": "" },
+      "o4": { "est": "6–8 min", "standard": "Life/energy tie-in", "url": "" },
+      "o5": { "est": "6–8 min", "standard": "Physical forces (intro)", "url": "" }
     },
     "night": {
-      "n1": { "url": "", "est": "5–7 min" },
-      "n2": { "url": "", "est": "5–7 min" },
-      "n3": { "url": "", "est": "5–7 min" },
-      "n4": { "url": "", "est": "5–7 min" },
-      "n5": { "url": "", "est": "5–7 min" }
+      "n1": { "est": "6–8 min", "standard": "Human geography basics", "url": "" },
+      "n2": { "est": "6–8 min", "standard": "Human geography basics", "url": "" },
+      "n3": { "est": "6–8 min", "standard": "Human geography basics", "url": "" },
+      "n4": { "est": "6–8 min", "standard": "Human geography basics", "url": "" },
+      "n5": { "est": "6–8 min", "standard": "Human geography basics", "url": "" }
     }
   }
 }
