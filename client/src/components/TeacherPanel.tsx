@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BottomSheet } from "./BottomSheet";
+import { getEvents, clearEvents, downloadEventsCSV } from '../lib/analytics';
 
 // Progress encode/decode helpers (URL-safe Base64)
 const b64urlEncode = (s: string) => { const bytes = new TextEncoder().encode(s); let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b)); return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
@@ -53,6 +54,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
           <div><div className="text-sm font-semibold mb-2">Progress Overview</div><div className="text-xs text-stone-600 space-y-1"><div>Forest (Literacy): {completed.forest?.size || 0}/{totals.forest}</div><div>Desert (Math): {completed.desert?.size || 0}/{totals.desert}</div><div>Ocean (Science): {completed.ocean?.size || 0}/{totals.ocean}</div><div>Night (HASS): {completed.night?.size || 0}/{totals.night}</div></div></div>
           <div><div className="text-sm font-semibold mb-2">Export Progress</div><button onClick={handleExport} className="w-full px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out">Copy progress link</button>{exportLink && <div className="mt-2 p-2 bg-stone-100 rounded-lg text-xs break-all">{exportLink}</div>}</div>
           <div><div className="text-sm font-semibold mb-2">Import Progress</div><div className="flex gap-2"><input value={importValue} onChange={(e) => setImportValue(e.target.value)} placeholder="Paste progress link or token" className="flex-1 px-3 py-2 border rounded-lg" /><button onClick={handleImport} className="px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition ease-out">Import</button></div></div>
+          <div className="mt-4 border-t pt-3"><div className="text-sm font-semibold mb-2">Analytics (local)</div><div className="flex items-center gap-2"><button onClick={() => downloadEventsCSV()} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs">Export events CSV</button><button onClick={() => { clearEvents(); alert('Cleared local analytics buffer'); }} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs">Clear buffer</button><span className="text-[11px] text-stone-600">{getEvents().length} event(s) captured</span></div></div>
         </div>
       </div>
     </BottomSheet>
