@@ -1,0 +1,30 @@
+{
+  "forest": [
+    { "id": "f1", "title": "First sounds (phonemic)" },
+    { "id": "f2", "title": "CVC blending" },
+    { "id": "f3", "title": "Sight words A" },
+    { "id": "f4", "title": "Build a sentence" },
+    { "id": "f5", "title": "Rhyme pairs" }
+  ],
+  "desert": [
+    { "id": "d1", "title": "Add within 5" },
+    { "id": "d2", "title": "Number bonds to 5" },
+    { "id": "d3", "title": "Add within 10" },
+    { "id": "d4", "title": "Doubles 1–5" },
+    { "id": "d5", "title": "Mini word problems" }
+  ],
+  "ocean": [
+    { "id": "o1", "title": "Push vs Pull" },
+    { "id": "o2", "title": "Gravity goes down" },
+    { "id": "o3", "title": "Friction (smooth vs rough)" },
+    { "id": "o4", "title": "Sound = vibrations" },
+    { "id": "o5", "title": "Light & shadows" }
+  ],
+  "night": [
+    { "id": "n1", "title": "What is a map?" },
+    { "id": "n2", "title": "Symbols & legend" },
+    { "id": "n3", "title": "My place / street" },
+    { "id": "n4", "title": "Directions (N/E/S/W)" },
+    { "id": "n5", "title": "Land vs water" }
+  ]
+}
