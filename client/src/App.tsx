@@ -503,7 +503,7 @@ export default function App(){
 
       {/* UI Overlays */}
       <BackpackSheet open={showBP} onClose={()=>setShowBP(false)} bp={bp}/>
-      <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={comp} onExport={exportProgress} onImport={importFromToken} lessons={LESSONS} onResetCurrentLoop={resetCurrentLoop} onFactoryReset={factoryReset}/>
+      <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={comp} onExport={exportProgress} onImport={importFromToken} lessons={LESSONS} loop={loop} onResetCurrentLoop={resetCurrentLoop} onFactoryReset={factoryReset}/>
       
       {/* Lesson Sheet */}
       <LessonSheet
