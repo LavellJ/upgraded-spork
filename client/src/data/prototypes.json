@@ -4,27 +4,47 @@
     "f2": { "q": "Pick the short-a word", "options": ["map","mop","mule","meet"], "correct": 0, "explain": "Short-a like 'cat' and 'map'." },
     "f3": { "q": "Rhyming with 'pin'", "options": ["fin","fan","fun","phone"], "correct": 0, "explain": "'fin' shares the /-in/ rhyme." },
     "f4": { "q": "Sight word: 'the' is…", "options": ["function word","noun","verb","adjective"], "correct": 0, "explain": "High-frequency function word." },
-    "f5": { "q": "Sentence makes sense?", "options": ["The sun is hot.","The sun is cold."], "correct": 0, "explain": "Basic comprehension." }
+    "f5": { "q": "Sentence makes sense?", "options": ["The sun is hot.","The sun is cold."], "correct": 0, "explain": "Basic comprehension." },
+    "f6": { "q": "Which has /sh/?", "options": ["ship","sip","sap","sit"], "correct": 0, "explain": "sh = /ʃ/ as in ship." },
+    "f7": { "q": "Blend st-op → ?", "options": ["stop","stoop","step","stap"], "correct": 0, "explain": "st + op = stop." },
+    "f8": { "q": "Find the sight word:", "options": ["and","sand","hand","band"], "correct": 0, "explain": "'and' is a high-frequency word." },
+    "f9": { "q": "Choose the correct end mark: \"We won\"", "options": [".","!","?"], "correct": 1, "explain": "Exclamation shows excitement." },
+    "f10": { "q": "Long or short 'a' in 'cake'?", "options": ["long","short"], "correct": 0, "explain": "Silent e → long vowel." }
   },
   "desert": {
     "d1": { "q": "5 + 3 = ?", "options": ["7","8","9","10"], "correct": 1, "explain": "Use number bonds within 10." },
     "d2": { "q": "Make 10 with 6", "options": ["+2","+3","+4","+5"], "correct": 3, "explain": "6 + 4 = 10." },
     "d3": { "q": "Which shows 7?", "options": ["⚫⚫⚫⚫⚫⚫","⚫⚫⚫⚫⚫⚫⚫","⚫⚫⚫⚫","⚫⚫"], "correct": 1, "explain": "Count the dots." },
     "d4": { "q": "9 − 4 = ?", "options": ["3","4","5","6"], "correct": 2, "explain": "Think: 9 → 4 more to 9 is 5." },
-    "d5": { "q": "True statement", "options": ["7 < 5","6 = 6","9 < 8","2 > 3"], "correct": 1, "explain": "Equality/inequality within 10." }
+    "d5": { "q": "True statement", "options": ["7 < 5","6 = 6","9 < 8","2 > 3"], "correct": 1, "explain": "Equality/inequality within 10." },
+    "d6": { "q": "12 + 7 = ?", "options": ["17","18","19","20"], "correct": 2, "explain": "12 + 7 = 19." },
+    "d7": { "q": "Make 10 with 6", "options": ["+2","+3","+4","+5"], "correct": 2, "explain": "6 + 4 = 10." },
+    "d8": { "q": "9 − 6 = ?", "options": ["2","3","4","5"], "correct": 1, "explain": "Count back: 9,8,7 → 3." },
+    "d9": { "q": "8 + ? = 10", "options": ["1","2","3","4"], "correct": 1, "explain": "8 + 2 makes 10." },
+    "d10": { "q": "You have 7 apples, eat 2, buy 4. Now?", "options": ["8","9","10","11"], "correct": 2, "explain": "7 − 2 + 4 = 9." }
   },
   "ocean": {
     "o1": { "q": "Push/pull are…", "options": ["forces","states of matter","energies","weights"], "correct": 0, "explain": "Push/pull change motion." },
     "o2": { "q": "Object rolls easier on…", "options": ["rough","smooth","sticky","foam"], "correct": 1, "explain": "Less friction on smooth surfaces." },
     "o3": { "q": "Magnet attracts…", "options": ["plastic spoon","paper clip","wood stick","glass bead"], "correct": 1, "explain": "Iron/steel are magnetic." },
     "o4": { "q": "Sun's energy helps plants…", "options": ["sleep","photosynthesize","breathe","evaporate"], "correct": 1, "explain": "Basic life science tie-in." },
-    "o5": { "q": "Heavy box moves easier if you…", "options": ["push gently","increase force","stand still","pull upward lightly"], "correct": 1, "explain": "Greater force → more acceleration." }
+    "o5": { "q": "Heavy box moves easier if you…", "options": ["push gently","increase force","stand still","pull upward lightly"], "correct": 1, "explain": "Greater force → more acceleration." },
+    "o6": { "q": "Magnet attracts:", "options": ["paper","wood","iron nail","glass"], "correct": 2, "explain": "Iron is magnetic." },
+    "o7": { "q": "Best for raincoat:", "options": ["cotton","paper","plastic","wool"], "correct": 2, "explain": "Waterproof material." },
+    "o8": { "q": "Water at 0°C is:", "options": ["solid","liquid","gas","plasma"], "correct": 0, "explain": "Freezing point." },
+    "o9": { "q": "A seesaw is a…", "options": ["lever","pulley","wheel","inclined plane"], "correct": 0, "explain": "Simple machine: lever." },
+    "o10": { "q": "Which is a weather tool?", "options": ["thermometer","microscope","telescope","compass"], "correct": 0, "explain": "Thermometer measures temperature." }
   },
   "night": {
     "n1": { "q": "Map symbol '★' often means…", "options": ["school","park","capital city","lake"], "correct": 2, "explain": "Many legends use a star for capitals." },
     "n2": { "q": "Compass: opposite of North", "options": ["South","East","West","Northeast"], "correct": 0, "explain": "North ↔ South." },
     "n3": { "q": "Which is a continent?", "options": ["Pacific","Australia","Sahara","Amazon"], "correct": 1, "explain": "Australia is a continent." },
     "n4": { "q": "Human geography studies…", "options": ["rocks","oceans","people & places","weather only"], "correct": 2, "explain": "People, cultures, settlements." },
-    "n5": { "q": "Using a map key helps you…", "options": ["breathe","read symbols","dig soil","predict weather"], "correct": 1, "explain": "Decode symbols via the legend." }
+    "n5": { "q": "Using a map key helps you…", "options": ["breathe","read symbols","dig soil","predict weather"], "correct": 1, "explain": "Decode symbols via the legend." },
+    "n6": { "q": "Map scale 1:1000 means:", "options": ["1 cm = 10 m","1 cm = 100 m","1 cm = 1000 m","1 cm = 1 m"], "correct": 0, "explain": "1 cm on map = 10 m on ground." },
+    "n7": { "q": "Cell B2 is:", "options": ["col B, row 2","row B, col 2","row 2, col B","middle"], "correct": 0, "explain": "Grid refs use column then row." },
+    "n8": { "q": "Which is a landform?", "options": ["river","mountain","lake","ocean"], "correct": 1, "explain": "Mountains are landforms." },
+    "n9": { "q": "From 🏫 to 🏠, turn:", "options": ["left then left","left then right","right then left","straight"], "correct": 2, "explain": "Route-following." },
+    "n10": { "q": "A continent is:", "options": ["Pacific","Africa","Amazon","Arctic Ocean"], "correct": 1, "explain": "Africa is a continent." }
   }
 }

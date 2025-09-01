@@ -5,6 +5,7 @@ import { BackpackSheet } from "./components/BackpackSheet";
 import { ActivityPlayer } from "./components/ActivityPlayer";
 import { LessonSheet } from "./components/LessonSheet";
 import { TeacherPanel } from "./components/TeacherPanel";
+import LOOP2 from "./data/loop2.json";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -116,7 +117,7 @@ const registryEntry = (biome, lessonId) => {
   return null;
 };
 
-const findLesson = (biome,id)=> (LOOP1[biome]||[]).find(l=>l.id===id)||null;
+const findLesson = (biome,id,lessons)=> (lessons[biome]||[]).find(l=>l.id===id)||null;
 
 // Time of day background
 const BG_BY_TOD = {
@@ -234,12 +235,12 @@ const getTemplate=(biome,id)=> TEMPLATES[biome]?.[id] || {q:"Prototype — place
 
 // LessonSheet component moved to separate file
 
-function Node({biome,status,onClick,count}){
+function Node({biome,status,onClick,count,total}){
   const subject=SUBJECTS[biome];
   const base={forest:"from-green-200 to-green-300",desert:"from-orange-200 to-amber-300",ocean:"from-cyan-200 to-sky-300",night:"from-indigo-300 to-slate-400"}[biome];
   const ringUnlocked = 'ring-2 ring-amber-200/60';
   const ringDone = 'ring-2 ring-emerald-300/70';
-  const len = (LOOP1[biome] || []).length || 5;              // ← dynamic total
+  const len = total || 5;              // ← dynamic total
   const arc = (Math.min(count, len) / len) * 289;            // ← dynamic dash
   return (
     <button onClick={onClick} disabled={status==='locked'} className={cx(
@@ -254,7 +255,7 @@ function Node({biome,status,onClick,count}){
       </svg>
       <span className="absolute left-2 bottom-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-white/70 text-stone-700">{subject.label}</span>
       <span className="absolute right-2 top-2 text-[11px] px-2 py-0.5 rounded-full bg-white/80 text-stone-700 shadow-sm">
-        {count}/{len}                                         {/* ← dynamic fraction */}
+        {count}/{total}                                         {/* ← dynamic fraction */}
       </span>
       {status==='locked'&&<span className="absolute -right-2 -bottom-2 text-[11px] px-2 py-1 rounded-full bg-stone-800 text-white shadow">🔒</span>}
       {status==='done'&&<span className="absolute -right-2 -bottom-2 text-[11px] px-2 py-1 rounded-full bg-emerald-600 text-white shadow">✓</span>}
@@ -292,6 +293,12 @@ function LessonNode({biome,lesson,completed,onSelect,pos,locked}){
 export default function App(){
   // ---- Global state (localStorage-backed) ----
   const [loop,setLoop]=useState(()=>{ try{return parseInt(localStorage.getItem(KEYS.loop)||'1');}catch{return 1;} });
+
+  // keep registry in sync with current loop for metadata lookup
+  CURRENT_LOOP = loop as any;
+
+  // select lessons by active loop
+  const LESSONS: any = loop === 2 ? LOOP2 : LOOP1;
   const [comp,setComp]=useState(()=>{ try{const raw=JSON.parse(localStorage.getItem(KEYS.comp)||'{}'); return { forest: new Set(raw.forest||[]), desert: new Set(raw.desert||[]), ocean: new Set(raw.ocean||[]), night: new Set(raw.night||[]) };}catch{return { forest: new Set(), desert: new Set(), ocean: new Set(), night: new Set() };} });
   const [teacherMode,setTeacherMode]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.teacher)||'false');}catch{return false;} });
   const [framework,setFramework]=useState(()=>{ try{return localStorage.getItem(KEYS.framework)||'Generic';}catch{return 'Generic';} });
@@ -310,10 +317,10 @@ export default function App(){
 
   // ---- Dynamic biome status computation ----
   function computeStatuses(c){
-    const lenF=(LOOP1.forest||[]).length||5;
-    const lenD=(LOOP1.desert||[]).length||5;
-    const lenO=(LOOP1.ocean||[]).length||5;
-    const lenN=(LOOP1.night||[]).length||5;
+    const lenF=(LESSONS.forest||[]).length||5;
+    const lenD=(LESSONS.desert||[]).length||5;
+    const lenO=(LESSONS.ocean||[]).length||5;
+    const lenN=(LESSONS.night||[]).length||5;
     return {
       forest: c.forest.size===lenF?'done':'unlocked',
       desert: c.forest.size>=3? (c.desert.size===lenD?'done':'unlocked'):'locked',
@@ -335,10 +342,10 @@ export default function App(){
   // Loop-up (gentle toast) — dynamic totals per biome
   useEffect(()=>{
     const totals = {
-      forest: (LOOP1.forest||[]).length || 5,
-      desert: (LOOP1.desert||[]).length || 5,
-      ocean:  (LOOP1.ocean ||[]).length || 5,
-      night:  (LOOP1.night ||[]).length || 5,
+      forest: (LESSONS.forest||[]).length || 5,
+      desert: (LESSONS.desert||[]).length || 5,
+      ocean:  (LESSONS.ocean ||[]).length || 5,
+      night:  (LESSONS.night ||[]).length || 5,
     };
     const doneCounts={forest:comp.forest.size,desert:comp.desert.size,ocean:comp.ocean.size,night:comp.night.size};
     const allDone = ['forest','desert','ocean','night'].every(b => doneCounts[b] >= totals[b]);
@@ -373,7 +380,7 @@ export default function App(){
   const markComplete = (biome,lessonId)=>{ const collectibles = ['🧰','🏅','🖋️','🎨','🔍']; const items = ['Field Kit','Merit Badge','Quill Pen','Sketch Pad','Looking Glass']; const kinds = ['tool','badge','tool','tool','tool'] as const; const rnd = Math.floor(Math.random()*collectibles.length); setComp(p=>({...p,[biome]:new Set([...p[biome],lessonId])})); bp.award({id:`${biome}-${lessonId}`,name:items[rnd],kind:kinds[rnd],icon:collectibles[rnd]}); setToast(`Collected ${items[rnd]}!`); setTimeout(()=>setToast(null),2000); };
   const openLessonSheet = (biome)=> setOpenBiome(biome);
   const startLesson = (lesson,biome)=>{ setLast({biome,lesson}); setPlayer({biome,lesson}); };
-  const resumeLesson = ()=>{ if(last) { const lesson = findLesson(last.biome,last.id); if(lesson) startLesson(lesson,last.biome); } };
+  const resumeLesson = ()=>{ if(last) { const lesson = findLesson(last.biome,last.id,LESSONS); if(lesson) startLesson(lesson,last.biome); } };
 
   // ---- Layout helpers ----
   const biomePos = { forest:{x:25,y:25}, desert:{x:65,y:30}, ocean:{x:70,y:70}, night:{x:20,y:65} };
@@ -390,7 +397,7 @@ export default function App(){
         <header className="flex items-center justify-between p-4 bg-white/20 backdrop-blur-sm border-b border-white/30">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-extrabold text-stone-900">Quest Island — Loop {loop}</h1>
-            {last&&<button onClick={resumeLesson} className="px-3 py-2 rounded-full bg-amber-600 text-white hover:bg-amber-700 transition ease-out text-sm">Resume: {findLesson(last.biome,last.id)?.title}</button>}
+            {last&&<button onClick={resumeLesson} className="px-3 py-2 rounded-full bg-amber-600 text-white hover:bg-amber-700 transition ease-out text-sm">Resume: {findLesson(last.biome,last.id,LESSONS)?.title}</button>}
           </div>
           <div className="flex items-center gap-2">
             <button onClick={()=>setCalm(p=>!p)} className={cx("w-10 h-10 rounded-full border transition ease-out", calm?"bg-blue-100 border-blue-300":"bg-white/50 border-white/70")} title={calm?"Disable calm mode":"Enable calm mode"}>😌</button>
@@ -415,16 +422,17 @@ export default function App(){
             {Object.entries(biomePos).map(([biome,pos])=>{
               const count = comp[biome].size;
               const status = biomeStatuses[biome];
+              const total = (LESSONS[biome] || []).length;
               return (
                 <div key={biome} className="absolute z-20" style={{left:pos.x+'%',top:pos.y+'%'}}>
-                  <Node biome={biome} status={status} onClick={()=>openLessonSheet(biome)} count={count}/>
+                  <Node biome={biome} status={status} onClick={()=>openLessonSheet(biome)} count={count} total={total}/>
                 </div>
               );
             })}
 
             {/* Lesson Nodes */}
             {Object.entries(lessonPos).map(([biome,positions])=>{
-              const lessons=LOOP1[biome]||[]; const biomeDone=comp[biome];
+              const lessons=LESSONS[biome]||[]; const biomeDone=comp[biome];
               return lessons.map((lesson,i)=>{
                 const pos=positions[i]; const locked=i>0&&!biomeDone.has(lessons[i-1].id)&&!teacherMode;
                 return <LessonNode key={lesson.id} biome={biome} lesson={lesson} completed={biomeDone} onSelect={(b,l)=>startLesson(l,b)} pos={pos} locked={locked}/>;
@@ -445,7 +453,7 @@ export default function App(){
         open={!!openBiome}
         onClose={() => setOpenBiome(null)}
         biome={openBiome ?? 'forest'}
-        lessons={openBiome ? LOOP1[openBiome as keyof typeof LOOP1] : []}
+        lessons={openBiome ? LESSONS[openBiome as keyof typeof LESSONS] : []}
         completed={openBiome ? comp[openBiome as keyof typeof comp] : new Set()}
         onComplete={(id) => {
           if (!openBiome) return;
@@ -478,7 +486,7 @@ export default function App(){
             const nextSet = new Set(prev[biome]);
             nextSet.add(id);
             // pick the next unfinished lesson in this biome
-            const nextLesson = (LOOP1[biome] || []).find(l => !nextSet.has(l.id));
+            const nextLesson = (LESSONS[biome] || []).find(l => !nextSet.has(l.id));
             setLast(nextLesson ? { biome, id: nextLesson.id } : null);
             return { ...prev, [biome]: nextSet } as typeof prev;
           });
