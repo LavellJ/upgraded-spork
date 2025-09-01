@@ -1,0 +1,30 @@
+{
+  "forest": {
+    "f1": { "q": "Pick the word that starts with /m/:", "options": ["mat","sun","dog"], "correct": 0, "explain": "/m/ as in mat" },
+    "f2": { "q": "Blend c-a-t:", "options": ["cat","cap","cot"], "correct": 0, "explain": "c+a+t = cat" },
+    "f3": { "q": "Tap the sight word 'the':", "options": ["the","cat","dog"], "correct": 0, "explain": "'the' is a common sight word" },
+    "f4": { "q": "Complete: 'I ___ a book'", "options": ["read","blue","happy"], "correct": 0, "explain": "'read' completes the sentence" },
+    "f5": { "q": "Which rhymes with 'log'?", "options": ["frog","sun","cup"], "correct": 0, "explain": "frog / log" }
+  },
+  "desert": {
+    "d1": { "q": "Which makes 5?", "options": ["2+3","1+1","4+4"], "correct": 0, "explain": "2 and 3 make 5" },
+    "d2": { "q": "Number bond to 5 — pick a pair:", "options": ["4 & 1","3 & 3","5 & 5"], "correct": 0, "explain": "4 and 1" },
+    "d3": { "q": "Which equals 9?", "options": ["7+2","4+1","3+3"], "correct": 0, "explain": "7+2=9" },
+    "d4": { "q": "Which is a double?", "options": ["4+4","3+5","2+3"], "correct": 0, "explain": "A double is the same number twice" },
+    "d5": { "q": "You have 2 apples and get 3 more. How many?", "options": ["4","5","6"], "correct": 1, "explain": "2+3=5" }
+  },
+  "ocean": {
+    "o1": { "q": "Push or pull opens a door?", "options": ["push","pull","neither"], "correct": 1, "explain": "You pull most doors open" },
+    "o2": { "q": "Gravity pulls objects ___", "options": ["down","sideways","up"], "correct": 0, "explain": "Gravity pulls toward Earth" },
+    "o3": { "q": "Which has MORE friction?", "options": ["carpet","ice","glass"], "correct": 0, "explain": "Rough surfaces have more friction" },
+    "o4": { "q": "Sound is made by ___", "options": ["vibrations","light","colors"], "correct": 0, "explain": "Vibrations make sound" },
+    "o5": { "q": "A shadow forms when light is ___", "options": ["blocked","made louder","only reflected"], "correct": 0, "explain": "Blocking light creates a shadow" }
+  },
+  "night": {
+    "n1": { "q": "Which symbol means school on a map legend?", "options": ["🏫","🌳","🏠"], "correct": 0, "explain": "🏫 usually marks a school" },
+    "n2": { "q": "What is a legend used for?", "options": ["explaining map symbols","finding treasure","telling a story"], "correct": 0, "explain": "A legend explains symbols" },
+    "n3": { "q": "Which shows your street best?", "options": ["local map","world map","weather map"], "correct": 0, "explain": "Local maps show streets" },
+    "n4": { "q": "Which direction is opposite East?", "options": ["West","North","South"], "correct": 0, "explain": "West is opposite East" },
+    "n5": { "q": "Which is water on a map?", "options": ["lake","forest","mountain"], "correct": 0, "explain": "A lake is water" }
+  }
+}
