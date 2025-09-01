@@ -264,10 +264,13 @@ function Node({biome,status,onClick,count,total}){
   );
 }
 
-function LessonNode({biome,lesson,completed,onSelect,pos,locked,isNext}){
+function LessonNode({biome,lesson,completed,onSelect,pos,locked,isNext,onLocked}){
   const {label,color}=SUBJECTS[biome]; const isDone= completed?.has?.(lesson.id)||false; const accent=color;
   return (
-    <div className="absolute cursor-pointer z-10" style={{left:pos.x+'%',top:pos.y+'%'}} onClick={()=>onSelect(biome,lesson)}>
+    <div className="absolute cursor-pointer z-10" style={{left:pos.x+'%',top:pos.y+'%'}} onClick={()=>{
+      if (locked) { onLocked?.(); return; }
+      onSelect(biome,lesson);
+    }}>
       <div className={cx("relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg transition-all duration-300 ease-out border border-amber-900/20", isDone ? "bg-emerald-100/90 shadow-emerald-200 scale-110" : locked ? "bg-stone-200/70 shadow-stone-200" : "bg-white/95 hover:scale-110 hover:shadow-xl hover:bg-amber-50/95")}>
         <span className="text-xl" style={{color: locked ? '#999' : accent}}>{isDone ? '✅' : '📘'}</span>
         {!isDone && !locked && (
@@ -316,6 +319,13 @@ export default function App(){
 
   // ---- UI state ----
   const [openBiome,setOpenBiome]=useState<string | null>(null); const [showBP,setShowBP]=useState(false); const [showTeacher,setShowTeacher]=useState(false); const [player,setPlayer]=useState<{biome:string,lesson:any} | null>(null); const [toast,setToast]=useState<string | null>(null); const [celebrate,setCelebrate]=useState(false);
+
+  // ---- Flash toast helper ----
+  function flash(msg: string, ms = 1400) {
+    setToast(msg);
+    window.clearTimeout((flash as any)._t);
+    (flash as any)._t = window.setTimeout(() => setToast(null), ms);
+  }
 
   // ---- Backpack ----
   const bp = useBackpack();
@@ -390,6 +400,45 @@ export default function App(){
   useEffect(()=>{ try{localStorage.setItem(KEYS.calm,JSON.stringify(calm));}catch{} },[calm]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.proto,JSON.stringify(protoOnly));}catch{} },[protoOnly]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.last,JSON.stringify(last));}catch{} },[last]);
+
+  // ---- Keyboard shortcuts ----
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName || '';
+      if (['INPUT','TEXTAREA','SELECT'].includes(tag)) return;
+
+      if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        setShowBP(v => !v);
+        return;
+      }
+      if (e.key === 't' || e.key === 'T') {
+        e.preventDefault();
+        setTeacherMode(v => !v);
+        flash(`Teacher mode ${!teacherMode ? 'on' : 'off'}`);
+        return;
+      }
+      if (e.key === 'r' || e.key === 'R') {
+        if (last) {
+          e.preventDefault();
+          const l = last as any;
+          setOpenBiome?.(l.biome);
+          setPlayer({ biome: l.biome, lesson: (LESSONS[l.biome] || []).find((x:any)=>x.id=== l.id) });
+          flash('Resuming lesson…');
+        }
+        return;
+      }
+      if (e.key === 'Escape') {
+        // close any overlays
+        setShowBP(false);
+        setShowTeacher(false);
+        setPlayer(null);
+        setOpenBiome?.(null);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [teacherMode, last]);
 
   // Loop-up (gentle toast) — dynamic totals per biome
   useEffect(()=>{
@@ -492,7 +541,7 @@ export default function App(){
               return lessons.map((lesson,i)=>{
                 const pos=positions[i]; const locked=i>0&&!biomeDone.has(lessons[i-1].id)&&!teacherMode;
                 const isNext = nextUnfinishedId === lesson.id;
-                return <LessonNode key={lesson.id} biome={biome} lesson={lesson} completed={biomeDone} onSelect={(b,l)=>startLesson(l,b)} pos={pos} locked={locked} isNext={isNext}/>;
+                return <LessonNode key={lesson.id} biome={biome} lesson={lesson} completed={biomeDone} onSelect={(b,l)=>startLesson(l,b)} pos={pos} locked={locked} isNext={isNext} onLocked={() => flash('Finish the previous lesson to unlock this one')}/>;
               });
             })}
 
