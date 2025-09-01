@@ -16,14 +16,7 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
-    <!-- ✅ Add SW register script -->
-    <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker.register("/sw.js").catch(console.error);
-        });
-      }
-    </script>
+    <!-- Service worker registration removed to prevent 404 errors -->
 
     <!-- Replit dev banner -->
     <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
