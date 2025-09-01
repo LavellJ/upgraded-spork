@@ -2,6 +2,13 @@ import React, { useState } from "react";
 import { BottomSheet } from "./BottomSheet";
 import { getEvents, clearEvents, downloadEventsCSV } from '../lib/analytics';
 
+const SUBJECTS = {
+  forest: { label: "Literacy", color: "#3B7D44" },
+  desert: { label: "Math", color: "#C96A2B" },
+  ocean:  { label: "Science", color: "#3BA7B6" },
+  night:  { label: "HASS", color: "#404A73" },
+};
+
 // Progress encode/decode helpers (URL-safe Base64)
 const b64urlEncode = (s: string) => { const bytes = new TextEncoder().encode(s); let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b)); return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
 const b64urlDecode = (s: string) => { const n = s.replace(/-/g, '+').replace(/_/g, '/'); const pad = n.length % 4 ? '='.repeat(4 - (n.length % 4)) : ''; const str = atob(n + pad); const bytes = new Uint8Array(str.length); for (let i = 0; i < str.length; i++) bytes[i] = str.charCodeAt(i); return new TextDecoder().decode(bytes); };
@@ -31,7 +38,17 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   const [importValue, setImportValue] = useState('');
   const [exportLink, setExportLink] = useState('');
   const handleExport = () => { const link = onExport(); setExportLink(link); };
-  const handleImport = () => { if (importValue.trim()) { onImport(extractQiFromInput(importValue)); setImportValue(''); } };
+  const handleImport = () => { 
+    if (importValue.trim()) { 
+      try {
+        onImport(extractQiFromInput(importValue)); 
+        setImportValue(''); 
+        alert('Progress imported successfully!');
+      } catch {
+        alert('Invalid progress data — please check your link.');
+      }
+    } 
+  };
   
   // Dynamic totals from current loop lessons
   const totals = {
@@ -39,6 +56,24 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
     desert: (lessons.desert || []).length,
     ocean:  (lessons.ocean  || []).length,
     night:  (lessons.night  || []).length,
+  };
+  const done = {
+    forest: completed.forest?.size || 0,
+    desert: completed.desert?.size || 0,
+    ocean:  completed.ocean?.size  || 0,
+    night:  completed.night?.size  || 0,
+  };
+  
+  // Recent analytics
+  const recent = getEvents().slice(-10).reverse();
+  
+  const handlePaste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      setImportValue(text || '');
+    } catch {
+      alert('Clipboard not available — please paste manually.');
+    }
   };
   return (
     <BottomSheet open={open} onClose={onClose}>
@@ -51,10 +86,10 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
         <div className="space-y-4">
           <div><label className="block text-sm font-semibold mb-2">Standards Framework</label><select value={framework} onChange={(e) => setFramework(e.target.value)} className="w-full px-3 py-2 border rounded-lg bg-white">{frameworks.map(f => <option key={f} value={f}>{f}</option>)}</select></div>
           <div><label className="flex items-center gap-2"><input type="checkbox" checked={protoOnly} onChange={(e) => setProtoOnly(e.target.checked)} className="rounded" />Use prototype-only mode</label><div className="text-xs text-stone-600 mt-1">When enabled, all activities use in-app prototypes instead of external links.</div></div>
-          <div><div className="text-sm font-semibold mb-2">Progress Overview</div><div className="text-xs text-stone-600 space-y-1"><div>Forest (Literacy): {completed.forest?.size || 0}/{totals.forest}</div><div>Desert (Math): {completed.desert?.size || 0}/{totals.desert}</div><div>Ocean (Science): {completed.ocean?.size || 0}/{totals.ocean}</div><div>Night (HASS): {completed.night?.size || 0}/{totals.night}</div></div></div>
+          <div><div className="text-sm font-semibold mb-2">Progress Overview</div><div className="grid grid-cols-2 gap-2">{Object.entries(SUBJECTS).map(([biome, subject]) => (<div key={biome} className="p-2 bg-stone-50 rounded-lg"><div className="flex items-center justify-between mb-1"><span className="text-xs font-medium">{subject.label}</span><span className="text-xs text-stone-600">{done[biome]}/{totals[biome]}</span></div><div className="h-1.5 bg-stone-200 rounded"><div className="h-1.5 rounded" style={{ width: `${totals[biome] ? (done[biome]/totals[biome])*100 : 0}%`, background: subject.color }} /></div></div>))}</div></div>
           <div><div className="text-sm font-semibold mb-2">Export Progress</div><button onClick={handleExport} className="w-full px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out">Copy progress link</button>{exportLink && <div className="mt-2 p-2 bg-stone-100 rounded-lg text-xs break-all">{exportLink}</div>}</div>
-          <div><div className="text-sm font-semibold mb-2">Import Progress</div><div className="flex gap-2"><input value={importValue} onChange={(e) => setImportValue(e.target.value)} placeholder="Paste progress link or token" className="flex-1 px-3 py-2 border rounded-lg" /><button onClick={handleImport} className="px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition ease-out">Import</button></div></div>
-          <div className="mt-4 border-t pt-3"><div className="text-sm font-semibold mb-2">Analytics (local)</div><div className="flex items-center gap-2"><button onClick={() => downloadEventsCSV()} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs">Export events CSV</button><button onClick={() => { clearEvents(); alert('Cleared local analytics buffer'); }} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs">Clear buffer</button><span className="text-[11px] text-stone-600">{getEvents().length} event(s) captured</span></div></div>
+          <div><div className="text-sm font-semibold mb-2">Import Progress</div><div className="flex gap-2 mb-2"><input value={importValue} onChange={(e) => setImportValue(e.target.value)} placeholder="Paste progress link or token" className="flex-1 px-3 py-2 border rounded-lg" /><button onClick={handlePaste} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 text-xs">Paste</button><button onClick={handleImport} className="px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition ease-out">Import</button></div></div>
+          <div className="mt-4 border-t pt-3"><div className="text-sm font-semibold mb-2">Analytics (local)</div><div className="flex items-center gap-2 mb-3"><button onClick={() => downloadEventsCSV()} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs">Export events CSV</button><button onClick={() => { clearEvents(); alert('Cleared local analytics buffer'); }} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs">Clear buffer</button><span className="text-[11px] text-stone-600">{getEvents().length} event(s) captured</span></div><div><div className="text-sm font-semibold mb-2">Recent activity</div>{recent.length === 0 ? (<div className="text-xs text-stone-500">No events yet.</div>) : (<ul className="space-y-1 text-xs text-stone-700">{recent.map((e, i) => (<li key={`${e.ts}-${e.action}-${i}`} className="flex items-center gap-2"><span>⏺</span><span className="opacity-70">{new Date(e.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span><span className="font-semibold">{e.action}</span><span className="opacity-70">{e.biome ?? ''} {e.lessonId ?? ''}</span></li>))}</ul>)}</div></div>
         </div>
       </div>
     </BottomSheet>
