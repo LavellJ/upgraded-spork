@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { Download, RefreshCw } from 'lucide-react';
 
 export function PwaUpdateToast() {
-  const { updateAvailable, showInstallPrompt, reloadApp, installApp } = usePwaUpdate();
+  const { updateAvailable, showInstallPrompt, reloadApp, installApp, cacheStatus } = usePwaUpdate();
   const { toast } = useToast();
 
   React.useEffect(() => {
