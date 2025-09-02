@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { BottomSheet } from "./BottomSheet";
 import { triggerScoutEvent } from "../learning/scout";
+import { useProfile } from "../profile/context";
 
 const cx = (...s: (string | false | undefined)[]): string => s.filter(Boolean).join(" ");
 
@@ -93,6 +94,7 @@ interface MCActivityProps {
 }
 
 function MCActivity({ biome, lesson, onSolved, onAttempt }: MCActivityProps) {
+  const { profile } = useProfile();
   const accent = SUBJECTS[biome].color;
   const tpl = getTemplate(biome, lesson.id);
   const [sel, setSel] = useState(-1);
@@ -106,7 +108,11 @@ function MCActivity({ biome, lesson, onSolved, onAttempt }: MCActivityProps) {
     
     // Trigger Scout event for wrong answers
     if (outcome === 'wrong') {
-      triggerScoutEvent('answerWrong', { lessonTitle: lesson.title });
+      triggerScoutEvent('answerWrong', { 
+        name: profile.name || 'Explorer',
+        lessonTitle: lesson.title,
+        ageBand: profile.ageBand
+      });
     }
   };
   return (
@@ -137,6 +143,7 @@ interface ActivityPlayerProps {
 }
 
 export function ActivityPlayer({ open, onClose, biome, lesson, onMarkComplete, protoOnly }: ActivityPlayerProps) {
+  const { profile } = useProfile();
   if (!open || !lesson) return null;
   const url = resolveActivityUrl(biome!, lesson.id, protoOnly);
   const accent = SUBJECTS[biome!].color;
@@ -154,7 +161,12 @@ export function ActivityPlayer({ open, onClose, biome, lesson, onMarkComplete, p
             biome={biome!} 
             lesson={lesson} 
             onSolved={() => { 
-              triggerScoutEvent('lessonFinish', { lessonTitle: lesson.title, isCorrect: true });
+              triggerScoutEvent('lessonFinish', { 
+                name: profile.name || 'Explorer',
+                lessonTitle: lesson.title, 
+                isCorrect: true,
+                ageBand: profile.ageBand
+              });
               onMarkComplete(lesson.id, 'correct'); 
               onClose(); 
             }}

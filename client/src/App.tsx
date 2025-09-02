@@ -936,8 +936,9 @@ function AppContent(){
           
           // Trigger Scout lesson start event
           triggerScoutEvent('lessonStart', { 
-            name: 'Explorer', // Could be personalized later
-            lessonTitle: lesson.title 
+            name: profile.name || 'Explorer',
+            lessonTitle: lesson.title,
+            ageBand: profile.ageBand
           });
           
           launchLesson(lesson, openBiome);
@@ -1021,6 +1022,9 @@ function AppContent(){
           } else {
             flash('Start a lesson first to practice specific skills!');
           }
+        }}
+        onMoreHelpClick={() => {
+          scout.requestMoreHelp(profile.ageBand, profile.name);
         }}
         calm={calm}
       />
