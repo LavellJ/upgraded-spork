@@ -217,6 +217,3 @@ export function getAvailableGroups(): string[] {
   const scoutLines = loadScoutLines();
   return Object.keys(scoutLines.groups);
 }
-  
-  // Filter out recently used messages if we have enough alternatives
-  const availableMessages = messages.filter(msg => !scoutState.recentMessages.includes(msg));
