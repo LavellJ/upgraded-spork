@@ -92,10 +92,10 @@ export function ScoutSheet({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-green-800 mb-1">
-                    Want to track your progress?
+                    Want some quick practice?
                   </p>
                   <p className="text-sm text-green-700">
-                    Check your learning journal for insights!
+                    Try a Journal session to boost your skills!
                   </p>
                 </div>
                 <button
@@ -103,7 +103,7 @@ export function ScoutSheet({
                   className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                   data-testid="scout-journal-button"
                 >
-                  Open Journal
+                  Quick Practice
                 </button>
               </div>
             </div>
