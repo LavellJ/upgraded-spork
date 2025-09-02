@@ -129,11 +129,11 @@ export function ActivityPlayer({ open, onClose, biome, lesson, onMarkComplete, p
   const accent = SUBJECTS[biome!].color;
   const external = !protoOnly && typeof url === 'string' && !url.includes('player.example');
   return (
-    <BottomSheet open={open} onClose={onClose}>
+    <BottomSheet open={open} onClose={onClose} titleId="activity-title">
       <div className="text-stone-800">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: accent + "22" }}>▶️</div>
-          <div className="font-extrabold" style={{ color: accent }}>{lesson.title}</div>
+          <h2 id="activity-title" className="font-extrabold" style={{ color: accent }} tabIndex={-1} data-autofocus>{lesson.title}</h2>
           {external ? <a href={url} target="_blank" rel="noreferrer" className="ml-auto text-xs px-2 py-1 rounded-full bg-white border hover:bg-stone-50 transition ease-out">Open in new tab</a> : <span className="ml-auto text-[11px] px-2 py-1 rounded-full bg-white/70 border">Using in-app prototype</span>}
         </div>
         <div className="mt-3 rounded-xl overflow-hidden border bg-white">

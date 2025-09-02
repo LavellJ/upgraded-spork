@@ -25,11 +25,11 @@ export function BackpackSheet({ open, onClose, bp }: BackpackSheetProps) {
     charm_feather: 'Shows a calm tip before you start.',
   };
   return (
-    <BottomSheet open={open} onClose={onClose}>
+    <BottomSheet open={open} onClose={onClose} titleId="backpack-title">
       <div className="text-stone-800">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">🎒</div>
-          <div className="font-extrabold">Scout's Backpack</div>
+          <h2 id="backpack-title" className="font-extrabold" tabIndex={-1} data-autofocus>Scout's Backpack</h2>
           <button onClick={onClose} className="ml-auto text-xs px-2 py-1 rounded-full border bg-white hover:bg-stone-50">Close</button>
         </div>
         <div className="mt-2 text-xs text-stone-600">Equip up to {equipLimit} items.</div>

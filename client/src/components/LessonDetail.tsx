@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useRef } from "react";
+import { useFocusTrap } from '../hooks/useFocusTrap';
+import { STANDARDS } from '../data/meta';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -80,6 +82,15 @@ interface LessonDetailProps {
 }
 
 export function LessonDetail({ open, onClose, biome, lesson, onMarkComplete, onStart, teacherMode, framework, protoOnly, calmTip }: LessonDetailProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+  
+  // Use focus trap hook
+  useFocusTrap({
+    isOpen: open && !!lesson,
+    onClose,
+    containerRef: modalRef
+  });
+  
   if (!open || !lesson) return null;
   const meta = getLessonMeta(biome, lesson.id, framework);
   const accent = SUBJECTS[biome].color;
@@ -91,10 +102,16 @@ export function LessonDetail({ open, onClose, biome, lesson, onMarkComplete, onS
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center">
       <div className="absolute inset-0 bg-stone-900/40" onClick={onClose} />
-      <div className="relative z-10 w-[min(92vw,36rem)] rounded-3xl bg-white/95 backdrop-blur border border-stone-900/10 shadow-2xl p-5">
+      <div 
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="lesson-detail-title"
+        className="relative z-10 w-[min(92vw,36rem)] rounded-3xl bg-white/95 backdrop-blur border border-stone-900/10 shadow-2xl p-5"
+      >
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: accent + "22" }}>{meta.icon}</div>
-          <div><div className="text-lg font-extrabold" style={{ color: accent }}>{lesson.title}</div><div className="text-xs text-stone-600">Est. {meta.est} • {SUBJECTS[biome].label}</div></div>
+          <div><h2 id="lesson-detail-title" className="text-lg font-extrabold" style={{ color: accent }} tabIndex={-1} data-autofocus>{lesson.title}</h2><div className="text-xs text-stone-600">Est. {meta.est} • {SUBJECTS[biome].label}</div></div>
           <button onClick={onClose} className="ml-auto text-stone-600 hover:text-stone-900 text-lg">×</button>
         </div>
         <div className="mt-3 text-sm">

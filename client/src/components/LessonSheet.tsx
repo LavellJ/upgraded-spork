@@ -131,10 +131,10 @@ export function LessonSheet({ open, onClose, biome, lessons, completed, onComple
   const allDone = completed.size === lessons.length && lessons.length > 0;
   const standardText = STANDARDS[framework]?.[biome] || getLessonMeta(biome, lessons[0]?.id || 'x', framework).standard;
   return (
-    <BottomSheet open={open} onClose={() => { setDetail(null); onClose(); }}>
+    <BottomSheet open={open} onClose={() => { setDetail(null); onClose(); }} titleId="lesson-sheet-title">
       <div className="text-stone-800">
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-2"><span className="text-xl">📍</span><h3 className="text-xl font-extrabold" style={{ color: subject.color }}>{subject.label}</h3></div>
+          <div className="flex items-center gap-2"><span className="text-xl">📍</span><h3 id="lesson-sheet-title" className="text-xl font-extrabold" style={{ color: subject.color }} tabIndex={-1} data-autofocus>{subject.label}</h3></div>
           <div className="flex items-center gap-2">
             <span className="text-xs px-2 py-1 rounded-full bg-stone-900/5">{completed.size}/{lessons.length} complete</span>
             {teacherMode && <button onClick={() => { lessons.forEach(l => { if (!completed.has(l.id)) onComplete(l.id); }); }} disabled={allDone} className={cx("text-xs px-2 py-1 rounded-full border transition ease-out", allDone ? "bg-stone-100 text-stone-400" : "bg-white hover:bg-stone-50")}>Complete all</button>}
