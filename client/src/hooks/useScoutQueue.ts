@@ -19,11 +19,13 @@ interface ScoutQueueState {
   current: ScoutQueueMessage | null;
   queue: ScoutQueueMessage[];
   pendingCount: number;
+  inbox: ScoutQueueMessage[];
 }
 
 // Global state to manage queue across components
 let globalQueue: ScoutQueueMessage[] = [];
 let globalCurrent: ScoutQueueMessage | null = null;
+let globalInbox: ScoutQueueMessage[] = []; // Store dismissed actionable messages (last 5)
 let subscribers: Array<(state: ScoutQueueState) => void> = [];
 let dismissTimer: NodeJS.Timeout | null = null;
 let messageHistory: Array<{ id: string; timestamp: number }> = [];
@@ -38,7 +40,8 @@ function notifySubscribers() {
   const state: ScoutQueueState = {
     current: globalCurrent,
     queue: [...globalQueue],
-    pendingCount: globalQueue.length
+    pendingCount: globalQueue.length,
+    inbox: [...globalInbox]
   };
   
   subscribers.forEach(callback => callback(state));
@@ -98,6 +101,16 @@ function startDismissTimer(calmMode: boolean) {
   
   dismissTimer = setTimeout(() => {
     if (globalCurrent) {
+      // Add actionable messages to inbox when auto-dismissed
+      if (globalCurrent.priority === 'actionable') {
+        globalInbox.push(globalCurrent);
+        
+        // Keep only last 5 inbox items
+        if (globalInbox.length > 5) {
+          globalInbox.shift();
+        }
+      }
+      
       globalCurrent = null;
       notifySubscribers();
       processQueue();
@@ -123,7 +136,8 @@ export function useScoutQueue() {
   const [state, setState] = useState<ScoutQueueState>({
     current: globalCurrent,
     queue: [...globalQueue],
-    pendingCount: globalQueue.length
+    pendingCount: globalQueue.length,
+    inbox: [...globalInbox]
   });
   
   const timerPausedRef = useRef(false);
@@ -215,6 +229,17 @@ export function useScoutQueue() {
   const dismiss = useCallback(() => {
     if (globalCurrent) {
       pauseDismissTimer();
+      
+      // Add actionable messages to inbox when dismissed
+      if (globalCurrent.priority === 'actionable') {
+        globalInbox.push(globalCurrent);
+        
+        // Keep only last 5 inbox items
+        if (globalInbox.length > 5) {
+          globalInbox.shift();
+        }
+      }
+      
       globalCurrent = null;
       notifySubscribers();
       processQueue();
@@ -245,14 +270,22 @@ export function useScoutQueue() {
     notifySubscribers();
   }, []);
   
+  // Remove message from inbox
+  const removeFromInbox = useCallback((messageId: string) => {
+    globalInbox = globalInbox.filter(msg => msg.id !== messageId);
+    notifySubscribers();
+  }, []);
+
   return {
     current: state.current,
     enqueue,
     dismiss,
     pendingCount: state.pendingCount,
+    inbox: state.inbox,
     pauseTimer,
     resumeTimer,
-    flushInfoMessages
+    flushInfoMessages,
+    removeFromInbox
   };
 }
 
@@ -260,6 +293,7 @@ export function useScoutQueue() {
 export function resetScoutQueue() {
   globalQueue = [];
   globalCurrent = null;
+  globalInbox = [];
   messageHistory = [];
   if (dismissTimer) {
     clearTimeout(dismissTimer);

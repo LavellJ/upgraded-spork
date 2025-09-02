@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { BottomSheet } from "./BottomSheet";
-import { triggerScoutEvent } from "../learning/scout";
+import { useScoutQueue } from "../hooks/useScoutQueue";
 import { useProfile } from "../profile/context";
 import { pushEvent } from "../progress/events";
 
@@ -96,6 +96,7 @@ interface MCActivityProps {
 
 function MCActivity({ biome, lesson, onSolved, onAttempt }: MCActivityProps) {
   const { profile } = useProfile();
+  const { enqueue } = useScoutQueue();
   const accent = SUBJECTS[biome].color;
   const tpl = getTemplate(biome, lesson.id);
   const [sel, setSel] = useState(-1);
@@ -107,12 +108,18 @@ function MCActivity({ biome, lesson, onSolved, onAttempt }: MCActivityProps) {
     const outcome = sel === tpl.correct ? 'correct' : 'wrong';
     onAttempt(outcome);
     
-    // Trigger Scout event for wrong answers
+    // Enqueue Scout message for wrong answers
     if (outcome === 'wrong') {
-      triggerScoutEvent('answerWrong', { 
-        name: profile.name || 'Explorer',
-        lessonTitle: lesson.title,
-        ageBand: profile.ageBand
+      enqueue({
+        id: `answer-wrong-${lesson.id}-${Date.now()}`,
+        text: `That's okay, ${profile.name || 'Explorer'}! Let's try again.`,
+        priority: 'actionable',
+        cta: {
+          label: 'Get Hint',
+          onClick: () => {
+            console.log('Show hint for lesson:', lesson.title);
+          }
+        }
       });
     }
   };
@@ -145,6 +152,7 @@ interface ActivityPlayerProps {
 
 export function ActivityPlayer({ open, onClose, biome, lesson, onMarkComplete, protoOnly }: ActivityPlayerProps) {
   const { profile } = useProfile();
+  const { enqueue, flushInfoMessages } = useScoutQueue();
   const startTimeRef = useRef<number | null>(null);
   
   // Track lesson start when component opens
@@ -192,11 +200,14 @@ export function ActivityPlayer({ open, onClose, biome, lesson, onMarkComplete, p
                 result: 'pass'
               });
               
-              triggerScoutEvent('lessonFinish', { 
-                name: profile.name || 'Explorer',
-                lessonTitle: lesson.title, 
-                isCorrect: true,
-                ageBand: profile.ageBand
+              // Flush any pending info messages before showing completion
+              flushInfoMessages();
+              
+              // Enqueue Scout celebration message for lesson completion
+              enqueue({
+                id: `lesson-complete-${lesson.id}-${Date.now()}`,
+                text: `Well done, ${profile.name || 'Explorer'}! You completed ${lesson.title}!`,
+                priority: 'info'
               });
               onMarkComplete(lesson.id, 'correct'); 
               onClose(); 
