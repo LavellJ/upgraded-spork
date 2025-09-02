@@ -1,0 +1,36 @@
+{
+  "start_lesson": [
+    "Let's scout this together, {name}!",
+    "Ready to explore? I'm right behind you!",
+    "Another adventure awaits, {name}!",
+    "Time to discover something new!"
+  ],
+  "fail_hint": [
+    "Good try. Want a clue?",
+    "Let's take a smaller step first.",
+    "That's okay! Every explorer makes mistakes.",
+    "How about we try a different approach?",
+    "No worries—learning takes practice!"
+  ],
+  "finish": [
+    "Nice! Another step on the trail.",
+    "Well done, {name}! You're getting stronger.",
+    "Excellent work! I knew you could do it.",
+    "That's the spirit of a true explorer!",
+    "You conquered that challenge beautifully!"
+  ],
+  "streak": [
+    "That's {n} in a row—steady as we go!",
+    "Wow! {n} victories in a row, {name}!",
+    "You're on fire with {n} straight wins!",
+    "Amazing streak of {n}! Keep it up!",
+    "Incredible! {n} perfect lessons in a row!"
+  ],
+  "encourage": [
+    "I believe in you, {name}!",
+    "You've got this! I'm here to help.",
+    "Take your time—we're exploring together.",
+    "Every step forward counts!",
+    "You're braver than you think!"
+  ]
+}

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BottomSheet } from "./BottomSheet";
+import { triggerScoutEvent } from "../learning/scout";
 
 const cx = (...s: (string | false | undefined)[]): string => s.filter(Boolean).join(" ");
 
@@ -102,6 +103,11 @@ function MCActivity({ biome, lesson, onSolved, onAttempt }: MCActivityProps) {
     setChecked(true);
     const outcome = sel === tpl.correct ? 'correct' : 'wrong';
     onAttempt(outcome);
+    
+    // Trigger Scout event for wrong answers
+    if (outcome === 'wrong') {
+      triggerScoutEvent('answerWrong', { lessonTitle: lesson.title });
+    }
   };
   return (
     <div className="p-3">
@@ -147,7 +153,11 @@ export function ActivityPlayer({ open, onClose, biome, lesson, onMarkComplete, p
           <MCActivity 
             biome={biome!} 
             lesson={lesson} 
-            onSolved={() => { onMarkComplete(lesson.id, 'correct'); onClose(); }}
+            onSolved={() => { 
+              triggerScoutEvent('lessonFinish', { lessonTitle: lesson.title, isCorrect: true });
+              onMarkComplete(lesson.id, 'correct'); 
+              onClose(); 
+            }}
             onAttempt={(outcome) => {
               // Track attempts immediately when they happen
               if (outcome === 'wrong') {

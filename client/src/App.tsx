@@ -12,6 +12,9 @@ import LOOP2 from "./data/loop2.json";
 import { logEvent } from "./lib/analytics";
 import { learnerCache } from "./learning/model";
 import { inferSkillIdsForLesson, getLessonById, recommendNextPin } from "./learning/policy";
+import { useScout, triggerScoutEvent } from "./learning/scout";
+import { ScoutBubble } from "./components/ScoutBubble";
+import { ScoutSheet } from "./components/ScoutSheet";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -379,6 +382,10 @@ export default function App(){
     window.clearTimeout((flash as any)._t);
     (flash as any)._t = window.setTimeout(() => setToast(null), ms);
   }
+
+  // ---- Scout system ----
+  const scout = useScout();
+  const [showScoutSheet, setShowScoutSheet] = useState(false);
 
   // ---- Backpack ----
   const bp = useBackpack();
@@ -902,6 +909,13 @@ export default function App(){
             return;
           }
           logEvent({ ts: new Date().toISOString(), loop, biome: openBiome, lessonId: lesson.id, action: 'start' });
+          
+          // Trigger Scout lesson start event
+          triggerScoutEvent('lessonStart', { 
+            name: 'Explorer', // Could be personalized later
+            lessonTitle: lesson.title 
+          });
+          
           launchLesson(lesson, openBiome);
         }}
         protoOnly={protoOnly}
@@ -950,6 +964,34 @@ export default function App(){
           });
         }}
         protoOnly={protoOnly}
+      />
+
+      {/* Scout Bubble */}
+      {scout.currentMessage && (
+        <ScoutBubble
+          message={scout.currentMessage.message}
+          onClick={() => setShowScoutSheet(true)}
+          calm={calm}
+          position={{ x: 20, y: 120 }}
+          visible={true}
+        />
+      )}
+
+      {/* Scout Sheet */}
+      <ScoutSheet
+        open={showScoutSheet}
+        onClose={() => {
+          setShowScoutSheet(false);
+          scout.dismissMessage();
+        }}
+        message={scout.currentMessage?.message || ''}
+        detailedMessage={scout.currentMessage?.detailedMessage}
+        showJournalCTA={scout.currentMessage?.showJournalCTA}
+        onJournalClick={() => {
+          // TODO: Open journal when implemented
+          flash('Journal feature coming soon!');
+        }}
+        calm={calm}
       />
 
       {/* Toast region for accessibility */}
