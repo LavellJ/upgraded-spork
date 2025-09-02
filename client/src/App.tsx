@@ -7,6 +7,7 @@ import { ActivityPlayer } from "./components/ActivityPlayer";
 import { LessonSheet } from "./components/LessonSheet";
 import { TeacherPanel } from "./components/TeacherPanel";
 import { HelpOverlay } from "./components/HelpOverlay";
+import { CompassTour } from "./components/CompassTour";
 import { JournalSheet } from './journal/JournalSheet';
 import { inferSkillIdFromLesson } from './journal/generator';
 import IslandBackdrop from "./components/IslandBackdrop";
@@ -401,6 +402,7 @@ function AppContent(){
 
   // ---- Onboarding system ----
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showCompassTour, setShowCompassTour] = useState(false);
   
   // Check if profile needs onboarding
   const needsOnboarding = !profile.name || !profile.ageBand || !profile.avatarId;
@@ -411,6 +413,37 @@ function AppContent(){
       setShowOnboarding(true);
     }
   }, [needsOnboarding]);
+
+  // Check compass tour flag and show after onboarding
+  const shouldShowCompassTour = () => {
+    try {
+      const flags = JSON.parse(localStorage.getItem('qi.flags') || '{}');
+      return !flags.compassTourShown;
+    } catch {
+      return true; // Show by default if storage fails
+    }
+  };
+
+  const markCompassTourShown = () => {
+    try {
+      const flags = JSON.parse(localStorage.getItem('qi.flags') || '{}');
+      flags.compassTourShown = true;
+      localStorage.setItem('qi.flags', JSON.stringify(flags));
+    } catch {
+      // Storage failed, try to set anyway
+      localStorage.setItem('qi.flags', JSON.stringify({ compassTourShown: true }));
+    }
+  };
+
+  // Show compass tour after onboarding completes (if not shown before)
+  useEffect(() => {
+    if (!showOnboarding && !needsOnboarding && shouldShowCompassTour()) {
+      const timer = setTimeout(() => {
+        setShowCompassTour(true);
+      }, 1000); // Small delay to let onboarding close smoothly
+      return () => clearTimeout(timer);
+    }
+  }, [showOnboarding, needsOnboarding]);
 
   // ---- Backpack ----
   const bp = useBackpack();
@@ -1046,7 +1079,22 @@ function AppContent(){
       {/* Onboarding */}
       <Onboarding
         open={showOnboarding}
-        onClose={() => setShowOnboarding(false)}
+        onClose={() => {
+          setShowOnboarding(false);
+          // Show compass tour after onboarding completes (if first time)
+          if (shouldShowCompassTour()) {
+            setTimeout(() => setShowCompassTour(true), 1000);
+          }
+        }}
+      />
+
+      {/* Compass Tour */}
+      <CompassTour
+        show={showCompassTour}
+        onComplete={() => {
+          setShowCompassTour(false);
+          markCompassTourShown();
+        }}
       />
 
       {/* Toast region for accessibility */}
