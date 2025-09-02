@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { BottomSheet } from "./BottomSheet";
 import { triggerScoutEvent } from "../learning/scout";
 import { useProfile } from "../profile/context";
+import { pushEvent } from "../progress/events";
 
 const cx = (...s: (string | false | undefined)[]): string => s.filter(Boolean).join(" ");
 
@@ -144,6 +145,21 @@ interface ActivityPlayerProps {
 
 export function ActivityPlayer({ open, onClose, biome, lesson, onMarkComplete, protoOnly }: ActivityPlayerProps) {
   const { profile } = useProfile();
+  const startTimeRef = useRef<number | null>(null);
+  
+  // Track lesson start when component opens
+  useEffect(() => {
+    if (open && lesson && biome) {
+      startTimeRef.current = Date.now();
+      pushEvent({
+        kind: 'lesson_start',
+        at: startTimeRef.current,
+        lessonId: lesson.id,
+        biomeId: biome
+      });
+    }
+  }, [open, lesson?.id, biome]);
+  
   if (!open || !lesson) return null;
   const url = resolveActivityUrl(biome!, lesson.id, protoOnly);
   const accent = SUBJECTS[biome!].color;
@@ -161,6 +177,21 @@ export function ActivityPlayer({ open, onClose, biome, lesson, onMarkComplete, p
             biome={biome!} 
             lesson={lesson} 
             onSolved={() => { 
+              // Calculate duration
+              const durationSec = startTimeRef.current 
+                ? Math.round((Date.now() - startTimeRef.current) / 1000)
+                : undefined;
+              
+              // Track lesson completion
+              pushEvent({
+                kind: 'lesson_finish',
+                at: Date.now(),
+                lessonId: lesson.id,
+                biomeId: biome!,
+                durationSec,
+                result: 'pass'
+              });
+              
               triggerScoutEvent('lessonFinish', { 
                 name: profile.name || 'Explorer',
                 lessonTitle: lesson.title, 
@@ -173,6 +204,20 @@ export function ActivityPlayer({ open, onClose, biome, lesson, onMarkComplete, p
             onAttempt={(outcome) => {
               // Track attempts immediately when they happen
               if (outcome === 'wrong') {
+                // Track failed attempt
+                const durationSec = startTimeRef.current 
+                  ? Math.round((Date.now() - startTimeRef.current) / 1000)
+                  : undefined;
+                
+                pushEvent({
+                  kind: 'lesson_finish',
+                  at: Date.now(),
+                  lessonId: lesson.id,
+                  biomeId: biome!,
+                  durationSec,
+                  result: 'retry'
+                });
+                
                 onMarkComplete(lesson.id, 'wrong');
               }
             }}
