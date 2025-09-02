@@ -153,3 +153,49 @@ This provides:
 - Automatic fallback handling
 - Easy asset swapping during development
 - Type-safe asset references
+
+## Low Quality Image Placeholders (LQIP)
+
+To improve perceived loading performance and prevent layout shifts, the asset pipeline supports Low Quality Image Placeholders (LQIP).
+
+### LQIP Generation Strategy
+
+For each high-resolution asset, provide a corresponding low-quality placeholder:
+
+1. **Generate LQIP assets:**
+   - Create tiny (20x15px for biomes, proportional for other assets) versions
+   - Apply heavy blur and compression
+   - Save as separate files with `-lqip` suffix
+
+2. **Naming convention:**
+   ```
+   biome-forest@1x.png      → biome-forest-lqip.png
+   ui-backpack.png          → ui-backpack-lqip.png
+   tool-compass.png         → tool-compass-lqip.png
+   ```
+
+3. **LQIP specifications:**
+   - Size: ~20px on longest dimension  
+   - Quality: Heavy JPEG compression (10-20%)
+   - Blur: 2-4px gaussian blur
+   - File size: Target <1KB per LQIP
+
+4. **Implementation:**
+   ```typescript
+   <ShimmerImage
+     src={getAsset('biome', 'forest')}
+     lqipSrc={getAsset('biome', 'forest-lqip')}
+     width={800}
+     height={600}
+     alt="Forest biome"
+   />
+   ```
+
+### Temporary Development Strategy
+
+During development, use a temporary blurred placeholder:
+- Generate a single tiny blurred PNG (data URI)
+- Apply to all assets as fallback LQIP
+- Replace with proper LQIPs during art finalization
+
+This ensures smooth loading transitions and prevents content layout shifts while maintaining development velocity.
