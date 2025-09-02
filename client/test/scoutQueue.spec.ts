@@ -2,10 +2,11 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useScoutQueue, resetScoutQueue, type ScoutQueueMessage } from '../src/hooks/useScoutQueue';
 
-// Mock the profile context
+// Mock the profile context with configurable calm mode
+const mockProfile = { calmMode: false };
 vi.mock('../src/profile/context', () => ({
   useProfile: () => ({
-    profile: { calmMode: false }
+    profile: mockProfile
   })
 }));
 
@@ -509,6 +510,238 @@ describe('useScoutQueue', () => {
         label: 'Take Action',
         onClick: mockOnClick
       });
+    });
+  });
+
+  describe('calm mode timing', () => {
+    it('auto-dismisses after 4500ms in calm mode', () => {
+      // Set calm mode
+      mockProfile.calmMode = true;
+      
+      const { result } = renderHook(() => useScoutQueue());
+      
+      act(() => {
+        result.current.enqueue({
+          id: 'test-calm-dismiss',
+          text: 'Calm mode test',
+          priority: 'info'
+        });
+      });
+      
+      expect(result.current.current).toBeTruthy();
+      
+      // Should still be visible after 3 seconds in calm mode
+      act(() => {
+        vi.advanceTimersByTime(3000);
+      });
+      
+      expect(result.current.current).toBeTruthy();
+      
+      // Should dismiss after 4.5 seconds
+      act(() => {
+        vi.advanceTimersByTime(1500); // Total 4500ms
+      });
+      
+      expect(result.current.current).toBeNull();
+      
+      // Reset calm mode
+      mockProfile.calmMode = false;
+    });
+  });
+
+  describe('inbox functionality', () => {
+    it('adds actionable messages to inbox when auto-dismissed', () => {
+      const { result } = renderHook(() => useScoutQueue());
+      
+      act(() => {
+        result.current.enqueue({
+          id: 'actionable-auto',
+          text: 'Actionable message',
+          priority: 'actionable',
+          cta: { label: 'Click', onClick: vi.fn() }
+        });
+      });
+      
+      expect(result.current.inbox.length).toBe(0);
+      
+      // Auto-dismiss via timer
+      act(() => {
+        vi.advanceTimersByTime(3000);
+      });
+      
+      expect(result.current.inbox.length).toBe(1);
+      expect(result.current.inbox[0].id).toBe('actionable-auto');
+    });
+
+    it('adds actionable messages to inbox when manually dismissed', () => {
+      const { result } = renderHook(() => useScoutQueue());
+      
+      act(() => {
+        result.current.enqueue({
+          id: 'actionable-manual',
+          text: 'Actionable message',
+          priority: 'actionable',
+          cta: { label: 'Click', onClick: vi.fn() }
+        });
+      });
+      
+      expect(result.current.inbox.length).toBe(0);
+      
+      // Manual dismiss
+      act(() => {
+        result.current.dismiss();
+      });
+      
+      expect(result.current.inbox.length).toBe(1);
+      expect(result.current.inbox[0].id).toBe('actionable-manual');
+    });
+
+    it('does not add info messages to inbox', () => {
+      const { result } = renderHook(() => useScoutQueue());
+      
+      act(() => {
+        result.current.enqueue({
+          id: 'info-no-inbox',
+          text: 'Info message',
+          priority: 'info'
+        });
+      });
+      
+      act(() => {
+        result.current.dismiss();
+      });
+      
+      expect(result.current.inbox.length).toBe(0);
+    });
+
+    it('keeps only last 5 inbox messages', () => {
+      const { result } = renderHook(() => useScoutQueue());
+      
+      // Add 6 actionable messages
+      for (let i = 1; i <= 6; i++) {
+        act(() => {
+          result.current.enqueue({
+            id: `inbox-${i}`,
+            text: `Actionable ${i}`,
+            priority: 'actionable',
+            cta: { label: 'Click', onClick: vi.fn() }
+          });
+        });
+        
+        act(() => {
+          result.current.dismiss();
+        });
+      }
+      
+      expect(result.current.inbox.length).toBe(5);
+      expect(result.current.inbox[0].id).toBe('inbox-2'); // First should be removed
+      expect(result.current.inbox[4].id).toBe('inbox-6'); // Last should remain
+    });
+
+    it('removes messages from inbox', () => {
+      const { result } = renderHook(() => useScoutQueue());
+      
+      act(() => {
+        result.current.enqueue({
+          id: 'remove-test',
+          text: 'Remove test',
+          priority: 'actionable',
+          cta: { label: 'Click', onClick: vi.fn() }
+        });
+      });
+      
+      act(() => {
+        result.current.dismiss();
+      });
+      
+      expect(result.current.inbox.length).toBe(1);
+      
+      act(() => {
+        result.current.removeFromInbox('remove-test');
+      });
+      
+      expect(result.current.inbox.length).toBe(0);
+    });
+  });
+
+  describe('accessibility compliance', () => {
+    it('should not steal focus when messages appear', () => {
+      // Create a test element to focus
+      const testInput = document.createElement('input');
+      testInput.setAttribute('data-testid', 'focus-test');
+      document.body.appendChild(testInput);
+      testInput.focus();
+      
+      const initialActiveElement = document.activeElement;
+      
+      const { result } = renderHook(() => useScoutQueue());
+      
+      // Enqueue a message
+      act(() => {
+        result.current.enqueue({
+          id: 'focus-test',
+          text: 'Should not steal focus',
+          priority: 'info'
+        });
+      });
+      
+      // Focus should not change
+      expect(document.activeElement).toBe(initialActiveElement);
+      
+      // Enqueue critical message
+      act(() => {
+        result.current.enqueue({
+          id: 'critical-focus-test',
+          text: 'Critical should not steal focus',
+          priority: 'critical'
+        });
+      });
+      
+      // Focus should still not change
+      expect(document.activeElement).toBe(initialActiveElement);
+      
+      // Cleanup
+      document.body.removeChild(testInput);
+    });
+
+    it('should not interfere with keyboard navigation', () => {
+      const { result } = renderHook(() => useScoutQueue());
+      
+      // Create multiple focusable elements
+      const button1 = document.createElement('button');
+      const button2 = document.createElement('button');
+      button1.setAttribute('data-testid', 'button-1');
+      button2.setAttribute('data-testid', 'button-2');
+      
+      document.body.appendChild(button1);
+      document.body.appendChild(button2);
+      
+      button1.focus();
+      expect(document.activeElement).toBe(button1);
+      
+      // Enqueue message while tabbing
+      act(() => {
+        result.current.enqueue({
+          id: 'tab-test',
+          text: 'Should not interfere with tabbing',
+          priority: 'actionable'
+        });
+      });
+      
+      // Simulate tab navigation
+      button2.focus();
+      expect(document.activeElement).toBe(button2);
+      
+      // Auto-dismiss shouldn't affect focus
+      act(() => {
+        vi.advanceTimersByTime(3000);
+      });
+      
+      expect(document.activeElement).toBe(button2);
+      
+      // Cleanup
+      document.body.removeChild(button1);
+      document.body.removeChild(button2);
     });
   });
 });

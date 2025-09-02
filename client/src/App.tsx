@@ -17,6 +17,7 @@ import { learnerCache } from "./learning/model";
 import { inferSkillIdsForLesson, getLessonById, recommendNextPin } from "./learning/policy";
 import { ScoutManager } from "./components/ScoutManager";
 import { RouteListener } from "./components/RouteListener";
+import { ScoutDebugCard } from "./components/ScoutDebugCard";
 import { useScoutQueue } from './hooks/useScoutQueue';
 import { ProfileProvider, useProfile } from "./profile/context";
 import { Onboarding } from "./onboarding/Onboarding";
@@ -1061,6 +1062,9 @@ function AppContent(){
 
       {/* Route Listener flushes info messages on route changes */}
       <RouteListener />
+
+      {/* Scout Debug Card (DEV only) */}
+      <ScoutDebugCard />
 
       {/* Journal Sheet */}
       <JournalSheet
