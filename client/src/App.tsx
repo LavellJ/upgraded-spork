@@ -20,6 +20,7 @@ import { ScoutBubble } from "./components/ScoutBubble";
 import { ScoutSheet } from "./components/ScoutSheet";
 import { ProfileProvider, useProfile } from "./profile/context";
 import { Onboarding } from "./onboarding/Onboarding";
+import { decodeFromQuery, savePath } from "./guide/assign";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -444,6 +445,34 @@ function AppContent(){
       return () => clearTimeout(timer);
     }
   }, [showOnboarding, needsOnboarding]);
+
+  // Check for assignment import on app startup
+  useEffect(() => {
+    const checkAssignmentImport = () => {
+      try {
+        const assignedPath = decodeFromQuery(window.location.search);
+        if (assignedPath) {
+          // Save the assignment
+          savePath(assignedPath);
+          
+          // Clear URL parameter to avoid reimporting
+          const url = new URL(window.location.href);
+          url.searchParams.delete('assign');
+          window.history.replaceState({}, '', url.toString());
+          
+          // Show success message
+          flash(`📚 Assignment imported: ${assignedPath.name}`, 3000);
+          
+          console.log('[Assignment] Imported assignment:', assignedPath.name, `(${assignedPath.lessonIds.length} lessons)`);
+        }
+      } catch (error) {
+        console.error('[Assignment] Failed to import assignment:', error);
+        flash('❌ Failed to import assignment', 2000);
+      }
+    };
+
+    checkAssignmentImport();
+  }, []); // Run once on mount
 
   // ---- Backpack ----
   const bp = useBackpack();
