@@ -17,6 +17,7 @@ import { learnerCache } from "./learning/model";
 import { inferSkillIdsForLesson, getLessonById, recommendNextPin } from "./learning/policy";
 import { ScoutManager } from "./components/ScoutManager";
 import { RouteListener } from "./components/RouteListener";
+import { useScoutQueue } from './hooks/useScoutQueue';
 import { ProfileProvider, useProfile } from "./profile/context";
 import { Onboarding } from "./onboarding/Onboarding";
 import { decodeFromQuery, savePath } from "./guide/assign";
@@ -394,6 +395,7 @@ function AppContent(){
 
   // ---- Scout system ----
   // Scout messaging now handled by ScoutManager component
+  const { enqueue } = useScoutQueue();
 
   // ---- Journal system ----
   const [showJournal, setShowJournal] = useState(false);
@@ -995,10 +997,10 @@ function AppContent(){
           logEvent({ ts: new Date().toISOString(), loop, biome: openBiome, lessonId: lesson.id, action: 'start' });
           
           // Trigger Scout lesson start event
-          triggerScoutEvent('lessonStart', { 
-            name: profile.name || 'Explorer',
-            lessonTitle: lesson.title,
-            ageBand: profile.ageBand
+          enqueue({
+            id: 'start_lesson',
+            priority: 'info',
+            text: `Let's scout this together, ${profile.name || 'Explorer'}!`
           });
           
           launchLesson(lesson, openBiome);
