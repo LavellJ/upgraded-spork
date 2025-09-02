@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { getBiomeAriaLabel } from '../../data/meta';
 
 // Import biome illustrations
 import jungleBiome from '@assets/93d1f38d-b62e-45ff-ba28-513648083209_1756280426905.png';
@@ -166,8 +167,8 @@ export function Biome({ id, name, subject, position, color, description, onClick
 
   return (
     <>
-    <motion.div
-      className="absolute cursor-pointer group"
+    <motion.button
+      className="absolute cursor-pointer group border-0 bg-transparent p-0"
       style={{ 
         left: position.x + "%", 
         top: position.y + "%",
@@ -177,6 +178,13 @@ export function Biome({ id, name, subject, position, color, description, onClick
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      aria-label={getBiomeAriaLabel(id, name)}
       data-testid={`biome-${id}`}
     >
       {/* Biome Circle */}
@@ -219,7 +227,7 @@ export function Biome({ id, name, subject, position, color, description, onClick
 
       </motion.div>
 
-    </motion.div>
+    </motion.button>
 
     {/* Fixed Position Tooltip */}
     {isHovered && (
