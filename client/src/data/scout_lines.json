@@ -1,36 +1,115 @@
 {
-  "start_lesson": [
-    "Let's scout this together, {name}!",
-    "Ready to explore? I'm right behind you!",
-    "Another adventure awaits, {name}!",
-    "Time to discover something new!"
-  ],
-  "fail_hint": [
-    "Good try. Want a clue?",
-    "Let's take a smaller step first.",
-    "That's okay! Every explorer makes mistakes.",
-    "How about we try a different approach?",
-    "No worries—learning takes practice!"
-  ],
-  "finish": [
-    "Nice! Another step on the trail.",
-    "Well done, {name}! You're getting stronger.",
-    "Excellent work! I knew you could do it.",
-    "That's the spirit of a true explorer!",
-    "You conquered that challenge beautifully!"
-  ],
-  "streak": [
-    "That's {n} in a row—steady as we go!",
-    "Wow! {n} victories in a row, {name}!",
-    "You're on fire with {n} straight wins!",
-    "Amazing streak of {n}! Keep it up!",
-    "Incredible! {n} perfect lessons in a row!"
-  ],
-  "encourage": [
-    "I believe in you, {name}!",
-    "You've got this! I'm here to help.",
-    "Take your time—we're exploring together.",
-    "Every step forward counts!",
-    "You're braver than you think!"
-  ]
+  "start_lesson": {
+    "5-8": [
+      "Let's scout this together, {name}!",
+      "Ready to explore? I'm right behind you!",
+      "Another adventure awaits, {name}!",
+      "Time to discover something new!",
+      "Yay! Let's learn something fun, {name}!"
+    ],
+    "9-12": [
+      "Ready to level up, {name}?",
+      "Time to tackle this challenge together!",
+      "Let's dive into this lesson, {name}!",
+      "Another quest begins—are you ready?",
+      "Time to show what you can do!"
+    ]
+  },
+  "fail_hint": {
+    "5-8": [
+      "Good try! Want a little clue?",
+      "Let's take a smaller step first.",
+      "That's okay! Every explorer makes mistakes.",
+      "How about we try something different?",
+      "No worries—learning takes practice!",
+      "Don't worry, {name}! Let's try again."
+    ],
+    "9-12": [
+      "Nice attempt. Want a hint to help?",
+      "Let's approach this from another angle.",
+      "Good effort! Making mistakes helps us learn.",
+      "How about we break this down step by step?",
+      "No problem, {name}—learning is a process!"
+    ]
+  },
+  "finish": {
+    "5-8": [
+      "Awesome! You did it, {name}!",
+      "Well done! You're getting stronger.",
+      "Excellent work! I knew you could do it.",
+      "That's the spirit of a true explorer!",
+      "You conquered that challenge beautifully!",
+      "Super job! You're amazing!"
+    ],
+    "9-12": [
+      "Excellent work, {name}! Well executed.",
+      "Outstanding! You've mastered that concept.",
+      "Great job! Your skills are really developing.",
+      "Impressive problem-solving, {name}!",
+      "You handled that challenge like a pro!",
+      "Nice! Another step on your learning journey."
+    ]
+  },
+  "streak": {
+    "5-8": [
+      "Wow! {n} in a row, {name}! You're on fire!",
+      "Amazing! {n} victories in a row!",
+      "Super streak of {n}! Keep it up!",
+      "You're doing great with {n} straight wins!",
+      "Incredible! {n} perfect lessons in a row!"
+    ],
+    "9-12": [
+      "That's {n} in a row—excellent consistency!",
+      "Impressive streak of {n}, {name}!",
+      "You're crushing it with {n} straight wins!",
+      "Outstanding run of {n} perfect lessons!",
+      "Remarkable! {n} victories in a row, {name}!"
+    ]
+  },
+  "encourage": {
+    "5-8": [
+      "I believe in you, {name}!",
+      "You've got this! I'm here to help.",
+      "Take your time—we're exploring together.",
+      "Every step forward counts!",
+      "You're braver than you think!",
+      "Don't give up! You can do it!"
+    ],
+    "9-12": [
+      "I have confidence in your abilities, {name}!",
+      "You're capable of more than you realize.",
+      "Stay focused—you're making real progress.",
+      "Challenge yourself and see what you achieve!",
+      "Your determination will pay off!",
+      "Keep pushing forward, {name}!"
+    ]
+  },
+  "hint_1": {
+    "5-8": [
+      "Here's a little clue to help you!",
+      "Let me give you a hint, {name}!",
+      "I have an idea that might help!",
+      "Want to hear my suggestion?"
+    ],
+    "9-12": [
+      "Let me offer some guidance.",
+      "Here's a strategy to consider, {name}.",
+      "Try thinking about it this way.",
+      "I have a suggestion that might help."
+    ]
+  },
+  "hint_2": {
+    "5-8": [
+      "One more clue coming up!",
+      "Let's try another hint, {name}!",
+      "Here's another way to think about it!",
+      "Maybe this will help you see it!"
+    ],
+    "9-12": [
+      "Let me provide another perspective.",
+      "Here's an additional approach to try.",
+      "Consider this alternative method, {name}.",
+      "This might clarify the solution path."
+    ]
+  }
 }

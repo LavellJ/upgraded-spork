@@ -9,6 +9,7 @@ interface ScoutSheetProps {
   detailedMessage?: string;
   showJournalCTA?: boolean;
   onJournalClick?: () => void;
+  onMoreHelpClick?: () => void;
   calm?: boolean;
 }
 
@@ -19,6 +20,7 @@ export function ScoutSheet({
   detailedMessage,
   showJournalCTA = false,
   onJournalClick,
+  onMoreHelpClick,
   calm = false
 }: ScoutSheetProps) {
   const contentVariants = {
@@ -110,8 +112,20 @@ export function ScoutSheet({
           )}
         </div>
 
-        {/* Close Button */}
-        <div className="mt-6 flex justify-end">
+        {/* Action Buttons */}
+        <div className="mt-6 flex gap-3 justify-end">
+          {/* More Help Button */}
+          {onMoreHelpClick && (
+            <button
+              onClick={onMoreHelpClick}
+              className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+              data-testid="scout-more-help-button"
+            >
+              More help
+            </button>
+          )}
+          
+          {/* Close Button */}
           <button
             onClick={onClose}
             className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"

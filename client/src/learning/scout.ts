@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import scoutLines from '../data/scout_lines.json';
+import type { AgeBand } from './model';
 
 // Scout event types
 export type ScoutEvent = 
@@ -26,6 +27,8 @@ interface ScoutState {
   currentStreak: number;
   lastMessageType: ScoutEvent | null;
   lastMessageTime: number;
+  recentMessages: string[]; // LRU cache for repeat suppression
+  moreHelpCount: number; // Track consecutive "more help" requests
 }
 
 // Global scout state
@@ -33,7 +36,9 @@ let scoutState: ScoutState = {
   wrongAnswerCount: 0,
   currentStreak: 0,
   lastMessageType: null,
-  lastMessageTime: 0
+  lastMessageTime: 0,
+  recentMessages: [],
+  moreHelpCount: 0
 };
 
 // Message queue
@@ -52,9 +57,42 @@ function replaceTokens(message: string, tokens: Record<string, string | number> 
   });
 }
 
-// Get random message from array
-function getRandomMessage(messages: string[]): string {
-  return messages[Math.floor(Math.random() * messages.length)];
+// Map age band to age bucket for message selection
+function getAgeBucket(ageBand?: AgeBand): '5-8' | '9-12' {
+  if (!ageBand) return '5-8'; // Default to younger bucket
+  
+  switch (ageBand) {
+    case '5-6':
+    case '7-8':
+      return '5-8';
+    case '9-10':
+    case '11-12':
+      return '9-12';
+    default:
+      return '5-8';
+  }
+}
+
+// Get random message from age-appropriate bucket with LRU suppression
+function getRandomMessage(messageData: Record<string, string[]>, ageBand?: AgeBand): string {
+  const bucket = getAgeBucket(ageBand);
+  const messages = messageData[bucket] || messageData['5-8'] || [];
+  
+  if (messages.length === 0) return "Let's keep exploring!";
+  
+  // Filter out recently used messages if we have enough alternatives
+  const availableMessages = messages.filter(msg => !scoutState.recentMessages.includes(msg));
+  const messagesToUse = availableMessages.length > 0 ? availableMessages : messages;
+  
+  const selectedMessage = messagesToUse[Math.floor(Math.random() * messagesToUse.length)];
+  
+  // Update LRU cache (keep last 3 messages)
+  scoutState.recentMessages.push(selectedMessage);
+  if (scoutState.recentMessages.length > 3) {
+    scoutState.recentMessages.shift();
+  }
+  
+  return selectedMessage;
 }
 
 // Anti-spam: Check if we should show a message
@@ -108,15 +146,16 @@ export function triggerScoutEvent(
     streakCount?: number; 
     lessonTitle?: string;
     isCorrect?: boolean;
+    ageBand?: AgeBand;
   } = {}
 ) {
-  const { name = "Explorer", streakCount = 0, lessonTitle = "", isCorrect = true } = payload;
+  const { name = "Explorer", streakCount = 0, lessonTitle = "", isCorrect = true, ageBand } = payload;
   
   // Handle different event types
   switch (event) {
     case 'lessonStart':
       if (shouldShowMessage(event)) {
-        const message = getRandomMessage(scoutLines.start_lesson);
+        const message = getRandomMessage(scoutLines.start_lesson, ageBand);
         const processedMessage = replaceTokens(message, { name });
         const detailedMessage = lessonTitle ? 
           `We're about to tackle "${lessonTitle}". I'll be here to help if you need any guidance!` : 
@@ -131,7 +170,7 @@ export function triggerScoutEvent(
       
       // Trigger hint after 2 wrong answers
       if (scoutState.wrongAnswerCount >= 2 && shouldShowMessage('fail_hint')) {
-        const message = getRandomMessage(scoutLines.fail_hint);
+        const message = getRandomMessage(scoutLines.fail_hint, ageBand);
         const processedMessage = replaceTokens(message, { name });
         const detailedMessage = "Remember, every mistake is a step toward understanding. Want to try approaching it differently?";
         
@@ -149,14 +188,14 @@ export function triggerScoutEvent(
           
           // Check for streak message first (takes priority)
           if (scoutState.currentStreak >= 3 && shouldShowMessage('streak')) {
-            const message = getRandomMessage(scoutLines.streak);
+            const message = getRandomMessage(scoutLines.streak, ageBand);
             const processedMessage = replaceTokens(message, { name, n: scoutState.currentStreak });
             const detailedMessage = `You've completed ${scoutState.currentStreak} lessons in a row! Your learning momentum is building beautifully.`;
             
             enqueueMessage(createMessage('streak', processedMessage, detailedMessage, true));
           } else {
             // Regular finish message
-            const message = getRandomMessage(scoutLines.finish);
+            const message = getRandomMessage(scoutLines.finish, ageBand);
             const processedMessage = replaceTokens(message, { name });
             const detailedMessage = "Great work! Each lesson completed makes you a stronger learner.";
             
@@ -170,7 +209,7 @@ export function triggerScoutEvent(
       
     case 'encourage':
       if (shouldShowMessage(event)) {
-        const message = getRandomMessage(scoutLines.encourage);
+        const message = getRandomMessage(scoutLines.encourage, ageBand);
         const processedMessage = replaceTokens(message, { name });
         
         enqueueMessage(createMessage(event, processedMessage));
@@ -214,12 +253,34 @@ export function useScout() {
     messageQueueLength: messageQueue.length
   }), []);
   
+  const requestMoreHelp = useCallback((ageBand?: AgeBand, learnerName?: string) => {
+    scoutState.moreHelpCount++;
+    
+    if (scoutState.moreHelpCount >= 2) {
+      // After second help request, offer journal
+      const message = getRandomMessage(scoutLines.hint_2, ageBand);
+      const processedMessage = replaceTokens(message, { name: learnerName || 'Explorer' });
+      const detailedMessage = "Since you're looking for extra support, how about trying a quick Journal session? It's perfect for targeted practice!";
+      
+      enqueueMessage(createMessage('encourage', processedMessage, detailedMessage, true));
+      scoutState.moreHelpCount = 0; // Reset after offering journal
+    } else {
+      // First help request, provide encouragement
+      const message = getRandomMessage(scoutLines.hint_1, ageBand);
+      const processedMessage = replaceTokens(message, { name: learnerName || 'Explorer' });
+      const detailedMessage = "Take your time to think through the problem. Break it down into smaller steps if it helps!";
+      
+      enqueueMessage(createMessage('encourage', processedMessage, detailedMessage));
+    }
+  }, []);
+
   return {
     currentMessage,
     hasMessage: messageQueue.length > 0,
     dismissMessage,
     clearAllMessages,
     getScoutStats,
+    requestMoreHelp,
     triggerEvent: triggerScoutEvent
   };
 }
@@ -230,7 +291,9 @@ export function resetScoutState() {
     wrongAnswerCount: 0,
     currentStreak: 0,
     lastMessageType: null,
-    lastMessageTime: 0
+    lastMessageTime: 0,
+    recentMessages: [],
+    moreHelpCount: 0
   };
   messageQueue = [];
   notifySubscribers();
