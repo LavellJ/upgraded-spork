@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { QuestIsland as QuestIslandMap } from "@/components/QuestIsland/QuestIsland";
 import { FloatingNavigation } from "@/components/FloatingNavigation";
 import { AtmosphericBackground } from "@/components/AtmosphericBackground";
+import { ProgressHUD } from "@/components/ProgressHUD";
 import { getLearnerName } from "@/utils/learnerName";
 
 export default function QuestIslandPage() {
@@ -86,6 +87,9 @@ export default function QuestIslandPage() {
             Complete lessons to unlock new areas and collect amazing treasures!
           </p>
         </motion.div>
+
+        {/* Progress HUD */}
+        <ProgressHUD />
       </div>
     </>
   );
