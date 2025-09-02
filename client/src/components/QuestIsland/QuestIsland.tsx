@@ -9,6 +9,7 @@ import { LessonNode } from "./LessonNode";
 import { getLearnerName } from "@/utils/learnerName";
 import { getAsset } from "../../lib/assetResolver";
 import { ShimmerImage } from "../ShimmerImage";
+import { schedulePrefetch } from "../../pwa/prefetch";
 
 export interface Collectible {
   id: string;
@@ -150,6 +151,12 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       window.history.replaceState({}, '', '/quest-island');
     }
   }, [refetchLessons]);
+
+  // Prefetch assets for next lessons when progress changes
+  useEffect(() => {
+    // Schedule prefetch after lesson progress updates
+    schedulePrefetch(lessonProgress, 100); // 100ms delay to avoid blocking main thread
+  }, [lessonProgress]);
   
   // Dynamic collectibles database - organized by biome categories
   const collectiblesDatabase: Record<string, Collectible[]> = {
@@ -501,6 +508,10 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     
     if (nextLesson) {
       setScoutMessage(`Ready for an adventure? Try "${lessonTitles[nextLesson]}" next!`);
+      
+      // Trigger prefetch for next lessons when compass picks
+      schedulePrefetch(lessonProgress, 0);
+      
       // Move Scout to suggest the next lesson (using exact branch endpoint positions)
       const lessonPositions: Record<string, { x: number; y: number }> = {
         "beach-1": { x: (treeBranches.beach.branches[0].endpoint.x/1200)*100, y: (treeBranches.beach.branches[0].endpoint.y/900)*100 },
