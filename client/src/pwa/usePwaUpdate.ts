@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 interface PwaUpdateState {
   updateAvailable: boolean;
   showInstallPrompt: boolean;
+  cacheStatus: Record<string, number>;
   reloadApp: () => void;
   installApp: () => void;
 }
@@ -11,6 +12,7 @@ export function usePwaUpdate(): PwaUpdateState {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [cacheStatus, setCacheStatus] = useState<Record<string, number>>({});
 
   useEffect(() => {
     // Listen for service worker updates
@@ -19,12 +21,25 @@ export function usePwaUpdate(): PwaUpdateState {
         setUpdateAvailable(true);
       });
 
+      // Listen for service worker messages
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        const { data } = event;
+        
+        if (data.type === 'ASSET_CACHED') {
+          console.log('New asset cached:', data.url);
+          // Could show a subtle notification here
+        }
+      });
+
       // Check for waiting service worker
       navigator.serviceWorker.getRegistration().then((registration) => {
         if (registration?.waiting) {
           setUpdateAvailable(true);
         }
       });
+
+      // Get initial cache status
+      getCacheStatus();
     }
 
     // Listen for install prompt
@@ -46,6 +61,28 @@ export function usePwaUpdate(): PwaUpdateState {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
   }, []);
+
+  const getCacheStatus = async () => {
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration?.active) {
+          const messageChannel = new MessageChannel();
+          
+          messageChannel.port1.onmessage = (event) => {
+            setCacheStatus(event.data);
+          };
+
+          registration.active.postMessage(
+            { type: 'GET_CACHE_STATUS' },
+            [messageChannel.port2]
+          );
+        }
+      } catch (error) {
+        console.log('Could not get cache status:', error);
+      }
+    }
+  };
 
   const reloadApp = () => {
     if ('serviceWorker' in navigator) {
@@ -77,6 +114,7 @@ export function usePwaUpdate(): PwaUpdateState {
   return {
     updateAvailable,
     showInstallPrompt,
+    cacheStatus,
     reloadApp,
     installApp
   };
