@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef, type ReactNode } from 'react';
 import { loadProfile, saveProfile, type Profile } from './model';
 import { learnerCache } from '../learning/model';
+import { track } from '../telemetry/events';
 
 interface ProfileContextValue {
   profile: Profile;
@@ -35,6 +36,14 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
     };
     setProfile(updatedProfile);
     saveProfile(updatedProfile);
+
+    // Track profile edits
+    track('profile_edit', {
+      editedAt: new Date().toISOString(),
+      fieldsChanged: Object.keys(updates),
+      profileHasName: !!updatedProfile.name,
+      ageBand: updatedProfile.ageBand
+    });
 
     // If age band changed, seed learner model
     if (updates.ageBand && updates.ageBand !== previousAgeBand.current) {

@@ -3,6 +3,7 @@ import { BottomSheet } from '../components/BottomSheet';
 import { useProfile } from '../profile/context';
 import { AVATARS, type AvatarId } from '../assets/ui/avatars';
 import { getCleanNameOrFallback, containsProfanity } from './profanityFilter';
+import { track } from '../telemetry/events';
 import type { AgeBand } from '../profile/model';
 
 interface OnboardingProps {
@@ -30,6 +31,15 @@ export function Onboarding({ open, onClose }: OnboardingProps) {
       mainHeadingRef.current.focus();
     }
   }, [currentStep, open]);
+
+  // Track onboarding start
+  useEffect(() => {
+    if (open && currentStep === 'welcome') {
+      track('onboarding_start', { 
+        timestamp: new Date().toISOString()
+      });
+    }
+  }, [open]);
 
   const handleNext = () => {
     switch (currentStep) {
@@ -62,6 +72,15 @@ export function Onboarding({ open, onClose }: OnboardingProps) {
         updateProfile({ 
           calmMode: true, 
           reducedMotion: true 
+        });
+        // Track onboarding completion
+        track('onboarding_complete', {
+          completedAt: new Date().toISOString(),
+          finalProfile: {
+            hasName: !!nameInput || !!getCleanNameOrFallback(nameInput),
+            ageBand: selectedAge,
+            avatarId: selectedAvatar
+          }
         });
         onClose();
         break;
