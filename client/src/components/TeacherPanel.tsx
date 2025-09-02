@@ -5,6 +5,8 @@ import { ThemeToggle } from './ThemeToggle';
 import { learnerCache } from '../learning/model';
 import { computeInsights } from '../learning/insights';
 import type { SkillInsight } from '../learning/insights';
+import { useProfile } from '../profile/context';
+import type { AgeBand } from '../profile/model';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -60,6 +62,9 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   const [exportLink, setExportLink] = useState('');
   const [snaps, setSnaps] = useState<Snapshot[]>(() => loadSnaps());
   const [showAuthoring, setShowAuthoring] = useState(false);
+  
+  // Profile context
+  const { profile, updateProfile } = useProfile();
   
   // Compute insights data
   const learnerState = learnerCache.getState();
@@ -150,6 +155,73 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
           <div className="space-y-4 overflow-auto">
           <div><label className="block text-sm font-semibold mb-2">Standards Framework</label><select value={framework} onChange={(e) => setFramework(e.target.value)} className="w-full px-3 py-2 border rounded-lg bg-white">{frameworks.map(f => <option key={f} value={f}>{f}</option>)}</select><div className="text-[11px] text-stone-600 mt-1">This sets which framework code appears in Lesson Detail. (Registry supports Generic / ACARA / NZC.)</div></div>
           <div><label className="flex items-center gap-2"><input type="checkbox" checked={protoOnly} onChange={(e) => setProtoOnly(e.target.checked)} className="rounded" />Use prototype-only mode</label><div className="text-xs text-stone-600 mt-1">When enabled, all activities use in-app prototypes instead of external links.</div></div>
+          
+          {/* Learner Profile Card */}
+          <div className="mt-4 border-t pt-3">
+            <div className="text-sm font-semibold mb-2">
+              👤 Learner Profile (beta)
+              <span className="ml-2 text-xs text-stone-500 font-normal">
+                Updated: {new Date(profile.updatedAt).toLocaleDateString()}
+              </span>
+            </div>
+            <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+              <div className="space-y-3">
+                {/* Name field */}
+                <div>
+                  <label htmlFor="learner-name" className="block text-xs font-medium text-purple-800 mb-1">
+                    Name / Nickname
+                  </label>
+                  <input
+                    id="learner-name"
+                    type="text"
+                    value={profile.name || ''}
+                    onChange={(e) => updateProfile({ name: e.target.value })}
+                    placeholder="Enter learner's name..."
+                    className="w-full px-2 py-1 text-sm border rounded bg-white"
+                    data-testid="input-learner-name"
+                  />
+                </div>
+                
+                {/* Age band field */}
+                <div>
+                  <label htmlFor="age-band" className="block text-xs font-medium text-purple-800 mb-1">
+                    Age Band
+                  </label>
+                  <select
+                    id="age-band"
+                    value={profile.ageBand || ''}
+                    onChange={(e) => updateProfile({ ageBand: e.target.value as AgeBand })}
+                    className="w-full px-2 py-1 text-sm border rounded bg-white"
+                    data-testid="select-age-band"
+                  >
+                    <option value="">Select age band...</option>
+                    <option value="5-6">5-6 years</option>
+                    <option value="7-8">7-8 years</option>
+                    <option value="9-10">9-10 years</option>
+                    <option value="11-12">11-12 years</option>
+                  </select>
+                </div>
+                
+                {/* Calm mode toggle */}
+                <div>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={profile.calmMode}
+                      onChange={(e) => updateProfile({ calmMode: e.target.checked })}
+                      className="rounded"
+                      data-testid="checkbox-calm-mode"
+                    />
+                    <span className="text-xs font-medium text-purple-800">Calm Mode</span>
+                  </label>
+                  <div className="text-[11px] text-purple-600 mt-1">
+                    Reduces animations and sounds for a more peaceful experience
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
           <div><div className="text-sm font-semibold mb-2">Progress Overview</div><div className="grid grid-cols-2 gap-2">{Object.entries(SUBJECTS).map(([biome, subject]) => (<div key={biome} className="p-2 bg-stone-50 rounded-lg"><div className="flex items-center justify-between mb-1"><span className="text-xs font-medium">{subject.label}</span><span className="text-xs text-stone-600">{done[biome]}/{totals[biome]}</span></div><div className="h-1.5 bg-stone-200 rounded"><div className="h-1.5 rounded" style={{ width: `${totals[biome] ? (done[biome]/totals[biome])*100 : 0}%`, background: subject.color }} /></div></div>))}</div><div className="mt-4"><label className="flex items-center gap-2"><input type="checkbox" checked={teacherPins} onChange={(e)=>setTeacherPins(e.target.checked)} className="rounded" />Show lesson pins on map (Teacher)</label><div className="text-[11px] text-stone-600 mt-1">Hidden by default. When Compass is equipped, only the next lesson pin shows.</div></div></div>
           <div><div className="text-sm font-semibold mb-2">Export Progress</div><div className="flex gap-2 flex-wrap"><button onClick={() => { const link = onExport(); try { navigator.clipboard.writeText(link); } catch {} alert('Progress link copied to clipboard.'); }} className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out">Copy progress link</button><button onClick={() => { const link = onExport(); try { navigator.clipboard.writeText(link); } catch {} const next = [{ ts: new Date().toISOString(), loop, link }, ...snaps].slice(0, 5); setSnaps(next); saveSnaps(next); alert('Snapshot saved (and link copied).'); }} className="px-3 py-2 rounded-lg border bg-white hover:bg-stone-50 transition ease-out">Save snapshot</button>{exportLink && <div className="mt-2 p-2 bg-stone-100 rounded-lg text-xs break-all">{exportLink}</div>}</div><div className="mt-3"><div className="text-sm font-semibold mb-1">Snapshots (last 5)</div>{snaps.length === 0 ? (<div className="text-xs text-stone-500">No snapshots yet.</div>) : (<ul className="space-y-1">{snaps.map((s, i) => (<li key={s.ts + i} className="flex items-center gap-2 text-xs"><span className="opacity-70">{new Date(s.ts).toLocaleString()}</span><span className="opacity-70">• Loop {s.loop}</span><button onClick={() => { try { navigator.clipboard.writeText(s.link); } catch {} alert('Snapshot link copied.'); }} className="ml-2 px-2 py-1 rounded-full border bg-white hover:bg-stone-50">Copy</button><button onClick={() => onImport(s.link)} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50">Restore</button></li>))}</ul>)}{snaps.length > 0 && (<button onClick={() => { setSnaps([]); saveSnaps([]); }} className="mt-2 px-2 py-1 rounded-full border bg-white hover:bg-stone-50 text-[11px] text-stone-600">Clear snapshots</button>)}</div></div>
           <div><div className="text-sm font-semibold mb-2">Import Progress</div><div className="flex gap-2 mb-2"><label className="sr-only" htmlFor="import-input">Import progress link or token</label><input id="import-input" value={importValue} onChange={(e) => setImportValue(e.target.value)} placeholder="Paste progress link or token" className="flex-1 px-3 py-2 border rounded-lg" /><button onClick={handlePaste} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 text-xs" aria-label="Paste from clipboard">Paste</button><button onClick={handleImport} className="px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition ease-out">Import</button></div></div>
