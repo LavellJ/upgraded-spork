@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BottomSheet } from "./components/BottomSheet";
 import { useBackpack, hasEquipped } from "./hooks/useBackpack";
+import { useSfx } from "./hooks/useSfx";
 import { BackpackSheet } from "./components/BackpackSheet";
 import { ActivityPlayer } from "./components/ActivityPlayer";
 import { LessonSheet } from "./components/LessonSheet";
@@ -380,6 +381,9 @@ export default function App(){
   // ---- Backpack ----
   const bp = useBackpack();
 
+  // ---- SFX hook ----
+  const sfx = useSfx();
+
   // ---- Time of day ----
   const tod = inferTimeOfDay();
 
@@ -526,7 +530,9 @@ export default function App(){
 
       if (e.key === 'b' || e.key === 'B') {
         e.preventDefault();
+        const isOpening = !showBP;
         setShowBP(v => !v);
+        if (isOpening) sfx.play('ui_open');
         return;
       }
       if (e.key === 'c' || e.key === 'C') {
@@ -587,6 +593,7 @@ export default function App(){
 
     if (allDone) {
       setCelebrate(true);
+      sfx.play('award_get', { volume: 0.5 }); // Celebration sound
       const t=setTimeout(()=>{
         setCelebrate(false);
         setLoop(l=>l+1); // show Loop 2 in header
@@ -624,7 +631,7 @@ export default function App(){
   }
 
   // ---- Event handlers ----
-  const markComplete = (biome,lessonId)=>{ const collectibles = ['🧰','🏅','🖋️','🎨','🔍']; const items = ['Field Kit','Merit Badge','Quill Pen','Sketch Pad','Looking Glass']; const kinds = ['tool','badge','tool','tool','tool'] as const; const rnd = Math.floor(Math.random()*collectibles.length); const awardId = `${biome}-${lessonId}`; setComp(p=>({...p,[biome]:new Set([...p[biome],lessonId])})); bp.award({id:awardId,name:items[rnd],kind:kinds[rnd],icon:collectibles[rnd]}); logEvent({ ts: new Date().toISOString(), loop, biome, lessonId, action: 'award', meta: { awardId, name: items[rnd] } }); setToast(`Collected ${items[rnd]}!`); setTimeout(()=>setToast(null),2000); };
+  const markComplete = (biome,lessonId)=>{ const collectibles = ['🧰','🏅','🖋️','🎨','🔍']; const items = ['Field Kit','Merit Badge','Quill Pen','Sketch Pad','Looking Glass']; const kinds = ['tool','badge','tool','tool','tool'] as const; const rnd = Math.floor(Math.random()*collectibles.length); const awardId = `${biome}-${lessonId}`; setComp(p=>({...p,[biome]:new Set([...p[biome],lessonId])})); bp.award({id:awardId,name:items[rnd],kind:kinds[rnd],icon:collectibles[rnd]}); sfx.play('award_get'); logEvent({ ts: new Date().toISOString(), loop, biome, lessonId, action: 'award', meta: { awardId, name: items[rnd] } }); setToast(`Collected ${items[rnd]}!`); setTimeout(()=>setToast(null),2000); };
   // Is this lesson locked (sequential gating)?
   const isLessonLocked = (biome: string, lessonId: string) => {
     if (teacherMode) return false; // override
@@ -711,9 +718,9 @@ export default function App(){
           </div>
           <div className="flex items-center gap-2">
             <button onClick={()=>setCalm(p=>!p)} className={cx("w-10 h-10 rounded-full border transition ease-out", calm?"bg-blue-100 border-blue-300":"bg-white/50 border-white/70")} title={calm?"Disable calm mode":"Enable calm mode"}>😌</button>
-            <button onClick={()=>setShowBP(true)} className="w-10 h-10 rounded-full bg-amber-100 hover:bg-amber-200 border border-amber-300 flex items-center justify-center transition ease-out">🎒</button>
+            <button onClick={()=>{ setShowBP(true); sfx.play('ui_open'); }} className="w-10 h-10 rounded-full bg-amber-100 hover:bg-amber-200 border border-amber-300 flex items-center justify-center transition ease-out">🎒</button>
             <button onClick={()=>setTeacherMode(p=>!p)} className={cx("px-3 py-2 rounded-full border transition ease-out", teacherMode?"bg-emerald-100 border-emerald-300 text-emerald-800":"bg-white/50 border-white/70 hover:bg-white/70")}>{teacherMode?'Teacher ✓':'Teacher'}</button>
-            {teacherMode&&<button onClick={()=>setShowTeacher(true)} className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 flex items-center justify-center transition ease-out">⚙️</button>}
+            {teacherMode&&<button onClick={()=>{ setShowTeacher(true); sfx.play('ui_open'); }} className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 flex items-center justify-center transition ease-out">⚙️</button>}
           </div>
         </header>
 
@@ -804,9 +811,9 @@ export default function App(){
               return !(s && s.size && s.size > 0);
             };
             
-            if (wasEmptyBefore(prev, 'forest'))  bp.award({ id:'tool_binocs',   name:'Binoculars', kind:'tool',  icon:'🔭' });
-            if (wasEmptyBefore(prev, 'desert'))  bp.award({ id:'tool_compass',  name:'Compass',    kind:'tool',  icon:'🧭' });
-            if (wasEmptyBefore(prev, 'ocean'))   bp.award({ id:'charm_feather', name:'Feather',    kind:'charm', icon:'🪶' });
+            if (wasEmptyBefore(prev, 'forest'))  { bp.award({ id:'tool_binocs',   name:'Binoculars', kind:'tool',  icon:'🔭' }); sfx.play('pin_unlock'); }
+            if (wasEmptyBefore(prev, 'desert'))  { bp.award({ id:'tool_compass',  name:'Compass',    kind:'tool',  icon:'🧭' }); sfx.play('pin_unlock'); }
+            if (wasEmptyBefore(prev, 'ocean'))   { bp.award({ id:'charm_feather', name:'Feather',    kind:'charm', icon:'🪶' }); sfx.play('pin_unlock'); }
             
             return next;
          });
@@ -848,9 +855,9 @@ export default function App(){
               return !(s && s.size && s.size > 0);
             };
             
-            if (wasEmptyBefore(prev, 'forest'))  bp.award({ id:'tool_binocs',   name:'Binoculars', kind:'tool',  icon:'🔭' });
-            if (wasEmptyBefore(prev, 'desert'))  bp.award({ id:'tool_compass',  name:'Compass',    kind:'tool',  icon:'🧭' });
-            if (wasEmptyBefore(prev, 'ocean'))   bp.award({ id:'charm_feather', name:'Feather',    kind:'charm', icon:'🪶' });
+            if (wasEmptyBefore(prev, 'forest'))  { bp.award({ id:'tool_binocs',   name:'Binoculars', kind:'tool',  icon:'🔭' }); sfx.play('pin_unlock'); }
+            if (wasEmptyBefore(prev, 'desert'))  { bp.award({ id:'tool_compass',  name:'Compass',    kind:'tool',  icon:'🧭' }); sfx.play('pin_unlock'); }
+            if (wasEmptyBefore(prev, 'ocean'))   { bp.award({ id:'charm_feather', name:'Feather',    kind:'charm', icon:'🪶' }); sfx.play('pin_unlock'); }
             
             // pick the next unfinished lesson in this biome
             const nextLesson = (LESSONS[biome] || []).find(l => !nextSet.has(l.id));
