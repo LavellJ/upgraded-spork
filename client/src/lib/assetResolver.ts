@@ -12,6 +12,7 @@ export type UIId = 'backpack' | 'balloon' | 'lock' | 'progress' | 'treasuremap' 
 export type ToolId = 'compass' | 'binocs' | 'journal' | 'timer';
 export type AudioId = 'ambient-morning' | 'ambient-day' | 'ambient-evening' | 'ambient-night' |
                      'music-background' | 'music-celebration' | 'music-focus' |
+                     'sfx-ui-open' | 'sfx-pin-unlock' | 'sfx-award-get' | 'sfx-step-nav' |
                      'sfx-collect' | 'sfx-unlock' | 'sfx-complete' | 'sfx-error' | 'sfx-success';
 
 // Asset path configurations
@@ -112,7 +113,7 @@ export function getAsset(type: AssetType, id: string): string {
     const path = buildAssetPath(type, id);
     
     // In development, return the path as-is and let Vite handle module resolution
-    if (import.meta.env?.DEV) {
+    if (typeof import.meta.env !== 'undefined' && import.meta.env.DEV) {
       return path;
     }
     
