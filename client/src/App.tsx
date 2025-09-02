@@ -11,7 +11,7 @@ import IslandBackdrop from "./components/IslandBackdrop";
 import LOOP2 from "./data/loop2.json";
 import { logEvent } from "./lib/analytics";
 import { learnerCache } from "./learning/model";
-import { inferSkillIdsForLesson, getLessonById } from "./learning/policy";
+import { inferSkillIdsForLesson, getLessonById, recommendNextPin } from "./learning/policy";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -690,6 +690,64 @@ export default function App(){
   // ---- Pin visibility helpers ----
   const nextUnfinishedId = (biome: string, done: Set<string>) =>
     (LESSONS[biome] || []).find((l:any) => !done.has(l.id))?.id ?? null;
+
+  // ---- Adaptive lesson selection ----
+  const getAdaptiveNextLesson = (currentBiome?: string): { lessonId: string | null; reasoning?: string } => {
+    const learnerState = learnerCache.getState();
+    
+    // Build candidates from unlocked lessons
+    const candidates: string[] = [];
+    const candidateInfo: Array<{id: string, biome: string, title: string}> = [];
+    
+    const biomesToCheck = currentBiome ? [currentBiome] : Object.keys(LESSONS);
+    
+    for (const biome of biomesToCheck) {
+      const lessons = LESSONS[biome] || [];
+      const doneSet = comp[biome] as Set<string>;
+      
+      for (let i = 0; i < lessons.length; i++) {
+        const lesson = lessons[i];
+        const isLocked = i > 0 && !doneSet.has(lessons[i-1].id) && !teacherMode;
+        const isCompleted = doneSet.has(lesson.id);
+        
+        // Include if unlocked and not completed
+        if (!isLocked && !isCompleted) {
+          candidates.push(lesson.id);
+          candidateInfo.push({
+            id: lesson.id,
+            biome: biome,
+            title: lesson.title || lesson.id
+          });
+        }
+      }
+    }
+    
+    if (candidates.length === 0) {
+      return { lessonId: null };
+    }
+    
+    // Use adaptive selection
+    const recommended = recommendNextPin(candidates, learnerState, loop);
+    
+    // Generate reasoning for DEV mode  
+    let reasoning = '';
+    if (recommended && (import.meta.env?.DEV || teacherMode)) {
+      const lessonInfo = candidateInfo.find(c => c.id === recommended);
+      if (lessonInfo) {
+        const lesson = getLessonById(recommended);
+        if (lesson) {
+          const skillIds = inferSkillIdsForLesson(lesson);
+          const skillMasteries = skillIds.map(skillId => {
+            const skill = learnerState.skills[skillId];
+            return `${skillId}: ${skill ? (skill.p * 100).toFixed(0) : 50}%`;
+          });
+          reasoning = `${lessonInfo.title} (${lessonInfo.biome})\nSkills: ${skillMasteries.join(', ')}`;
+        }
+      }
+    }
+    
+    return { lessonId: recommended, reasoning };
+  };
   
   const showAnyPins = (teacherMode && teacherPins) || hasEquipped(bp, 'tool_compass');
 
@@ -753,7 +811,10 @@ export default function App(){
             {showAnyPins && Object.entries(lessonPos).map(([biome, positions]) => {
               const lessons = LESSONS[biome] || [];
               const doneSet = comp[biome] as Set<string>;
-              const nextId = hasEquipped(bp, 'tool_compass') ? nextUnfinishedId(biome, doneSet) : null;
+              
+              // Use adaptive selection when compass is equipped
+              const adaptiveResult = hasEquipped(bp, 'tool_compass') ? getAdaptiveNextLesson(biome) : { lessonId: null };
+              const nextId = adaptiveResult.lessonId;
 
               return lessons.map((lesson, i) => {
                 // If compass is the only reason pins are visible, show *only* the next unfinished pin.
@@ -777,6 +838,17 @@ export default function App(){
                         isNext={lesson.id === nextId}
                         onLocked={() => flash('Finish the previous lesson to unlock this one')}
                       />
+                      
+                      {/* DEV Mode: "Why this?" tooltip for adaptive selections */}
+                      {lesson.id === nextId && adaptiveResult.reasoning && teacherMode && (
+                        <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-[60] pointer-events-none">
+                          <div className="bg-blue-900/95 text-white text-xs rounded-lg px-2 py-1 shadow-lg max-w-48 text-center whitespace-pre-line">
+                            <div className="font-semibold mb-1">Why this?</div>
+                            {adaptiveResult.reasoning}
+                          </div>
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-blue-900/95"></div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
