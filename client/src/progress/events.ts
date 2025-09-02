@@ -5,7 +5,8 @@ export type ProgressEvent =
   | { kind: 'lesson_start'; at: number; lessonId: string; biomeId: string }
   | { kind: 'lesson_finish'; at: number; lessonId: string; biomeId: string; durationSec?: number; result?: 'pass' | 'retry' }
   | { kind: 'journal_start'; at: number; skillId: string }
-  | { kind: 'journal_finish'; at: number; skillId: string; n: number; correct: number; durationSec?: number };
+  | { kind: 'journal_finish'; at: number; skillId: string; n: number; correct: number; durationSec?: number }
+  | { kind: 'scout_msg'; at: number; messageId: string; priority: 'info' | 'actionable' | 'critical'; text: string; cta?: { label: string; clicked?: boolean }; dismissed?: boolean };
 
 const STORAGE_KEY = 'qi.progress.history.v1';
 const MAX_EVENTS = 5000;
