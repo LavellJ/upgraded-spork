@@ -21,6 +21,7 @@ import { ScoutDebugCard } from "./components/ScoutDebugCard";
 import { PwaUpdateToast } from "./components/PwaUpdateToast";
 import { OfflineBanner } from "./components/OfflineBanner";
 import { useScoutQueue } from './hooks/useScoutQueue';
+import { useSyncEngine } from './sync/engine';
 import { ProfileProvider, useProfile } from "./profile/context";
 import { Onboarding } from "./onboarding/Onboarding";
 import { decodeFromQuery, savePath } from "./guide/assign";
@@ -366,6 +367,9 @@ function LessonNode({biome,lesson,completed,onSelect,pos,locked,isNext,onLocked}
 // Main App Component
 // --------------------------------------
 function AppContent(){
+  // ---- Sync engine initialization ----
+  useSyncEngine(); // Start sync loop
+  
   // ---- Profile context for calm mode and other settings ----
   const { profile, updateProfile } = useProfile();
   const calm = profile.calmMode;

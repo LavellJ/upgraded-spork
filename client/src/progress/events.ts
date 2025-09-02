@@ -39,6 +39,7 @@ export function loadEvents(): ProgressEvent[] {
 /**
  * Add a new progress event and persist to localStorage
  * Maintains max events limit by removing oldest events
+ * Also enqueues event for sync when online
  */
 export function pushEvent(event: ProgressEvent): void {
   try {
@@ -54,6 +55,21 @@ export function pushEvent(event: ProgressEvent): void {
     
     // Persist to storage
     localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmedEvents));
+    
+    // Enqueue for sync to backend
+    try {
+      // Dynamic import to avoid circular dependencies
+      import('../sync/queue').then(({ enqueue }) => {
+        enqueue({
+          kind: 'event',
+          payload: event,
+          id: `event-${event.at}-${event.kind}`,
+          at: event.at
+        });
+      });
+    } catch (syncError) {
+      console.warn('Failed to enqueue event for sync:', syncError);
+    }
     
     // Log in development for debugging
     if (process.env.NODE_ENV === 'development') {

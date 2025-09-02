@@ -224,6 +224,21 @@ export function JournalSheet({
       const existing = JSON.parse(localStorage.getItem(JOURNAL_HISTORY_KEY) || '[]');
       const updated = [entry, ...existing].slice(0, 50); // Keep last 50 sessions
       localStorage.setItem(JOURNAL_HISTORY_KEY, JSON.stringify(updated));
+      
+      // Enqueue for sync to backend
+      try {
+        // Dynamic import to avoid circular dependencies
+        import('../sync/queue').then(({ enqueue }) => {
+          enqueue({
+            kind: 'learner',
+            payload: entry,
+            id: `learner-${entry.sessionId}-${entry.date}`,
+            at: Date.now()
+          });
+        });
+      } catch (syncError) {
+        console.warn('Failed to enqueue journal session for sync:', syncError);
+      }
     } catch (error) {
       console.error('Failed to save journal history:', error);
     }
