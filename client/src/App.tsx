@@ -19,6 +19,7 @@ import { ScoutManager } from "./components/ScoutManager";
 import { RouteListener } from "./components/RouteListener";
 import { ScoutDebugCard } from "./components/ScoutDebugCard";
 import { PwaUpdateToast } from "./components/PwaUpdateToast";
+import { OfflineBanner } from "./components/OfflineBanner";
 import { useScoutQueue } from './hooks/useScoutQueue';
 import { ProfileProvider, useProfile } from "./profile/context";
 import { Onboarding } from "./onboarding/Onboarding";
@@ -1069,6 +1070,9 @@ function AppContent(){
 
       {/* PWA Update Toast */}
       <PwaUpdateToast />
+
+      {/* Offline Banner */}
+      <OfflineBanner />
 
       {/* Journal Sheet */}
       <JournalSheet

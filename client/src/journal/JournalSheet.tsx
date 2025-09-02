@@ -7,6 +7,7 @@ import { learnerCache } from '../learning/model';
 import { nanoid } from 'nanoid';
 import { pushEvent } from '../progress/events';
 import { ReflectionPrompt } from '../reflections/ReflectionPrompt';
+import { useOnline } from '../pwa/useOnline';
 
 interface JournalSheetProps {
   open: boolean;
@@ -50,6 +51,7 @@ export function JournalSheet({
   calm = false,
   onComplete 
 }: JournalSheetProps) {
+  const { online } = useOnline();
   const [session, setSession] = useState<JournalSession | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
@@ -193,6 +195,7 @@ export function JournalSheet({
       duration: totalDuration,
       masteryBefore: skillBefore?.p || 0.5,
       masteryAfter: learnerState.skills[skillId!]?.p || 0.5,
+      offline: !online, // Mark session as offline if not online
       // Extended fields for review functionality
       sessionId: session.id,
       targetLevel: session.targetLevel,

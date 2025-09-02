@@ -5,6 +5,7 @@ import { Card, CardContent } from './ui/card';
 import { useProfile } from '../profile/context';
 import { loadEvents, overallCompletion, biomeCompletion, dayStreak, lastJournalRecap } from '../progress';
 import type { Lesson } from '../progress';
+import { PendingSyncIndicator } from './PendingSyncIndicator';
 
 // Biome definitions matching ActivityPlayer
 const BIOMES = {
@@ -130,6 +131,7 @@ export function ProgressHUD({ className = '' }: ProgressHUDProps) {
                   {overall.completed}/{overall.total} lessons
                 </p>
               </div>
+              <PendingSyncIndicator pendingCount={0} className="ml-auto" />
             </div>
             
             <button

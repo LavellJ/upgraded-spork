@@ -40,6 +40,7 @@ export const journalHistoryEntry = z.object({
   duration: z.number(),
   masteryBefore: z.number(),
   masteryAfter: z.number(),
+  offline: z.boolean().optional(), // Track if session was completed offline
   // Extended fields for review functionality
   sessionId: z.string(),
   targetLevel: z.enum(['easy', 'core', 'stretch']),
