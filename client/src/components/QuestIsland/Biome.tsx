@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { getBiomeAriaLabel } from '../../data/meta';
 import { getAsset, type BiomeId } from '../../lib/assetResolver';
+import { ShimmerImage } from '../ShimmerImage';
 
 interface BiomeProps {
   id: string;
@@ -199,21 +200,20 @@ export function Biome({ id, name, subject, position, color, description, onClick
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       >
         {/* Biome image background */}
-        <div 
-          className="absolute inset-0 rounded-full"
-          style={getBiomeImage() ? {
-            backgroundImage: `url(${getBiomeImage()})`,
-            backgroundSize: '110%',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            imageRendering: 'auto',
-            WebkitBackfaceVisibility: 'hidden' as any,
-            backfaceVisibility: 'hidden',
-            WebkitTransform: 'translateZ(0)' as any,
-            transform: 'translateZ(0)',
-            filter: 'blur(0px)',
-          } : {}}
-        />
+        {getBiomeImage() ? (
+          <div className="absolute inset-0 rounded-full overflow-hidden">
+            <ShimmerImage
+              src={getBiomeImage()}
+              alt={`${name} biome background`}
+              width={246}
+              height={246}
+              className="rounded-full scale-110 object-cover"
+              priority
+            />
+          </div>
+        ) : (
+          <div className="absolute inset-0 rounded-full" />
+        )}
         
         {/* Fallback gradient background for biomes without images */}
         {!getBiomeImage() && (

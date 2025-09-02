@@ -8,6 +8,7 @@ import { JourneyJournal } from "./JourneyJournal";
 import { LessonNode } from "./LessonNode";
 import { getLearnerName } from "@/utils/learnerName";
 import { getAsset } from "../../lib/assetResolver";
+import { ShimmerImage } from "../ShimmerImage";
 
 export interface Collectible {
   id: string;
@@ -650,9 +651,11 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
           whileTap={{ scale: 0.95 }}
           data-testid="treasure-map-progress-button"
         >
-          <img 
-            src={getAsset('ui', 'progress')} 
-            alt="Treasure Map Progress" 
+          <ShimmerImage
+            src={getAsset('ui', 'progress')}
+            alt="Treasure Map Progress"
+            width={288}
+            height={288}
             className="w-72 h-72 drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-300"
           />
           {/* Progress overlay - Lesson completion count */}
@@ -679,15 +682,19 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         >
           <div className="relative w-72 h-72">
             {/* Default Backpack (normal state) */}
-            <img 
-              src={getAsset('ui', 'backpack')} 
-              alt="Backpack" 
+            <ShimmerImage
+              src={getAsset('ui', 'backpack')}
+              alt="Backpack"
+              width={288}
+              height={288}
               className="absolute inset-0 w-full h-full drop-shadow-lg group-hover:drop-shadow-xl opacity-100 group-hover:opacity-0 transition-all duration-300"
             />
             {/* Hover Backpack (hover state) */}
-            <img 
-              src="/attached_assets/b6342ccf-f378-4db5-84a1-5f2509a39eb0_1756299357065.png" 
+            <ShimmerImage
+              src="/attached_assets/b6342ccf-f378-4db5-84a1-5f2509a39eb0_1756299357065.png"
               alt="Backpack Hover"
+              width={288}
+              height={288}
               className="absolute inset-0 w-full h-full object-contain drop-shadow-lg group-hover:drop-shadow-xl opacity-0 group-hover:opacity-100 scale-125 transition-all duration-300"
             />
           </div>
@@ -713,9 +720,11 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             
             {/* Adventure Trail - Kidney Shape */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <img 
-                src={getAsset('ui', 'treasuremap')} 
+              <ShimmerImage
+                src={getAsset('ui', 'treasuremap')}
                 alt="Adventure Trail"
+                width={1815}
+                height={1403}
                 className="w-[1815px] h-[1403px] object-contain opacity-95"
                 style={{
                   filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.3))',
