@@ -131,7 +131,7 @@ export function ProgressHUD({ className = '' }: ProgressHUDProps) {
                   {overall.completed}/{overall.total} lessons
                 </p>
               </div>
-              <PendingSyncIndicator pendingCount={0} className="ml-auto" />
+              <PendingSyncIndicator className="ml-auto" />
             </div>
             
             <button
