@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, type ReactNode } from 'react';
 import { loadProfile, saveProfile, type Profile } from './model';
+import { learnerCache } from '../learning/model';
 
 interface ProfileContextValue {
   profile: Profile;
@@ -23,6 +24,7 @@ interface ProfileProviderProps {
 
 export function ProfileProvider({ children }: ProfileProviderProps) {
   const [profile, setProfile] = useState<Profile>(() => loadProfile());
+  const previousAgeBand = useRef(profile.ageBand);
 
   const updateProfile = (updates: Partial<Profile>) => {
     const updatedProfile = {
@@ -33,6 +35,12 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
     };
     setProfile(updatedProfile);
     saveProfile(updatedProfile);
+
+    // If age band changed, seed learner model
+    if (updates.ageBand && updates.ageBand !== previousAgeBand.current) {
+      learnerCache.seedForAgeBand(updates.ageBand);
+      previousAgeBand.current = updates.ageBand;
+    }
   };
 
   const toggleCalmMode = () => {

@@ -758,7 +758,7 @@ function AppContent(){
     }
     
     // Use adaptive selection
-    const recommended = recommendNextPin(candidates, learnerState, loop);
+    const recommended = recommendNextPin(candidates, learnerState, loop, profile.ageBand);
     
     // Generate reasoning for DEV mode  
     let reasoning = '';

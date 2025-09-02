@@ -1,4 +1,5 @@
 export type SkillId = string;
+export type AgeBand = '5-6' | '7-8' | '9-10' | '11-12';
 
 export type Mastery = {
   p: number;        // probability/confidence 0..1
@@ -110,6 +111,59 @@ export function decayMastery(state: LearnerState, now: number = Date.now()): Lea
   return hasChanges ? { ...state } : state;
 }
 
+// Initialize skill baselines based on age band
+export function initSeed(state: LearnerState, ageBand: AgeBand): LearnerState {
+  // Define skill categories for seeding
+  const earlySkills = [
+    'literacy.phonics', 'literacy.sight-words', 'math.counting', 'math.number-recognition',
+    'general.forest', 'biome.forest'
+  ];
+  
+  const coreSkills = [
+    'literacy.reading', 'literacy.vocabulary', 'math.addition', 'math.subtraction',
+    'science.observation', 'general.desert', 'biome.desert', 'general.ocean', 'biome.ocean'
+  ];
+  
+  const stretchSkills = [
+    'literacy.comprehension', 'math.multiplication', 'math.division', 'science.forces',
+    'science.ecology', 'general.night', 'biome.night'
+  ];
+
+  // Define baseline probabilities by age band
+  const baselines = {
+    '5-6': { early: 0.35, core: 0.20, stretch: 0.15 },
+    '7-8': { early: 0.55, core: 0.40, stretch: 0.25 },
+    '9-10': { early: 0.70, core: 0.65, stretch: 0.45 },
+    '11-12': { early: 0.80, core: 0.75, stretch: 0.55 }
+  };
+
+  const ageBandBaselines = baselines[ageBand];
+  
+  // Apply seeding only to skills not yet seen
+  const skillsToSeed = [
+    ...earlySkills.map(id => ({ id, p: ageBandBaselines.early })),
+    ...coreSkills.map(id => ({ id, p: ageBandBaselines.core })),
+    ...stretchSkills.map(id => ({ id, p: ageBandBaselines.stretch }))
+  ];
+
+  let hasChanges = false;
+  
+  for (const { id, p } of skillsToSeed) {
+    // Only seed if skill hasn't been seen yet
+    if (!state.skills[id] || state.skills[id].seen === 0) {
+      state.skills[id] = {
+        p: Math.max(0.05, Math.min(0.99, p)),
+        seen: 0,
+        correct: 0,
+        streak: 0
+      };
+      hasChanges = true;
+    }
+  }
+
+  return hasChanges ? { ...state } : state;
+}
+
 // Singleton in-memory cache with subscription
 class LearnerCache {
   private state: LearnerState;
@@ -157,6 +211,14 @@ class LearnerCache {
   
   reset(): void {
     this.setState({ version: 1, skills: {} });
+  }
+
+  // Initialize skill baselines based on age band
+  seedForAgeBand(ageBand: AgeBand): void {
+    const seeded = initSeed(this.state, ageBand);
+    if (seeded !== this.state) {
+      this.setState(seeded);
+    }
   }
 }
 
