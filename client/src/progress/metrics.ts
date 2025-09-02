@@ -271,3 +271,95 @@ export function scoutSummary(events: ProgressEvent[], days: number = 7): ScoutSu
     topMessages
   };
 }
+
+/**
+ * Scout analytics for the given time period
+ */
+export interface ScoutAnalytics {
+  showRate: number;        // shown/uniqueIds
+  ctaCtr: number;         // clicked/shownActionable
+  medianDwellMs: number;  // P50 dwell across dismiss/auto_dismiss
+  sessionDoseP95: number; // 95th percentile of shown per session
+}
+
+export function scoutAnalytics(events: ProgressEvent[], days: number = 7): ScoutAnalytics {
+  const cutoff = Date.now() - (days * 24 * 60 * 60 * 1000);
+  
+  const analyticsEvents = events.filter(event => 
+    event.kind === 'scout_analytics' && event.at >= cutoff
+  );
+  
+  if (analyticsEvents.length === 0) {
+    return {
+      showRate: 0,
+      ctaCtr: 0,
+      medianDwellMs: 0,
+      sessionDoseP95: 0
+    };
+  }
+  
+  // Count unique message IDs and shown events
+  const uniqueIds = new Set();
+  const shownEvents = analyticsEvents.filter(event => {
+    if ('action' in event && event.action === 'shown') {
+      if ('id' in event) uniqueIds.add(event.id);
+      return true;
+    }
+    return false;
+  });
+  
+  // Calculate show rate (shown/unique IDs)
+  const showRate = uniqueIds.size > 0 ? shownEvents.length / uniqueIds.size : 0;
+  
+  // Count actionable messages shown and clicked
+  const actionableShown = shownEvents.filter(event => 
+    'priority' in event && event.priority === 'actionable'
+  ).length;
+  
+  const clickedEvents = analyticsEvents.filter(event => 
+    'action' in event && event.action === 'clicked' && 
+    'priority' in event && event.priority === 'actionable'
+  ).length;
+  
+  // Calculate CTA click-through rate
+  const ctaCtr = actionableShown > 0 ? clickedEvents / actionableShown : 0;
+  
+  // Calculate median dwell time for dismiss/auto_dismiss events
+  const dwellTimes = analyticsEvents
+    .filter(event => 
+      'action' in event && 
+      (event.action === 'dismissed' || event.action === 'auto_dismiss') &&
+      'dwellMs' in event && 
+      typeof event.dwellMs === 'number' && 
+      event.dwellMs > 0
+    )
+    .map(event => 'dwellMs' in event ? event.dwellMs! : 0)
+    .sort((a, b) => a - b);
+  
+  const medianDwellMs = dwellTimes.length > 0 
+    ? dwellTimes[Math.floor(dwellTimes.length / 2)] 
+    : 0;
+  
+  // Calculate session doses (shown per session)
+  const sessionDoses = new Map<string, number>();
+  shownEvents.forEach(event => {
+    if ('sessionId' in event) {
+      const current = sessionDoses.get(event.sessionId) || 0;
+      sessionDoses.set(event.sessionId, current + 1);
+    }
+  });
+  
+  const doses = Array.from(sessionDoses.values()).sort((a, b) => a - b);
+  
+  // Calculate 95th percentile of session dose
+  const sessionDoseP95 = doses.length > 0 
+    ? doses[Math.floor(doses.length * 0.95)] || doses[doses.length - 1]
+    : 0;
+  
+  return {
+    showRate: Math.round(showRate * 100) / 100, // Round to 2 decimal places
+    ctaCtr: Math.round(ctaCtr * 100) / 100,
+    medianDwellMs: Math.round(medianDwellMs),
+    sessionDoseP95
+  };
+}

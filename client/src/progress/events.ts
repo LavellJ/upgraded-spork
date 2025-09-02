@@ -6,7 +6,8 @@ export type ProgressEvent =
   | { kind: 'lesson_finish'; at: number; lessonId: string; biomeId: string; durationSec?: number; result?: 'pass' | 'retry' }
   | { kind: 'journal_start'; at: number; skillId: string }
   | { kind: 'journal_finish'; at: number; skillId: string; n: number; correct: number; durationSec?: number }
-  | { kind: 'scout_msg'; at: number; messageId: string; priority: 'info' | 'actionable' | 'critical'; text: string; cta?: { label: string; clicked?: boolean }; dismissed?: boolean };
+  | { kind: 'scout_msg'; at: number; messageId: string; priority: 'info' | 'actionable' | 'critical'; text: string; cta?: { label: string; clicked?: boolean }; dismissed?: boolean }
+  | { kind: 'scout_analytics'; at: number; id: string; priority: 'info' | 'actionable' | 'critical'; action: 'shown' | 'clicked' | 'dismissed' | 'auto_dismiss'; dwellMs?: number; sessionId: string };
 
 const STORAGE_KEY = 'qi.progress.history.v1';
 const MAX_EVENTS = 5000;
@@ -142,4 +143,28 @@ export function clearEvents(): void {
  */
 export function getEventCount(): number {
   return loadEvents().length;
+}
+
+const SESSION_STORAGE_KEY = 'qi.session.id';
+
+/**
+ * Get or create a session ID that persists until browser reload
+ * Used for tracking Scout analytics per session
+ */
+export function getSessionId(): string {
+  try {
+    let sessionId = sessionStorage.getItem(SESSION_STORAGE_KEY);
+    
+    if (!sessionId) {
+      // Generate new session ID using timestamp + random
+      sessionId = `sess_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      sessionStorage.setItem(SESSION_STORAGE_KEY, sessionId);
+    }
+    
+    return sessionId;
+  } catch (error) {
+    // Fallback if sessionStorage is not available
+    console.warn('Failed to access sessionStorage for session ID:', error);
+    return `sess_${Date.now()}_fallback`;
+  }
 }
