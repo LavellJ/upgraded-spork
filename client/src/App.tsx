@@ -15,9 +15,8 @@ import LOOP2 from "./data/loop2.json";
 import { logEvent } from "./lib/analytics";
 import { learnerCache } from "./learning/model";
 import { inferSkillIdsForLesson, getLessonById, recommendNextPin } from "./learning/policy";
-import { useScout, triggerScoutEvent } from "./learning/scout";
-import { ScoutBubble } from "./components/ScoutBubble";
-import { ScoutSheet } from "./components/ScoutSheet";
+import { ScoutManager } from "./components/ScoutManager";
+import { RouteListener } from "./components/RouteListener";
 import { ProfileProvider, useProfile } from "./profile/context";
 import { Onboarding } from "./onboarding/Onboarding";
 import { decodeFromQuery, savePath } from "./guide/assign";
@@ -394,8 +393,7 @@ function AppContent(){
   }
 
   // ---- Scout system ----
-  const scout = useScout();
-  const [showScoutSheet, setShowScoutSheet] = useState(false);
+  // Scout messaging now handled by ScoutManager component
 
   // ---- Journal system ----
   const [showJournal, setShowJournal] = useState(false);
@@ -1053,43 +1051,14 @@ function AppContent(){
         protoOnly={protoOnly}
       />
 
-      {/* Scout Bubble */}
-      {scout.currentMessage && (
-        <ScoutBubble
-          message={scout.currentMessage.message}
-          onClick={() => setShowScoutSheet(true)}
-          calm={calm}
-          position={{ x: 20, y: 120 }}
-          visible={true}
-        />
-      )}
-
-      {/* Scout Sheet */}
-      <ScoutSheet
-        open={showScoutSheet}
-        onClose={() => {
-          setShowScoutSheet(false);
-          scout.dismissMessage();
-        }}
-        message={scout.currentMessage?.message || ''}
-        detailedMessage={scout.currentMessage?.detailedMessage}
-        showJournalCTA={scout.currentMessage?.showJournalCTA}
-        onJournalClick={() => {
-          // Infer skill ID from current context
-          if (openBiome && player?.lesson) {
-            const skillId = inferSkillIdFromLesson(player.lesson.id, openBiome);
-            setJournalSkillId(skillId);
-            setShowJournal(true);
-            setShowScoutSheet(false);
-          } else {
-            flash('Start a lesson first to practice specific skills!');
-          }
-        }}
-        onMoreHelpClick={() => {
-          scout.requestMoreHelp(profile.ageBand, profile.name);
-        }}
-        calm={calm}
+      {/* Scout Manager handles all Scout messaging */}
+      <ScoutManager 
+        position={{ x: 20, y: 120 }}
+        visible={true}
       />
+
+      {/* Route Listener flushes info messages on route changes */}
+      <RouteListener />
 
       {/* Journal Sheet */}
       <JournalSheet
