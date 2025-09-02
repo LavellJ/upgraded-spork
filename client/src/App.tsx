@@ -452,6 +452,79 @@ export default function App(){
   useEffect(()=>{ try{localStorage.setItem(KEYS.proto,JSON.stringify(protoOnly));}catch{} },[protoOnly]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.last,JSON.stringify(last));}catch{} },[last]);
 
+  // ---- Dev-only accessibility smoke checks ----
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    
+    let isRunning = false;
+    
+    const runAxeCheck = async () => {
+      if (isRunning) return;
+      isRunning = true;
+      
+      try {
+        const axe = await import('axe-core');
+        setTimeout(() => {
+          axe.default.run(document, {
+            runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] }
+          })
+          .then(results => {
+            if (results.violations.length) {
+              console.warn('[a11y]', results.violations);
+            }
+            isRunning = false;
+          })
+          .catch(err => {
+            console.error('[a11y] Error running axe checks:', err);
+            isRunning = false;
+          });
+        }, 0);
+      } catch (err) {
+        console.error('[a11y] Failed to import axe-core:', err);
+        isRunning = false;
+      }
+    };
+    
+    // Run on initial mount
+    runAxeCheck();
+  }, []);
+  
+  // ---- Run axe checks when overlays open/close ----
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    
+    let isRunning = false;
+    
+    const runDelayedAxeCheck = async () => {
+      if (isRunning) return;
+      isRunning = true;
+      
+      try {
+        const axe = await import('axe-core');
+        setTimeout(() => {
+          axe.default.run(document, {
+            runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] }
+          })
+          .then(results => {
+            if (results.violations.length) {
+              console.warn('[a11y] Sheet state change violations:', results.violations);
+            }
+            isRunning = false;
+          })
+          .catch(err => {
+            console.error('[a11y] Error running axe checks on state change:', err);
+            isRunning = false;
+          });
+        }, 100); // Small delay to let DOM update
+      } catch (err) {
+        console.error('[a11y] Failed to import axe-core for state change:', err);
+        isRunning = false;
+      }
+    };
+    
+    runDelayedAxeCheck();
+  }, [showBP, showTeacher, showHelp, openBiome, player]);
+
   // ---- Keyboard shortcuts ----
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
