@@ -8,6 +8,10 @@ import { computeInsights } from '../learning/insights';
 import type { SkillInsight } from '../learning/insights';
 import { useProfile } from '../profile/context';
 import type { AgeBand } from '../profile/model';
+import { Timeline } from '../guide/Timeline';
+import { downloadCsv, getCsvStats } from '../guide/exportCsv';
+import { loadEvents, getEventsRange } from '../progress';
+import { Download } from 'lucide-react';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -63,6 +67,8 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   const [exportLink, setExportLink] = useState('');
   const [snaps, setSnaps] = useState<Snapshot[]>(() => loadSnaps());
   const [showAuthoring, setShowAuthoring] = useState(false);
+  const [selectedStandard, setSelectedStandard] = useState<string>('all');
+  const [activeTab, setActiveTab] = useState<'overview' | 'timeline'>('overview');
   
   // Profile context
   const { profile, updateProfile } = useProfile();
@@ -378,7 +384,113 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
 
           <div className="mt-4 border-t pt-3"><div className="text-sm font-semibold mb-2">Quick Practice</div><div className="space-y-2 mb-3"><button onClick={() => { if (typeof onOpenJournal === 'function') onOpenJournal('literacy.phonics'); }} className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out text-sm w-full">Practice Phonics</button><button onClick={() => { if (typeof onOpenJournal === 'function') onOpenJournal('math.addition'); }} className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out text-sm w-full">Practice Math</button><button onClick={() => { if (typeof onOpenJournal === 'function') onOpenJournal('science.forces'); }} className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out text-sm w-full">Practice Science</button></div></div>
           
-          <div className="mt-4 border-t pt-3"><div className="text-sm font-semibold mb-2">Analytics (local)</div><div className="flex items-center gap-2 mb-3"><button onClick={() => downloadEventsCSV()} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs">Export events CSV</button><button onClick={() => { clearEvents(); alert('Cleared local analytics buffer'); }} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs">Clear buffer</button><span className="text-[11px] text-stone-600">{getEvents().length} event(s) captured</span></div><div><div className="text-sm font-semibold mb-2">Recent activity</div>{recent.length === 0 ? (<div className="text-xs text-stone-500">No events yet.</div>) : (<ul className="space-y-1 text-xs text-stone-700">{recent.map((e, i) => (<li key={`${e.ts}-${e.action}-${i}`} className="flex items-center gap-2"><span>⏺</span><span className="opacity-70">{new Date(e.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span><span className="font-semibold">{e.action}</span><span className="opacity-70">{e.biome ?? ''} {e.lessonId ?? ''}</span></li>))}</ul>)}</div></div>
+          {/* Analytics & Timeline Section */}
+          <div className="mt-4 border-t pt-3">
+            <div className="flex items-center gap-2 mb-3">
+              <button 
+                onClick={() => setActiveTab('overview')}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                  activeTab === 'overview' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white border hover:bg-stone-50'
+                }`}
+                data-testid="tab-overview"
+              >
+                📊 Overview
+              </button>
+              <button 
+                onClick={() => setActiveTab('timeline')}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                  activeTab === 'timeline' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white border hover:bg-stone-50'
+                }`}
+                data-testid="tab-timeline"
+              >
+                📅 Timeline
+              </button>
+            </div>
+
+            {activeTab === 'overview' ? (
+              <div>
+                <div className="text-sm font-semibold mb-2">Analytics (local)</div>
+                <div className="flex items-center gap-2 mb-3 flex-wrap">
+                  <button 
+                    onClick={() => {
+                      const events = loadEvents();
+                      downloadCsv(events);
+                    }} 
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition ease-out text-sm"
+                    data-testid="button-export-csv"
+                  >
+                    <Download className="w-4 h-4" />
+                    Export CSV
+                  </button>
+                  <button 
+                    onClick={() => downloadEventsCSV()} 
+                    className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs"
+                  >
+                    Export legacy CSV
+                  </button>
+                  <button 
+                    onClick={() => { 
+                      clearEvents(); 
+                      alert('Cleared local analytics buffer'); 
+                    }} 
+                    className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs"
+                  >
+                    Clear buffer
+                  </button>
+                  <span className="text-[11px] text-stone-600">{getEvents().length} event(s) captured</span>
+                </div>
+                
+                {(() => {
+                  const progressEvents = loadEvents();
+                  const stats = getCsvStats(progressEvents);
+                  return (
+                    <div className="mb-3 p-3 bg-stone-50 rounded-lg">
+                      <div className="text-xs font-medium mb-2">📈 Progress Summary</div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>Total Events: <span className="font-medium">{stats.totalEvents}</span></div>
+                        <div>Lesson Events: <span className="font-medium">{stats.lessonEvents}</span></div>
+                        <div>Journal Events: <span className="font-medium">{stats.journalEvents}</span></div>
+                        {stats.dateRange && (
+                          <div className="col-span-2">Range: <span className="font-medium">{stats.dateRange.start} - {stats.dateRange.end}</span></div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+                
+                <div>
+                  <div className="text-sm font-semibold mb-2">Recent activity</div>
+                  {recent.length === 0 ? (
+                    <div className="text-xs text-stone-500">No events yet.</div>
+                  ) : (
+                    <ul className="space-y-1 text-xs text-stone-700">
+                      {recent.map((e, i) => (
+                        <li key={`${e.ts}-${e.action}-${i}`} className="flex items-center gap-2">
+                          <span>⏺</span>
+                          <span className="opacity-70">
+                            {new Date(e.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
+                          </span>
+                          <span className="font-semibold">{e.action}</span>
+                          <span className="opacity-70">{e.biome ?? ''} {e.lessonId ?? ''}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="max-h-96 overflow-y-auto">
+                <Timeline 
+                  selectedStandard={selectedStandard}
+                  onStandardChange={setSelectedStandard}
+                />
+              </div>
+            )}
+          </div>
           <div className="mt-5 border-t pt-3"><div className="text-sm font-semibold mb-2 text-red-700">Danger zone</div><div className="grid grid-cols-1 sm:grid-cols-2 gap-2"><button onClick={() => { if (confirm('Reset progress for the current loop? This keeps your loop number and backpack.')) { onResetCurrentLoop(); alert('Current loop progress has been reset.'); } }} className="px-3 py-2 rounded-lg border bg-white hover:bg-stone-50 text-red-700">Reset current loop</button><button onClick={() => { if (confirm('Factory reset everything? This sets Loop to 1 and clears progress and backpack.')) { onFactoryReset(); alert('All progress reset. Back to Loop 1.'); } }} className="px-3 py-2 rounded-lg border bg-white hover:bg-stone-50 text-red-700">Factory reset (all)</button><button onClick={() => { if (confirm('Reset learner model? This clears all skill mastery data.')) { learnerCache.reset(); alert('Learner model has been reset.'); } }} className="px-3 py-2 rounded-lg border bg-white hover:bg-stone-50 text-red-700">Reset learner model</button></div><div className="mt-2 text-[11px] text-stone-600">Tip: Use Export to snapshot progress before you reset.</div></div>
           </div>
         )}
