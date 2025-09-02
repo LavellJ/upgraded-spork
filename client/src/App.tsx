@@ -452,73 +452,64 @@ export default function App(){
   useEffect(()=>{ try{localStorage.setItem(KEYS.proto,JSON.stringify(protoOnly));}catch{} },[protoOnly]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.last,JSON.stringify(last));}catch{} },[last]);
 
-  // ---- Dev-only accessibility smoke checks ----
+  // ---- Dev-only accessibility smoke checks (global singleton) ----
   useEffect(() => {
     if (!import.meta.env.DEV) return;
     
-    let isRunning = false;
-    
-    const runAxeCheck = async () => {
-      if (isRunning) return;
-      isRunning = true;
+    // Global singleton pattern to prevent concurrent axe runs
+    const runAxeCheck = async (context = 'mount') => {
+      // Check if axe is already running globally
+      if ((window as any).__axeRunning) return;
+      (window as any).__axeRunning = true;
       
       try {
         const axe = await import('axe-core');
-        setTimeout(() => {
-          axe.default.run(document, {
-            runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] }
-          })
-          .then(results => {
-            if (results.violations.length) {
-              console.warn('[a11y]', results.violations);
-            }
-            isRunning = false;
-          })
-          .catch(err => {
-            console.error('[a11y] Error running axe checks:', err);
-            isRunning = false;
-          });
-        }, 0);
+        
+        await new Promise(resolve => setTimeout(resolve, context === 'mount' ? 0 : 150));
+        
+        const results = await axe.default.run(document, {
+          runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] }
+        });
+        
+        if (results.violations.length) {
+          console.warn(`[a11y:${context}]`, results.violations);
+        }
       } catch (err) {
-        console.error('[a11y] Failed to import axe-core:', err);
-        isRunning = false;
+        console.error(`[a11y:${context}] Error running axe checks:`, err);
+      } finally {
+        (window as any).__axeRunning = false;
       }
     };
     
     // Run on initial mount
-    runAxeCheck();
+    runAxeCheck('mount');
   }, []);
   
   // ---- Run axe checks when overlays open/close ----
   useEffect(() => {
     if (!import.meta.env.DEV) return;
     
-    let isRunning = false;
-    
     const runDelayedAxeCheck = async () => {
-      if (isRunning) return;
-      isRunning = true;
+      // Check if axe is already running globally
+      if ((window as any).__axeRunning) return;
+      (window as any).__axeRunning = true;
       
       try {
         const axe = await import('axe-core');
-        setTimeout(() => {
-          axe.default.run(document, {
-            runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] }
-          })
-          .then(results => {
-            if (results.violations.length) {
-              console.warn('[a11y] Sheet state change violations:', results.violations);
-            }
-            isRunning = false;
-          })
-          .catch(err => {
-            console.error('[a11y] Error running axe checks on state change:', err);
-            isRunning = false;
-          });
-        }, 100); // Small delay to let DOM update
+        
+        await new Promise(resolve => setTimeout(resolve, 150));
+        
+        const results = await axe.default.run(document, {
+          runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] }
+        });
+        
+        if (results.violations.length) {
+          console.warn('[a11y:state-change]', results.violations);
+        }
       } catch (err) {
-        console.error('[a11y] Failed to import axe-core for state change:', err);
-        isRunning = false;
+        console.error('[a11y:state-change] Error running axe checks:', err);
+      } finally {
+        (window as any).__axeRunning = false;
       }
     };
     
