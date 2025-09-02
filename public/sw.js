@@ -68,6 +68,7 @@ self.addEventListener('fetch', event => {
   }
 
   // Biome/pin images and assets - StaleWhileRevalidate strategy
+  // This includes prefetched assets from link[rel="prefetch"]
   if (isAssetRequest(url)) {
     event.respondWith(staleWhileRevalidate(request, ASSETS_CACHE));
     return;
