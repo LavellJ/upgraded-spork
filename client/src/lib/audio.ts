@@ -1,5 +1,7 @@
-// Import the actual file URL that Vite serves
-import musicUrl from "../assets/bg-music.mp3";
+import { getAsset } from './assetResolver';
+
+// Use asset resolver for background music
+const musicUrl = getAsset('audio', 'music-background');
 
 const audio = new Audio(musicUrl);
 audio.loop = true;

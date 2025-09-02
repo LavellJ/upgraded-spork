@@ -7,12 +7,7 @@ import { Biome } from "./Biome";
 import { JourneyJournal } from "./JourneyJournal";
 import { LessonNode } from "./LessonNode";
 import { getLearnerName } from "@/utils/learnerName";
-import explorerDefault from '@assets/image_1756014874313.png';
-import explorerThinking from '@assets/scout-thinking.png';
-import trailImage from '@assets/a493b3ae-451b-48a1-b634-c3720d692e77_1756275137722.png';
-import progressIcon from '@assets/925fba67-25bb-45e9-8e91-eb6e19d9394c_1756186426342_1756275909668.png';
-import treasureMapIcon from '@assets/generated_images/Scout_general_exploration_5819cb00.png';
-import backpackIcon from '@assets/fd4dc3d1-ed79-4c91-a0b1-e71382387485_1756182003955_1756275864806.png';
+import { getAsset } from "../../lib/assetResolver";
 
 export interface Collectible {
   id: string;
@@ -656,7 +651,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
           data-testid="treasure-map-progress-button"
         >
           <img 
-            src={progressIcon} 
+            src={getAsset('ui', 'progress')} 
             alt="Treasure Map Progress" 
             className="w-72 h-72 drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-300"
           />
@@ -685,7 +680,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
           <div className="relative w-72 h-72">
             {/* Default Backpack (normal state) */}
             <img 
-              src={backpackIcon} 
+              src={getAsset('ui', 'backpack')} 
               alt="Backpack" 
               className="absolute inset-0 w-full h-full drop-shadow-lg group-hover:drop-shadow-xl opacity-100 group-hover:opacity-0 transition-all duration-300"
             />
@@ -719,7 +714,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             {/* Adventure Trail - Kidney Shape */}
             <div className="absolute inset-0 flex items-center justify-center">
               <img 
-                src={trailImage} 
+                src={getAsset('ui', 'treasuremap')} 
                 alt="Adventure Trail"
                 className="w-[1815px] h-[1403px] object-contain opacity-95"
                 style={{
@@ -816,7 +811,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
             {/* Scout Image */}
             <div className="flex-shrink-0">
               <img
-                src={explorerThinking}
+                src={getAsset('ui', 'scout-thinking')}
                 alt="Scout"
                 className="w-16 h-16 object-contain drop-shadow-lg"
               />

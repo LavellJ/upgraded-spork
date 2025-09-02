@@ -2,11 +2,7 @@ import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState, useCallback } from "react";
 import type { AgeGroup } from "@/components/AgeSelector";
 import { getLearnerName } from "@/utils/learnerName";
-
-// Import Scout character images - 3 versions used throughout entire app
-import explorerDefault from '@assets/image_1756014874313.png';
-import explorerExcited from '@assets/scout-excited.png';
-import explorerThinking from '@assets/scout-thinking.png';
+import { getAsset } from "../../lib/assetResolver";
 
 interface ScoutProps {
   position: { x: number; y: number };
@@ -29,9 +25,9 @@ export function Scout({ position, target, onReachTarget, ageGroup = "pre-primary
   // Get Scout image based on mood - 3 versions used throughout entire app
   const getScoutImage = () => {
     switch (scoutMood) {
-      case 'excited': return explorerExcited;
-      case 'thinking': return explorerThinking;
-      default: return explorerDefault;
+      case 'excited': return getAsset('ui', 'scout-excited');
+      case 'thinking': return getAsset('ui', 'scout-thinking');
+      default: return getAsset('ui', 'scout-default');
     }
   };
 
