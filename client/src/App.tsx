@@ -5,6 +5,7 @@ import { BackpackSheet } from "./components/BackpackSheet";
 import { ActivityPlayer } from "./components/ActivityPlayer";
 import { LessonSheet } from "./components/LessonSheet";
 import { TeacherPanel } from "./components/TeacherPanel";
+import { HelpOverlay } from "./components/HelpOverlay";
 import IslandBackdrop from "./components/IslandBackdrop";
 import LOOP2 from "./data/loop2.json";
 import { logEvent } from "./lib/analytics";
@@ -367,7 +368,7 @@ export default function App(){
   const [last,setLast]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.last)||'null');}catch{return null;} });
 
   // ---- UI state ----
-  const [openBiome,setOpenBiome]=useState<string | null>(null); const [showBP,setShowBP]=useState(false); const [showTeacher,setShowTeacher]=useState(false); const [player,setPlayer]=useState<{biome:string,lesson:any} | null>(null); const [toast,setToast]=useState<string | null>(null); const [celebrate,setCelebrate]=useState(false);
+  const [openBiome,setOpenBiome]=useState<string | null>(null); const [showBP,setShowBP]=useState(false); const [showTeacher,setShowTeacher]=useState(false); const [showHelp,setShowHelp]=useState(false); const [player,setPlayer]=useState<{biome:string,lesson:any} | null>(null); const [toast,setToast]=useState<string | null>(null); const [celebrate,setCelebrate]=useState(false);
 
   // ---- Flash toast helper ----
   function flash(msg: string, ms = 1400) {
@@ -454,12 +455,26 @@ export default function App(){
   // ---- Keyboard shortcuts ----
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement)?.tagName || '';
-      if (['INPUT','TEXTAREA','SELECT'].includes(tag)) return;
+      const target = e.target as HTMLElement;
+      const tag = target?.tagName || '';
+      const isEditable = target?.contentEditable === 'true';
+      if (['INPUT','TEXTAREA','SELECT'].includes(tag) || isEditable) return;
 
       if (e.key === 'b' || e.key === 'B') {
         e.preventDefault();
         setShowBP(v => !v);
+        return;
+      }
+      if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        const wasEquipped = bp.equipped.includes('tool_compass');
+        bp.toggleEquip('tool_compass');
+        flash(`Compass ${wasEquipped ? 'unequipped' : 'equipped'}`);
+        return;
+      }
+      if (e.key === '?') {
+        e.preventDefault();
+        setShowHelp(v => !v);
         return;
       }
       if (e.key === 't' || e.key === 'T') {
@@ -486,6 +501,7 @@ export default function App(){
         // close any overlays
         setShowBP(false);
         setShowTeacher(false);
+        setShowHelp(false);
         setPlayer(null);
         setOpenBiome?.(null);
       }
@@ -702,6 +718,7 @@ export default function App(){
       {/* UI Overlays */}
       <BackpackSheet open={showBP} onClose={()=>setShowBP(false)} bp={bp}/>
       <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={comp} onExport={exportProgress} onImport={importFromToken} lessons={LESSONS} loop={loop} onResetCurrentLoop={resetCurrentLoop} onFactoryReset={factoryReset} teacherPins={teacherPins} setTeacherPins={setTeacherPins}/>
+      <HelpOverlay open={showHelp} onClose={()=>setShowHelp(false)} />
       
       {/* Lesson Sheet */}
       <LessonSheet
