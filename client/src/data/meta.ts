@@ -26,3 +26,12 @@ export const STANDARDS = {
     night:  "NZC L1: Place & Environment"
   },
 };
+
+// Accessibility helpers
+export function getBiomeAriaLabel(biomeId: string, biomeName: string): string {
+  return `Enter ${biomeName} biome`;
+}
+
+export function getPinAriaLabel(lesson: { title: string }): string {
+  return `Start lesson: ${lesson.title}`;
+}

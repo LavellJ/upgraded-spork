@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import balloonIcon from '@assets/097fe560-b8ac-4192-b450-4f106e9ff693_1756279378478.png';
 import lockIcon from '@assets/9252541e-bdfc-4bfa-ab60-c69c63a4297e_1756279935456.png';
+import { getPinAriaLabel } from '../../data/meta';
 
 interface LessonNodeProps {
   id: string;
@@ -10,9 +11,10 @@ interface LessonNodeProps {
   completed: boolean;
   locked: boolean;
   onClick: () => void;
+  isVisible?: boolean;
 }
 
-export function LessonNode({ id, title, biome, position, completed, locked, onClick }: LessonNodeProps) {
+export function LessonNode({ id, title, biome, position, completed, locked, onClick, isVisible = true }: LessonNodeProps) {
   const getNodeColor = () => {
     return "from-yellow-400 to-amber-500";
   };
@@ -22,14 +24,23 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
   };
 
   return (
-    <div
-      className={`absolute cursor-pointer group ${locked ? 'cursor-not-allowed' : ''}`}
+    <button
+      className={`absolute cursor-pointer group border-0 bg-transparent p-0 ${locked ? 'cursor-not-allowed' : ''}`}
       style={{ 
         left: position.x + "%", 
         top: position.y + "%",
         transform: "translate(-50%, -50%)"
       }}
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      aria-label={getPinAriaLabel({ title })}
+      tabIndex={isVisible ? 0 : -1}
+      aria-hidden={!isVisible}
       data-testid={`lesson-node-${id}`}
     >
       {completed ? (
@@ -150,6 +161,6 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
       )}
-    </div>
+    </button>
   );
 }
