@@ -3,6 +3,8 @@ import { BottomSheet } from "./BottomSheet";
 import { getEvents, clearEvents, downloadEventsCSV } from '../lib/analytics';
 import { ThemeToggle } from './ThemeToggle';
 import { learnerCache } from '../learning/model';
+import { computeInsights } from '../learning/insights';
+import type { SkillInsight } from '../learning/insights';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -53,11 +55,15 @@ function saveSnaps(snaps: Snapshot[]) {
   try { localStorage.setItem(SNAP_KEY, JSON.stringify(snaps)); } catch {}
 }
 
-export function TeacherPanel({ open, onClose, frameworks, framework, setFramework, protoOnly, setProtoOnly, completed, onImport, onExport, lessons, loop, onResetCurrentLoop, onFactoryReset, teacherPins, setTeacherPins }: TeacherPanelProps) {
+export function TeacherPanel({ open, onClose, frameworks, framework, setFramework, protoOnly, setProtoOnly, completed, onImport, onExport, lessons, loop, onResetCurrentLoop, onFactoryReset, teacherPins, setTeacherPins, onOpenJournal }: TeacherPanelProps) {
   const [importValue, setImportValue] = useState('');
   const [exportLink, setExportLink] = useState('');
   const [snaps, setSnaps] = useState<Snapshot[]>(() => loadSnaps());
   const [showAuthoring, setShowAuthoring] = useState(false);
+  
+  // Compute insights data
+  const learnerState = learnerCache.getState();
+  const insights = computeInsights(learnerState, framework, loop);
   
   // Check if we're in development mode
   const isDev = process.env.NODE_ENV === 'development';
@@ -147,6 +153,100 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
           <div><div className="text-sm font-semibold mb-2">Progress Overview</div><div className="grid grid-cols-2 gap-2">{Object.entries(SUBJECTS).map(([biome, subject]) => (<div key={biome} className="p-2 bg-stone-50 rounded-lg"><div className="flex items-center justify-between mb-1"><span className="text-xs font-medium">{subject.label}</span><span className="text-xs text-stone-600">{done[biome]}/{totals[biome]}</span></div><div className="h-1.5 bg-stone-200 rounded"><div className="h-1.5 rounded" style={{ width: `${totals[biome] ? (done[biome]/totals[biome])*100 : 0}%`, background: subject.color }} /></div></div>))}</div><div className="mt-4"><label className="flex items-center gap-2"><input type="checkbox" checked={teacherPins} onChange={(e)=>setTeacherPins(e.target.checked)} className="rounded" />Show lesson pins on map (Teacher)</label><div className="text-[11px] text-stone-600 mt-1">Hidden by default. When Compass is equipped, only the next lesson pin shows.</div></div></div>
           <div><div className="text-sm font-semibold mb-2">Export Progress</div><div className="flex gap-2 flex-wrap"><button onClick={() => { const link = onExport(); try { navigator.clipboard.writeText(link); } catch {} alert('Progress link copied to clipboard.'); }} className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out">Copy progress link</button><button onClick={() => { const link = onExport(); try { navigator.clipboard.writeText(link); } catch {} const next = [{ ts: new Date().toISOString(), loop, link }, ...snaps].slice(0, 5); setSnaps(next); saveSnaps(next); alert('Snapshot saved (and link copied).'); }} className="px-3 py-2 rounded-lg border bg-white hover:bg-stone-50 transition ease-out">Save snapshot</button>{exportLink && <div className="mt-2 p-2 bg-stone-100 rounded-lg text-xs break-all">{exportLink}</div>}</div><div className="mt-3"><div className="text-sm font-semibold mb-1">Snapshots (last 5)</div>{snaps.length === 0 ? (<div className="text-xs text-stone-500">No snapshots yet.</div>) : (<ul className="space-y-1">{snaps.map((s, i) => (<li key={s.ts + i} className="flex items-center gap-2 text-xs"><span className="opacity-70">{new Date(s.ts).toLocaleString()}</span><span className="opacity-70">• Loop {s.loop}</span><button onClick={() => { try { navigator.clipboard.writeText(s.link); } catch {} alert('Snapshot link copied.'); }} className="ml-2 px-2 py-1 rounded-full border bg-white hover:bg-stone-50">Copy</button><button onClick={() => onImport(s.link)} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50">Restore</button></li>))}</ul>)}{snaps.length > 0 && (<button onClick={() => { setSnaps([]); saveSnaps([]); }} className="mt-2 px-2 py-1 rounded-full border bg-white hover:bg-stone-50 text-[11px] text-stone-600">Clear snapshots</button>)}</div></div>
           <div><div className="text-sm font-semibold mb-2">Import Progress</div><div className="flex gap-2 mb-2"><label className="sr-only" htmlFor="import-input">Import progress link or token</label><input id="import-input" value={importValue} onChange={(e) => setImportValue(e.target.value)} placeholder="Paste progress link or token" className="flex-1 px-3 py-2 border rounded-lg" /><button onClick={handlePaste} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 text-xs" aria-label="Paste from clipboard">Paste</button><button onClick={handleImport} className="px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition ease-out">Import</button></div></div>
+          {/* Insights Card */}
+          <div className="mt-4 border-t pt-3">
+            <div className="text-sm font-semibold mb-2">
+              Insights (beta)
+              <span className="ml-2 text-xs text-stone-500 font-normal">
+                Framework: {framework}
+              </span>
+            </div>
+            
+            {/* Strengths & Needs */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+              {/* Strengths */}
+              <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                <div className="text-xs font-medium text-green-800 mb-2">
+                  💪 Top Strengths
+                </div>
+                {insights.strengths.length > 0 ? (
+                  <div className="space-y-1">
+                    {insights.strengths.map(skill => (
+                      <div key={skill.skillId} className="flex items-center justify-between text-xs">
+                        <span className="text-green-700 truncate">{skill.displayName}</span>
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium">{skill.percentage}%</span>
+                          {skill.trend && (
+                            <span className="text-green-600">
+                              {skill.trend === 'up' ? '↗' : skill.trend === 'down' ? '↘' : '→'}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-xs text-green-600">
+                    Complete more lessons to see strengths
+                  </div>
+                )}
+              </div>
+
+              {/* Needs */}
+              <div className="bg-orange-50 rounded-lg p-3 border border-orange-200">
+                <div className="text-xs font-medium text-orange-800 mb-2">
+                  🎯 Areas for Growth
+                </div>
+                {insights.needs.length > 0 ? (
+                  <div className="space-y-1">
+                    {insights.needs.map(skill => (
+                      <div key={skill.skillId} className="flex items-center justify-between text-xs">
+                        <span className="text-orange-700 truncate">{skill.displayName}</span>
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium">{skill.percentage}%</span>
+                          {skill.trend && (
+                            <span className="text-orange-600">
+                              {skill.trend === 'up' ? '↗' : skill.trend === 'down' ? '↘' : '→'}
+                            </span>
+                          )}
+                          <button
+                            onClick={() => onOpenJournal?.(skill.skillId)}
+                            className="ml-1 px-1.5 py-0.5 bg-orange-200 hover:bg-orange-300 rounded text-[10px] font-medium text-orange-800 transition-colors"
+                            title="Quick 3-question practice"
+                            data-testid={`journal-${skill.skillId}`}
+                          >
+                            Journal 3
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-xs text-orange-600">
+                    Start some lessons to identify focus areas
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Suggested Next Step */}
+            {insights.suggestedNextStep && (
+              <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                <div className="text-xs font-medium text-blue-800 mb-1">
+                  🧭 Suggested Next Step
+                </div>
+                <div className="text-xs text-blue-700">
+                  <span className="font-medium">
+                    {insights.suggestedNextStep.biome.charAt(0).toUpperCase() + insights.suggestedNextStep.biome.slice(1)} Lesson {insights.suggestedNextStep.lessonId.toUpperCase()}
+                  </span>
+                  <div className="text-blue-600 mt-1">
+                    {insights.suggestedNextStep.reason}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="mt-4 border-t pt-3"><div className="text-sm font-semibold mb-2">Quick Practice</div><div className="space-y-2 mb-3"><button onClick={() => { if (typeof onOpenJournal === 'function') onOpenJournal('literacy.phonics'); }} className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out text-sm w-full">Practice Phonics</button><button onClick={() => { if (typeof onOpenJournal === 'function') onOpenJournal('math.addition'); }} className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out text-sm w-full">Practice Math</button><button onClick={() => { if (typeof onOpenJournal === 'function') onOpenJournal('science.forces'); }} className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out text-sm w-full">Practice Science</button></div></div>
           
           <div className="mt-4 border-t pt-3"><div className="text-sm font-semibold mb-2">Analytics (local)</div><div className="flex items-center gap-2 mb-3"><button onClick={() => downloadEventsCSV()} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs">Export events CSV</button><button onClick={() => { clearEvents(); alert('Cleared local analytics buffer'); }} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs">Clear buffer</button><span className="text-[11px] text-stone-600">{getEvents().length} event(s) captured</span></div><div><div className="text-sm font-semibold mb-2">Recent activity</div>{recent.length === 0 ? (<div className="text-xs text-stone-500">No events yet.</div>) : (<ul className="space-y-1 text-xs text-stone-700">{recent.map((e, i) => (<li key={`${e.ts}-${e.action}-${i}`} className="flex items-center gap-2"><span>⏺</span><span className="opacity-70">{new Date(e.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span><span className="font-semibold">{e.action}</span><span className="opacity-70">{e.biome ?? ''} {e.lessonId ?? ''}</span></li>))}</ul>)}</div></div>
