@@ -18,6 +18,7 @@ import { useScout, triggerScoutEvent } from "./learning/scout";
 import { ScoutBubble } from "./components/ScoutBubble";
 import { ScoutSheet } from "./components/ScoutSheet";
 import { ProfileProvider, useProfile } from "./profile/context";
+import { Onboarding } from "./onboarding/Onboarding";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -397,6 +398,19 @@ function AppContent(){
   // ---- Journal system ----
   const [showJournal, setShowJournal] = useState(false);
   const [journalSkillId, setJournalSkillId] = useState<string | null>(null);
+
+  // ---- Onboarding system ----
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  
+  // Check if profile needs onboarding
+  const needsOnboarding = !profile.name || !profile.ageBand || !profile.avatarId;
+  
+  // Show onboarding on mount if needed
+  useEffect(() => {
+    if (needsOnboarding) {
+      setShowOnboarding(true);
+    }
+  }, [needsOnboarding]);
 
   // ---- Backpack ----
   const bp = useBackpack();
@@ -1023,6 +1037,12 @@ function AppContent(){
         onComplete={() => {
           flash('Great practice session!');
         }}
+      />
+
+      {/* Onboarding */}
+      <Onboarding
+        open={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
       />
 
       {/* Toast region for accessibility */}
