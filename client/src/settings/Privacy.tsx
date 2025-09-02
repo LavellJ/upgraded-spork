@@ -50,8 +50,21 @@ export function Privacy({ open, onClose }: PrivacyProps) {
     }
   };
 
-  const handleImport = () => {
-    fileInputRef.current?.click();
+  const handleImport = async () => {
+    // Import requires acknowledgement since it can overwrite data
+    const { showGuideNotice } = await import('../guide/notices');
+    const confirmed = await showGuideNotice('data-import', {
+      title: 'Import Learning Data',
+      body: 'This will import data from a backup file. You can choose to merge with existing data or replace everything. This action cannot be undone.',
+      actions: {
+        acknowledge: 'Continue Import',
+        cancel: 'Cancel'
+      }
+    });
+
+    if (confirmed) {
+      fileInputRef.current?.click();
+    }
   };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,25 +95,38 @@ export function Privacy({ open, onClose }: PrivacyProps) {
     }
   };
 
-  const handleClearAll = () => {
+  const handleClearAll = async () => {
     if (clearConfirmText !== 'CLEAR') {
       showStatus('error', 'Please type CLEAR exactly to confirm.');
       return;
     }
 
-    try {
-      setIsProcessing(true);
-      clearAll();
-      showStatus('success', 'All data has been cleared. Starting fresh!');
-      setShowClearConfirm(false);
-      setClearConfirmText('');
-      
-      // Close privacy panel after clearing
-      setTimeout(() => onClose(), 2000);
-    } catch (error) {
-      showStatus('error', 'Could not clear all data. Please try again.');
-    } finally {
-      setIsProcessing(false);
+    // Clear all requires final acknowledgement
+    const { showGuideNotice } = await import('../guide/notices');
+    const confirmed = await showGuideNotice('data-clear-all', {
+      title: 'Clear All Learning Data',
+      body: 'This will permanently delete ALL learning progress, settings, reflections, and personal data. This action cannot be undone. Please ensure you have a backup if you want to keep anything.',
+      actions: {
+        acknowledge: 'Delete Everything',
+        cancel: 'Keep My Data'
+      }
+    });
+
+    if (confirmed) {
+      try {
+        setIsProcessing(true);
+        clearAll();
+        showStatus('success', 'All data has been cleared. Starting fresh!');
+        setShowClearConfirm(false);
+        setClearConfirmText('');
+        
+        // Close privacy panel after clearing
+        setTimeout(() => onClose(), 2000);
+      } catch (error) {
+        showStatus('error', 'Could not clear all data. Please try again.');
+      } finally {
+        setIsProcessing(false);
+      }
     }
   };
 

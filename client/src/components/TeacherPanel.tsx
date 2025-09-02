@@ -17,6 +17,9 @@ import { AssignmentCreator } from '../guide/AssignmentCreator';
 import { CloudSyncSettings } from '../auth/CloudSyncSettings';
 import { PrefetchSettings } from './PrefetchSettings';
 import { InsightsCard } from '../guide/InsightsCard';
+import { isGuide, toggleGuideMode } from '../guide/auth';
+import { getEventsByKind } from '../progress/events';
+import { AuditLogView } from './AuditLogView';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -73,7 +76,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   const [snaps, setSnaps] = useState<Snapshot[]>(() => loadSnaps());
   const [showAuthoring, setShowAuthoring] = useState(false);
   const [selectedStandard, setSelectedStandard] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'assignments' | 'privacy'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'assignments' | 'privacy' | 'audit'>('overview');
   
   // Profile context
   const { profile, updateProfile } = useProfile();
@@ -436,6 +439,17 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
               >
                 🛡️ Privacy
               </button>
+              <button 
+                onClick={() => setActiveTab('audit')}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                  activeTab === 'audit' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white border hover:bg-stone-50'
+                }`}
+                data-testid="tab-audit"
+              >
+                📋 Admin
+              </button>
             </div>
 
             {activeTab === 'overview' ? (
@@ -481,6 +495,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                         <div>Total Events: <span className="font-medium">{stats.totalEvents}</span></div>
                         <div>Lesson Events: <span className="font-medium">{stats.lessonEvents}</span></div>
                         <div>Journal Events: <span className="font-medium">{stats.journalEvents}</span></div>
+                        <div>Guide Events: <span className="font-medium">{stats.guideAckEvents}</span></div>
                         {stats.dateRange && (
                           <div className="col-span-2">Range: <span className="font-medium">{stats.dateRange.start} - {stats.dateRange.end}</span></div>
                         )}
@@ -521,13 +536,54 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
               <div className="max-h-96 overflow-y-auto">
                 <AssignmentCreator selectedFramework={framework} />
               </div>
-            ) : (
+            ) : activeTab === 'privacy' ? (
               <div className="max-h-96 overflow-y-auto space-y-4">
                 <CloudSyncSettings />
                 <PrefetchSettings />
                 <InsightsCard timeRange={30} />
                 <Privacy open={false} onClose={() => {}} />
               </div>
+            ) : activeTab === 'audit' ? (
+              <div className="max-h-96 overflow-y-auto space-y-4">
+                {/* Guide Mode Toggle */}
+                <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-orange-600">👨‍🏫</span>
+                      <h3 className="font-medium text-orange-800">Guide Mode</h3>
+                    </div>
+                    <button
+                      onClick={() => {
+                        toggleGuideMode();
+                        // Force re-render to show updated state
+                        window.location.reload();
+                      }}
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition ease-out ${
+                        isGuide() 
+                          ? 'bg-orange-600 text-white' 
+                          : 'bg-white text-orange-600 border border-orange-300'
+                      }`}
+                      data-testid="guide-mode-toggle"
+                    >
+                      {isGuide() ? 'Enabled' : 'Disabled'}
+                    </button>
+                  </div>
+                  <p className="text-xs text-orange-700 mb-2">
+                    Guide mode enables adult acknowledgement for critical actions like data clearing and cloud sync changes.
+                  </p>
+                  <div className="text-xs text-orange-600">
+                    <strong>Status:</strong> {isGuide() ? 'Guide privileges enabled' : 'Standard learner mode'}
+                  </div>
+                </div>
+
+                {/* Audit Log */}
+                <div className="bg-gray-50 rounded-lg p-4 border">
+                  <h3 className="font-medium text-gray-800 mb-3">📋 Audit Log</h3>
+                  <AuditLogView />
+                </div>
+              </div>
+            ) : (
+              <div>Unknown tab</div>
             )}
           </div>
           <div className="mt-5 border-t pt-3"><div className="text-sm font-semibold mb-2 text-red-700">Danger zone</div><div className="grid grid-cols-1 sm:grid-cols-2 gap-2"><button onClick={() => { if (confirm('Reset progress for the current loop? This keeps your loop number and backpack.')) { onResetCurrentLoop(); alert('Current loop progress has been reset.'); } }} className="px-3 py-2 rounded-lg border bg-white hover:bg-stone-50 text-red-700">Reset current loop</button><button onClick={() => { if (confirm('Factory reset everything? This sets Loop to 1 and clears progress and backpack.')) { onFactoryReset(); alert('All progress reset. Back to Loop 1.'); } }} className="px-3 py-2 rounded-lg border bg-white hover:bg-stone-50 text-red-700">Factory reset (all)</button><button onClick={() => { if (confirm('Reset learner model? This clears all skill mastery data.')) { learnerCache.reset(); alert('Learner model has been reset.'); } }} className="px-3 py-2 rounded-lg border bg-white hover:bg-stone-50 text-red-700">Reset learner model</button></div><div className="mt-2 text-[11px] text-stone-600">Tip: Use Export to snapshot progress before you reset.</div></div>

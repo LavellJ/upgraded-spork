@@ -25,6 +25,7 @@ import { useSyncEngine } from './sync/engine';
 import { ProfileProvider, useProfile } from "./profile/context";
 import { Onboarding } from "./onboarding/Onboarding";
 import { decodeFromQuery, savePath } from "./guide/assign";
+import { GuideNoticeProvider } from "./guide/notices";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -1142,7 +1143,9 @@ function AppContent(){
 export default function App() {
   return (
     <ProfileProvider>
-      <AppContent />
+      <GuideNoticeProvider>
+        <AppContent />
+      </GuideNoticeProvider>
     </ProfileProvider>
   );
 }

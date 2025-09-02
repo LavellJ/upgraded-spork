@@ -46,13 +46,25 @@ export function CloudSyncSettings({ className = '' }: CloudSyncSettingsProps) {
 
   const handleToggleCloudSync = async () => {
     if (auth.enabled) {
-      // Disable cloud sync
-      const newAuth = disableCloudSync();
-      setAuth(newAuth);
-      setEmail('');
-      showMessage('success', 'Cloud sync disabled. Your data stays local.');
+      // Disable cloud sync - requires acknowledgement
+      const { showGuideNotice } = await import('../guide/notices');
+      const confirmed = await showGuideNotice('cloud-sync-disable', {
+        title: 'Disable Cloud Sync',
+        body: 'This will disable cloud synchronization and keep your data local-only. Any future progress will not be backed up to the cloud.',
+        actions: {
+          acknowledge: 'Disable Cloud Sync',
+          cancel: 'Keep Cloud Sync'
+        }
+      });
+
+      if (confirmed) {
+        const newAuth = disableCloudSync();
+        setAuth(newAuth);
+        setEmail('');
+        showMessage('success', 'Cloud sync disabled. Your data stays local.');
+      }
     } else {
-      // Enable cloud sync - need email first
+      // Enable cloud sync - requires acknowledgement
       if (!email.trim()) {
         showMessage('error', 'Please enter your email address first.');
         return;
@@ -63,12 +75,24 @@ export function CloudSyncSettings({ className = '' }: CloudSyncSettingsProps) {
         return;
       }
 
-      try {
-        const newAuth = enableCloudSync(email.trim());
-        setAuth(newAuth);
-        showMessage('success', 'Cloud sync enabled. Send magic link to verify.');
-      } catch (error) {
-        showMessage('error', 'Failed to enable cloud sync. Please try again.');
+      const { showGuideNotice } = await import('../guide/notices');
+      const confirmed = await showGuideNotice('cloud-sync-enable', {
+        title: 'Enable Cloud Sync',
+        body: `This will enable cloud synchronization for your learning data using the email ${email.trim()}. Your data will be securely backed up and synchronized across devices.`,
+        actions: {
+          acknowledge: 'Enable Cloud Sync',
+          cancel: 'Stay Local-Only'
+        }
+      });
+
+      if (confirmed) {
+        try {
+          const newAuth = enableCloudSync(email.trim());
+          setAuth(newAuth);
+          showMessage('success', 'Cloud sync enabled. Send magic link to verify.');
+        } catch (error) {
+          showMessage('error', 'Failed to enable cloud sync. Please try again.');
+        }
       }
     }
   };
