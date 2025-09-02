@@ -1,5 +1,6 @@
 import type { JournalItem, SkillLevel } from '../schema/journal';
 import { nanoid } from 'nanoid';
+import { allBanks, getItemsForSkill, getAllAvailableSkills } from './banks';
 
 // Generator interface for creating journal items
 export interface JournalGenerator {
@@ -7,8 +8,8 @@ export interface JournalGenerator {
   getAvailableSkills(): string[];
 }
 
-// Item banks for different skills derived from lesson standards
-const ITEM_BANKS: Record<string, Record<SkillLevel, Array<Omit<JournalItem, 'id' | 'skillId'>>>> = {
+// Legacy inline banks - now using external bank files
+const LEGACY_ITEM_BANKS: Record<string, Record<SkillLevel, Array<Omit<JournalItem, 'id' | 'skillId'>>>> = {
   'literacy.phonics': {
     easy: [
       {
@@ -177,7 +178,23 @@ const ITEM_BANKS: Record<string, Record<SkillLevel, Array<Omit<JournalItem, 'id'
 // Local generator implementation
 class LocalGenerator implements JournalGenerator {
   async generate(skillId: string, level: SkillLevel, n: number): Promise<JournalItem[]> {
-    const skillBank = ITEM_BANKS[skillId];
+    // First try to get items from the new bank files
+    const bankItems = getItemsForSkill(skillId, level);
+    
+    if (bankItems.length > 0) {
+      // Use items from bank files, cycling if needed
+      return Array.from({ length: n }, (_, i) => {
+        const sourceItem = bankItems[i % bankItems.length];
+        return {
+          ...sourceItem,
+          id: nanoid(), // Generate fresh ID for each instance
+          skillId // Ensure skillId matches what was requested
+        };
+      });
+    }
+
+    // Fallback to legacy banks for any missing skills
+    const skillBank = LEGACY_ITEM_BANKS[skillId];
     if (!skillBank) {
       // Fallback to a generic skill if not found
       return this.generateFallback(skillId, level, n);
@@ -210,7 +227,7 @@ class LocalGenerator implements JournalGenerator {
   }
 
   getAvailableSkills(): string[] {
-    return Object.keys(ITEM_BANKS);
+    return getAllAvailableSkills();
   }
 
   private async generateFallback(skillId: string, level: SkillLevel, n: number): Promise<JournalItem[]> {
