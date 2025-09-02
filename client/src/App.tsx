@@ -17,6 +17,7 @@ import { inferSkillIdsForLesson, getLessonById, recommendNextPin } from "./learn
 import { useScout, triggerScoutEvent } from "./learning/scout";
 import { ScoutBubble } from "./components/ScoutBubble";
 import { ScoutSheet } from "./components/ScoutSheet";
+import { ProfileProvider, useProfile } from "./profile/context";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -358,7 +359,12 @@ function LessonNode({biome,lesson,completed,onSelect,pos,locked,isNext,onLocked}
 // --------------------------------------
 // Main App Component
 // --------------------------------------
-export default function App(){
+function AppContent(){
+  // ---- Profile context for calm mode and other settings ----
+  const { profile, updateProfile } = useProfile();
+  const calm = profile.calmMode;
+  const setCalm = (value: boolean) => updateProfile({ calmMode: value });
+
   // ---- Global state (localStorage-backed) ----
   const [loop,setLoop]=useState(()=>{ try{return parseInt(localStorage.getItem(KEYS.loop)||'1');}catch{return 1;} });
 
@@ -371,7 +377,6 @@ export default function App(){
   const [teacherMode,setTeacherMode]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.teacher)||'false');}catch{return false;} });
   const [teacherPins,setTeacherPins]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.pins)||'false');}catch{return false;} });
   const [framework,setFramework]=useState(()=>{ try{return localStorage.getItem(KEYS.framework)||'Generic';}catch{return 'Generic';} });
-  const [calm,setCalm]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.calm)||'false');}catch{return false;} });
   const [protoOnly,setProtoOnly]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.proto)||'true');}catch{return true;} });
   const [last,setLast]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.last)||'null');}catch{return null;} });
 
@@ -467,7 +472,6 @@ export default function App(){
   useEffect(()=>{ try{localStorage.setItem(KEYS.teacher,JSON.stringify(teacherMode));}catch{} },[teacherMode]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.pins,JSON.stringify(teacherPins));}catch{} },[teacherPins]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.framework,framework);}catch{} },[framework]);
-  useEffect(()=>{ try{localStorage.setItem(KEYS.calm,JSON.stringify(calm));}catch{} },[calm]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.proto,JSON.stringify(protoOnly));}catch{} },[protoOnly]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.last,JSON.stringify(last));}catch{} },[last]);
 
@@ -1044,5 +1048,13 @@ export default function App(){
         .qi-bob { animation: qiBob 3.5s ease-in-out infinite; }
       `}</style>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ProfileProvider>
+      <AppContent />
+    </ProfileProvider>
   );
 }
