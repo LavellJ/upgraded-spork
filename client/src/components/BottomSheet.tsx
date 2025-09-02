@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface BottomSheetProps {
   open: boolean;
@@ -10,64 +11,13 @@ interface BottomSheetProps {
 // Simple bottom sheet used across Backpack / Lessons / Teacher Panel
 export function BottomSheet({ open, onClose, children, titleId }: BottomSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null);
-  const previousFocusRef = useRef<Element | null>(null);
-  // Focus management and tab trap
-  useEffect(() => {
-    if (!open) return;
-
-    // Store previously focused element
-    previousFocusRef.current = document.activeElement;
-    
-    // Focus the first focusable element inside the sheet
-    setTimeout(() => {
-      const focusableElements = sheetRef.current?.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusableElements && focusableElements.length > 0) {
-        (focusableElements[0] as HTMLElement).focus();
-      }
-    }, 100);
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose?.();
-        return;
-      }
-      
-      // Tab trap
-      if (e.key === 'Tab') {
-        const focusableElements = sheetRef.current?.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        ) as NodeListOf<HTMLElement>;
-        
-        if (!focusableElements || focusableElements.length === 0) return;
-        
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-        
-        if (e.shiftKey) {
-          if (document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement.focus();
-          }
-        } else {
-          if (document.activeElement === lastElement) {
-            e.preventDefault();
-            firstElement.focus();
-          }
-        }
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      // Restore focus when closing
-      if (previousFocusRef.current) {
-        (previousFocusRef.current as HTMLElement).focus?.();
-      }
-    };
-  }, [open, onClose]);
+  
+  // Use the focus trap hook
+  useFocusTrap({
+    isOpen: open,
+    onClose: onClose || (() => {}),
+    containerRef: sheetRef
+  });
 
   if (!open) return null;
 
