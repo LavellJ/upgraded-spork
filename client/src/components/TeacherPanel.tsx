@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { BottomSheet } from "./BottomSheet";
 import { getEvents, clearEvents, downloadEventsCSV } from '../lib/analytics';
+import { getLastEvents, clearEvents as clearTelemetryEvents } from '../telemetry/events';
 import { ThemeToggle } from './ThemeToggle';
 import { learnerCache } from '../learning/model';
 import { computeInsights } from '../learning/insights';
@@ -102,6 +103,9 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   
   // Recent analytics
   const recent = getEvents().slice(-10).reverse();
+  
+  // Recent telemetry events (DEV only)
+  const recentTelemetry = getLastEvents(10);
   
   const handlePaste = async () => {
     try {
@@ -318,6 +322,59 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
               </div>
             )}
           </div>
+
+          {/* Telemetry Debug Card (DEV only) */}
+          {isDev && recentTelemetry.length > 0 && (
+            <div className="mt-4 border-t pt-3">
+              <div className="text-sm font-semibold mb-2">
+                🔧 Telemetry Events (DEV) 
+                <span className="ml-2 text-xs text-stone-500 font-normal">
+                  Last {recentTelemetry.length} events
+                </span>
+              </div>
+              <div className="space-y-1 max-h-48 overflow-y-auto">
+                {recentTelemetry.map((event, index) => (
+                  <div key={`${event.timestamp}-${index}`} className="text-xs p-2 bg-yellow-50 rounded border border-yellow-200">
+                    <div className="flex justify-between items-start">
+                      <span className="font-medium text-yellow-800">
+                        {event.type.replace(/_/g, ' ').toUpperCase()}
+                      </span>
+                      <span className="text-yellow-600 text-[10px]">
+                        {new Date(event.timestamp).toLocaleTimeString()}
+                      </span>
+                    </div>
+                    {event.payload && Object.keys(event.payload).length > 0 && (
+                      <div className="mt-1 text-yellow-700 text-[10px] font-mono bg-yellow-100 p-1 rounded">
+                        {JSON.stringify(event.payload, null, 1).slice(0, 200)}
+                        {JSON.stringify(event.payload).length > 200 && '...'}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-2 flex gap-2">
+                <button 
+                  onClick={() => {
+                    clearTelemetryEvents();
+                    alert('Telemetry events cleared.');
+                  }} 
+                  className="px-2 py-1 rounded border bg-white hover:bg-stone-50 text-xs text-stone-600"
+                >
+                  Clear Events
+                </button>
+                <button 
+                  onClick={() => {
+                    const events = getLastEvents(50);
+                    console.log('Telemetry Buffer:', events);
+                    alert(`${events.length} events logged to console.`);
+                  }} 
+                  className="px-2 py-1 rounded border bg-white hover:bg-stone-50 text-xs text-stone-600"
+                >
+                  Log to Console
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="mt-4 border-t pt-3"><div className="text-sm font-semibold mb-2">Quick Practice</div><div className="space-y-2 mb-3"><button onClick={() => { if (typeof onOpenJournal === 'function') onOpenJournal('literacy.phonics'); }} className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out text-sm w-full">Practice Phonics</button><button onClick={() => { if (typeof onOpenJournal === 'function') onOpenJournal('math.addition'); }} className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out text-sm w-full">Practice Math</button><button onClick={() => { if (typeof onOpenJournal === 'function') onOpenJournal('science.forces'); }} className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition ease-out text-sm w-full">Practice Science</button></div></div>
           
