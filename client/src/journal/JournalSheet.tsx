@@ -5,6 +5,7 @@ import type { JournalItem, JournalSession, JournalHistoryEntry, SkillLevel } fro
 import { getGenerator, getLevelFromMastery } from './generator';
 import { learnerCache } from '../learning/model';
 import { nanoid } from 'nanoid';
+import { pushEvent } from '../progress/events';
 
 interface JournalSheetProps {
   open: boolean;
@@ -75,6 +76,13 @@ export function JournalSheet({
         startedAt: Date.now()
       };
       
+      // Track journal session start
+      pushEvent({
+        kind: 'journal_start',
+        at: newSession.startedAt,
+        skillId
+      });
+      
       setSession(newSession);
       setItemStartTime(Date.now());
     } catch (error) {
@@ -143,6 +151,17 @@ export function JournalSheet({
     // Calculate session stats
     const correctCount = responses.filter(r => r.isCorrect).length;
     const totalDuration = Date.now() - session.startedAt;
+    const durationSec = Math.round(totalDuration / 1000);
+    
+    // Track journal session completion
+    pushEvent({
+      kind: 'journal_finish',
+      at: Date.now(),
+      skillId: session.skillId,
+      n: session.items.length,
+      correct: correctCount,
+      durationSec
+    });
     
     // Save session history
     const historyEntry: JournalHistoryEntry = {
