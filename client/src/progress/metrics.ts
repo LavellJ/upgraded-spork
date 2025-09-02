@@ -192,3 +192,82 @@ function getPreviousDay(dateString: string): string {
   date.setDate(date.getDate() - 1);
   return date.toLocaleDateString();
 }
+
+/**
+ * Scout intervention summary for the given time period
+ */
+export interface ScoutSummary {
+  totalShown: number;
+  actionableShown: number;
+  clickedCTAs: number;
+  dismissals: number;
+  topMessages: Array<{ messageId: string; count: number; priority: string }>;
+}
+
+export function scoutSummary(events: ProgressEvent[], days: number = 7): ScoutSummary {
+  const cutoff = Date.now() - (days * 24 * 60 * 60 * 1000);
+  
+  const scoutEvents = events.filter(event => 
+    event.kind === 'scout_msg' && event.at >= cutoff
+  );
+  
+  if (scoutEvents.length === 0) {
+    return {
+      totalShown: 0,
+      actionableShown: 0,
+      clickedCTAs: 0,
+      dismissals: 0,
+      topMessages: []
+    };
+  }
+  
+  let actionableShown = 0;
+  let clickedCTAs = 0;
+  let dismissals = 0;
+  const messageCounts = new Map<string, { count: number; priority: string }>();
+  
+  scoutEvents.forEach(event => {
+    if ('priority' in event && 'messageId' in event) {
+      // Count actionable messages
+      if (event.priority === 'actionable') {
+        actionableShown++;
+      }
+      
+      // Count CTA clicks
+      if (event.cta?.clicked) {
+        clickedCTAs++;
+      }
+      
+      // Count dismissals
+      if (event.dismissed) {
+        dismissals++;
+      }
+      
+      // Track message frequency for top messages
+      const existing = messageCounts.get(event.messageId);
+      if (existing) {
+        existing.count++;
+      } else {
+        messageCounts.set(event.messageId, { count: 1, priority: event.priority });
+      }
+    }
+  });
+  
+  // Get top 3 messages by show count
+  const topMessages = Array.from(messageCounts.entries())
+    .map(([messageId, data]) => ({
+      messageId,
+      count: data.count,
+      priority: data.priority
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 3);
+  
+  return {
+    totalShown: scoutEvents.length,
+    actionableShown,
+    clickedCTAs,
+    dismissals,
+    topMessages
+  };
+}

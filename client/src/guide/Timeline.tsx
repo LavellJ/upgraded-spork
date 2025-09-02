@@ -23,7 +23,7 @@ interface TimelineState {
   reviewSessionId: string | null;
 }
 
-type EventKind = 'all' | 'lessons' | 'journal';
+type EventKind = 'all' | 'lessons' | 'journal' | 'scout';
 type TimeRange = 7 | 30 | 90;
 
 // Registry type for easier access
@@ -69,6 +69,10 @@ export function Timeline({ selectedStandard, onStandardChange, onStartJournal }:
     } else if (kindFilter === 'journal') {
       filtered = filtered.filter(event => 
         event.kind === 'journal_start' || event.kind === 'journal_finish'
+      );
+    } else if (kindFilter === 'scout') {
+      filtered = filtered.filter(event => 
+        event.kind === 'scout_msg'
       );
     }
     
@@ -185,6 +189,16 @@ export function Timeline({ selectedStandard, onStandardChange, onStartJournal }:
         return '📝';
       case 'journal_finish':
         return '✍️';
+      case 'scout_msg':
+        if ('priority' in event) {
+          switch (event.priority) {
+            case 'critical': return '🔴';
+            case 'actionable': return '🟡';
+            case 'info': return '💬';
+            default: return '🧭';
+          }
+        }
+        return '🧭';
       default:
         return '📊';
     }
@@ -205,6 +219,13 @@ export function Timeline({ selectedStandard, onStandardChange, onStartJournal }:
         const total = 'n' in event ? event.n : 0;
         const journalDuration = 'durationSec' in event ? ` (${formatDuration(event.durationSec)})` : '';
         return `Finished practice: ${'skillId' in event ? event.skillId.replace('.', ' → ') : ''} • ${correct}/${total} correct${journalDuration}`;
+      case 'scout_msg':
+        if ('text' in event && 'cta' in event) {
+          const scoutText = `Scout: ${event.text}`;
+          const ctaText = event.cta?.label ? ` • CTA: ${event.cta.label}` : '';
+          return scoutText + ctaText;
+        }
+        return 'Scout intervention';
       default:
         return 'Activity';
     }
@@ -275,6 +296,7 @@ export function Timeline({ selectedStandard, onStandardChange, onStartJournal }:
                 <SelectItem value="all">All Events</SelectItem>
                 <SelectItem value="lessons">Lessons</SelectItem>
                 <SelectItem value="journal">Journal</SelectItem>
+                <SelectItem value="scout">Scout</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -349,6 +371,13 @@ export function Timeline({ selectedStandard, onStandardChange, onStartJournal }:
                           // Could open event details here
                         }
                       }}
+                      aria-label={
+                        event.kind === 'scout_msg' && 'priority' in event && 'text' in event
+                          ? `Scout message, ${event.priority} priority, ${event.cta?.label ? 'CTA offered' : 'no CTA'}`
+                          : event.kind === 'journal_finish'
+                          ? 'Journal session, click to review'
+                          : 'Learning activity'
+                      }
                       data-testid={`timeline-event-${event.kind}`}
                     >
                       <div className="text-lg flex-shrink-0">

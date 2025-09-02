@@ -90,6 +90,25 @@ function processQueue() {
       messageId: globalCurrent.id
     }
   });
+
+  // Also log as ProgressEvent for Timeline
+  try {
+    import('../progress').then(({ pushEvent }) => {
+      pushEvent({
+        kind: 'scout_msg',
+        at: globalCurrent.timestamp,
+        messageId: globalCurrent.id,
+        priority: globalCurrent.priority,
+        text: globalCurrent.text,
+        cta: globalCurrent.cta ? { 
+          label: globalCurrent.cta.label 
+        } : undefined,
+        dismissed: false
+      });
+    });
+  } catch (error) {
+    console.warn('Failed to log scout message as progress event:', error);
+  }
 }
 
 function startDismissTimer(calmMode: boolean) {
