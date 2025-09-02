@@ -2,10 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { AgeGroup } from "./AgeSelector";
 import { getLearnerName } from "@/utils/learnerName";
-// Import Scout character images - 3 versions used throughout entire app
-import explorerDefault from '@assets/image_1756014874313.png';
-import explorerExcited from '@assets/scout-excited.png';
-import explorerThinking from '@assets/scout-thinking.png';
+import { getAsset } from "../lib/assetResolver";
 
 interface ExplorerBuddyProps {
   ageGroup: AgeGroup;
@@ -195,9 +192,9 @@ export function ExplorerBuddy({
   // Get Scout image based on mood - 3 versions used throughout entire app
   const getExpressionImage = useCallback(() => {
     switch (buddyMood) {
-      case 'excited': return explorerExcited;
-      case 'thinking': return explorerThinking;
-      default: return explorerDefault;
+      case 'excited': return getAsset('ui', 'scout-excited');
+      case 'thinking': return getAsset('ui', 'scout-thinking');
+      default: return getAsset('ui', 'scout-default');
     }
   }, [buddyMood]);
 

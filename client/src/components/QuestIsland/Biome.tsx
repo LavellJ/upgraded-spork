@@ -1,12 +1,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { getBiomeAriaLabel } from '../../data/meta';
-
-// Import biome illustrations
-import jungleBiome from '@assets/93d1f38d-b62e-45ff-ba28-513648083209_1756280426905.png';
-import lagoonBiome from '@assets/1596b76d-9d32-4f53-81cb-17b6a9d3f4c5_1756280188364.png';
-import volcanoBiome from '@assets/21ffafcd-859d-41f3-af58-d7eb82341f22_1756280344496.png';
-import beachBiome from '@assets/530f43b9-b747-4b3f-b133-32f866bee0fe_1756280261658.png';
+import { getAsset, type BiomeId } from '../../lib/assetResolver';
 
 interface BiomeProps {
   id: string;
@@ -53,18 +48,21 @@ export function Biome({ id, name, subject, position, color, description, onClick
   };
 
   const getBiomeImage = () => {
-    switch (id) {
-      case "beach":
-        return beachBiome;
-      case "jungle":
-        return jungleBiome;
-      case "volcano":
-        return volcanoBiome;
-      case "lagoon":
-        return lagoonBiome;
-      default:
-        return null;
+    // Map legacy biome IDs to standardized biome IDs
+    const biomeIdMap: Record<string, BiomeId> = {
+      "beach": "night",
+      "jungle": "forest", 
+      "volcano": "desert",
+      "lagoon": "ocean"
+    };
+    
+    const standardId = biomeIdMap[id];
+    if (!standardId) {
+      console.warn(`Unknown biome ID: ${id}`);
+      return getAsset('biome', 'forest'); // fallback
     }
+    
+    return getAsset('biome', standardId);
   };
 
 
