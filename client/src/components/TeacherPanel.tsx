@@ -68,7 +68,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   
   // Compute insights data
   const learnerState = learnerCache.getState();
-  const insights = computeInsights(learnerState, framework, loop);
+  const insights = computeInsights(learnerState, framework, loop, profile.ageBand);
   
   // Check if we're in development mode
   const isDev = process.env.NODE_ENV === 'development';

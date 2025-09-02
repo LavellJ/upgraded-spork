@@ -1,4 +1,4 @@
-import type { LearnerState, SkillId, Mastery } from './model';
+import type { LearnerState, SkillId, Mastery, AgeBand } from './model';
 import { recommendNextPin } from './policy';
 import { getGenerator } from '../journal/generator';
 import REGISTRY from '../data/registry.json';
@@ -105,7 +105,8 @@ function calculateTrend(mastery: Mastery): 'up' | 'down' | 'stable' {
 export function computeInsights(
   learnerState: LearnerState, 
   framework: string = 'Generic',
-  currentLoop: number = 1
+  currentLoop: number = 1,
+  ageBand?: AgeBand
 ): InsightsData {
   const availableSkillIds = getGenerator().getAvailableSkills();
   
@@ -163,7 +164,7 @@ export function computeInsights(
     
     // Try to recommend from need lessons first, fallback to all lessons
     const candidateLessons = needLessons.length > 0 ? needLessons : frameworkLessons;
-    const recommended = recommendNextPin(candidateLessons, learnerState, currentLoop);
+    const recommended = recommendNextPin(candidateLessons, learnerState, currentLoop, ageBand);
     
     if (recommended) {
       // Find biome for this lesson

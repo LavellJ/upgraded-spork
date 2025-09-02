@@ -1,6 +1,27 @@
 import type { JournalItem, SkillLevel } from '../schema/journal';
 import { nanoid } from 'nanoid';
 import { allBanks, getItemsForSkill, getAllAvailableSkills } from './banks';
+import type { AgeBand } from '../learning/model';
+
+// Map mastery probability to difficulty level based on age band
+export function mapMasteryToLevel(p: number, ageBand?: AgeBand): SkillLevel {
+  // Base thresholds
+  let easyThreshold = 0.45;
+  let coreThreshold = 0.75;
+  
+  // Widen 'easy' threshold for younger age bands
+  if (ageBand === '5-6' || ageBand === '7-8') {
+    easyThreshold += 0.05; // easier threshold at 0.50
+  }
+  
+  if (p < easyThreshold) {
+    return 'easy';
+  } else if (p < coreThreshold) {
+    return 'core';
+  } else {
+    return 'stretch';
+  }
+}
 
 // Generator interface for creating journal items
 export interface JournalGenerator {
@@ -277,11 +298,9 @@ export function getGenerator(): JournalGenerator {
   return generatorInstance;
 }
 
-// Helper function to determine appropriate level based on mastery
+// Helper function to determine appropriate level based on mastery (deprecated, use mapMasteryToLevel)
 export function getLevelFromMastery(mastery: number): SkillLevel {
-  if (mastery < 0.4) return 'easy';
-  if (mastery < 0.75) return 'core';
-  return 'stretch';
+  return mapMasteryToLevel(mastery);
 }
 
 // Helper function to map skill IDs from lesson standards
