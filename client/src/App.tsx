@@ -10,6 +10,8 @@ import { HelpOverlay } from "./components/HelpOverlay";
 import IslandBackdrop from "./components/IslandBackdrop";
 import LOOP2 from "./data/loop2.json";
 import { logEvent } from "./lib/analytics";
+import { learnerCache } from "./learning/model";
+import { inferSkillIdsForLesson, getLessonById } from "./learning/policy";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -841,10 +843,20 @@ export default function App(){
         onClose={() => setPlayer(null)}
         biome={player?.biome}
         lesson={player?.lesson}
-        onMarkComplete={(id) => {
+        onMarkComplete={(id, outcome = 'correct') => {
           if (!player?.biome) return;
           const biome = player.biome;
           logEvent({ ts: new Date().toISOString(), loop, biome, lessonId: id, action: 'complete' });
+          
+          // Update learner model
+          const lesson = getLessonById(id);
+          if (lesson) {
+            const skillIds = inferSkillIdsForLesson(lesson);
+            skillIds.forEach(skillId => {
+              learnerCache.updateSkill(skillId, outcome);
+            });
+          }
+          
           setComp(prev => {
             const nextSet = new Set(prev[biome as keyof typeof prev]);
             nextSet.add(id);

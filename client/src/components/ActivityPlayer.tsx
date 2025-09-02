@@ -88,14 +88,21 @@ interface MCActivityProps {
   biome: string;
   lesson: { id: string; title: string };
   onSolved: () => void;
+  onAttempt: (outcome: 'correct' | 'wrong') => void;
 }
 
-function MCActivity({ biome, lesson, onSolved }: MCActivityProps) {
+function MCActivity({ biome, lesson, onSolved, onAttempt }: MCActivityProps) {
   const accent = SUBJECTS[biome].color;
   const tpl = getTemplate(biome, lesson.id);
   const [sel, setSel] = useState(-1);
   const [checked, setChecked] = useState(false);
   const ok = checked && sel === tpl.correct;
+  
+  const handleCheck = () => {
+    setChecked(true);
+    const outcome = sel === tpl.correct ? 'correct' : 'wrong';
+    onAttempt(outcome);
+  };
   return (
     <div className="p-3">
       <div className="text-sm text-stone-700 mb-2">Prototype activity</div>
@@ -104,7 +111,7 @@ function MCActivity({ biome, lesson, onSolved }: MCActivityProps) {
         <button key={i} onClick={() => { setSel(i); setChecked(false); }} className={cx("text-left px-3 py-2 rounded-xl border bg-white hover:bg-stone-50 transition ease-out", sel === i && "ring-2 ring-amber-500")}>{String.fromCharCode(65 + i)}. {opt}</button>
       ))}</div>
       <div className="mt-3 flex items-center gap-2">
-        <button disabled={sel < 0} onClick={() => setChecked(true)} className={cx("px-3 py-2 rounded-full transition ease-out", sel < 0 ? "bg-stone-200 text-stone-500" : "bg-amber-700/90 text-white hover:bg-amber-700")}>Check answer</button>
+        <button disabled={sel < 0} onClick={handleCheck} className={cx("px-3 py-2 rounded-full transition ease-out", sel < 0 ? "bg-stone-200 text-stone-500" : "bg-amber-700/90 text-white hover:bg-amber-700")}>Check answer</button>
         {checked && (<span className={cx("text-sm", ok ? "text-emerald-700" : "text-rose-700")}>{ok ? "Correct!" : "Try again"}</span>)}
       </div>
       {checked && !ok && <div className="mt-1 text-xs text-stone-600">Hint: {tpl.explain}</div>}
@@ -119,7 +126,7 @@ interface ActivityPlayerProps {
   onClose: () => void;
   biome?: string;
   lesson?: { id: string; title: string };
-  onMarkComplete: (id: string) => void;
+  onMarkComplete: (id: string, outcome?: 'correct' | 'wrong') => void;
   protoOnly: boolean;
 }
 
@@ -137,7 +144,17 @@ export function ActivityPlayer({ open, onClose, biome, lesson, onMarkComplete, p
           {external ? <a href={url} target="_blank" rel="noreferrer" className="ml-auto text-xs px-2 py-1 rounded-full bg-white border hover:bg-stone-50 transition ease-out">Open in new tab</a> : <span className="ml-auto text-[11px] px-2 py-1 rounded-full bg-white/70 border">Using in-app prototype</span>}
         </div>
         <div className="mt-3 rounded-xl overflow-hidden border bg-white">
-          <MCActivity biome={biome!} lesson={lesson} onSolved={() => { onMarkComplete(lesson.id); onClose(); }} />
+          <MCActivity 
+            biome={biome!} 
+            lesson={lesson} 
+            onSolved={() => { onMarkComplete(lesson.id, 'correct'); onClose(); }}
+            onAttempt={(outcome) => {
+              // Track attempts immediately when they happen
+              if (outcome === 'wrong') {
+                onMarkComplete(lesson.id, 'wrong');
+              }
+            }}
+          />
         </div>
         <div className="mt-3 flex items-center justify-end"><button onClick={onClose} className="px-3 py-2 rounded-full border bg-white hover:bg-stone-50 text-stone-700 transition ease-out">Close</button></div>
       </div>
