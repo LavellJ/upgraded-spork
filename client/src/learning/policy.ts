@@ -1,6 +1,7 @@
 import registryData from '../data/registry.json';
 import prototypesData from '../data/prototypes.json';
 import type { LearnerState, SkillId, AgeBand } from './model';
+import { getNextAssignedLesson } from '../guide/assign';
 
 type RegistryEntry = {
   url?: string;
@@ -138,6 +139,28 @@ export function recommendNextPin(
   ageBand?: AgeBand
 ): string | null {
   if (candidates.length === 0) return null;
+  
+  // First, check for assigned lessons that haven't been completed
+  const completedSet = new Set<string>();
+  
+  // Build completed set from all sources (this could be passed in as a parameter)
+  // For now, we'll check against the available candidates to avoid breaking existing logic
+  const nextAssignedLesson = getNextAssignedLesson(completedSet);
+  
+  // If there's a next assigned lesson and it's in our candidates, prioritize it
+  if (nextAssignedLesson) {
+    // Check if the assigned lesson is available in candidates
+    const assignedCandidate = candidates.find(candidate => {
+      // Handle both "biome.lessonId" and "lessonId" formats
+      const lessonId = candidate.includes('.') ? candidate.split('.')[1] : candidate;
+      return lessonId === nextAssignedLesson;
+    });
+    
+    if (assignedCandidate) {
+      console.log('[Compass] Prioritizing assigned lesson:', assignedCandidate);
+      return assignedCandidate;
+    }
+  }
   
   const TARGET_MASTERY = 0.75;
   const allLessons = getAllLessons();

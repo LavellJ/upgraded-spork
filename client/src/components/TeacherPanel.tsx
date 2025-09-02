@@ -12,6 +12,7 @@ import { Timeline } from '../guide/Timeline';
 import { downloadCsv, getCsvStats } from '../guide/exportCsv';
 import { loadEvents, getEventsRange } from '../progress';
 import { Download } from 'lucide-react';
+import { AssignmentCreator } from '../guide/AssignmentCreator';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -68,7 +69,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   const [snaps, setSnaps] = useState<Snapshot[]>(() => loadSnaps());
   const [showAuthoring, setShowAuthoring] = useState(false);
   const [selectedStandard, setSelectedStandard] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<'overview' | 'timeline'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'assignments'>('overview');
   
   // Profile context
   const { profile, updateProfile } = useProfile();
@@ -386,7 +387,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
           
           {/* Analytics & Timeline Section */}
           <div className="mt-4 border-t pt-3">
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-3 flex-wrap">
               <button 
                 onClick={() => setActiveTab('overview')}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
@@ -408,6 +409,17 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 data-testid="tab-timeline"
               >
                 📅 Timeline
+              </button>
+              <button 
+                onClick={() => setActiveTab('assignments')}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                  activeTab === 'assignments' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white border hover:bg-stone-50'
+                }`}
+                data-testid="tab-assignments"
+              >
+                🎯 Assignments
               </button>
             </div>
 
@@ -482,12 +494,16 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                   )}
                 </div>
               </div>
-            ) : (
+            ) : activeTab === 'timeline' ? (
               <div className="max-h-96 overflow-y-auto">
                 <Timeline 
                   selectedStandard={selectedStandard}
                   onStandardChange={setSelectedStandard}
                 />
+              </div>
+            ) : (
+              <div className="max-h-96 overflow-y-auto">
+                <AssignmentCreator selectedFramework={framework} />
               </div>
             )}
           </div>

@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import balloonIcon from '@assets/097fe560-b8ac-4192-b450-4f106e9ff693_1756279378478.png';
 import lockIcon from '@assets/9252541e-bdfc-4bfa-ab60-c69c63a4297e_1756279935456.png';
 import { getPinAriaLabel } from '../../data/meta';
+import { getActiveAssignedLessons } from '../../guide/assign';
 
 interface LessonNodeProps {
   id: string;
@@ -15,7 +16,14 @@ interface LessonNodeProps {
 }
 
 export function LessonNode({ id, title, biome, position, completed, locked, onClick, isVisible = true }: LessonNodeProps) {
+  // Check if this lesson is part of an active assignment
+  const activeAssignedLessons = getActiveAssignedLessons();
+  const isAssigned = activeAssignedLessons.includes(id);
+
   const getNodeColor = () => {
+    if (isAssigned) {
+      return "from-blue-400 to-indigo-500"; // Blue gradient for assigned lessons
+    }
     return "from-yellow-400 to-amber-500";
   };
 
@@ -87,7 +95,7 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
           />
         </motion.div>
       ) : (
-        /* Hot Air Balloon with Yellow Circle Background for Available Lessons */
+        /* Hot Air Balloon with Circle Background for Available Lessons */
         <motion.div
           className="relative"
           animate={{
@@ -103,10 +111,17 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
-          {/* Yellow Circle Background to indicate current progress */}
+          {/* Circle Background to indicate current progress - changes color for assignments */}
           <motion.div
             className={`absolute inset-0 w-12 h-12 bg-gradient-to-br ${getNodeColor()} rounded-full shadow-lg -z-10 m-auto`}
-            animate={{
+            animate={isAssigned ? {
+              scale: [1, 1.4, 1],
+              boxShadow: [
+                "0 4px 12px rgba(59, 130, 246, 0.4)",
+                "0 8px 25px rgba(59, 130, 246, 0.8)", 
+                "0 4px 12px rgba(59, 130, 246, 0.4)"
+              ]
+            } : {
               scale: [1, 1.3, 1],
               boxShadow: [
                 "0 4px 12px rgba(255, 193, 7, 0.4)",
@@ -114,7 +129,7 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
                 "0 4px 12px rgba(255, 193, 7, 0.4)"
               ]
             }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            transition={{ duration: isAssigned ? 1.2 : 1.5, repeat: Infinity, ease: "easeInOut" }}
           />
           
           {/* Hot Air Balloon on top */}
@@ -160,6 +175,26 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
           }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
+      )}
+      
+      {/* Assignment Badge - shows target icon for assigned lessons */}
+      {isAssigned && !completed && (
+        <motion.div
+          className="absolute -top-2 -right-2 w-6 h-6 bg-blue-600 rounded-full shadow-lg flex items-center justify-center z-20"
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ 
+            scale: 1, 
+            rotate: 0,
+            y: [0, -2, 0]
+          }}
+          transition={{ 
+            scale: { duration: 0.3, ease: "backOut" },
+            rotate: { duration: 0.5, ease: "backOut" },
+            y: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+          }}
+        >
+          <span className="text-white text-xs">🎯</span>
+        </motion.div>
       )}
     </button>
   );
