@@ -82,15 +82,30 @@ const registryEntry = (biome: string, lessonId: string) => {
   return null;
 };
 
-function getLessonMeta(biome: string, id: string) {
+function getLessonMeta(biome: string, id: string, framework = 'Generic') {
   const base = {
     forest: { icon: "📘", est: "5–7 min", objectives: ["Identify sounds", "Blend simple words", "Read aloud"], standard: "Foundational phonics & fluency" },
     desert: { icon: "➕", est: "6–8 min", objectives: ["Add within 10", "Use number bonds", "Apply to word problems"], standard: "Number sense & operations" },
     ocean: { icon: "⚙️", est: "5–7 min", objectives: ["Observe forces", "Use simple terms", "Predict outcomes"], standard: "Physical forces & inquiry" },
     night: { icon: "🧭", est: "5–7 min", objectives: ["Read symbols", "Use directions", "Locate places"], standard: "Human geography basics" },
   }[biome] || { icon: "📘", est: "5–7 min", objectives: ["Learn"], standard: "Core skill" };
+  
   const reg = registryEntry(biome, id);
-  return { ...base, est: reg?.est || base.est, standard: reg?.standard || base.standard, id, biome };
+  
+  // Get the mapped standard based on selected framework
+  const mappedStd = 
+    (reg?.standards && framework && reg.standards[framework]) ||
+    (reg?.standards?.Generic) ||
+    (STANDARDS[framework]?.[biome]) ||
+    base.standard;
+
+  return { 
+    ...base, 
+    est: reg?.est || base.est, 
+    standard: mappedStd, 
+    id, 
+    biome 
+  };
 }
 
 interface LessonSheetProps {
@@ -114,7 +129,7 @@ export function LessonSheet({ open, onClose, biome, lessons, completed, onComple
   const subject = SUBJECTS[biome];
   const [detail, setDetail] = useState<{ id: string; title: string } | null>(null);
   const allDone = completed.size === lessons.length && lessons.length > 0;
-  const standardText = STANDARDS[framework]?.[biome] || getLessonMeta(biome, lessons[0]?.id || 'x').standard;
+  const standardText = STANDARDS[framework]?.[biome] || getLessonMeta(biome, lessons[0]?.id || 'x', framework).standard;
   return (
     <BottomSheet open={open} onClose={() => { setDetail(null); onClose(); }}>
       <div className="text-stone-800">
@@ -167,7 +182,7 @@ export function LessonSheet({ open, onClose, biome, lessons, completed, onComple
             );
           })}
         </div>
-        <LessonDetail open={!!detail} onClose={() => setDetail(null)} biome={biome} lesson={detail} onMarkComplete={onComplete} onStart={onStart} teacherMode={teacherMode} standardText={standardText} protoOnly={protoOnly} calmTip={calmTip} />
+        <LessonDetail open={!!detail} onClose={() => setDetail(null)} biome={biome} lesson={detail} onMarkComplete={onComplete} onStart={onStart} teacherMode={teacherMode} framework={framework} protoOnly={protoOnly} calmTip={calmTip} />
       </div>
     </BottomSheet>
   );

@@ -1,62 +1,348 @@
 {
   "1": {
     "forest": {
-      "f1": { "est": "6–8 min", "standard": "Foundational phonics & fluency", "url": "" },
-      "f2": { "est": "6–8 min", "standard": "Foundational phonics & fluency", "url": "" },
-      "f3": { "est": "6–8 min", "standard": "Foundational phonics & fluency", "url": "" },
-      "f4": { "est": "6–8 min", "standard": "Foundational phonics & fluency", "url": "" },
-      "f5": { "est": "6–8 min", "standard": "Foundational phonics & fluency", "url": "" }
+      "f1": { 
+        "url": "https://activities.learnoz.com/literacy/cvc-words-1",
+        "standards": {
+          "Generic": "Foundational phonics & fluency",
+          "ACARA": "AC9EFLY02",
+          "NZC": "NZC L1: Phonics/Decoding"
+        },
+        "est": "6–8 min" 
+      },
+      "f2": { 
+        "url": "https://activities.learnoz.com/literacy/cvc-words-2",
+        "standards": {
+          "Generic": "Blending CVC words",
+          "ACARA": "AC9EFLY03",
+          "NZC": "NZC L1: Reading/Decoding"
+        },
+        "est": "6–8 min" 
+      },
+      "f3": { 
+        "url": "https://activities.learnoz.com/literacy/sight-words-1",
+        "standards": {
+          "Generic": "Sight word recognition",
+          "ACARA": "AC9EFLY04",
+          "NZC": "NZC L1: Reading Vocabulary"
+        },
+        "est": "6–8 min" 
+      },
+      "f4": { 
+        "url": "https://activities.learnoz.com/literacy/letter-sounds",
+        "standards": {
+          "Generic": "Letter-sound correspondence", 
+          "ACARA": "AC9EFLY01"
+        },
+        "est": "6–8 min" 
+      },
+      "f5": { 
+        "url": "https://activities.learnoz.com/literacy/reading-fluency-1",
+        "standards": {
+          "Generic": "Reading fluency & expression",
+          "ACARA": "AC9EFLY05"
+        },
+        "est": "6–8 min" 
+      }
     },
     "desert": {
-      "d1": { "est": "6–8 min", "standard": "Number sense within 10", "url": "" },
-      "d2": { "est": "6–8 min", "standard": "Number sense within 10", "url": "" },
-      "d3": { "est": "6–8 min", "standard": "Number sense within 10", "url": "" },
-      "d4": { "est": "6–8 min", "standard": "Number sense within 10", "url": "" },
-      "d5": { "est": "6–8 min", "standard": "Number sense within 10", "url": "" }
+      "d1": { 
+        "url": "https://activities.learnoz.com/math/counting-to-10",
+        "standards": {
+          "Generic": "Number sense within 10",
+          "ACARA": "AC9M1N01",
+          "NZC": "NZC L1: Number (to 10)"
+        },
+        "est": "6–8 min" 
+      },
+      "d2": { 
+        "url": "https://activities.learnoz.com/math/addition-within-5",
+        "standards": {
+          "Generic": "Addition within 5",
+          "ACARA": "AC9M1N02"
+        },
+        "est": "6–8 min" 
+      },
+      "d3": { 
+        "url": "https://activities.learnoz.com/math/subtraction-within-5",
+        "standards": {
+          "Generic": "Subtraction within 5",
+          "ACARA": "AC9M1N02"
+        },
+        "est": "6–8 min" 
+      },
+      "d4": { 
+        "url": "https://activities.learnoz.com/math/number-bonds-5",
+        "standards": {
+          "Generic": "Number bonds to 5",
+          "ACARA": "AC9M1N03"
+        },
+        "est": "6–8 min" 
+      },
+      "d5": { 
+        "url": "https://activities.learnoz.com/math/addition-within-10",
+        "standards": {
+          "Generic": "Addition within 10",
+          "ACARA": "AC9M1N04"
+        },
+        "est": "6–8 min" 
+      }
     },
     "ocean": {
-      "o1": { "est": "6–8 min", "standard": "Physical forces (intro)", "url": "" },
-      "o2": { "est": "6–8 min", "standard": "Physical forces (intro)", "url": "" },
-      "o3": { "est": "6–8 min", "standard": "Physical forces (intro)", "url": "" },
-      "o4": { "est": "6–8 min", "standard": "Life/energy tie-in", "url": "" },
-      "o5": { "est": "6–8 min", "standard": "Physical forces (intro)", "url": "" }
+      "o1": { 
+        "url": "https://activities.learnoz.com/science/forces-push-pull",
+        "standards": {
+          "Generic": "Forces: push and pull",
+          "ACARA": "AC9S1U03",
+          "NZC": "NZC L1: Physical World"
+        },
+        "est": "6–8 min" 
+      },
+      "o2": { 
+        "url": "https://activities.learnoz.com/science/materials-hard-soft",
+        "standards": {
+          "Generic": "Material properties",
+          "ACARA": "AC9S1U02"
+        },
+        "est": "6–8 min" 
+      },
+      "o3": { 
+        "url": "https://activities.learnoz.com/science/motion-fast-slow",
+        "standards": {
+          "Generic": "Motion concepts",
+          "ACARA": "AC9S1U03"
+        },
+        "est": "6–8 min" 
+      },
+      "o4": { 
+        "url": "https://activities.learnoz.com/science/living-nonliving",
+        "standards": {
+          "Generic": "Living vs non-living",
+          "ACARA": "AC9S1U01"
+        },
+        "est": "6–8 min" 
+      },
+      "o5": { 
+        "url": "https://activities.learnoz.com/science/weather-observation",
+        "standards": {
+          "Generic": "Weather patterns",
+          "ACARA": "AC9S1U04"
+        },
+        "est": "6–8 min" 
+      }
     },
     "night": {
-      "n1": { "est": "6–8 min", "standard": "Human geography basics", "url": "" },
-      "n2": { "est": "6–8 min", "standard": "Human geography basics", "url": "" },
-      "n3": { "est": "6–8 min", "standard": "Human geography basics", "url": "" },
-      "n4": { "est": "6–8 min", "standard": "Human geography basics", "url": "" },
-      "n5": { "est": "6–8 min", "standard": "Human geography basics", "url": "" }
+      "n1": { 
+        "url": "https://activities.learnoz.com/hass/maps-symbols",
+        "standards": {
+          "Generic": "Map symbols & legends",
+          "ACARA": "AC9HS1K04",
+          "NZC": "NZC L1: Place & Environment"
+        },
+        "est": "6–8 min" 
+      },
+      "n2": { 
+        "url": "https://activities.learnoz.com/hass/directions-compass",
+        "standards": {
+          "Generic": "Cardinal directions",
+          "ACARA": "AC9HS1K03"
+        },
+        "est": "6–8 min" 
+      },
+      "n3": { 
+        "url": "https://activities.learnoz.com/hass/home-school-places",
+        "standards": {
+          "Generic": "Familiar places",
+          "ACARA": "AC9HS1K01"
+        },
+        "est": "6–8 min" 
+      },
+      "n4": { 
+        "url": "https://activities.learnoz.com/hass/land-water-features",
+        "standards": {
+          "Generic": "Natural features",
+          "ACARA": "AC9HS1K02"
+        },
+        "est": "6–8 min" 
+      },
+      "n5": { 
+        "url": "https://activities.learnoz.com/hass/community-helpers",
+        "standards": {
+          "Generic": "Community & helpers",
+          "ACARA": "AC9HS1S01"
+        },
+        "est": "6–8 min" 
+      }
     }
   },
   "2": {
     "forest": {
-      "f6":  { "est": "7–9 min", "standard": "Phonics: digraphs", "url": "" },
-      "f7":  { "est": "7–9 min", "standard": "Phonics: blends", "url": "" },
-      "f8":  { "est": "6–8 min", "standard": "Sight words set B", "url": "" },
-      "f9":  { "est": "6–8 min", "standard": "Conventions: punctuation", "url": "" },
-      "f10": { "est": "7–9 min", "standard": "Vowels: long vs short", "url": "" }
+      "f6": { 
+        "url": "https://activities.learnoz.com/literacy/digraphs-ch-sh",
+        "standards": {
+          "Generic": "Phonics: digraphs",
+          "ACARA": "AC9EFLY06"
+        },
+        "est": "7–9 min" 
+      },
+      "f7": { 
+        "url": "https://activities.learnoz.com/literacy/consonant-blends",
+        "standards": {
+          "Generic": "Phonics: blends", 
+          "ACARA": "AC9EFLY07"
+        },
+        "est": "7–9 min" 
+      },
+      "f8": { 
+        "url": "https://activities.learnoz.com/literacy/sight-words-advanced",
+        "standards": {
+          "Generic": "Sight words set B",
+          "ACARA": "AC9EFLY08"
+        },
+        "est": "6–8 min" 
+      },
+      "f9": { 
+        "url": "https://activities.learnoz.com/literacy/punctuation-basics",
+        "standards": {
+          "Generic": "Conventions: punctuation",
+          "ACARA": "AC9ELC01"
+        },
+        "est": "6–8 min" 
+      },
+      "f10": { 
+        "url": "https://activities.learnoz.com/literacy/vowels-long-short",
+        "standards": {
+          "Generic": "Vowels: long vs short",
+          "ACARA": "AC9EFLY09"
+        },
+        "est": "7–9 min" 
+      }
     },
     "desert": {
-      "d6":  { "est": "7–9 min", "standard": "Add within 20", "url": "" },
-      "d7":  { "est": "6–8 min", "standard": "Make 10 / bonds to 10", "url": "" },
-      "d8":  { "est": "6–8 min", "standard": "Subtract within 10", "url": "" },
-      "d9":  { "est": "6–8 min", "standard": "Make 10 strategy", "url": "" },
-      "d10": { "est": "8–10 min", "standard": "Two-step problems", "url": "" }
+      "d6": { 
+        "url": "https://activities.learnoz.com/math/addition-within-20",
+        "standards": {
+          "Generic": "Add within 20",
+          "ACARA": "AC9M1N05"
+        },
+        "est": "7–9 min" 
+      },
+      "d7": { 
+        "url": "https://activities.learnoz.com/math/make-ten-strategy",
+        "standards": {
+          "Generic": "Make 10 / bonds to 10",
+          "ACARA": "AC9M1N06"
+        },
+        "est": "6–8 min" 
+      },
+      "d8": { 
+        "url": "https://activities.learnoz.com/math/subtraction-within-10",
+        "standards": {
+          "Generic": "Subtract within 10",
+          "ACARA": "AC9M1N07"
+        },
+        "est": "6–8 min" 
+      },
+      "d9": { 
+        "url": "https://activities.learnoz.com/math/ten-frame-strategy",
+        "standards": {
+          "Generic": "Make 10 strategy",
+          "ACARA": "AC9M1N08"
+        },
+        "est": "6–8 min" 
+      },
+      "d10": { 
+        "url": "https://activities.learnoz.com/math/word-problems-two-step",
+        "standards": {
+          "Generic": "Two-step problems",
+          "ACARA": "AC9M1N09"
+        },
+        "est": "8–10 min" 
+      }
     },
     "ocean": {
-      "o6":  { "est": "6–8 min", "standard": "Magnetism intro", "url": "" },
-      "o7":  { "est": "6–8 min", "standard": "Material properties", "url": "" },
-      "o8":  { "est": "6–8 min", "standard": "States of matter", "url": "" },
-      "o9":  { "est": "6–8 min", "standard": "Simple machines: lever", "url": "" },
-      "o10": { "est": "6–8 min", "standard": "Weather patterns", "url": "" }
+      "o6": { 
+        "url": "https://activities.learnoz.com/science/magnetism-intro",
+        "standards": {
+          "Generic": "Magnetism intro",
+          "ACARA": "AC9S1U05"
+        },
+        "est": "6–8 min" 
+      },
+      "o7": { 
+        "url": "https://activities.learnoz.com/science/materials-properties",
+        "standards": {
+          "Generic": "Material properties",
+          "ACARA": "AC9S1U06"
+        },
+        "est": "6–8 min" 
+      },
+      "o8": { 
+        "url": "https://activities.learnoz.com/science/states-matter",
+        "standards": {
+          "Generic": "States of matter",
+          "ACARA": "AC9S1U07"
+        },
+        "est": "6–8 min" 
+      },
+      "o9": { 
+        "url": "https://activities.learnoz.com/science/simple-machines-lever",
+        "standards": {
+          "Generic": "Simple machines: lever",
+          "ACARA": "AC9S1U08"
+        },
+        "est": "6–8 min" 
+      },
+      "o10": { 
+        "url": "https://activities.learnoz.com/science/weather-patterns",
+        "standards": {
+          "Generic": "Weather patterns",
+          "ACARA": "AC9S1U09"
+        },
+        "est": "6–8 min" 
+      }
     },
     "night": {
-      "n6":  { "est": "6–8 min", "standard": "Map scale", "url": "" },
-      "n7":  { "est": "6–8 min", "standard": "Grid references", "url": "" },
-      "n8":  { "est": "6–8 min", "standard": "Landforms", "url": "" },
-      "n9":  { "est": "6–8 min", "standard": "Routes & directions", "url": "" },
-      "n10": { "est": "6–8 min", "standard": "Continents & oceans", "url": "" }
+      "n6": { 
+        "url": "https://activities.learnoz.com/hass/map-scale-intro",
+        "standards": {
+          "Generic": "Map scale",
+          "ACARA": "AC9HS1K05"
+        },
+        "est": "6–8 min" 
+      },
+      "n7": { 
+        "url": "https://activities.learnoz.com/hass/grid-references",
+        "standards": {
+          "Generic": "Grid references",
+          "ACARA": "AC9HS1K06"
+        },
+        "est": "6–8 min" 
+      },
+      "n8": { 
+        "url": "https://activities.learnoz.com/hass/landforms-basic",
+        "standards": {
+          "Generic": "Landforms",
+          "ACARA": "AC9HS1K07"
+        },
+        "est": "6–8 min" 
+      },
+      "n9": { 
+        "url": "https://activities.learnoz.com/hass/routes-directions",
+        "standards": {
+          "Generic": "Routes & directions",
+          "ACARA": "AC9HS1K08"
+        },
+        "est": "6–8 min" 
+      },
+      "n10": { 
+        "url": "https://activities.learnoz.com/hass/continents-oceans",
+        "standards": {
+          "Generic": "Continents & oceans",
+          "ACARA": "AC9HS1K09"
+        },
+        "est": "6–8 min" 
+      }
     }
   }
 }
