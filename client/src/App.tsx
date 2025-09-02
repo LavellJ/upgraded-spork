@@ -156,14 +156,30 @@ const AmbientLayer = ({tod, calm=false}) => (
 );
 
 // Meta helpers
-function getLessonMeta(biome,id){ const base={
-  forest:{icon:"📘",est:"5–7 min",objectives:["Identify sounds","Blend simple words","Read aloud"],standard:"Foundational phonics & fluency"},
-  desert:{icon:"➕",est:"6–8 min",objectives:["Add within 10","Use number bonds","Apply to word problems"],standard:"Number sense & operations"},
-  ocean:{icon:"⚙️",est:"5–7 min",objectives:["Observe forces","Use simple terms","Predict outcomes"],standard:"Physical forces & inquiry"},
-  night:{icon:"🧭",est:"5–7 min",objectives:["Read symbols","Use directions","Locate places"],standard:"Human geography basics"},
-}[biome] || {icon:"📘",est:"5–7 min",objectives:["Learn"],standard:"Core skill"};
-  const reg = registryEntry(biome,id);
-  return {...base, est: reg?.est || base.est, standard: reg?.standard || base.standard, id, biome};
+function getLessonMeta(biome, id, framework = 'Generic') {
+  const base = {
+    forest:{icon:"📘",est:"5–7 min",objectives:["Identify sounds","Blend simple words","Read aloud"],standard:"Foundational phonics & fluency"},
+    desert:{icon:"➕",est:"6–8 min",objectives:["Add within 10","Use number bonds","Apply to word problems"],standard:"Number sense & operations"},
+    ocean:{icon:"⚙️",est:"5–7 min",objectives:["Observe forces","Use simple terms","Predict outcomes"],standard:"Physical forces & inquiry"},
+    night:{icon:"🧭",est:"5–7 min",objectives:["Read symbols","Use directions","Locate places"],standard:"Human geography basics"},
+  }[biome] || {icon:"📘",est:"5–7 min",objectives:["Learn"],standard:"Core skill"};
+
+  const reg = registryEntry(biome, id);
+  
+  // Get the mapped standard based on selected framework
+  const mappedStd = 
+    (reg?.standards && framework && reg.standards[framework]) ||
+    (reg?.standards?.Generic) ||
+    (STANDARDS[framework]?.[biome]) ||
+    base.standard;
+
+  return {
+    ...base, 
+    est: reg?.est || base.est, 
+    standard: mappedStd, 
+    id, 
+    biome
+  };
 }
 // Activity URL (respects Prototype-only mode)
 const resolveActivityUrl = (biome,lessonId, protoOnly) => {

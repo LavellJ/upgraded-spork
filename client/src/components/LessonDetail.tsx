@@ -40,15 +40,30 @@ const registryEntry = (biome: string, lessonId: string) => {
   return null;
 };
 
-function getLessonMeta(biome: string, id: string) {
+function getLessonMeta(biome: string, id: string, framework = 'Generic') {
   const base = {
     forest: { icon: "📘", est: "5–7 min", objectives: ["Identify sounds", "Blend simple words", "Read aloud"], standard: "Foundational phonics & fluency" },
     desert: { icon: "➕", est: "6–8 min", objectives: ["Add within 10", "Use number bonds", "Apply to word problems"], standard: "Number sense & operations" },
     ocean: { icon: "⚙️", est: "5–7 min", objectives: ["Observe forces", "Use simple terms", "Predict outcomes"], standard: "Physical forces & inquiry" },
     night: { icon: "🧭", est: "5–7 min", objectives: ["Read symbols", "Use directions", "Locate places"], standard: "Human geography basics" },
   }[biome] || { icon: "📘", est: "5–7 min", objectives: ["Learn"], standard: "Core skill" };
+  
   const reg = registryEntry(biome, id);
-  return { ...base, est: reg?.est || base.est, standard: reg?.standard || base.standard, id, biome };
+  
+  // Get the mapped standard based on selected framework
+  const mappedStd = 
+    (reg?.standards && framework && reg.standards[framework]) ||
+    (reg?.standards?.Generic) ||
+    (STANDARDS[framework]?.[biome]) ||
+    base.standard;
+
+  return { 
+    ...base, 
+    est: reg?.est || base.est, 
+    standard: mappedStd, 
+    id, 
+    biome 
+  };
 }
 
 interface LessonDetailProps {
@@ -59,16 +74,20 @@ interface LessonDetailProps {
   onMarkComplete: (id: string) => void;
   onStart: (lesson: { id: string; title: string }) => void;
   teacherMode: boolean;
-  standardText?: string;
+  framework: string;
   protoOnly: boolean;
   calmTip?: boolean;
 }
 
-export function LessonDetail({ open, onClose, biome, lesson, onMarkComplete, onStart, teacherMode, standardText, protoOnly, calmTip }: LessonDetailProps) {
+export function LessonDetail({ open, onClose, biome, lesson, onMarkComplete, onStart, teacherMode, framework, protoOnly, calmTip }: LessonDetailProps) {
   if (!open || !lesson) return null;
-  const meta = getLessonMeta(biome, lesson.id);
+  const meta = getLessonMeta(biome, lesson.id, framework);
   const accent = SUBJECTS[biome].color;
   const hasLink = !protoOnly && !!registryEntry(biome, lesson.id)?.url?.trim();
+  
+  // Get framework-specific standard text
+  const reg = registryEntry(biome, lesson.id);
+  const standardText = reg?.standards?.[framework] || STANDARDS[framework]?.[biome] || meta.standard;
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center">
       <div className="absolute inset-0 bg-stone-900/40" onClick={onClose} />
@@ -86,7 +105,7 @@ export function LessonDetail({ open, onClose, biome, lesson, onMarkComplete, onS
             </div>
           )}
           <ul className="list-disc pl-5 space-y-1 text-stone-700">{meta.objectives.map((o, i) => <li key={i}>{o}</li>)}</ul>
-          <div className="mt-3 text-xs text-stone-600">Aligned to: {standardText || meta.standard}</div>
+          <div className="mt-3 text-xs text-stone-600">Aligned to: {standardText}</div>
           {teacherMode && <div className="mt-2 text-xs text-stone-600">Teacher tools: Quick-complete available.</div>}
         </div>
         <div className="mt-4 flex items-center justify-end gap-2">
