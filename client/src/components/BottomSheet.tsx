@@ -23,13 +23,13 @@ export function BottomSheet({ open, onClose, children, titleId }: BottomSheetPro
 
   return (
     <div className="fixed inset-0 z-40">
-      <div className="absolute inset-0 bg-stone-900/40" onClick={onClose} />
+      <div className="absolute inset-0 bg-bg-overlay" onClick={onClose} />
       <div 
         ref={sheetRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[min(96vw,42rem)] max-h-[88vh] overflow-auto rounded-t-3xl bg-white/95 backdrop-blur border border-stone-900/10 shadow-2xl p-4"
+        className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[min(96vw,42rem)] max-h-[88vh] overflow-auto rounded-t-3xl bg-bg-card backdrop-blur border border-fg-subtle/20 shadow-2xl p-4"
       >
         {children}
       </div>

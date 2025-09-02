@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { BottomSheet } from "./BottomSheet";
 import { getEvents, clearEvents, downloadEventsCSV } from '../lib/analytics';
+import { ThemeToggle } from './ThemeToggle';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -99,7 +100,10 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
         <div className="flex items-center gap-2 mb-4">
           <span className="text-lg">⚙️</span>
           <h3 className="font-extrabold text-lg">Teacher Panel</h3>
-          <button onClick={onClose} className="ml-auto text-xs px-2 py-1 rounded-full border bg-white hover:bg-stone-50">Close</button>
+          <div className="ml-auto flex items-center gap-2">
+            <ThemeToggle />
+            <button onClick={onClose} className="text-xs px-2 py-1 rounded-full border bg-white hover:bg-stone-50">Close</button>
+          </div>
         </div>
         <div className="space-y-4">
           <div><label className="block text-sm font-semibold mb-2">Standards Framework</label><select value={framework} onChange={(e) => setFramework(e.target.value)} className="w-full px-3 py-2 border rounded-lg bg-white">{frameworks.map(f => <option key={f} value={f}>{f}</option>)}</select><div className="text-[11px] text-stone-600 mt-1">This sets which framework code appears in Lesson Detail. (Registry supports Generic / ACARA / NZC.)</div></div>
