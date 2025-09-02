@@ -18,6 +18,7 @@ import { inferSkillIdsForLesson, getLessonById, recommendNextPin } from "./learn
 import { ScoutManager } from "./components/ScoutManager";
 import { RouteListener } from "./components/RouteListener";
 import { ScoutDebugCard } from "./components/ScoutDebugCard";
+import { PwaUpdateToast } from "./components/PwaUpdateToast";
 import { useScoutQueue } from './hooks/useScoutQueue';
 import { ProfileProvider, useProfile } from "./profile/context";
 import { Onboarding } from "./onboarding/Onboarding";
@@ -1065,6 +1066,9 @@ function AppContent(){
 
       {/* Scout Debug Card (DEV only) */}
       <ScoutDebugCard />
+
+      {/* PWA Update Toast */}
+      <PwaUpdateToast />
 
       {/* Journal Sheet */}
       <JournalSheet
