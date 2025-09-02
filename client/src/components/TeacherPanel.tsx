@@ -55,6 +55,10 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   const [importValue, setImportValue] = useState('');
   const [exportLink, setExportLink] = useState('');
   const [snaps, setSnaps] = useState<Snapshot[]>(() => loadSnaps());
+  const [showAuthoring, setShowAuthoring] = useState(false);
+  
+  // Check if we're in development mode
+  const isDev = process.env.NODE_ENV === 'development';
   
   const handleExport = () => { const link = onExport(); setExportLink(link); };
   const handleImport = () => { 
@@ -96,16 +100,46 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   };
   return (
     <BottomSheet open={open} onClose={onClose}>
-      <div className="text-stone-800">
+      <div className="text-stone-800 h-full flex flex-col">
         <div className="flex items-center gap-2 mb-4">
           <span className="text-lg">⚙️</span>
           <h3 className="font-extrabold text-lg">Teacher Panel</h3>
           <div className="ml-auto flex items-center gap-2">
+            {isDev && (
+              <button
+                onClick={() => setShowAuthoring(!showAuthoring)}
+                className={`text-xs px-3 py-1 rounded-full border transition ease-out ${
+                  showAuthoring 
+                    ? 'bg-blue-600 text-white border-blue-600' 
+                    : 'bg-white hover:bg-stone-50'
+                }`}
+              >
+                {showAuthoring ? '🔧 Exit Authoring' : '🔧 Authoring'}
+              </button>
+            )}
             <ThemeToggle />
             <button onClick={onClose} className="text-xs px-2 py-1 rounded-full border bg-white hover:bg-stone-50">Close</button>
           </div>
         </div>
-        <div className="space-y-4">
+
+        {showAuthoring && isDev ? (
+          <div className="flex-1 min-h-0 p-4 bg-blue-50 rounded-lg">
+            <h3 className="text-lg font-bold text-blue-800 mb-2">🔧 Content Authoring Tool</h3>
+            <p className="text-blue-700">Authoring tool will be available here when implementation is complete.</p>
+            <div className="mt-4 p-3 bg-blue-100 rounded border">
+              <div className="text-sm text-blue-800">
+                <strong>Features coming:</strong>
+                <ul className="list-disc ml-4 mt-2">
+                  <li>Live JSON editor with validation</li>
+                  <li>Real-time prototype question preview</li>
+                  <li>Import/Export functionality</li>
+                  <li>Schema validation with error reporting</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4 overflow-auto">
           <div><label className="block text-sm font-semibold mb-2">Standards Framework</label><select value={framework} onChange={(e) => setFramework(e.target.value)} className="w-full px-3 py-2 border rounded-lg bg-white">{frameworks.map(f => <option key={f} value={f}>{f}</option>)}</select><div className="text-[11px] text-stone-600 mt-1">This sets which framework code appears in Lesson Detail. (Registry supports Generic / ACARA / NZC.)</div></div>
           <div><label className="flex items-center gap-2"><input type="checkbox" checked={protoOnly} onChange={(e) => setProtoOnly(e.target.checked)} className="rounded" />Use prototype-only mode</label><div className="text-xs text-stone-600 mt-1">When enabled, all activities use in-app prototypes instead of external links.</div></div>
           <div><div className="text-sm font-semibold mb-2">Progress Overview</div><div className="grid grid-cols-2 gap-2">{Object.entries(SUBJECTS).map(([biome, subject]) => (<div key={biome} className="p-2 bg-stone-50 rounded-lg"><div className="flex items-center justify-between mb-1"><span className="text-xs font-medium">{subject.label}</span><span className="text-xs text-stone-600">{done[biome]}/{totals[biome]}</span></div><div className="h-1.5 bg-stone-200 rounded"><div className="h-1.5 rounded" style={{ width: `${totals[biome] ? (done[biome]/totals[biome])*100 : 0}%`, background: subject.color }} /></div></div>))}</div><div className="mt-4"><label className="flex items-center gap-2"><input type="checkbox" checked={teacherPins} onChange={(e)=>setTeacherPins(e.target.checked)} className="rounded" />Show lesson pins on map (Teacher)</label><div className="text-[11px] text-stone-600 mt-1">Hidden by default. When Compass is equipped, only the next lesson pin shows.</div></div></div>
@@ -113,7 +147,8 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
           <div><div className="text-sm font-semibold mb-2">Import Progress</div><div className="flex gap-2 mb-2"><label className="sr-only" htmlFor="import-input">Import progress link or token</label><input id="import-input" value={importValue} onChange={(e) => setImportValue(e.target.value)} placeholder="Paste progress link or token" className="flex-1 px-3 py-2 border rounded-lg" /><button onClick={handlePaste} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 text-xs" aria-label="Paste from clipboard">Paste</button><button onClick={handleImport} className="px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition ease-out">Import</button></div></div>
           <div className="mt-4 border-t pt-3"><div className="text-sm font-semibold mb-2">Analytics (local)</div><div className="flex items-center gap-2 mb-3"><button onClick={() => downloadEventsCSV()} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs">Export events CSV</button><button onClick={() => { clearEvents(); alert('Cleared local analytics buffer'); }} className="px-2 py-1 rounded-full border bg-white hover:bg-stone-50 transition ease-out text-xs">Clear buffer</button><span className="text-[11px] text-stone-600">{getEvents().length} event(s) captured</span></div><div><div className="text-sm font-semibold mb-2">Recent activity</div>{recent.length === 0 ? (<div className="text-xs text-stone-500">No events yet.</div>) : (<ul className="space-y-1 text-xs text-stone-700">{recent.map((e, i) => (<li key={`${e.ts}-${e.action}-${i}`} className="flex items-center gap-2"><span>⏺</span><span className="opacity-70">{new Date(e.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span><span className="font-semibold">{e.action}</span><span className="opacity-70">{e.biome ?? ''} {e.lessonId ?? ''}</span></li>))}</ul>)}</div></div>
           <div className="mt-5 border-t pt-3"><div className="text-sm font-semibold mb-2 text-red-700">Danger zone</div><div className="grid grid-cols-1 sm:grid-cols-2 gap-2"><button onClick={() => { if (confirm('Reset progress for the current loop? This keeps your loop number and backpack.')) { onResetCurrentLoop(); alert('Current loop progress has been reset.'); } }} className="px-3 py-2 rounded-lg border bg-white hover:bg-stone-50 text-red-700">Reset current loop</button><button onClick={() => { if (confirm('Factory reset everything? This sets Loop to 1 and clears progress and backpack.')) { onFactoryReset(); alert('All progress reset. Back to Loop 1.'); } }} className="px-3 py-2 rounded-lg border bg-white hover:bg-stone-50 text-red-700">Factory reset (all)</button></div><div className="mt-2 text-[11px] text-stone-600">Tip: Use Export to snapshot progress before you reset.</div></div>
-        </div>
+          </div>
+        )}
       </div>
     </BottomSheet>
   );
