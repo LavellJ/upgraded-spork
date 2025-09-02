@@ -177,9 +177,17 @@ export function Privacy({ open, onClose }: PrivacyProps) {
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-gray-700">
-              LearnOz keeps all your learning progress right on your device. Nothing gets sent to our servers - 
-              it's all yours and stays private!
+              LearnOz keeps all your learning progress right on your device by default. Nothing gets sent to our servers 
+              unless you choose to enable cloud sync - it's all yours and stays private!
             </p>
+            
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-sm text-blue-800 font-medium mb-1">🔄 Optional Cloud Sync</p>
+              <p className="text-xs text-blue-700">
+                Optionally sync your progress across devices with adult verification. 
+                Cloud sync requires a magic link sent to an adult's email.
+              </p>
+            </div>
             
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className="space-y-1">

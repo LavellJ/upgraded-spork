@@ -14,6 +14,7 @@ import { downloadCsv, getCsvStats } from '../guide/exportCsv';
 import { loadEvents, getEventsRange } from '../progress';
 import { Download } from 'lucide-react';
 import { AssignmentCreator } from '../guide/AssignmentCreator';
+import { CloudSyncSettings } from '../auth/CloudSyncSettings';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -519,7 +520,8 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 <AssignmentCreator selectedFramework={framework} />
               </div>
             ) : (
-              <div className="max-h-96 overflow-y-auto">
+              <div className="max-h-96 overflow-y-auto space-y-4">
+                <CloudSyncSettings />
                 <Privacy open={false} onClose={() => {}} />
               </div>
             )}
