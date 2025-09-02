@@ -30,11 +30,24 @@ let subscribers: Array<(state: ScoutQueueState) => void> = [];
 let dismissTimer: NodeJS.Timeout | null = null;
 let messageHistory: Array<{ id: string; timestamp: number }> = [];
 
+// Session tracking for guardrails
+let sessionShownCounts: { info: number; actionable: number; critical: number } = { info: 0, actionable: 0, critical: 0 };
+let sessionStartTime: number = Date.now();
+let lastRateLimitReset: number = Date.now();
+let currentMessageStartTime: number | null = null;
+
 // Constants
 const QUEUE_CAP = 3;
 const COALESCE_WINDOW_MS = 30 * 1000; // 30 seconds
 const DEFAULT_DISMISS_MS = 3000;
 const CALM_DISMISS_MS = 4500;
+
+// Guardrail constants (per 10 minutes)
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+const MAX_INFO_PER_WINDOW = 6;
+const MAX_ACTIONABLE_PER_WINDOW = 3;
+const MAX_CRITICAL_PER_WINDOW = 2; // Critical messages should be rare
+const CALM_MODE_REDUCTION = 0.8; // 20% reduction
 
 function notifySubscribers() {
   const state: ScoutQueueState = {
@@ -70,6 +83,70 @@ function addToHistory(message: ScoutQueueMessage) {
   }
 }
 
+// Session tracking and guardrails helpers
+function resetSessionCountsIfNeeded() {
+  const now = Date.now();
+  
+  // Reset counters every 10 minutes
+  if (now - lastRateLimitReset >= RATE_LIMIT_WINDOW_MS) {
+    sessionShownCounts = { info: 0, actionable: 0, critical: 0 };
+    lastRateLimitReset = now;
+  }
+}
+
+function getSessionLimits(calmMode: boolean) {
+  const multiplier = calmMode ? CALM_MODE_REDUCTION : 1;
+  return {
+    info: Math.floor(MAX_INFO_PER_WINDOW * multiplier),
+    actionable: Math.floor(MAX_ACTIONABLE_PER_WINDOW * multiplier),
+    critical: Math.floor(MAX_CRITICAL_PER_WINDOW * multiplier)
+  };
+}
+
+function canShowMessage(priority: ScoutPriority, calmMode: boolean): boolean {
+  resetSessionCountsIfNeeded();
+  const limits = getSessionLimits(calmMode);
+  
+  switch (priority) {
+    case 'info':
+      return sessionShownCounts.info < limits.info;
+    case 'actionable':
+      return sessionShownCounts.actionable < limits.actionable;
+    case 'critical':
+      return sessionShownCounts.critical < limits.critical;
+    default:
+      return false;
+  }
+}
+
+function recordMessageShown(priority: ScoutPriority) {
+  resetSessionCountsIfNeeded();
+  sessionShownCounts[priority]++;
+}
+
+function emitAnalyticsEvent(
+  messageId: string,
+  priority: ScoutPriority,
+  action: 'shown' | 'clicked' | 'dismissed' | 'auto_dismiss',
+  dwellMs?: number
+) {
+  try {
+    import('../progress').then(({ pushEvent, getSessionId }) => {
+      pushEvent({
+        kind: 'scout_analytics',
+        at: Date.now(),
+        id: messageId,
+        priority,
+        action,
+        dwellMs,
+        sessionId: getSessionId()
+      });
+    });
+  } catch (error) {
+    console.warn('Failed to emit scout analytics event:', error);
+  }
+}
+
 function processQueue() {
   if (globalCurrent || globalQueue.length === 0) {
     return;
@@ -77,6 +154,11 @@ function processQueue() {
   
   // Show next message from queue
   globalCurrent = globalQueue.shift()!;
+  currentMessageStartTime = Date.now();
+  
+  // Record as shown for session tracking
+  recordMessageShown(globalCurrent.priority);
+  
   notifySubscribers();
   
   // Log to analytics events
@@ -91,17 +173,20 @@ function processQueue() {
     }
   });
 
+  // Emit analytics event for shown
+  emitAnalyticsEvent(globalCurrent.id, globalCurrent.priority, 'shown');
+
   // Also log as ProgressEvent for Timeline
   try {
     import('../progress').then(({ pushEvent }) => {
       pushEvent({
         kind: 'scout_msg',
-        at: globalCurrent.timestamp,
-        messageId: globalCurrent.id,
-        priority: globalCurrent.priority,
-        text: globalCurrent.text,
-        cta: globalCurrent.cta ? { 
-          label: globalCurrent.cta.label 
+        at: globalCurrent!.timestamp,
+        messageId: globalCurrent!.id,
+        priority: globalCurrent!.priority,
+        text: globalCurrent!.text,
+        cta: globalCurrent!.cta ? { 
+          label: globalCurrent!.cta.label 
         } : undefined,
         dismissed: false
       });
@@ -120,6 +205,12 @@ function startDismissTimer(calmMode: boolean) {
   
   dismissTimer = setTimeout(() => {
     if (globalCurrent) {
+      // Calculate dwell time
+      const dwellMs = currentMessageStartTime ? Date.now() - currentMessageStartTime : undefined;
+      
+      // Emit analytics event for auto dismiss
+      emitAnalyticsEvent(globalCurrent.id, globalCurrent.priority, 'auto_dismiss', dwellMs);
+      
       // Add actionable messages to inbox when auto-dismissed
       if (globalCurrent.priority === 'actionable') {
         globalInbox.push(globalCurrent);
@@ -131,6 +222,7 @@ function startDismissTimer(calmMode: boolean) {
       }
       
       globalCurrent = null;
+      currentMessageStartTime = null;
       notifySubscribers();
       processQueue();
     }
@@ -199,6 +291,20 @@ export function useScoutQueue() {
       return;
     }
     
+    // Check guardrails - respect session limits
+    if (!canShowMessage(message.priority, profile.calmMode)) {
+      // For actionable messages that hit limits, add to inbox only
+      if (message.priority === 'actionable') {
+        globalInbox.push(fullMessage);
+        if (globalInbox.length > 5) {
+          globalInbox.shift();
+        }
+        notifySubscribers();
+      }
+      // Info messages are ignored when limits hit
+      return;
+    }
+    
     // Add to history for coalescing checks
     addToHistory(fullMessage);
     
@@ -207,6 +313,8 @@ export function useScoutQueue() {
       // For critical messages, we'll trigger ScoutSheet opening
       // This will be handled by the component consuming this hook
       globalCurrent = fullMessage;
+      currentMessageStartTime = Date.now();
+      recordMessageShown(fullMessage.priority);
       notifySubscribers();
       
       // Log critical message immediately
@@ -220,6 +328,9 @@ export function useScoutQueue() {
           messageId: fullMessage.id
         }
       });
+      
+      // Emit analytics event for critical message shown
+      emitAnalyticsEvent(fullMessage.id, fullMessage.priority, 'shown');
       
       return;
     }
@@ -243,11 +354,17 @@ export function useScoutQueue() {
     if (!globalCurrent) {
       processQueue();
     }
-  }, []);
+  }, [profile.calmMode]);
   
   const dismiss = useCallback(() => {
     if (globalCurrent) {
       pauseDismissTimer();
+      
+      // Calculate dwell time
+      const dwellMs = currentMessageStartTime ? Date.now() - currentMessageStartTime : undefined;
+      
+      // Emit analytics event for manual dismiss
+      emitAnalyticsEvent(globalCurrent.id, globalCurrent.priority, 'dismissed', dwellMs);
       
       // Add actionable messages to inbox when dismissed
       if (globalCurrent.priority === 'actionable') {
@@ -260,6 +377,7 @@ export function useScoutQueue() {
       }
       
       globalCurrent = null;
+      currentMessageStartTime = null;
       notifySubscribers();
       processQueue();
     }
@@ -295,6 +413,17 @@ export function useScoutQueue() {
     notifySubscribers();
   }, []);
 
+  // Add CTA click handler
+  const onCtaClick = useCallback((messageId: string) => {
+    // Find message and emit analytics event
+    const message = globalCurrent?.id === messageId ? globalCurrent : 
+                   globalInbox.find(msg => msg.id === messageId);
+    
+    if (message) {
+      emitAnalyticsEvent(message.id, message.priority, 'clicked');
+    }
+  }, []);
+
   return {
     current: state.current,
     enqueue,
@@ -304,7 +433,8 @@ export function useScoutQueue() {
     pauseTimer,
     resumeTimer,
     flushInfoMessages,
-    removeFromInbox
+    removeFromInbox,
+    onCtaClick
   };
 }
 
@@ -314,9 +444,23 @@ export function resetScoutQueue() {
   globalCurrent = null;
   globalInbox = [];
   messageHistory = [];
+  sessionShownCounts = { info: 0, actionable: 0, critical: 0 };
+  sessionStartTime = Date.now();
+  lastRateLimitReset = Date.now();
+  currentMessageStartTime = null;
   if (dismissTimer) {
     clearTimeout(dismissTimer);
     dismissTimer = null;
   }
   notifySubscribers();
+}
+
+// Export function to get current session stats (useful for testing)
+export function getSessionStats() {
+  resetSessionCountsIfNeeded();
+  return {
+    counts: { ...sessionShownCounts },
+    sessionDuration: Date.now() - sessionStartTime,
+    lastReset: lastRateLimitReset
+  };
 }

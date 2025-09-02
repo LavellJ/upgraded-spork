@@ -2,7 +2,7 @@
 // Unified interface for progress events and metrics
 
 export type { ProgressEvent } from './events';
-export type { CompletionMetrics, JournalRecap, Lesson, ScoutSummary } from './metrics';
+export type { CompletionMetrics, JournalRecap, Lesson, ScoutSummary, ScoutAnalytics } from './metrics';
 
 export {
   loadEvents,
@@ -11,7 +11,8 @@ export {
   getEventsBetween,
   getEventsByKind,
   clearEvents,
-  getEventCount
+  getEventCount,
+  getSessionId
 } from './events';
 
 export {
@@ -22,5 +23,6 @@ export {
   getCompletionEvents,
   lessonSuccessRate,
   averageSessionDuration,
-  scoutSummary
+  scoutSummary,
+  scoutAnalytics
 } from './metrics';

@@ -3,8 +3,8 @@
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { MessageSquare, Target, MousePointer, X } from 'lucide-react';
-import { getEventsRange, scoutSummary, type ScoutSummary } from '../progress';
+import { MessageSquare, Target, MousePointer, X, Info, Clock, Activity } from 'lucide-react';
+import { getEventsRange, scoutSummary, scoutAnalytics, type ScoutSummary, type ScoutAnalytics } from '../progress';
 
 interface InsightsCardProps {
   timeRange?: 7 | 30 | 90;
@@ -16,6 +16,10 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
   
   const summary: ScoutSummary = useMemo(() => {
     return scoutSummary(events, timeRange);
+  }, [events, timeRange]);
+
+  const analytics: ScoutAnalytics = useMemo(() => {
+    return scoutAnalytics(events, timeRange);
   }, [events, timeRange]);
 
   const hasData = summary.totalShown > 0;
@@ -160,8 +164,59 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
           </div>
         )}
 
-        {/* Engagement rate */}
-        {summary.actionableShown > 0 && (
+        {/* Analytics row */}
+        {analytics.ctaCtr > 0 && (
+          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 border border-indigo-100">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                <Activity className="w-4 h-4 text-indigo-600" />
+                Analytics
+              </h4>
+              <div className="flex items-center gap-1">
+                <Info className="w-3 h-3 text-gray-400" />
+                <span className="text-xs text-gray-500" title="Guardrails prevent over-messaging: 6 info + 3 actionable per 10min (20% less in Calm Mode)">
+                  Guardrails Active
+                </span>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="text-lg font-bold text-indigo-700">
+                  {Math.round(analytics.ctaCtr * 100)}%
+                </div>
+                <div className="text-xs text-gray-600">CTR</div>
+                <div className="text-xs text-gray-500 mt-1" title="Click-through rate for actionable messages">
+                  CTA clicks
+                </div>
+              </div>
+              
+              <div className="text-center border-l border-r border-indigo-200 px-2">
+                <div className="text-lg font-bold text-indigo-700 flex items-center justify-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  {Math.round(analytics.medianDwellMs / 1000)}s
+                </div>
+                <div className="text-xs text-gray-600">Median Dwell</div>
+                <div className="text-xs text-gray-500 mt-1" title="How long learners view messages before dismissing">
+                  Viewing time
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <div className="text-lg font-bold text-indigo-700">
+                  {analytics.sessionDoseP95}
+                </div>
+                <div className="text-xs text-gray-600">P95 Dose</div>
+                <div className="text-xs text-gray-500 mt-1" title="95th percentile of messages shown per session">
+                  Session max
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Engagement rate (legacy - keep for compatibility) */}
+        {summary.actionableShown > 0 && analytics.ctaCtr === 0 && (
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-100">
             <div className="flex items-center justify-between">
               <div>
