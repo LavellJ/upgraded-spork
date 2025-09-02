@@ -6,6 +6,7 @@ import { getGenerator, getLevelFromMastery } from './generator';
 import { learnerCache } from '../learning/model';
 import { nanoid } from 'nanoid';
 import { pushEvent } from '../progress/events';
+import { ReflectionPrompt } from '../reflections/ReflectionPrompt';
 
 interface JournalSheetProps {
   open: boolean;
@@ -24,6 +25,24 @@ interface SessionResponse {
 
 const JOURNAL_HISTORY_KEY = 'qi.journal.history.v1';
 
+// Export function to load journal history for review functionality
+export function loadJournalHistory(): JournalHistoryEntry[] {
+  try {
+    const stored = localStorage.getItem(JOURNAL_HISTORY_KEY);
+    if (!stored) return [];
+    return JSON.parse(stored);
+  } catch (error) {
+    console.error('Failed to load journal history:', error);
+    return [];
+  }
+}
+
+// Get specific session for review
+export function getJournalSession(sessionId: string): JournalHistoryEntry | null {
+  const history = loadJournalHistory();
+  return history.find(entry => entry.sessionId === sessionId) || null;
+}
+
 export function JournalSheet({ 
   open, 
   onClose, 
@@ -39,6 +58,7 @@ export function JournalSheet({
   const [responses, setResponses] = useState<SessionResponse[]>([]);
   const [itemStartTime, setItemStartTime] = useState(Date.now());
   const [isComplete, setIsComplete] = useState(false);
+  const [showReflection, setShowReflection] = useState(false);
 
   // Initialize session when opened
   useEffect(() => {
@@ -52,6 +72,7 @@ export function JournalSheet({
       setShowFeedback(false);
       setResponses([]);
       setIsComplete(false);
+      setShowReflection(false);
     }
   }, [open, skillId]);
 
@@ -163,7 +184,7 @@ export function JournalSheet({
       durationSec
     });
     
-    // Save session history
+    // Save session history - extended with detailed data for review
     const historyEntry: JournalHistoryEntry = {
       date: new Date().toISOString(),
       skillId: session.skillId,
@@ -171,18 +192,28 @@ export function JournalSheet({
       correctCount,
       duration: totalDuration,
       masteryBefore: skillBefore?.p || 0.5,
-      masteryAfter: learnerState.skills[skillId!]?.p || 0.5
+      masteryAfter: learnerState.skills[skillId!]?.p || 0.5,
+      // Extended fields for review functionality
+      sessionId: session.id,
+      targetLevel: session.targetLevel,
+      items: session.items,
+      responses: responses
     };
     
     saveSessionHistory(historyEntry);
     
     setIsComplete(true);
     
-    // Auto-close after showing completion
+    // Show reflection prompt after completion
+    setTimeout(() => {
+      setShowReflection(true);
+    }, 1000);
+    
+    // Auto-close after showing completion (extended time for reflection)
     setTimeout(() => {
       onComplete?.();
       onClose();
-    }, calm ? 2000 : 3000);
+    }, calm ? 8000 : 10000);
   };
 
   const saveSessionHistory = (entry: JournalHistoryEntry) => {
@@ -206,8 +237,6 @@ export function JournalSheet({
       open={open} 
       onClose={onClose} 
       titleId="journal-title"
-      role="dialog"
-      aria-labelledby="journal-title"
     >
       <div className="text-gray-800 p-2">
         {/* Header */}
@@ -385,6 +414,14 @@ export function JournalSheet({
           </div>
         )}
       </div>
+      
+      {/* Reflection Prompt */}
+      <ReflectionPrompt
+        open={showReflection}
+        onClose={() => setShowReflection(false)}
+        refType="journal"
+        refId={session?.skillId || ''}
+      />
     </BottomSheet>
   );
 }

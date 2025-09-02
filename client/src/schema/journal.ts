@@ -31,7 +31,7 @@ export const journalSession = z.object({
 
 export type JournalSession = z.infer<typeof journalSession>;
 
-// Session history entry
+// Session history entry - extended to include detailed review data
 export const journalHistoryEntry = z.object({
   date: z.string(),
   skillId: z.string(),
@@ -39,7 +39,17 @@ export const journalHistoryEntry = z.object({
   correctCount: z.number(),
   duration: z.number(),
   masteryBefore: z.number(),
-  masteryAfter: z.number()
+  masteryAfter: z.number(),
+  // Extended fields for review functionality
+  sessionId: z.string(),
+  targetLevel: z.enum(['easy', 'core', 'stretch']),
+  items: z.array(journalItem), // Store the actual items presented
+  responses: z.array(z.object({
+    itemId: z.string(),
+    userAnswer: z.string(),
+    isCorrect: z.boolean(),
+    timeSpent: z.number()
+  })) // Store user responses for review
 });
 
 export type JournalHistoryEntry = z.infer<typeof journalHistoryEntry>;

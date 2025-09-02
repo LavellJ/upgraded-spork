@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, BookOpen, Target, Filter, ChevronDown } from 'lucide-react';
+import { Calendar, BookOpen, Target, Filter, ChevronDown, RotateCcw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
@@ -9,10 +9,18 @@ import { loadEvents, getEventsRange } from '../progress';
 import type { ProgressEvent } from '../progress';
 import registryData from '../data/registry.json';
 import { STANDARDS } from '../data/meta';
+import { loadJournalHistory } from '../journal/JournalSheet';
+import { getReflectionAt } from '../reflections/model';
+import { JournalReviewSheet } from '../journal/JournalReviewSheet';
 
 interface TimelineProps {
   selectedStandard?: string;
   onStandardChange?: (standard: string) => void;
+  onStartJournal?: (skillId: string) => void;
+}
+
+interface TimelineState {
+  reviewSessionId: string | null;
 }
 
 type EventKind = 'all' | 'lessons' | 'journal';
@@ -39,9 +47,10 @@ interface RegistryData {
 
 const registry = registryData as RegistryData;
 
-export function Timeline({ selectedStandard, onStandardChange }: TimelineProps) {
+export function Timeline({ selectedStandard, onStandardChange, onStartJournal }: TimelineProps) {
   const [kindFilter, setKindFilter] = useState<EventKind>('all');
   const [timeRange, setTimeRange] = useState<TimeRange>(30);
+  const [reviewSessionId, setReviewSessionId] = useState<string | null>(null);
   
   // Get events based on time range
   const events = useMemo(() => {
@@ -200,6 +209,27 @@ export function Timeline({ selectedStandard, onStandardChange }: TimelineProps) 
         return 'Activity';
     }
   };
+
+  // Find journal session ID for review functionality
+  const findJournalSessionId = (event: ProgressEvent): string | null => {
+    if (event.kind !== 'journal_finish' || !('skillId' in event)) return null;
+    
+    const journalHistory = loadJournalHistory();
+    const skillId = event.skillId;
+    const eventTime = event.at;
+    
+    // Find the closest journal session by timestamp and skillId
+    const matching = journalHistory.find(entry => 
+      entry.skillId === skillId && 
+      Math.abs(new Date(entry.date).getTime() - eventTime) < 5 * 60 * 1000 // Within 5 minutes
+    );
+    
+    return matching?.sessionId || null;
+  };
+
+  const handleReviewSession = (sessionId: string) => {
+    setReviewSessionId(sessionId);
+  };
   
   // Standards options for filter
   const standardOptions = useMemo(() => {
@@ -330,15 +360,42 @@ export function Timeline({ selectedStandard, onStandardChange }: TimelineProps) 
                           {getEventDescription(event)}
                         </p>
                         
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs text-gray-500">
-                            {formatTime(event.at)}
-                          </span>
+                        <div className="flex items-center justify-between mt-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-500">
+                              {formatTime(event.at)}
+                            </span>
+                            
+                            {'biomeId' in event && event.biomeId && (
+                              <Badge variant="secondary" className="text-xs">
+                                {event.biomeId}
+                              </Badge>
+                            )}
+                            
+                            {/* Reflection indicator */}
+                            {getReflectionAt(event.at) && (
+                              <Badge variant="outline" className="text-xs">
+                                💭 Reflection
+                              </Badge>
+                            )}
+                          </div>
                           
-                          {'biomeId' in event && event.biomeId && (
-                            <Badge variant="secondary" className="text-xs">
-                              {event.biomeId}
-                            </Badge>
+                          {/* Review button for journal_finish events */}
+                          {event.kind === 'journal_finish' && findJournalSessionId(event) && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const sessionId = findJournalSessionId(event);
+                                if (sessionId) handleReviewSession(sessionId);
+                              }}
+                              className="text-xs h-6 px-2"
+                              data-testid="review-session-button"
+                            >
+                              <RotateCcw className="w-3 h-3 mr-1" />
+                              Review
+                            </Button>
                           )}
                         </div>
                       </div>
@@ -350,6 +407,14 @@ export function Timeline({ selectedStandard, onStandardChange }: TimelineProps) 
           </div>
         )}
       </CardContent>
+      
+      {/* Journal Review Sheet */}
+      <JournalReviewSheet
+        open={!!reviewSessionId}
+        onClose={() => setReviewSessionId(null)}
+        sessionId={reviewSessionId}
+        onStartRedo={onStartJournal}
+      />
     </Card>
   );
 }
