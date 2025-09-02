@@ -1,22 +1,23 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useScoutQueue, type ScoutQueueMessage } from '../hooks/useScoutQueue';
 
 interface ScoutBubbleProps {
-  message: string;
-  onClick: () => void;
+  onClick?: () => void;
   calm?: boolean;
   position?: { x: number; y: number };
   visible?: boolean;
 }
 
 export function ScoutBubble({ 
-  message, 
   onClick, 
   calm = false, 
   position = { x: 20, y: 20 }, 
   visible = true 
 }: ScoutBubbleProps) {
-  if (!visible) return null;
+  const { current, dismiss, pauseTimer, resumeTimer } = useScoutQueue();
+  
+  if (!visible || !current) return null;
 
   const bubbleVariants = {
     hidden: { opacity: 0, scale: 0.8, y: 10 },
@@ -43,6 +44,38 @@ export function ScoutBubble({
     }
   };
 
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      dismiss();
+    }
+  };
+
+  const handleCTAClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (current.cta) {
+      current.cta.onClick();
+      dismiss();
+    }
+  };
+
+  const handleMouseEnter = () => {
+    pauseTimer();
+  };
+
+  const handleMouseLeave = () => {
+    resumeTimer();
+  };
+
+  const handleFocus = () => {
+    pauseTimer();
+  };
+
+  const handleBlur = () => {
+    resumeTimer();
+  };
+
   return (
     <motion.div
       className="fixed z-50 pointer-events-none"
@@ -50,16 +83,25 @@ export function ScoutBubble({
       initial="hidden"
       animate="visible"
       variants={bubbleVariants}
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
     >
       {/* Scout Avatar */}
       <motion.div
-        className="relative mb-2 pointer-events-auto cursor-pointer"
-        onClick={onClick}
+        className="relative mb-2 pointer-events-auto cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded-full"
+        onClick={handleClick}
         whileHover="hover"
         whileTap="tap"
         variants={bubbleVariants}
         animate={avatarBounce}
         data-testid="scout-avatar"
+        tabIndex={0}
+        aria-label="Scout assistant - click to dismiss message"
       >
         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg flex items-center justify-center border-2 border-white">
           <span className="text-lg">🧭</span>
@@ -73,15 +115,29 @@ export function ScoutBubble({
 
       {/* Message Bubble */}
       <motion.div
-        className="relative max-w-xs pointer-events-auto cursor-pointer"
-        onClick={onClick}
+        className="relative max-w-xs pointer-events-auto cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded-2xl"
+        onClick={handleClick}
         whileHover="hover"
         whileTap="tap"
         variants={bubbleVariants}
         data-testid="scout-message-bubble"
+        tabIndex={0}
+        aria-label={`Scout message: ${current.text}`}
       >
         <div className="bg-white/95 backdrop-blur-sm text-gray-800 rounded-2xl shadow-lg p-3 border border-white/20">
-          <p className="text-sm font-medium leading-relaxed">{message}</p>
+          <p className="text-sm font-medium leading-relaxed mb-2">{current.text}</p>
+          
+          {/* CTA Button for actionable messages */}
+          {current.cta && current.priority === 'actionable' && (
+            <button
+              onClick={handleCTAClick}
+              className="w-full mt-2 px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+              data-testid="scout-cta-button"
+              aria-label={current.cta.label}
+            >
+              {current.cta.label}
+            </button>
+          )}
           
           {/* Speech bubble tail */}
           <div className="absolute -top-2 left-6 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-white/95"></div>
@@ -91,10 +147,12 @@ export function ScoutBubble({
         <div className="absolute inset-0 bg-gradient-to-r from-amber-200/20 to-orange-200/20 rounded-2xl blur-xl -z-10"></div>
       </motion.div>
       
-      {/* Click hint */}
+      {/* Priority indicator and click hint */}
       <div className="mt-1 text-center">
         <span className="text-xs text-gray-600/80 bg-white/60 px-2 py-1 rounded-full">
-          Click for more
+          {current.priority === 'critical' ? '🚨 Important' : 
+           current.priority === 'actionable' ? '⚡ Action' : 
+           'Click to dismiss'}
         </span>
       </div>
     </motion.div>
