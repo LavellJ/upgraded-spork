@@ -65,7 +65,7 @@ export default function QuestIslandPage() {
 
         {/* Welcome Message */}
         <motion.div
-          className="fixed bottom-8 left-8 bg-gradient-to-br from-blue-500/90 to-purple-600/90 backdrop-blur-sm text-white px-6 py-4 rounded-2xl shadow-lg max-w-sm"
+          className="fixed bottom-8 left-8 bg-gradient-to-br from-brand-primary/90 to-brand-accent/90 backdrop-blur-sm text-fg-base px-6 py-4 rounded-2xl shadow-lg max-w-sm"
           initial={{ opacity: 0, y: 50, scale: 0.8 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ delay: 2, duration: 0.8, ease: "easeOut" }}

@@ -75,6 +75,25 @@ export default {
         'charcoal': 'var(--charcoal)',
         'soft-white': 'var(--soft-white)',
         'evening-dark': 'var(--evening-dark)',
+        // Semantic color tokens
+        bg: {
+          base: 'var(--bg-base)',
+          subtle: 'var(--bg-subtle)',
+          card: 'var(--bg-card)',
+          overlay: 'var(--bg-overlay)',
+          surface: 'var(--bg-surface)',
+        },
+        fg: {
+          base: 'var(--fg-base)',
+          muted: 'var(--fg-muted)',
+          subtle: 'var(--fg-subtle)',
+          accent: 'var(--fg-accent)',
+        },
+        brand: {
+          primary: 'var(--brand-primary)',
+          secondary: 'var(--brand-secondary)',
+          accent: 'var(--brand-accent)',
+        },
       },
       fontFamily: {
         sans: ["var(--font-sans)"],

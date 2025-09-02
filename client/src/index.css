@@ -82,6 +82,20 @@
   --volcano-red: 220 20 60;
   --lagoon-cyan: 0 206 209;
   --quest-amber: 255 191 0;
+  
+  /* Semantic Color Tokens - Default Theme */
+  --bg-base: hsl(43.6364 60% 95%);
+  --bg-subtle: hsl(43.6364 40% 92%);
+  --bg-card: hsl(0 0% 100%);
+  --bg-overlay: hsl(0 0% 0% / 0.4);
+  --bg-surface: hsl(43.6364 30% 98%);
+  --fg-base: hsl(30 15% 15%);
+  --fg-muted: hsl(30 10% 45%);
+  --fg-subtle: hsl(30 8% 65%);
+  --fg-accent: hsl(203.8863 88.2845% 45%);
+  --brand-primary: hsl(37.3469 60% 65%);
+  --brand-secondary: hsl(184.1463 50% 55%);
+  --brand-accent: hsl(15.7895 55% 65%);
 }
 
 .dark {
@@ -270,4 +284,41 @@
   .font-display {
     font-family: var(--font-sans);
   }
+}
+/* High Contrast Theme */
+[data-theme="hc"] {
+  /* Semantic Color Tokens - High Contrast Theme */
+  --bg-base: hsl(0 0% 100%);
+  --bg-subtle: hsl(0 0% 95%);
+  --bg-card: hsl(0 0% 100%);
+  --bg-overlay: hsl(0 0% 0% / 0.8);
+  --bg-surface: hsl(0 0% 98%);
+  --fg-base: hsl(0 0% 0%);
+  --fg-muted: hsl(0 0% 25%);
+  --fg-subtle: hsl(0 0% 40%);
+  --fg-accent: hsl(220 100% 30%);
+  --brand-primary: hsl(220 100% 35%);
+  --brand-secondary: hsl(180 100% 25%);
+  --brand-accent: hsl(0 100% 40%);
+  
+  /* Override existing theme colors for better contrast */
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(0 0% 0%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(0 0% 0%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(0 0% 0%);
+  --primary: hsl(220 100% 35%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(0 0% 10%);
+  --secondary-foreground: hsl(0 0% 100%);
+  --muted: hsl(0 0% 90%);
+  --muted-foreground: hsl(0 0% 10%);
+  --accent: hsl(220 100% 90%);
+  --accent-foreground: hsl(220 100% 15%);
+  --destructive: hsl(0 100% 40%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(0 0% 70%);
+  --input: hsl(0 0% 95%);
+  --ring: hsl(220 100% 35%);
 }

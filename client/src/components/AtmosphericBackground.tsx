@@ -1,3 +1,4 @@
+import React from 'react';
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 
 export function AtmosphericBackground() {
