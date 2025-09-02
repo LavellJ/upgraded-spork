@@ -1,15 +1,24 @@
-// Comprehensive tests for Scout analytics and guardrails
-// Tests show/click/dwell/dismiss tracking and per-session rate limiting
+// Comprehensive tests for Scout analytics, guardrails, and content system
+// Tests show/click/dwell/dismiss tracking, rate limiting, and variant selection
 
 import { describe, test, expect, beforeEach, vi, afterEach } from 'vitest';
 import { resetScoutQueue, getSessionStats } from '../src/hooks/useScoutQueue';
 import { clearEvents, pushEvent, getSessionId, loadEvents } from '../src/progress/events';
 import { scoutAnalytics, scoutSummary } from '../src/progress/metrics';
+import { 
+  pickScoutLine, 
+  loadScoutLines, 
+  resetRecentLines, 
+  getRecentLines,
+  hasScoutGroup,
+  getAvailableGroups 
+} from '../src/learning/scout';
 
 // Mock timers for testing time-based functionality
 beforeEach(() => {
   vi.useFakeTimers();
   resetScoutQueue();
+  resetRecentLines();
   clearEvents();
   // Clear session storage to reset session ID
   if (typeof sessionStorage !== 'undefined') {
@@ -348,6 +357,262 @@ describe('Scout Guardrails', () => {
     
     expect(analytics.showRate).toBe(1); // Valid show event counted
     expect(analytics.medianDwellMs).toBe(0); // No valid dwell times
+  });
+});
+
+describe('Scout Lines Content System', () => {
+  describe('loadScoutLines', () => {
+    test('loads scout lines with correct structure', () => {
+      const lines = loadScoutLines();
+      
+      expect(lines).toHaveProperty('locale');
+      expect(lines).toHaveProperty('groups');
+      expect(typeof lines.groups).toBe('object');
+    });
+
+    test('has required groups with correct structure', () => {
+      const lines = loadScoutLines();
+      const requiredGroups = ['start_lesson', 'fail_hint', 'finish', 'encourage'];
+      
+      requiredGroups.forEach(groupId => {
+        expect(lines.groups).toHaveProperty(groupId);
+        const group = lines.groups[groupId];
+        
+        // Check that it has age buckets
+        expect(Object.keys(group).length).toBeGreaterThan(0);
+        
+        // Check first variant has required properties
+        const firstBucket = Object.values(group)[0] as any[];
+        expect(firstBucket).toBeInstanceOf(Array);
+        
+        if (firstBucket.length > 0) {
+          const firstVariant = firstBucket[0];
+          expect(firstVariant).toHaveProperty('id');
+          expect(firstVariant).toHaveProperty('priority');
+          expect(firstVariant).toHaveProperty('text');
+          expect(['info', 'actionable', 'critical']).toContain(firstVariant.priority);
+        }
+      });
+    });
+  });
+
+  describe('Age Bucket Mapping', () => {
+    test('maps AgeBand strings to correct buckets', () => {
+      // Test 5-8 bucket
+      expect(pickScoutLine('start_lesson', { age: '5-6' })).toBeTruthy();
+      expect(pickScoutLine('start_lesson', { age: '7-8' })).toBeTruthy();
+      
+      // Test 9-12 bucket  
+      expect(pickScoutLine('start_lesson', { age: '9-10' })).toBeTruthy();
+      expect(pickScoutLine('start_lesson', { age: '11-12' })).toBeTruthy();
+    });
+
+    test('maps numeric ages to correct buckets', () => {
+      for (let age = 5; age <= 8; age++) {
+        const result = pickScoutLine('start_lesson', { age });
+        expect(result).toBeTruthy();
+      }
+      
+      for (let age = 9; age <= 12; age++) {
+        const result = pickScoutLine('start_lesson', { age });
+        expect(result).toBeTruthy();
+      }
+    });
+
+    test('fallback to 5-8 for undefined age', () => {
+      const result = pickScoutLine('start_lesson', {});
+      expect(result).toBeTruthy();
+    });
+
+    test('uses "all" bucket when available', () => {
+      const result = pickScoutLine('streak', { age: '7-8' });
+      expect(result).toBeTruthy();
+      expect(result?.id).toMatch(/streak_[1-5]/); // Streak group uses "all" bucket
+    });
+  });
+
+  describe('Variant Selection and LRU', () => {
+    test('returns different variants on subsequent calls', () => {
+      const results = new Set();
+      const groupId = 'encourage';
+      const profile = { age: '7-8' as const, name: 'TestUser' };
+      
+      // Make multiple calls to get different variants
+      for (let i = 0; i < 10; i++) {
+        const result = pickScoutLine(groupId, profile);
+        if (result) {
+          results.add(result.id);
+        }
+      }
+      
+      // Should have gotten multiple different variants
+      expect(results.size).toBeGreaterThan(1);
+    });
+
+    test('tracks recent lines to avoid immediate repeats', () => {
+      const profile = { age: '7-8' as const, name: 'TestUser' };
+      
+      // Mock random to ensure deterministic selection
+      const mockRng = vi.fn();
+      mockRng.mockReturnValueOnce(0); // First item
+      
+      const firstResult = pickScoutLine('encourage', profile, {}, mockRng);
+      expect(firstResult).toBeTruthy();
+      
+      const recentLines = getRecentLines();
+      expect(recentLines).toContain(firstResult!.id);
+    });
+
+    test('resets to all candidates when all have been shown recently', () => {
+      const profile = { age: '7-8' as const, name: 'TestUser' };
+      const groupId = 'encourage';
+      const seenIds = new Set();
+      
+      // Exhaust all variants to test reset behavior
+      for (let i = 0; i < 20; i++) {
+        const result = pickScoutLine(groupId, profile);
+        if (result) {
+          seenIds.add(result.id);
+        }
+      }
+      
+      // Should have cycled through variants
+      expect(seenIds.size).toBeGreaterThan(3);
+    });
+  });
+
+  describe('Template Variable Replacement', () => {
+    test('replaces {name} with provided name', () => {
+      const result = pickScoutLine('start_lesson', { age: '7-8', name: 'Alice' });
+      expect(result).toBeTruthy();
+      expect(result!.text).toContain('Alice');
+    });
+
+    test('replaces {name} with fallback when name not provided', () => {
+      const result = pickScoutLine('start_lesson', { age: '7-8' });
+      expect(result).toBeTruthy();
+      expect(result!.text).toContain('explorer');
+    });
+
+    test('replaces template variables from templateVars', () => {
+      const result = pickScoutLine('streak', { age: '7-8' }, { n: 5 });
+      expect(result).toBeTruthy();
+      expect(result!.text).toContain('5');
+    });
+
+    test('handles multiple template replacements', () => {
+      const result = pickScoutLine('streak', { age: '7-8', name: 'Bob' }, { n: 3 });
+      expect(result).toBeTruthy();
+      expect(result!.text).toContain('Bob');
+      expect(result!.text).toContain('3');
+    });
+  });
+
+  describe('Priority Flow-through', () => {
+    test('maintains priority from source data', () => {
+      const result = pickScoutLine('fail_hint', { age: '7-8' });
+      expect(result).toBeTruthy();
+      expect(result!.priority).toBe('actionable'); // fail_hint group has actionable priority
+    });
+
+    test('includes CTA labels for actionable messages', () => {
+      const result = pickScoutLine('fail_hint', { age: '9-10' });
+      expect(result).toBeTruthy();
+      expect(result!.priority).toBe('actionable');
+      expect(result!.ctaLabel).toBeTruthy();
+      expect(typeof result!.ctaLabel).toBe('string');
+    });
+
+    test('handles info priority messages without CTAs', () => {
+      const result = pickScoutLine('finish', { age: '7-8' });
+      expect(result).toBeTruthy();
+      expect(result!.priority).toBe('info');
+      // CTA is optional for info messages
+    });
+
+    test('handles critical priority messages', () => {
+      const result = pickScoutLine('error_recovery', { age: '9-10' });
+      expect(result).toBeTruthy();
+      expect(result!.priority).toBe('critical');
+      expect(result!.ctaLabel).toBeTruthy();
+    });
+  });
+
+  describe('Edge Cases and Error Handling', () => {
+    test('returns null for non-existent groups', () => {
+      const result = pickScoutLine('non_existent_group', { age: '7-8' });
+      expect(result).toBeNull();
+    });
+
+    test('handles groups with no matching age bucket', () => {
+      // Test with numeric age outside range
+      const result = pickScoutLine('start_lesson', { age: 15 }); // Outside supported range
+      expect(result).toBeTruthy(); // Should fallback to 5-8 bucket
+    });
+
+    test('handles empty template variables gracefully', () => {
+      const result = pickScoutLine('encourage', { age: '7-8' }, {});
+      expect(result).toBeTruthy();
+      expect(result!.text).toBeTruthy();
+    });
+  });
+
+  describe('Utility Functions', () => {
+    test('checks if groups exist with hasScoutGroup', () => {
+      expect(hasScoutGroup('start_lesson', '7-8')).toBe(true);
+      expect(hasScoutGroup('non_existent', '7-8')).toBe(false);
+    });
+
+    test('returns available groups with getAvailableGroups', () => {
+      const groups = getAvailableGroups();
+      expect(Array.isArray(groups)).toBe(true);
+      expect(groups).toContain('start_lesson');
+      expect(groups).toContain('fail_hint');
+      expect(groups).toContain('finish');
+    });
+
+    test('resets recent lines cache', () => {
+      // Add some lines to recent cache
+      pickScoutLine('encourage', { age: '7-8' });
+      expect(getRecentLines().length).toBeGreaterThan(0);
+      
+      resetRecentLines();
+      expect(getRecentLines().length).toBe(0);
+    });
+  });
+
+  describe('Content Quality', () => {
+    test('has age-appropriate content for younger children (5-8)', () => {
+      const result = pickScoutLine('encourage', { age: '5-6' });
+      expect(result).toBeTruthy();
+      
+      // Check content exists and is reasonable length
+      expect(result!.text.length).toBeGreaterThan(5);
+      expect(result!.text.length).toBeLessThan(200); // Not too wordy
+    });
+
+    test('has age-appropriate content for older children (9-12)', () => {
+      const result = pickScoutLine('encourage', { age: '11-12' });
+      expect(result).toBeTruthy();
+      
+      // Check content exists and is reasonable length
+      expect(result!.text.length).toBeGreaterThan(10);
+      expect(result!.text.length).toBeLessThan(200); // Not too wordy
+    });
+
+    test('has consistent ID patterns within groups', () => {
+      const lines = loadScoutLines();
+      
+      Object.entries(lines.groups).forEach(([groupId, group]) => {
+        Object.entries(group).forEach(([ageBucket, variants]) => {
+          variants.forEach(variant => {
+            expect(variant.id).toBeTruthy();
+            expect(typeof variant.id).toBe('string');
+            expect(variant.id.length).toBeGreaterThan(0);
+          });
+        });
+      });
+    });
   });
 });
 

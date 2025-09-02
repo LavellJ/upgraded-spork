@@ -1,115 +1,122 @@
 {
-  "start_lesson": {
-    "5-8": [
-      "Let's scout this together, {name}!",
-      "Ready to explore? I'm right behind you!",
-      "Another adventure awaits, {name}!",
-      "Time to discover something new!",
-      "Yay! Let's learn something fun, {name}!"
-    ],
-    "9-12": [
-      "Ready to level up, {name}?",
-      "Time to tackle this challenge together!",
-      "Let's dive into this lesson, {name}!",
-      "Another quest begins—are you ready?",
-      "Time to show what you can do!"
-    ]
-  },
-  "fail_hint": {
-    "5-8": [
-      "Good try! Want a little clue?",
-      "Let's take a smaller step first.",
-      "That's okay! Every explorer makes mistakes.",
-      "How about we try something different?",
-      "No worries—learning takes practice!",
-      "Don't worry, {name}! Let's try again."
-    ],
-    "9-12": [
-      "Nice attempt. Want a hint to help?",
-      "Let's approach this from another angle.",
-      "Good effort! Making mistakes helps us learn.",
-      "How about we break this down step by step?",
-      "No problem, {name}—learning is a process!"
-    ]
-  },
-  "finish": {
-    "5-8": [
-      "Awesome! You did it, {name}!",
-      "Well done! You're getting stronger.",
-      "Excellent work! I knew you could do it.",
-      "That's the spirit of a true explorer!",
-      "You conquered that challenge beautifully!",
-      "Super job! You're amazing!"
-    ],
-    "9-12": [
-      "Excellent work, {name}! Well executed.",
-      "Outstanding! You've mastered that concept.",
-      "Great job! Your skills are really developing.",
-      "Impressive problem-solving, {name}!",
-      "You handled that challenge like a pro!",
-      "Nice! Another step on your learning journey."
-    ]
-  },
-  "streak": {
-    "5-8": [
-      "Wow! {n} in a row, {name}! You're on fire!",
-      "Amazing! {n} victories in a row!",
-      "Super streak of {n}! Keep it up!",
-      "You're doing great with {n} straight wins!",
-      "Incredible! {n} perfect lessons in a row!"
-    ],
-    "9-12": [
-      "That's {n} in a row—excellent consistency!",
-      "Impressive streak of {n}, {name}!",
-      "You're crushing it with {n} straight wins!",
-      "Outstanding run of {n} perfect lessons!",
-      "Remarkable! {n} victories in a row, {name}!"
-    ]
-  },
-  "encourage": {
-    "5-8": [
-      "I believe in you, {name}!",
-      "You've got this! I'm here to help.",
-      "Take your time—we're exploring together.",
-      "Every step forward counts!",
-      "You're braver than you think!",
-      "Don't give up! You can do it!"
-    ],
-    "9-12": [
-      "I have confidence in your abilities, {name}!",
-      "You're capable of more than you realize.",
-      "Stay focused—you're making real progress.",
-      "Challenge yourself and see what you achieve!",
-      "Your determination will pay off!",
-      "Keep pushing forward, {name}!"
-    ]
-  },
-  "hint_1": {
-    "5-8": [
-      "Here's a little clue to help you!",
-      "Let me give you a hint, {name}!",
-      "I have an idea that might help!",
-      "Want to hear my suggestion?"
-    ],
-    "9-12": [
-      "Let me offer some guidance.",
-      "Here's a strategy to consider, {name}.",
-      "Try thinking about it this way.",
-      "I have a suggestion that might help."
-    ]
-  },
-  "hint_2": {
-    "5-8": [
-      "One more clue coming up!",
-      "Let's try another hint, {name}!",
-      "Here's another way to think about it!",
-      "Maybe this will help you see it!"
-    ],
-    "9-12": [
-      "Let me provide another perspective.",
-      "Here's an additional approach to try.",
-      "Consider this alternative method, {name}.",
-      "This might clarify the solution path."
-    ]
+  "locale": "en-AU",
+  "groups": {
+    "start_lesson": {
+      "5-8": [
+        { "id": "start_1", "priority": "info", "text": "Let's scout this together, {name}!" },
+        { "id": "start_2", "priority": "info", "text": "Ready to explore? I'm right behind you!" },
+        { "id": "start_3", "priority": "info", "text": "Another adventure awaits, {name}!" },
+        { "id": "start_4", "priority": "info", "text": "Time to discover something new!" },
+        { "id": "start_5", "priority": "info", "text": "Yay! Let's learn something fun, {name}!" }
+      ],
+      "9-12": [
+        { "id": "start_6", "priority": "info", "text": "Ready to level up, {name}?" },
+        { "id": "start_7", "priority": "info", "text": "Time to tackle this challenge together!" },
+        { "id": "start_8", "priority": "info", "text": "Let's dive into this lesson, {name}!" },
+        { "id": "start_9", "priority": "info", "text": "Another quest begins—are you ready?" },
+        { "id": "start_10", "priority": "info", "text": "Time to show what you can do!" }
+      ]
+    },
+    "fail_hint": {
+      "5-8": [
+        { "id": "hint_1", "priority": "actionable", "text": "Good try! Want a little clue?", "cta": "Yes" },
+        { "id": "hint_2", "priority": "actionable", "text": "Let's take a smaller step first.", "cta": "Try Journal" },
+        { "id": "hint_3", "priority": "actionable", "text": "That's okay! Every explorer makes mistakes.", "cta": "Show Hint" },
+        { "id": "hint_4", "priority": "actionable", "text": "How about we try something different?", "cta": "Get Help" },
+        { "id": "hint_5", "priority": "actionable", "text": "No worries—learning takes practice!", "cta": "Practice" },
+        { "id": "hint_6", "priority": "actionable", "text": "Don't worry, {name}! Let's try again.", "cta": "Try Again" }
+      ],
+      "9-12": [
+        { "id": "hint_7", "priority": "actionable", "text": "Nice attempt. Want a hint to help?", "cta": "Show Hint" },
+        { "id": "hint_8", "priority": "actionable", "text": "Let's approach this from another angle.", "cta": "Different Method" },
+        { "id": "hint_9", "priority": "actionable", "text": "Good effort! Making mistakes helps us learn.", "cta": "Learn More" },
+        { "id": "hint_10", "priority": "actionable", "text": "How about we break this down step by step?", "cta": "Step by Step" },
+        { "id": "hint_11", "priority": "actionable", "text": "No problem, {name}—learning is a process!", "cta": "Keep Going" }
+      ]
+    },
+    "finish": {
+      "5-8": [
+        { "id": "finish_1", "priority": "info", "text": "Awesome! You did it, {name}!" },
+        { "id": "finish_2", "priority": "info", "text": "Well done! You're getting stronger." },
+        { "id": "finish_3", "priority": "info", "text": "Excellent work! I knew you could do it." },
+        { "id": "finish_4", "priority": "info", "text": "That's the spirit of a true explorer!" },
+        { "id": "finish_5", "priority": "info", "text": "You conquered that challenge beautifully!" },
+        { "id": "finish_6", "priority": "info", "text": "Super job! You're amazing!" }
+      ],
+      "9-12": [
+        { "id": "finish_7", "priority": "info", "text": "Excellent work, {name}! Well executed." },
+        { "id": "finish_8", "priority": "info", "text": "Outstanding! You've mastered that concept." },
+        { "id": "finish_9", "priority": "info", "text": "Great job! Your skills are really developing." },
+        { "id": "finish_10", "priority": "info", "text": "Impressive problem-solving, {name}!" },
+        { "id": "finish_11", "priority": "info", "text": "You handled that challenge like a pro!" },
+        { "id": "finish_12", "priority": "info", "text": "Nice! Another step on your learning journey." }
+      ]
+    },
+    "streak": {
+      "all": [
+        { "id": "streak_1", "priority": "actionable", "text": "Wow! {n} in a row, {name}! You're on fire!", "cta": "Keep Going" },
+        { "id": "streak_2", "priority": "actionable", "text": "Amazing! {n} victories in a row!", "cta": "Continue" },
+        { "id": "streak_3", "priority": "actionable", "text": "Super streak of {n}! Keep it up!", "cta": "Next Lesson" },
+        { "id": "streak_4", "priority": "actionable", "text": "You're doing great with {n} straight wins!", "cta": "Keep Learning" },
+        { "id": "streak_5", "priority": "actionable", "text": "Incredible! {n} perfect lessons in a row!", "cta": "Continue Streak" }
+      ]
+    },
+    "encourage": {
+      "5-8": [
+        { "id": "encourage_1", "priority": "info", "text": "I believe in you, {name}!" },
+        { "id": "encourage_2", "priority": "info", "text": "You've got this! I'm here to help." },
+        { "id": "encourage_3", "priority": "info", "text": "Take your time—we're exploring together." },
+        { "id": "encourage_4", "priority": "info", "text": "Every step forward counts!" },
+        { "id": "encourage_5", "priority": "info", "text": "You're braver than you think!" },
+        { "id": "encourage_6", "priority": "info", "text": "Don't give up! You can do it!" }
+      ],
+      "9-12": [
+        { "id": "encourage_7", "priority": "info", "text": "I have confidence in your abilities, {name}!" },
+        { "id": "encourage_8", "priority": "info", "text": "You're capable of more than you realize." },
+        { "id": "encourage_9", "priority": "info", "text": "Stay focused—you're making real progress." },
+        { "id": "encourage_10", "priority": "info", "text": "Challenge yourself and see what you achieve!" },
+        { "id": "encourage_11", "priority": "info", "text": "Your determination will pay off!" },
+        { "id": "encourage_12", "priority": "info", "text": "Keep pushing forward, {name}!" }
+      ]
+    },
+    "journal_encourage": {
+      "5-8": [
+        { "id": "journal_1", "priority": "actionable", "text": "Want to practice with some fun questions?", "cta": "Open Journal" },
+        { "id": "journal_2", "priority": "actionable", "text": "Let's strengthen your skills with practice!", "cta": "Try Questions" },
+        { "id": "journal_3", "priority": "actionable", "text": "Time for some quick practice, {name}!", "cta": "Start Practice" }
+      ],
+      "9-12": [
+        { "id": "journal_4", "priority": "actionable", "text": "Ready to reinforce your learning?", "cta": "Open Journal" },
+        { "id": "journal_5", "priority": "actionable", "text": "Let's consolidate with some practice questions!", "cta": "Practice Now" },
+        { "id": "journal_6", "priority": "actionable", "text": "Time to cement your understanding!", "cta": "Start Journal" }
+      ]
+    },
+    "calm_mode": {
+      "all": [
+        { "id": "calm_1", "priority": "info", "text": "Taking your time - that's perfect, {name}!" },
+        { "id": "calm_2", "priority": "info", "text": "Learning at your own pace is wonderful!" },
+        { "id": "calm_3", "priority": "info", "text": "Steady progress is the best progress!" },
+        { "id": "calm_4", "priority": "info", "text": "You're doing great - no rush needed!" }
+      ]
+    },
+    "error_recovery": {
+      "all": [
+        { "id": "error_1", "priority": "critical", "text": "Oops! Something went wrong. Let me help you get back on track.", "cta": "Try Again" },
+        { "id": "error_2", "priority": "critical", "text": "Technical hiccup! Don't worry, your progress is saved.", "cta": "Reload" },
+        { "id": "error_3", "priority": "critical", "text": "Let's fix this together! Your learning won't be lost.", "cta": "Restart" }
+      ]
+    },
+    "achievement": {
+      "5-8": [
+        { "id": "achieve_1", "priority": "actionable", "text": "You earned a new badge, {name}! 🌟", "cta": "View Badge" },
+        { "id": "achieve_2", "priority": "actionable", "text": "Congratulations! New achievement unlocked! 🎉", "cta": "See Progress" },
+        { "id": "achieve_3", "priority": "actionable", "text": "Wow! You've reached a new milestone! ⭐", "cta": "Celebrate" }
+      ],
+      "9-12": [
+        { "id": "achieve_4", "priority": "actionable", "text": "Achievement unlocked! Excellent progress, {name}!", "cta": "View Achievement" },
+        { "id": "achieve_5", "priority": "actionable", "text": "Outstanding! You've mastered another skill!", "cta": "See Progress" },
+        { "id": "achieve_6", "priority": "actionable", "text": "Milestone reached! Your dedication is paying off!", "cta": "Continue Learning" }
+      ]
+    }
   }
 }

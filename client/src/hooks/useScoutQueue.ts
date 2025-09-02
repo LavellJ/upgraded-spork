@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useProfile } from '../profile/context';
 import { logEvent } from '../lib/analytics';
+import { pickScoutLine, type PickedScoutLine } from '../learning/scout';
 
 export type ScoutPriority = 'info' | 'actionable' | 'critical';
 
@@ -355,6 +356,35 @@ export function useScoutQueue() {
       processQueue();
     }
   }, [profile.calmMode]);
+
+  const enqueueScoutGroup = useCallback((
+    groupId: string,
+    templateVars: Record<string, string | number> = {},
+    ctaHandler?: () => void
+  ) => {
+    const scoutLine = pickScoutLine(
+      groupId,
+      { age: profile.ageBand, name: profile.name },
+      templateVars
+    );
+    
+    if (!scoutLine) {
+      console.warn(`Failed to pick scout line from group: ${groupId}`);
+      return;
+    }
+    
+    const message: Omit<ScoutQueueMessage, 'timestamp'> = {
+      id: scoutLine.id,
+      text: scoutLine.text,
+      priority: scoutLine.priority,
+      cta: scoutLine.ctaLabel && ctaHandler ? {
+        label: scoutLine.ctaLabel,
+        onClick: ctaHandler
+      } : undefined
+    };
+    
+    enqueue(message);
+  }, [profile.ageBand, profile.name, enqueue]);
   
   const dismiss = useCallback(() => {
     if (globalCurrent) {
@@ -427,6 +457,7 @@ export function useScoutQueue() {
   return {
     current: state.current,
     enqueue,
+    enqueueScoutGroup,
     dismiss,
     pendingCount: state.pendingCount,
     inbox: state.inbox,
