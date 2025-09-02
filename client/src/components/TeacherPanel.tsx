@@ -9,6 +9,7 @@ import type { SkillInsight } from '../learning/insights';
 import { useProfile } from '../profile/context';
 import type { AgeBand } from '../profile/model';
 import { Timeline } from '../guide/Timeline';
+import { Privacy } from '../settings/Privacy';
 import { downloadCsv, getCsvStats } from '../guide/exportCsv';
 import { loadEvents, getEventsRange } from '../progress';
 import { Download } from 'lucide-react';
@@ -69,7 +70,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   const [snaps, setSnaps] = useState<Snapshot[]>(() => loadSnaps());
   const [showAuthoring, setShowAuthoring] = useState(false);
   const [selectedStandard, setSelectedStandard] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'assignments'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'assignments' | 'privacy'>('overview');
   
   // Profile context
   const { profile, updateProfile } = useProfile();
@@ -421,6 +422,17 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
               >
                 🎯 Assignments
               </button>
+              <button 
+                onClick={() => setActiveTab('privacy')}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                  activeTab === 'privacy' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white border hover:bg-stone-50'
+                }`}
+                data-testid="tab-privacy"
+              >
+                🛡️ Privacy
+              </button>
             </div>
 
             {activeTab === 'overview' ? (
@@ -499,11 +511,16 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 <Timeline 
                   selectedStandard={selectedStandard}
                   onStandardChange={setSelectedStandard}
+                  onStartJournal={onOpenJournal}
                 />
+              </div>
+            ) : activeTab === 'assignments' ? (
+              <div className="max-h-96 overflow-y-auto">
+                <AssignmentCreator selectedFramework={framework} />
               </div>
             ) : (
               <div className="max-h-96 overflow-y-auto">
-                <AssignmentCreator selectedFramework={framework} />
+                <Privacy open={false} onClose={() => {}} />
               </div>
             )}
           </div>
