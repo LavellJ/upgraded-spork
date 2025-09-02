@@ -457,7 +457,11 @@ export default function App(){
           e.preventDefault();
           const l = last as any;
           setOpenBiome?.(l.biome);
-          setPlayer({ biome: l.biome, lesson: (LESSONS[l.biome] || []).find((x:any)=>x.id=== l.id) });
+          const lesson = (LESSONS[l.biome] || []).find((x:any)=>x.id=== l.id);
+          if (lesson) {
+            logEvent({ ts: new Date().toISOString(), loop, biome: l.biome, lessonId: l.id, action: 'resume' });
+            launchLesson(lesson, l.biome);
+          }
           flash('Resuming lesson…');
         }
         return;
@@ -512,6 +516,17 @@ export default function App(){
   const exportProgress = ()=> { const link = makeProgressLink(buildProgressPayload(loop,comp,bp,framework,protoOnly)); logEvent({ ts: new Date().toISOString(), loop, action: 'export' }); return link; };
   const importFromToken = (token)=>{ try{ const payload=JSON.parse(b64urlDecode(token)); if(payload.v!==1) return; setLoop(payload.loop||1); setComp({ forest: new Set(payload.comp?.forest||[]), desert: new Set(payload.comp?.desert||[]), ocean: new Set(payload.comp?.ocean||[]), night: new Set(payload.comp?.night||[]) }); if(payload.bp){ bp.setItems(payload.bp.items||[]); bp.setEquipped(payload.bp.equipped||[]); } if(payload.framework) setFramework(payload.framework); if(typeof payload.protoOnly==='boolean') setProtoOnly(payload.protoOnly); logEvent({ ts: new Date().toISOString(), loop: payload.loop ?? loop, action: 'import' }); }catch{} };
 
+  // ---- Ping helper for external URLs ----
+  async function pingUrl(url: string, timeoutMs = 2000): Promise<boolean> {
+    try {
+      const resp = await fetch(`/api/ping?url=${encodeURIComponent(url)}&t=${timeoutMs}`);
+      const data = await resp.json();
+      return !!data.ok;
+    } catch {
+      return false;
+    }
+  }
+
   // ---- Event handlers ----
   const markComplete = (biome,lessonId)=>{ const collectibles = ['🧰','🏅','🖋️','🎨','🔍']; const items = ['Field Kit','Merit Badge','Quill Pen','Sketch Pad','Looking Glass']; const kinds = ['tool','badge','tool','tool','tool'] as const; const rnd = Math.floor(Math.random()*collectibles.length); const awardId = `${biome}-${lessonId}`; setComp(p=>({...p,[biome]:new Set([...p[biome],lessonId])})); bp.award({id:awardId,name:items[rnd],kind:kinds[rnd],icon:collectibles[rnd]}); logEvent({ ts: new Date().toISOString(), loop, biome, lessonId, action: 'award', meta: { awardId, name: items[rnd] } }); setToast(`Collected ${items[rnd]}!`); setTimeout(()=>setToast(null),2000); };
   // Is this lesson locked (sequential gating)?
@@ -525,15 +540,43 @@ export default function App(){
   };
   
   const openLessonSheet = (biome)=> setOpenBiome(biome);
-  const startLesson = (lesson,biome)=>{ 
+  
+  // ---- External activity launcher with fallback ----
+  async function launchLesson(lesson: any, biome: string) {
     if (isLessonLocked(biome, lesson.id)) {
       flash('Finish the previous lesson to unlock this one');
       return;
     }
-    setLast({biome,lesson}); 
-    setPlayer({biome,lesson}); 
+    
+    // Respect Prototype-only mode
+    if (protoOnly) {
+      setLast({ biome, lesson });
+      setPlayer({ biome, lesson });
+      return;
+    }
+
+    // Check registry for a real URL
+    const url = registryEntry(biome, lesson.id)?.url?.trim();
+    if (url) {
+      const ok = await pingUrl(url, 2000);
+      if (ok) {
+        setLast({ biome, lesson });
+        window.open(url, '_blank', 'noopener,noreferrer');
+        flash('Opened in a new tab.');
+        return;
+      } else {
+        flash('External lesson unavailable — using in-app prototype.');
+      }
+    }
+    // Fallback: in-app
+    setLast({ biome, lesson });
+    setPlayer({ biome, lesson });
+  }
+  
+  const startLesson = (lesson,biome)=>{ 
+    launchLesson(lesson, biome);
   };
-  const resumeLesson = ()=>{ if(last) { const lesson = findLesson(last.biome,last.id,LESSONS); if(lesson) { logEvent({ ts: new Date().toISOString(), loop, biome: last.biome, lessonId: last.id, action: 'resume' }); startLesson(lesson,last.biome); } } };
+  const resumeLesson = ()=>{ if(last) { const lesson = findLesson(last.biome,last.id,LESSONS); if(lesson) { logEvent({ ts: new Date().toISOString(), loop, biome: last.biome, lessonId: last.id, action: 'resume' }); launchLesson(lesson,last.biome); } } };
 
   // ---- Layout helpers ----
   const biomePos = { forest:{x:25,y:25}, desert:{x:65,y:30}, ocean:{x:70,y:70}, night:{x:20,y:65} };
@@ -681,8 +724,7 @@ export default function App(){
             return;
           }
           logEvent({ ts: new Date().toISOString(), loop, biome: openBiome, lessonId: lesson.id, action: 'start' });
-          setPlayer({ biome: openBiome, lesson });
-          setLast({ biome: openBiome, id: lesson.id });   // ← save last
+          launchLesson(lesson, openBiome);
         }}
         protoOnly={protoOnly}
         calmTip={hasEquipped(bp, 'charm_feather')}
