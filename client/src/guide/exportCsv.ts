@@ -21,7 +21,10 @@ export function buildCsv(events: ProgressEvent[], options: CsvExportOptions = {}
     'durationSec',
     'result',
     'n',
-    'correct'
+    'correct',
+    'noticeId',
+    'action',
+    'actor'
   ];
 
   const rows: string[] = [];
@@ -59,7 +62,16 @@ export function buildCsv(events: ProgressEvent[], options: CsvExportOptions = {}
       'n' in event ? event.n : '',
       
       // correct (number of correct answers in journal)
-      'correct' in event ? event.correct : ''
+      'correct' in event ? event.correct : '',
+      
+      // noticeId (for guide_ack events)
+      'noticeId' in event ? event.noticeId : '',
+      
+      // action (for guide_ack events)
+      'action' in event && event.kind === 'guide_ack' ? event.action : '',
+      
+      // actor (for guide_ack events)
+      'actor' in event ? event.actor : ''
     ];
 
     // Escape values and handle commas/quotes
@@ -118,6 +130,7 @@ export function getCsvStats(events: ProgressEvent[]): {
   totalEvents: number;
   lessonEvents: number;
   journalEvents: number;
+  guideAckEvents: number;
   dateRange: { start: string; end: string } | null;
 } {
   const lessonEvents = events.filter(e => 
@@ -127,6 +140,8 @@ export function getCsvStats(events: ProgressEvent[]): {
   const journalEvents = events.filter(e => 
     e.kind === 'journal_start' || e.kind === 'journal_finish'
   ).length;
+  
+  const guideAckEvents = events.filter(e => e.kind === 'guide_ack').length;
 
   let dateRange: { start: string; end: string } | null = null;
   
@@ -142,6 +157,7 @@ export function getCsvStats(events: ProgressEvent[]): {
     totalEvents: events.length,
     lessonEvents,
     journalEvents,
+    guideAckEvents,
     dateRange
   };
 }
