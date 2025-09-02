@@ -7,6 +7,8 @@ import { ActivityPlayer } from "./components/ActivityPlayer";
 import { LessonSheet } from "./components/LessonSheet";
 import { TeacherPanel } from "./components/TeacherPanel";
 import { HelpOverlay } from "./components/HelpOverlay";
+import { JournalSheet } from './journal/JournalSheet';
+import { inferSkillIdFromLesson } from './journal/generator';
 import IslandBackdrop from "./components/IslandBackdrop";
 import LOOP2 from "./data/loop2.json";
 import { logEvent } from "./lib/analytics";
@@ -386,6 +388,10 @@ export default function App(){
   // ---- Scout system ----
   const scout = useScout();
   const [showScoutSheet, setShowScoutSheet] = useState(false);
+
+  // ---- Journal system ----
+  const [showJournal, setShowJournal] = useState(false);
+  const [journalSkillId, setJournalSkillId] = useState<string | null>(null);
 
   // ---- Backpack ----
   const bp = useBackpack();
@@ -869,7 +875,7 @@ export default function App(){
 
       {/* UI Overlays */}
       <BackpackSheet open={showBP} onClose={()=>setShowBP(false)} bp={bp}/>
-      <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={comp} onExport={exportProgress} onImport={importFromToken} lessons={LESSONS} loop={loop} onResetCurrentLoop={resetCurrentLoop} onFactoryReset={factoryReset} teacherPins={teacherPins} setTeacherPins={setTeacherPins}/>
+      <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={comp} onExport={exportProgress} onImport={importFromToken} lessons={LESSONS} loop={loop} onResetCurrentLoop={resetCurrentLoop} onFactoryReset={factoryReset} teacherPins={teacherPins} setTeacherPins={setTeacherPins} onOpenJournal={(skillId) => { setJournalSkillId(skillId); setShowJournal(true); }}/>
       <HelpOverlay open={showHelp} onClose={()=>setShowHelp(false)} />
       
       {/* Lesson Sheet */}
@@ -988,10 +994,31 @@ export default function App(){
         detailedMessage={scout.currentMessage?.detailedMessage}
         showJournalCTA={scout.currentMessage?.showJournalCTA}
         onJournalClick={() => {
-          // TODO: Open journal when implemented
-          flash('Journal feature coming soon!');
+          // Infer skill ID from current context
+          if (openBiome && player?.lesson) {
+            const skillId = inferSkillIdFromLesson(player.lesson.id, openBiome);
+            setJournalSkillId(skillId);
+            setShowJournal(true);
+            setShowScoutSheet(false);
+          } else {
+            flash('Start a lesson first to practice specific skills!');
+          }
         }}
         calm={calm}
+      />
+
+      {/* Journal Sheet */}
+      <JournalSheet
+        open={showJournal}
+        onClose={() => {
+          setShowJournal(false);
+          setJournalSkillId(null);
+        }}
+        skillId={journalSkillId || undefined}
+        calm={calm}
+        onComplete={() => {
+          flash('Great practice session!');
+        }}
       />
 
       {/* Toast region for accessibility */}
