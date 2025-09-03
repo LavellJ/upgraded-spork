@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useProfile } from '../profile/context';
+import { formatDue } from '../guide/assign';
 
 export type AssignmentState = 'assigned' | 'due_soon' | 'overdue' | 'done';
 
@@ -90,22 +91,4 @@ export function AssignmentBadge({ state, dueAt, className = '' }: AssignmentBadg
   );
 }
 
-/**
- * Format due date as relative text
- */
-export function formatDue(dueAt: number): string {
-  const now = Date.now();
-  const diffMs = dueAt - now;
-  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-  
-  if (diffDays < 0) {
-    const daysPast = Math.abs(diffDays);
-    if (daysPast === 1) return '1 day ago';
-    return `${daysPast} days ago`;
-  }
-  
-  if (diffDays === 0) return 'today';
-  if (diffDays === 1) return 'tomorrow';
-  
-  return `in ${diffDays} days`;
-}
+// formatDue is now imported from assign.ts
