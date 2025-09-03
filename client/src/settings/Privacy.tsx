@@ -13,10 +13,15 @@ import {
   FileText,
   Database,
   X,
-  CheckCircle
+  CheckCircle,
+  Users,
+  Cloud,
+  RefreshCw,
+  User
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { exportAll, importAll, clearAll, getDataSummary, downloadBackup } from './backup';
+import { exportAll, importAll, clearAll, getDataSummary, downloadBackup, importServerSnapshot } from './backup';
+import { useRoster } from '../roster/context';
 
 interface PrivacyProps {
   open: boolean;
@@ -29,9 +34,12 @@ export function Privacy({ open, onClose }: PrivacyProps) {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [showServerImport, setShowServerImport] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const { roster } = useRoster();
   const dataSummary = getDataSummary();
+  const isDev = process.env.NODE_ENV === 'development';
 
   const showStatus = (type: 'success' | 'error', text: string) => {
     setStatusMessage({ type, text });
@@ -75,11 +83,20 @@ export function Privacy({ open, onClose }: PrivacyProps) {
       setIsProcessing(true);
       const text = await file.text();
       
-      // Ask user about merge vs replace
-      const shouldMerge = window.confirm(
-        'Would you like to keep your current progress and add the imported data? ' +
-        'Click OK to keep both, or Cancel to replace everything.'
-      );
+      const parsed = JSON.parse(text);
+      const isV2 = parsed.version === '2.0';
+      
+      // Ask user about merge vs replace with better messaging for roster imports
+      let message = 'Would you like to keep your current progress and add the imported data? ' +
+                    'Click OK to keep both, or Cancel to replace everything.';
+      
+      if (isV2 && parsed.roster && parsed.roster.learners.length > 1) {
+        message = `This backup contains ${parsed.roster.learners.length} learners. ` +
+                  'Would you like to merge them with your current data? ' +
+                  'Click OK to merge, or Cancel to replace everything.';
+      }
+      
+      const shouldMerge = window.confirm(message);
       
       importAll(text, { merge: shouldMerge });
       showStatus('success', 'Your data has been imported successfully!');
@@ -90,6 +107,51 @@ export function Privacy({ open, onClose }: PrivacyProps) {
       }
     } catch (error) {
       showStatus('error', 'Could not import the file. Please check it\'s a valid LearnOz backup.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleServerSnapshot = async () => {
+    if (!isDev) return;
+    
+    try {
+      setIsProcessing(true);
+      
+      // Fetch roster and snapshot data from server
+      const [rosterResponse, snapshotResponse] = await Promise.all([
+        fetch('/api/roster'),
+        fetch('/api/snapshot').catch(() => null) // Optional endpoint
+      ]);
+      
+      if (!rosterResponse.ok) {
+        throw new Error('Failed to fetch roster from server');
+      }
+      
+      const roster = await rosterResponse.json();
+      let snapshotData = null;
+      
+      if (snapshotResponse && snapshotResponse.ok) {
+        snapshotData = await snapshotResponse.json();
+      }
+      
+      const serverData = {
+        roster,
+        data: (snapshotData as any)?.data || {},
+        telemetryBuffer: (snapshotData as any)?.telemetryBuffer
+      };
+      
+      // Ask user about merge vs replace
+      const shouldMerge = window.confirm(
+        'Import server snapshot data? ' +
+        'Click OK to merge with local data, or Cancel to replace everything.'
+      );
+      
+      await importServerSnapshot(serverData, { merge: shouldMerge });
+      showStatus('success', 'Server snapshot imported successfully!');
+    } catch (error) {
+      console.error('Server snapshot import failed:', error);
+      showStatus('error', 'Could not import server snapshot. Make sure the server is running.');
     } finally {
       setIsProcessing(false);
     }
@@ -238,55 +300,91 @@ export function Privacy({ open, onClose }: PrivacyProps) {
           </CardContent>
         </Card>
 
-        {/* Data Summary */}
+        {/* Data Summary - Roster Aware */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="text-lg">Your Learning Data</CardTitle>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              Your Learning Data
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Profile Setup</span>
-                  <Badge variant={dataSummary.profile ? "default" : "secondary"}>
-                    {dataSummary.profile ? 'Yes' : 'No'}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Learning Progress</span>
-                  <Badge variant={dataSummary.learner ? "default" : "secondary"}>
-                    {dataSummary.learner ? 'Yes' : 'No'}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Activities</span>
-                  <Badge variant={dataSummary.eventsCount > 0 ? "default" : "secondary"}>
-                    {dataSummary.eventsCount}
-                  </Badge>
-                </div>
+            {/* Roster Overview */}
+            <div className="mb-4 p-3 rounded-lg bg-blue-50 border border-blue-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-blue-800">Roster Status</span>
+                <Badge variant={dataSummary.hasRoster ? "default" : "secondary"}>
+                  {dataSummary.hasRoster ? `${dataSummary.learnerCount} Learners` : 'No Roster'}
+                </Badge>
               </div>
-              
-              <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-4 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Practice Sessions</span>
-                  <Badge variant={dataSummary.journalSessionsCount > 0 ? "default" : "secondary"}>
-                    {dataSummary.journalSessionsCount}
+                  <span className="text-blue-700">Global Profile</span>
+                  <Badge variant={dataSummary.globalProfile ? "default" : "secondary"} className="text-xs">
+                    {dataSummary.globalProfile ? 'Yes' : 'No'}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Reflections</span>
-                  <Badge variant={dataSummary.reflectionsCount > 0 ? "default" : "secondary"}>
-                    {dataSummary.reflectionsCount}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Total Size</span>
-                  <Badge variant="outline">
+                  <span className="text-blue-700">Total Size</span>
+                  <Badge variant="outline" className="text-xs">
                     {formatDataSize(dataSummary.totalSize)}
                   </Badge>
                 </div>
               </div>
             </div>
+
+            {/* Per-Learner Breakdown */}
+            {dataSummary.learners.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="text-sm font-medium text-gray-800">Learner Data Breakdown</h4>
+                {dataSummary.learners.map((learner) => (
+                  <div key={learner.id} className="p-3 rounded-lg border border-gray-200 bg-gray-50">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4 text-gray-600" />
+                        <span className="text-sm font-medium">{learner.name}</span>
+                      </div>
+                      <Badge variant="outline" className="text-xs">
+                        {formatDataSize(learner.size)}
+                      </Badge>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Activities</span>
+                        <Badge variant={learner.eventsCount > 0 ? "default" : "secondary"} className="text-xs">
+                          {learner.eventsCount}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Sessions</span>
+                        <Badge variant={learner.journalSessionsCount > 0 ? "default" : "secondary"} className="text-xs">
+                          {learner.journalSessionsCount}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Reflections</span>
+                        <Badge variant={learner.reflectionsCount > 0 ? "default" : "secondary"} className="text-xs">
+                          {learner.reflectionsCount}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Assignments</span>
+                        <Badge variant={learner.assignedPathsCount > 0 ? "default" : "secondary"} className="text-xs">
+                          {learner.assignedPathsCount}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {dataSummary.learners.length === 0 && (
+              <div className="text-center py-4 text-gray-500">
+                <p className="text-sm">No learner data found</p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -296,6 +394,15 @@ export function Privacy({ open, onClose }: PrivacyProps) {
             <CardTitle className="text-lg">Backup & Restore</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Backup Info */}
+            <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
+              <p className="text-sm text-amber-800 font-medium mb-1">📋 Roster-Aware Backups (V2)</p>
+              <p className="text-xs text-amber-700">
+                Exports include all learners and their namespaced data. 
+                {dataSummary.learnerCount > 1 && ` Backing up ${dataSummary.learnerCount} learners.`}
+              </p>
+            </div>
+
             {/* Telemetry Toggle */}
             <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
               <div className="flex-1">
@@ -320,7 +427,7 @@ export function Privacy({ open, onClose }: PrivacyProps) {
                 data-testid="export-data-button"
               >
                 <Download className="w-4 h-4" />
-                Save Backup
+                Export All ({dataSummary.learnerCount > 1 ? 'Roster' : 'Single'})
               </Button>
               
               <Button
@@ -331,9 +438,32 @@ export function Privacy({ open, onClose }: PrivacyProps) {
                 data-testid="import-data-button"
               >
                 <Upload className="w-4 h-4" />
-                Load Backup
+                Import Data
               </Button>
             </div>
+
+            {/* Server Snapshot (DEV Only) */}
+            {isDev && (
+              <div className="pt-3 border-t border-gray-200">
+                <div className="p-3 rounded-lg bg-purple-50 border border-purple-200 mb-3">
+                  <p className="text-sm text-purple-800 font-medium mb-1">🔧 Development Tools</p>
+                  <p className="text-xs text-purple-700">
+                    Pull server snapshot for testing merge functionality
+                  </p>
+                </div>
+                
+                <Button
+                  variant="outline"
+                  onClick={handleServerSnapshot}
+                  disabled={isProcessing}
+                  className="w-full flex items-center gap-2 text-purple-700 border-purple-300 hover:bg-purple-50"
+                  data-testid="server-snapshot-button"
+                >
+                  <Cloud className="w-4 h-4" />
+                  Pull Server Snapshot
+                </Button>
+              </div>
+            )}
 
             <input
               ref={fileInputRef}
