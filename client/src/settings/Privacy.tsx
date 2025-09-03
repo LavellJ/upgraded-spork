@@ -17,7 +17,8 @@ import {
   Users,
   Cloud,
   RefreshCw,
-  User
+  User,
+  FileCheck
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { exportAll, importAll, clearAll, getDataSummary, downloadBackup, importServerSnapshot } from './backup';
@@ -156,6 +157,56 @@ export function Privacy({ open, onClose }: PrivacyProps) {
     } catch (error) {
       console.error('Server snapshot import failed:', error);
       showStatus('error', 'Could not import server snapshot. Make sure the server is running.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleAuditDownload = async () => {
+    try {
+      setIsProcessing(true);
+      
+      // Get auth token for the request
+      const authData = localStorage.getItem('qi.auth.v1');
+      if (!authData) {
+        showStatus('error', 'Authentication required. Please enable cloud sync first.');
+        return;
+      }
+      
+      const auth = JSON.parse(authData);
+      if (!auth.token) {
+        showStatus('error', 'No authentication token found. Please sign in.');
+        return;
+      }
+      
+      // Request audit log from server
+      const response = await fetch('/api/admin/log', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+      
+      // Trigger download
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `audit-log-${new Date().toISOString().slice(0, 10)}.jsonl`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      showStatus('success', 'Audit trail downloaded successfully!');
+    } catch (error) {
+      console.error('Audit download failed:', error);
+      showStatus('error', `Could not download audit trail: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsProcessing(false);
     }
@@ -452,20 +503,33 @@ export function Privacy({ open, onClose }: PrivacyProps) {
                 <div className="p-3 rounded-lg bg-purple-50 border border-purple-200 mb-3">
                   <p className="text-sm text-purple-800 font-medium mb-1">🔧 Development Tools</p>
                   <p className="text-xs text-purple-700">
-                    Pull server snapshot for testing merge functionality
+                    Development utilities for testing and audit oversight
                   </p>
                 </div>
                 
-                <Button
-                  variant="outline"
-                  onClick={handleServerSnapshot}
-                  disabled={isProcessing}
-                  className="w-full flex items-center gap-2 text-purple-700 border-purple-300 hover:bg-purple-50"
-                  data-testid="server-snapshot-button"
-                >
-                  <Cloud className="w-4 h-4" />
-                  Pull Server Snapshot
-                </Button>
+                <div className="space-y-2">
+                  <Button
+                    variant="outline"
+                    onClick={handleServerSnapshot}
+                    disabled={isProcessing}
+                    className="w-full flex items-center gap-2 text-purple-700 border-purple-300 hover:bg-purple-50"
+                    data-testid="server-snapshot-button"
+                  >
+                    <Cloud className="w-4 h-4" />
+                    Pull Server Snapshot
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    onClick={handleAuditDownload}
+                    disabled={isProcessing}
+                    className="w-full flex items-center gap-2 text-orange-700 border-orange-300 hover:bg-orange-50"
+                    data-testid="audit-download-button"
+                  >
+                    <FileCheck className="w-4 h-4" />
+                    Download Audit Trail (DEV)
+                  </Button>
+                </div>
               </div>
             )}
 

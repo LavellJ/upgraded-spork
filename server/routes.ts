@@ -4,6 +4,7 @@ import { Router } from "express";
 import { createServer, type Server } from "http";
 import { verifyToken, issueToken } from './auth';
 import { userStorage, type UserDoc } from './userStorage';
+import { auditLog, getAuditLogPath } from './audit';
 import fs from "fs";
 import path from "path";
 
@@ -188,6 +189,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const token = issueToken({ email, role });
+      
+      // Audit log token issuance
+      auditLog.tokenIssued(email, role, req.ip);
+      
       res.json({ token, expires_in_days: 30 });
     });
   }
@@ -227,6 +232,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Save updated document
       await saveUserDoc(userEmail, userDoc);
       
+      // Audit log sync batch processing
+      auditLog.syncBatch(userEmail, accepted, req.ip);
+      
       res.json({ ok: true, accepted });
     } catch (err) {
       console.error('Error in /api/sync/batch:', err);
@@ -263,6 +271,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       userDoc.roster = roster;
       await saveUserDoc(userEmail, userDoc);
+      
+      // Audit log roster update
+      auditLog.rosterUpdated(userEmail, roster.learners.length, req.ip);
       
       res.json({ ok: true, roster: userDoc.roster });
     } catch (err) {
@@ -349,6 +360,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // If no email specified, return list of available users
         const users = await userStorage.listUsers();
         const stats = await userStorage.getStats();
+        
+        // Audit log admin dump (list users)
+        auditLog.adminDump((req as any).user.email, undefined, req.ip);
+        
         return res.json({
           users,
           stats,
@@ -358,6 +373,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get and return user document
       const userDoc = await getUserDoc(email);
+      
+      // Audit log admin dump (specific user)
+      auditLog.adminDump((req as any).user.email, email, req.ip);
+      
       res.json({
         email,
         document: userDoc,
@@ -365,6 +384,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (err) {
       console.error('Error in GET /api/admin/dump:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Admin audit log endpoint (DEV mode or admin role required)
+  api.get('/api/admin/log', authMiddleware, async (req, res) => {
+    try {
+      const userRole = (req as any).user.role;
+      const isDev = process.env.NODE_ENV === 'development';
+      
+      // Check authorization
+      if (!isDev && userRole !== 'admin') {
+        return res.status(403).json({ error: 'Admin role required' });
+      }
+      
+      // Audit log access to audit log
+      auditLog.auditAccess((req as any).user.email, req.ip);
+      
+      try {
+        const auditContent = fs.readFileSync(getAuditLogPath(), 'utf8');
+        
+        // Set appropriate headers for file download
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename="audit-log-${new Date().toISOString().slice(0, 10)}.jsonl"`);
+        
+        res.send(auditContent);
+      } catch (fileError) {
+        // If audit log doesn't exist yet, return empty log
+        if ((fileError as any).code === 'ENOENT') {
+          res.setHeader('Content-Type', 'application/json');
+          res.setHeader('Content-Disposition', `attachment; filename="audit-log-${new Date().toISOString().slice(0, 10)}.jsonl"`);
+          res.send('');
+        } else {
+          throw fileError;
+        }
+      }
+    } catch (err) {
+      console.error('Error in GET /api/admin/log:', err);
       res.status(500).json({ error: 'Internal server error' });
     }
   });
@@ -382,6 +439,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`📅 Manual retention compaction requested by ${(req as any).user.email}`);
       const result = await userStorage.runRetentionCompaction();
+      
+      // Audit log retention compaction
+      auditLog.retentionRun((req as any).user.email, result, req.ip);
       
       res.json({
         ok: true,
