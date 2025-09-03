@@ -15,6 +15,7 @@ import { Privacy } from '../settings/Privacy';
 import { Consent } from '../settings/Consent';
 import { QuickStart } from '../teacher/QuickStart';
 import { QAPanel } from './QAPanel';
+import { ReportsTab } from './ReportsTab';
 import { downloadCsv, getCsvStats } from '../guide/exportCsv';
 import { loadEvents, getEventsRange } from '../progress';
 import { Download } from 'lucide-react';
@@ -40,7 +41,7 @@ const SUBJECTS = {
 };
 
 // Define tab types and constants
-const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'roster', 'privacy', 'consent', 'audit', 'funnel', 'qa'] as const;
+const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'roster', 'privacy', 'consent', 'audit', 'funnel', 'qa', 'reports'] as const;
 type Tab = typeof TABS[number];
 
 // Progress encode/decode helpers (URL-safe Base64)
@@ -640,6 +641,24 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                   📱 QA
                 </button>
               )}
+              {/* Reports Tab */}
+              <button 
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'reports'}
+                aria-controls="tab-content-reports"
+                id="tab-reports"
+                data-tab="reports"
+                onClick={handleTabClick}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                  activeTab === 'reports' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white border hover:bg-stone-50'
+                }`}
+                data-testid="tab-reports"
+              >
+                📊 Reports
+              </button>
             </div>
 
             {activeTab === 'roster' ? (
@@ -904,6 +923,16 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 className="max-h-96 overflow-y-auto space-y-4"
               >
                 <QAPanel currentBiome={getCurrentBiome()} />
+              </div>
+            ) : activeTab === 'reports' ? (
+              <div 
+                id="tab-content-reports" 
+                role="region" 
+                aria-live="polite" 
+                aria-labelledby="tab-reports"
+                className="max-h-96 overflow-y-auto space-y-4"
+              >
+                <ReportsTab />
               </div>
             ) : (
               <div>Unknown tab</div>
