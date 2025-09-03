@@ -3,6 +3,7 @@ import { BottomSheet } from "./BottomSheet";
 import { useScoutQueue } from "../hooks/useScoutQueue";
 import { useProfile } from "../profile/context";
 import { pushEvent } from "../progress/events";
+import { openJournalForSkill, inferPrimarySkillForCurrentLesson } from "../journal/open";
 
 const cx = (...s: (string | false | undefined)[]): string => s.filter(Boolean).join(" ");
 
@@ -103,24 +104,49 @@ function MCActivity({ biome, lesson, onSolved, onAttempt }: MCActivityProps) {
   const [checked, setChecked] = useState(false);
   const ok = checked && sel === tpl.correct;
   
+  // Track wrong answers in a row for this lesson
+  const wrongInRowRef = useRef(0);
+  
   const handleCheck = () => {
     setChecked(true);
     const outcome = sel === tpl.correct ? 'correct' : 'wrong';
     onAttempt(outcome);
     
-    // Enqueue Scout message for wrong answers
-    if (outcome === 'wrong') {
-      enqueue({
-        id: `answer-wrong-${lesson.id}-${Date.now()}`,
-        text: `That's okay, ${profile.name || 'Explorer'}! Let's try again.`,
-        priority: 'actionable',
-        cta: {
-          label: 'Get Hint',
-          onClick: () => {
-            console.log('Show hint for lesson:', lesson.title);
+    // Handle wrong answer tracking and Scout intervention
+    if (outcome === 'correct') {
+      wrongInRowRef.current = 0; // Reset on correct answer
+    } else {
+      wrongInRowRef.current += 1;
+      
+      // After 2 wrong answers, show actionable Scout hint with Journal CTA
+      if (wrongInRowRef.current === 2) {
+        const skillId = inferPrimarySkillForCurrentLesson(lesson.id, biome);
+        
+        // Use authorable line if available, otherwise fallback
+        const hintText = `Want a quick hint, ${profile.name || 'Explorer'}? Let's practice together!`;
+        
+        const result = enqueue({
+          id: `fail_hint_${lesson.id}_${Date.now()}`,
+          priority: 'actionable',
+          text: hintText,
+          cta: {
+            label: 'Try Journal',
+            onClick: () => openJournalForSkill(skillId, 4)
           }
+        }, { lessonId: lesson.id });
+        
+        // Optional: Log if message was routed to inbox
+        if (result?.routedToInbox) {
+          console.log('Scout hint routed to inbox due to guardrails:', result.reason);
         }
-      });
+      } else {
+        // First wrong answer - show encouragement
+        enqueue({
+          id: `answer-wrong-${lesson.id}-${Date.now()}`,
+          text: `That's okay, ${profile.name || 'Explorer'}! Let's try again.`,
+          priority: 'info'
+        }, { lessonId: lesson.id });
+      }
     }
   };
   return (
