@@ -3,7 +3,9 @@
 export type SyncItem =
   | { kind: 'event'; payload: any; id: string; at: number }
   | { kind: 'learner'; payload: any; id: string; at: number }
-  | { kind: 'reflection'; payload: any; id: string; at: number };
+  | { kind: 'reflection'; payload: any; id: string; at: number }
+  | { kind: 'journal'; payload: any; id: string; at: number }
+  | { kind: 'assignment'; payload: any; id: string; at: number };
 
 export type SyncState = {
   version: 1;
@@ -21,6 +23,11 @@ export type SyncStatus = {
 export type SyncResult = {
   ok: boolean;
   error?: string;
+  // Optional server data for merging (when server has conflicting state)
+  mergeData?: {
+    kind: string;
+    serverItems: any[];
+  }[];
 };
 
 // Storage key for sync queue persistence

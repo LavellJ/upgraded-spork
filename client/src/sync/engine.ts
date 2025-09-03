@@ -5,6 +5,7 @@ import type { SyncItem, SyncStatus } from './types';
 import { loadQueue, dequeueByIds, getPendingCount } from './queue';
 import { send } from './transport';
 import { useOnline } from '../pwa/useOnline';
+import { mergeSyncPayloads } from './merge';
 
 // Sync engine configuration
 const DEFAULT_INTERVAL_MS = 5000;
@@ -87,6 +88,33 @@ export async function flushOnce(): Promise<boolean> {
           lastError: result.error || 'Sync failed'
         });
         return false;
+      }
+      
+      // Handle merge data if server provided it
+      if (result.mergeData) {
+        for (const mergeGroup of result.mergeData) {
+          if (mergeGroup.kind === kind && mergeGroup.serverItems.length > 0) {
+            console.debug(`Merging ${mergeGroup.serverItems.length} ${kind} items from server`);
+            
+            // Extract local payloads for this kind
+            const localPayloads = groupItems.map(item => item.payload);
+            
+            // Merge with server data
+            const mergedPayloads = mergeSyncPayloads(
+              localPayloads,
+              mergeGroup.serverItems,
+              kind
+            );
+            
+            // TODO: Save merged data back to local storage
+            // This would require kind-specific save functions
+            console.debug(`Merged ${kind} data:`, { 
+              local: localPayloads.length,
+              server: mergeGroup.serverItems.length,
+              merged: mergedPayloads.length
+            });
+          }
+        }
       }
       
       // Collect IDs for successful items
