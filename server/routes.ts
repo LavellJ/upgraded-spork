@@ -220,6 +220,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Snapshot endpoint for development import (DEV only)
+  api.get('/api/snapshot', authMiddleware, (req, res) => {
+    try {
+      const userId = req.query.userId as string;
+      
+      if (!userId) {
+        return res.status(400).json({ error: 'Missing userId parameter' });
+      }
+      
+      const userData = getUserData(userId);
+      
+      // Convert server data format to V2 backup format
+      const snapshotData = {
+        roster: userData.roster,
+        data: {} as Record<string, any>,
+        telemetryBuffer: [] // Not tracked on server for privacy
+      };
+      
+      // Convert learner data from server format to V2 format
+      for (const [learnerId, rawData] of Object.entries(userData.data)) {
+        const learnerData: any = {
+          profile: null, // Profile is global
+          model: null,
+          events: [],
+          journal: [],
+          reflections: [],
+          assignments: []
+        };
+        
+        // Group items by type based on their structure
+        for (const [itemId, item] of Object.entries(rawData as Record<string, any>)) {
+          if (!item || typeof item !== 'object') continue;
+          
+          // Categorize items based on their properties
+          if ('kind' in item && 'at' in item) {
+            // Progress events
+            learnerData.events.push(item);
+          } else if ('p' in item && 'seen' in item && 'correct' in item) {
+            // Learner model skills data
+            if (!learnerData.model) {
+              learnerData.model = { version: 1, skills: {} };
+            }
+            learnerData.model.skills[itemId] = item;
+          } else if ('date' in item && 'skillId' in item && 'sessionId' in item) {
+            // Journal history entries
+            learnerData.journal.push(item);
+          } else if ('refType' in item && 'refId' in item && 'note' in item) {
+            // Reflections
+            learnerData.reflections.push(item);
+          } else if ('id' in item && 'name' in item && 'lessonIds' in item) {
+            // Assignments
+            learnerData.assignments.push(item);
+          }
+        }
+        
+        snapshotData.data[learnerId] = learnerData;
+      }
+      
+      res.json(snapshotData);
+    } catch (err) {
+      console.error('Error in GET /api/snapshot:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   app.use(api);
 
   // Create and return the HTTP server that index.ts expects
