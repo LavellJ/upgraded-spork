@@ -200,69 +200,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   api.post('/api/roster', authMiddleware, (req, res) => {
     try {
-      const { userId, action, learner, learnerId } = req.body;
+      // Simple approach: accept entire roster object for sync
+      const roster = req.body;
       
-      if (!userId || !action) {
-        return res.status(400).json({ error: 'Missing required fields: userId, action' });
+      if (!roster || !roster.learners || !Array.isArray(roster.learners)) {
+        return res.status(400).json({ error: 'Invalid roster format' });
       }
+      
+      // Derive userId from token (simplified for DEV)
+      const userId = `user_${(req as any).authToken.slice(-8)}`;
       
       const userData = getUserData(userId);
-      const now = Date.now();
+      userData.roster = roster;
       
-      switch (action) {
-        case 'add':
-          if (!learner || !learner.name) {
-            return res.status(400).json({ error: 'Missing learner data for add action' });
-          }
-          
-          const newLearner = {
-            id: learner.id || `learner_${now}_${Math.random().toString(36).substr(2, 9)}`,
-            name: learner.name,
-            avatarId: learner.avatarId,
-            ageBand: learner.ageBand,
-            createdAt: now,
-            updatedAt: now
-          };
-          
-          userData.roster.learners.push(newLearner);
-          break;
-          
-        case 'update':
-          if (!learnerId || !learner) {
-            return res.status(400).json({ error: 'Missing learnerId or learner data for update action' });
-          }
-          
-          const learnerIndex = userData.roster.learners.findIndex(l => l.id === learnerId);
-          if (learnerIndex === -1) {
-            return res.status(404).json({ error: 'Learner not found' });
-          }
-          
-          userData.roster.learners[learnerIndex] = {
-            ...userData.roster.learners[learnerIndex],
-            ...learner,
-            id: learnerId, // Preserve ID
-            updatedAt: now
-          };
-          break;
-          
-        case 'delete':
-          if (!learnerId) {
-            return res.status(400).json({ error: 'Missing learnerId for delete action' });
-          }
-          
-          const deleteIndex = userData.roster.learners.findIndex(l => l.id === learnerId);
-          if (deleteIndex === -1) {
-            return res.status(404).json({ error: 'Learner not found' });
-          }
-          
-          userData.roster.learners.splice(deleteIndex, 1);
-          break;
-          
-        default:
-          return res.status(400).json({ error: 'Invalid action. Must be add, update, or delete' });
-      }
-      
-      res.json(userData.roster);
+      res.json({ ok: true, roster: userData.roster });
     } catch (err) {
       console.error('Error in POST /api/roster:', err);
       res.status(500).json({ error: 'Internal server error' });

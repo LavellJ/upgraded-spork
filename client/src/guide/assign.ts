@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid';
+import { ns, BASE_KEYS } from '../storage/namespace';
 
 export interface AssignedPath {
   id: string;
@@ -8,14 +9,12 @@ export interface AssignedPath {
   expiresAt?: number;
 }
 
-const STORAGE_KEY = 'qi.assigned.paths.v1';
-
 /**
  * Save an assigned path to localStorage
  */
-export function savePath(path: AssignedPath): void {
+export function savePath(path: AssignedPath, learnerId?: string): void {
   try {
-    const paths = loadPaths();
+    const paths = loadPaths(learnerId);
     const existingIndex = paths.findIndex(p => p.id === path.id);
     
     if (existingIndex >= 0) {
@@ -24,7 +23,8 @@ export function savePath(path: AssignedPath): void {
       paths.push(path);
     }
     
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(paths));
+    const storageKey = learnerId ? ns(learnerId, BASE_KEYS.assignedPaths) : 'qi.assigned.paths.v1'; // fallback for legacy
+    localStorage.setItem(storageKey, JSON.stringify(paths));
   } catch (error) {
     console.error('Failed to save assigned path:', error);
   }
@@ -33,9 +33,10 @@ export function savePath(path: AssignedPath): void {
 /**
  * Load all assigned paths from localStorage, filtering out expired ones
  */
-export function loadPaths(): AssignedPath[] {
+export function loadPaths(learnerId?: string): AssignedPath[] {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const storageKey = learnerId ? ns(learnerId, BASE_KEYS.assignedPaths) : 'qi.assigned.paths.v1'; // fallback for legacy
+    const stored = localStorage.getItem(storageKey);
     if (!stored) return [];
     
     const paths = JSON.parse(stored) as AssignedPath[];
@@ -48,7 +49,8 @@ export function loadPaths(): AssignedPath[] {
     
     // Save back if we filtered anything
     if (activePaths.length !== paths.length) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(activePaths));
+      const storageKey = learnerId ? ns(learnerId, BASE_KEYS.assignedPaths) : 'qi.assigned.paths.v1'; // fallback for legacy
+      localStorage.setItem(storageKey, JSON.stringify(activePaths));
     }
     
     return activePaths;
@@ -61,11 +63,12 @@ export function loadPaths(): AssignedPath[] {
 /**
  * Delete an assigned path by ID
  */
-export function deletePath(id: string): void {
+export function deletePath(id: string, learnerId?: string): void {
   try {
-    const paths = loadPaths();
+    const paths = loadPaths(learnerId);
     const filtered = paths.filter(p => p.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+    const storageKey = learnerId ? ns(learnerId, BASE_KEYS.assignedPaths) : 'qi.assigned.paths.v1'; // fallback for legacy
+    localStorage.setItem(storageKey, JSON.stringify(filtered));
   } catch (error) {
     console.error('Failed to delete assigned path:', error);
   }
@@ -77,7 +80,8 @@ export function deletePath(id: string): void {
 export function createPath(
   name: string, 
   lessonIds: string[], 
-  expiryDays?: number
+  expiryDays?: number,
+  learnerId?: string
 ): AssignedPath {
   const now = Date.now();
   const path: AssignedPath = {
@@ -88,7 +92,7 @@ export function createPath(
     expiresAt: expiryDays ? now + (expiryDays * 24 * 60 * 60 * 1000) : undefined
   };
   
-  savePath(path);
+  savePath(path, learnerId);
   return path;
 }
 
@@ -159,8 +163,8 @@ export function decodeFromQuery(search: string): AssignedPath | null {
 /**
  * Get active assigned lesson IDs (non-expired assignments)
  */
-export function getActiveAssignedLessons(): string[] {
-  const paths = loadPaths();
+export function getActiveAssignedLessons(learnerId?: string): string[] {
+  const paths = loadPaths(learnerId);
   const lessonIds = new Set<string>();
   
   paths.forEach(path => {
@@ -173,8 +177,8 @@ export function getActiveAssignedLessons(): string[] {
 /**
  * Get the next assigned lesson that hasn't been completed
  */
-export function getNextAssignedLesson(completedLessons: Set<string>): string | null {
-  const paths = loadPaths();
+export function getNextAssignedLesson(completedLessons: Set<string>, learnerId?: string): string | null {
+  const paths = loadPaths(learnerId);
   
   // Sort by creation date (oldest first)
   const sortedPaths = paths.sort((a, b) => a.createdAt - b.createdAt);
@@ -193,8 +197,8 @@ export function getNextAssignedLesson(completedLessons: Set<string>): string | n
 /**
  * Mark assignment as completed if all lessons are done
  */
-export function checkAndCompleteAssignments(completedLessons: Set<string>): string[] {
-  const paths = loadPaths();
+export function checkAndCompleteAssignments(completedLessons: Set<string>, learnerId?: string): string[] {
+  const paths = loadPaths(learnerId);
   const completedPaths: string[] = [];
   
   const remainingPaths = paths.filter(path => {
@@ -207,7 +211,8 @@ export function checkAndCompleteAssignments(completedLessons: Set<string>): stri
   });
   
   if (remainingPaths.length !== paths.length) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(remainingPaths));
+    const storageKey = learnerId ? ns(learnerId, BASE_KEYS.assignedPaths) : 'qi.assigned.paths.v1'; // fallback for legacy
+    localStorage.setItem(storageKey, JSON.stringify(remainingPaths));
   }
   
   return completedPaths;
@@ -216,12 +221,12 @@ export function checkAndCompleteAssignments(completedLessons: Set<string>): stri
 /**
  * Get assignment progress for a specific path
  */
-export function getAssignmentProgress(pathId: string, completedLessons: Set<string>): {
+export function getAssignmentProgress(pathId: string, completedLessons: Set<string>, learnerId?: string): {
   total: number;
   completed: number;
   nextLesson: string | null;
 } | null {
-  const paths = loadPaths();
+  const paths = loadPaths(learnerId);
   const path = paths.find(p => p.id === pathId);
   
   if (!path) return null;
