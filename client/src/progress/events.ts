@@ -8,7 +8,8 @@ export type ProgressEvent =
   | { kind: 'journal_finish'; at: number; skillId: string; n: number; correct: number; durationSec?: number; source?: 'scout' | 'guide' | 'manual' }
   | { kind: 'scout_msg'; at: number; messageId: string; priority: 'info' | 'actionable' | 'critical'; text: string; cta?: { label: string; clicked?: boolean }; dismissed?: boolean }
   | { kind: 'scout_analytics'; at: number; id: string; priority: 'info' | 'actionable' | 'critical'; action: 'shown' | 'clicked' | 'dismissed' | 'auto_dismiss' | 'routed_inbox'; dwellMs?: number; sessionId: string; abVariant?: Record<string, string> }
-  | { kind: 'guide_ack'; at: number; noticeId: string; action: 'shown' | 'ack' | 'dismiss'; actor: 'guide' };
+  | { kind: 'guide_ack'; at: number; noticeId: string; action: 'shown' | 'ack' | 'dismiss'; actor: 'guide' }
+  | { kind: 'funnel'; at: number; step: 'onboard' | 'first_lesson_start' | 'first_lesson_finish' | 'first_journal' | 'assignment_received' | 'three_completions' };
 
 import { ns, BASE_KEYS } from '../storage/namespace';
 
@@ -172,5 +173,41 @@ export function getSessionId(): string {
     // Fallback if sessionStorage is not available
     console.warn('Failed to access sessionStorage for session ID:', error);
     return `sess_${Date.now()}_fallback`;
+  }
+}
+
+/**
+ * Check if a funnel step has already been reached
+ */
+function hasFunnelStep(step: string, learnerId?: string): boolean {
+  const events = loadEvents(learnerId);
+  return events.some(event => 
+    event.kind === 'funnel' && 'step' in event && event.step === step
+  );
+}
+
+/**
+ * Track funnel milestone if not already reached
+ */
+export function trackFunnelStep(step: 'onboard' | 'first_lesson_start' | 'first_lesson_finish' | 'first_journal' | 'assignment_received' | 'three_completions', learnerId?: string): void {
+  // Only track if step hasn't been reached before
+  if (!hasFunnelStep(step, learnerId)) {
+    pushEvent({
+      kind: 'funnel',
+      at: Date.now(),
+      step
+    }, learnerId);
+  }
+}
+
+/**
+ * Check lesson completion count and trigger three_completions if needed
+ */
+export function checkThreeCompletions(learnerId?: string): void {
+  const events = loadEvents(learnerId);
+  const completions = events.filter(event => event.kind === 'lesson_finish').length;
+  
+  if (completions >= 3) {
+    trackFunnelStep('three_completions', learnerId);
   }
 }

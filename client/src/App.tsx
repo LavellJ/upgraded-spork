@@ -22,12 +22,14 @@ import { RouteListener } from "./components/RouteListener";
 import { ScoutDebugCard } from "./components/ScoutDebugCard";
 import { PwaUpdateToast } from "./components/PwaUpdateToast";
 import { OfflineBanner } from "./components/OfflineBanner";
+import { FunnelViewer } from "./debug/FunnelViewer";
 import { useScoutQueue } from './hooks/useScoutQueue';
 import { useSyncEngine } from './sync/engine';
 import { useProfile } from "./profile/context";
 import { Onboarding } from "./onboarding/Onboarding";
 import { decodeFromQuery, savePath } from "./guide/assign";
 import { GuideNoticeProvider } from "./guide/notices";
+import { trackFunnelStep } from "./progress/events";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -511,6 +513,9 @@ function AppContent(){
         if (assignedPath) {
           // Save the assignment
           savePath(assignedPath);
+          
+          // Track assignment received in funnel
+          trackFunnelStep('assignment_received');
           
           // Clear URL parameter to avoid reimporting
           const url = new URL(window.location.href);
