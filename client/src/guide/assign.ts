@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
 import { ns, BASE_KEYS } from '../storage/namespace';
 
+// V1 Types (legacy)
 export interface AssignedPath {
   id: string;
   name: string;
@@ -8,6 +9,30 @@ export interface AssignedPath {
   createdAt: number;
   expiresAt?: number;
 }
+
+// V2 Types
+export type AssignedLessonStatus = 'not_started' | 'in_progress' | 'done';
+
+export type AssignedLesson = {
+  lessonId: string;
+  status: AssignedLessonStatus;
+  completedAt?: number;
+  dueAt?: number; // optional, overrides path due at
+};
+
+export type AssignedPathV2 = {
+  id: string;
+  name: string;
+  lessonIds: string[]; // keep for quick checks
+  lessons: AssignedLesson[]; // source of truth for statuses/due
+  createdAt: number;
+  updatedAt: number;
+  startAt?: number;
+  dueAt?: number; // default due for all lessons unless overridden
+  expiresAt?: number;
+  priority?: 'low' | 'normal' | 'high';
+  archived?: boolean;
+};
 
 /**
  * Save an assigned path to localStorage
@@ -264,4 +289,276 @@ export function getAssignmentProgress(pathId: string, completedLessons: Set<stri
     completed,
     nextLesson
   };
+}
+
+// =============================================================================
+// V2 ASSIGNMENT PATH SYSTEM
+// =============================================================================
+
+/**
+ * Load all assigned paths v2 from localStorage, filtering out expired ones
+ */
+export function loadPathsV2(learnerId: string): AssignedPathV2[] {
+  try {
+    const storageKey = ns(learnerId, 'assigned.paths.v2');
+    const stored = localStorage.getItem(storageKey);
+    if (!stored) return [];
+    
+    const paths = JSON.parse(stored) as AssignedPathV2[];
+    const now = Date.now();
+    
+    // Filter out expired paths
+    const activePaths = paths.filter(path => 
+      !path.expiresAt || path.expiresAt > now
+    );
+    
+    // Save back if we filtered anything
+    if (activePaths.length !== paths.length) {
+      localStorage.setItem(storageKey, JSON.stringify(activePaths));
+    }
+    
+    return activePaths;
+  } catch (error) {
+    console.error('Failed to load assigned paths v2:', error);
+    return [];
+  }
+}
+
+/**
+ * Save all assigned paths v2 to localStorage
+ */
+export function savePathsV2(paths: AssignedPathV2[], learnerId: string): void {
+  try {
+    const storageKey = ns(learnerId, 'assigned.paths.v2');
+    localStorage.setItem(storageKey, JSON.stringify(paths));
+  } catch (error) {
+    console.error('Failed to save assigned paths v2:', error);
+  }
+}
+
+/**
+ * Upsert an assigned path v2
+ */
+export function upsertPathV2(path: AssignedPathV2, learnerId: string): void {
+  try {
+    const paths = loadPathsV2(learnerId);
+    const existingIndex = paths.findIndex(p => p.id === path.id);
+    
+    path.updatedAt = Date.now();
+    
+    if (existingIndex >= 0) {
+      paths[existingIndex] = path;
+    } else {
+      paths.push(path);
+    }
+    
+    savePathsV2(paths, learnerId);
+  } catch (error) {
+    console.error('Failed to upsert assigned path v2:', error);
+  }
+}
+
+/**
+ * Delete an assigned path v2 by ID
+ */
+export function deletePathV2(id: string, learnerId: string): void {
+  try {
+    const paths = loadPathsV2(learnerId);
+    const filtered = paths.filter(p => p.id !== id);
+    savePathsV2(filtered, learnerId);
+  } catch (error) {
+    console.error('Failed to delete assigned path v2:', error);
+  }
+}
+
+/**
+ * Migrate from v1 to v2 format
+ */
+export function migrateFromV1(learnerId: string): void {
+  try {
+    // Check if v2 already exists
+    const existingV2Paths = loadPathsV2(learnerId);
+    if (existingV2Paths.length > 0) {
+      return; // Already migrated
+    }
+    
+    // Load v1 paths
+    const v1StorageKey = ns(learnerId, BASE_KEYS.assignedPaths);
+    const v1Stored = localStorage.getItem(v1StorageKey);
+    if (!v1Stored) return;
+    
+    const v1Paths = JSON.parse(v1Stored) as AssignedPath[];
+    
+    // Convert to v2
+    const convertedV2Paths: AssignedPathV2[] = v1Paths.map(v1Path => {
+      const lessons: AssignedLesson[] = v1Path.lessonIds.map(lessonId => ({
+        lessonId,
+        status: 'not_started' as AssignedLessonStatus
+      }));
+      
+      return {
+        id: v1Path.id,
+        name: v1Path.name,
+        lessonIds: v1Path.lessonIds,
+        lessons,
+        createdAt: v1Path.createdAt,
+        updatedAt: v1Path.createdAt,
+        expiresAt: v1Path.expiresAt,
+        priority: 'normal'
+      };
+    });
+    
+    // Save v2 and remove v1
+    if (convertedV2Paths.length > 0) {
+      savePathsV2(convertedV2Paths, learnerId);
+      localStorage.removeItem(v1StorageKey);
+    }
+  } catch (error) {
+    console.error('Failed to migrate from v1 to v2:', error);
+  }
+}
+
+/**
+ * Get active assignments for a learner
+ */
+export function getActiveAssignments(learnerId: string, options: { includeArchived?: boolean } = {}): AssignedPathV2[] {
+  const paths = loadPathsV2(learnerId);
+  
+  if (options.includeArchived) {
+    return paths;
+  }
+  
+  return paths.filter(path => !path.archived);
+}
+
+/**
+ * Get path progress
+ */
+export function getPathProgress(path: AssignedPathV2): { total: number; done: number; pct: number } {
+  const total = path.lessons.length;
+  const done = path.lessons.filter(lesson => lesson.status === 'done').length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  
+  return { total, done, pct };
+}
+
+/**
+ * Get lesson assignment details
+ */
+export function getLessonAssignment(paths: AssignedPathV2[], lessonId: string): { pathId: string; dueAt?: number; status: AssignedLessonStatus } | null {
+  for (const path of paths) {
+    const lesson = path.lessons.find(l => l.lessonId === lessonId);
+    if (lesson) {
+      return {
+        pathId: path.id,
+        dueAt: lesson.dueAt || path.dueAt,
+        status: lesson.status
+      };
+    }
+  }
+  return null;
+}
+
+/**
+ * Check if due soon (≤48h)
+ */
+export function isDueSoon(dueAt?: number, now: number = Date.now()): boolean {
+  if (!dueAt) return false;
+  const hoursUntilDue = (dueAt - now) / (1000 * 60 * 60);
+  return hoursUntilDue <= 48 && hoursUntilDue > 0;
+}
+
+/**
+ * Check if overdue
+ */
+export function isOverdue(dueAt?: number, now: number = Date.now()): boolean {
+  if (!dueAt) return false;
+  return dueAt < now;
+}
+
+/**
+ * Encode an assigned path v2 to a shareable link
+ */
+export function encodeToLinkV2(path: AssignedPathV2): string {
+  try {
+    const linkData = {
+      id: path.id,
+      name: path.name,
+      lessonIds: path.lessonIds,
+      startAt: path.startAt,
+      dueAt: path.dueAt,
+      expiresAt: path.expiresAt,
+      priority: path.priority
+    };
+    
+    const data = JSON.stringify(linkData);
+    const encoded = btoa(data)
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+    
+    return `${window.location.origin}${window.location.pathname}?assign=${encoded}`;
+  } catch (error) {
+    console.error('Failed to encode path v2 to link:', error);
+    return '';
+  }
+}
+
+/**
+ * Decode an assigned path v2 from URL search parameters
+ */
+export function decodeFromQueryV2(search: string): AssignedPathV2 | null {
+  try {
+    const params = new URLSearchParams(search);
+    const assignParam = params.get('assign');
+    
+    if (!assignParam) return null;
+    
+    // Restore base64 padding
+    const padded = assignParam
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+    const padding = padded.length % 4;
+    const base64 = padding ? padded + '='.repeat(4 - padding) : padded;
+    
+    const data = atob(base64);
+    const linkData = JSON.parse(data);
+    
+    // Validate the structure
+    if (!linkData.id || !linkData.name || !Array.isArray(linkData.lessonIds)) {
+      console.warn('Invalid assigned path v2 structure');
+      return null;
+    }
+    
+    // Check if expired
+    if (linkData.expiresAt && linkData.expiresAt <= Date.now()) {
+      console.warn('Assigned path v2 has expired');
+      return null;
+    }
+    
+    // Create v2 path skeleton (create lessons from ids)
+    const lessons: AssignedLesson[] = linkData.lessonIds.map((lessonId: string) => ({
+      lessonId,
+      status: 'not_started' as AssignedLessonStatus
+    }));
+    
+    const now = Date.now();
+    const path: AssignedPathV2 = {
+      id: linkData.id,
+      name: linkData.name,
+      lessonIds: linkData.lessonIds,
+      lessons,
+      createdAt: now,
+      updatedAt: now,
+      startAt: linkData.startAt,
+      dueAt: linkData.dueAt,
+      expiresAt: linkData.expiresAt,
+      priority: linkData.priority || 'normal'
+    };
+    
+    return path;
+  } catch (error) {
+    console.error('Failed to decode assigned path v2 from query:', error);
+    return null;
+  }
 }
