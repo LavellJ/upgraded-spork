@@ -412,3 +412,121 @@ export function onTaskMinutes(days: number = 7): { [dayISO: string]: number } {
   
   return result;
 }
+
+/**
+ * Calculate 7-day return metric
+ * Checks if learner came back within 7 days of their last activity
+ * 
+ * @param events Progress events to analyze
+ * @returns Object with returnedWithin7d boolean and lastActiveISO date
+ */
+export function weeklyReturn(events: ProgressEvent[]): { returnedWithin7d: boolean; lastActiveISO: string } {
+  if (events.length === 0) {
+    return { returnedWithin7d: false, lastActiveISO: '' };
+  }
+  
+  // Get all learning activity events (lesson_finish, journal_finish)
+  const activityEvents = events.filter(event => 
+    event.kind === 'lesson_finish' || event.kind === 'journal_finish'
+  ).sort((a, b) => b.at - a.at); // Most recent first
+  
+  if (activityEvents.length === 0) {
+    return { returnedWithin7d: false, lastActiveISO: '' };
+  }
+  
+  // Find the last active date
+  const lastActiveDate = new Date(activityEvents[0].at);
+  const lastActiveISO = lastActiveDate.toISOString().split('T')[0];
+  
+  // Check if there's activity within the last 7 days
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  
+  const returnedWithin7d = lastActiveDate >= sevenDaysAgo;
+  
+  return { returnedWithin7d, lastActiveISO };
+}
+
+/**
+ * Calculate session streak metrics
+ * Counts consecutive days with learning activity and tracks best streak
+ * 
+ * @param events Progress events to analyze  
+ * @returns Object with current streak and best (longest) streak
+ */
+export function sessionStreak(events: ProgressEvent[]): { current: number; best: number } {
+  if (events.length === 0) {
+    return { current: 0, best: 0 };
+  }
+  
+  // Get all learning activity events (lesson_finish, journal_finish)
+  const activityEvents = events.filter(event => 
+    event.kind === 'lesson_finish' || event.kind === 'journal_finish'
+  );
+  
+  if (activityEvents.length === 0) {
+    return { current: 0, best: 0 };
+  }
+  
+  // Get unique activity days (ISO date strings)
+  const activityDays = new Set<string>();
+  activityEvents.forEach(event => {
+    const date = new Date(event.at);
+    const dayISO = date.toISOString().split('T')[0];
+    activityDays.add(dayISO);
+  });
+  
+  // Sort activity days chronologically
+  const sortedDays = Array.from(activityDays).sort();
+  
+  if (sortedDays.length === 0) {
+    return { current: 0, best: 0 };
+  }
+  
+  // Calculate all streaks
+  let streaks: number[] = [];
+  let currentStreak = 1;
+  
+  for (let i = 1; i < sortedDays.length; i++) {
+    const prevDate = new Date(sortedDays[i - 1]);
+    const currentDate = new Date(sortedDays[i]);
+    
+    // Check if current date is consecutive (next day)
+    const diffMs = currentDate.getTime() - prevDate.getTime();
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+    
+    if (Math.abs(diffDays - 1) < 0.1) { // Within ~2.4 hours tolerance for timezone issues
+      currentStreak++;
+    } else {
+      streaks.push(currentStreak);
+      currentStreak = 1;
+    }
+  }
+  streaks.push(currentStreak); // Add the final streak
+  
+  // Calculate best streak (longest ever)
+  const best = Math.max(...streaks, 0);
+  
+  // Calculate current streak (from today backwards)
+  const today = new Date().toISOString().split('T')[0];
+  const hasActivityToday = activityDays.has(today);
+  
+  // If no activity today, check yesterday as potential start of current streak
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayISO = yesterday.toISOString().split('T')[0];
+  
+  const streakStartDate = hasActivityToday ? today : yesterdayISO;
+  let current = 0;
+  
+  if (activityDays.has(streakStartDate)) {
+    // Count backwards from streak start date
+    let checkDate = new Date(streakStartDate);
+    while (activityDays.has(checkDate.toISOString().split('T')[0])) {
+      current++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    }
+  }
+  
+  return { current, best };
+}
