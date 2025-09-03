@@ -20,11 +20,8 @@ import { InsightsCard } from '../guide/InsightsCard';
 import { isGuide, toggleGuideMode } from '../guide/auth';
 import { getEventsByKind } from '../progress/events';
 import { AuditLogView } from './AuditLogView';
-// Dynamic import to avoid useRoster hook being called before RosterProvider initializes
+import { RosterManagement } from './RosterManagement';
 import { getAllAssignments, setVariant, getScoutDwellVariant, SCOUT_DWELL_VARIANTS } from '../ab/model';
-
-// Dynamic component to load RosterManagement only when needed
-const DynamicRosterManagement = React.lazy(() => import('./RosterManagement').then(module => ({ default: module.RosterManagement })));
 import { getScoutDwellAnalytics } from '../ab/analytics';
 
 const SUBJECTS = {
@@ -472,9 +469,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
             </div>
 
             {activeTab === 'roster' ? (
-              <React.Suspense fallback={<div className="text-center py-4 text-gray-500">Loading learners...</div>}>
-                <DynamicRosterManagement />
-              </React.Suspense>
+              <RosterManagement />
             ) : activeTab === 'overview' ? (
               <div>
                 <div className="text-sm font-semibold mb-2">Analytics (local)</div>
