@@ -15,6 +15,8 @@ import LOOP2 from "./data/loop2.json";
 import { logEvent } from "./lib/analytics";
 import { learnerCache } from "./learning/model";
 import { inferSkillIdsForLesson, getLessonById, recommendNextPin, getLastRecommendationReason } from "./learning/policy";
+import { checkAssignmentNudges } from "./utils/assignmentNudges";
+import { useRosterOptional } from "./roster";
 import { ScoutManager } from "./components/ScoutManager";
 import { RouteListener } from "./components/RouteListener";
 import { ScoutDebugCard } from "./components/ScoutDebugCard";
@@ -375,6 +377,7 @@ function AppContent(){
   // TEMP: Use default values while debugging context issue
   const calm = true;
   const setCalm = (value: boolean) => { console.log('setCalm called with:', value); };
+  const rosterContext = useRosterOptional();
 
   // ---- Global state (localStorage-backed) ----
   const [loop,setLoop]=useState(()=>{ try{return parseInt(localStorage.getItem(KEYS.loop)||'1');}catch{return 1;} });
@@ -404,6 +407,35 @@ function AppContent(){
   // ---- Scout system ----
   // Scout messaging now handled by ScoutManager component
   const { enqueue } = useScoutQueue();
+  
+  // Check for assignment nudges on map entry (once per session)
+  const [mapEntryNudgeChecked, setMapEntryNudgeChecked] = useState(false);
+  
+  useEffect(() => {
+    if (!mapEntryNudgeChecked && rosterContext?.activeLearner?.id) {
+      setMapEntryNudgeChecked(true);
+      
+      // Delay to allow everything to load
+      setTimeout(() => {
+        checkAssignmentNudges(
+          rosterContext.activeLearner.id,
+          enqueue,
+          (lessonId: string) => {
+            // Focus pin functionality
+            const targetLesson = Object.values(LESSONS).flat().find(l => l.id === lessonId);
+            if (targetLesson) {
+              for (const [biomeName, lessons] of Object.entries(LESSONS)) {
+                if (lessons.some(l => l.id === lessonId)) {
+                  setOpenBiome(biomeName);
+                  break;
+                }
+              }
+            }
+          }
+        );
+      }, 3000);
+    }
+  }, [mapEntryNudgeChecked, rosterContext?.activeLearner?.id, enqueue]);
   
   // ---- Journal system ----
   const [showJournal, setShowJournal] = useState(false);
@@ -1039,6 +1071,28 @@ function AppContent(){
             text: `Let's scout this together, Explorer!`
           });
           
+          // Check for assignment nudges on lesson start
+          if (rosterContext?.activeLearner?.id) {
+            checkAssignmentNudges(
+              rosterContext.activeLearner.id,
+              enqueue,
+              (lessonId: string) => {
+                // Focus pin functionality - find and scroll to the lesson
+                const targetLesson = Object.values(LESSONS).flat().find(l => l.id === lessonId);
+                if (targetLesson) {
+                  // Find the biome containing this lesson
+                  for (const [biomeName, lessons] of Object.entries(LESSONS)) {
+                    if (lessons.some(l => l.id === lessonId)) {
+                      setOpenBiome(biomeName);
+                      // Note: We could add more sophisticated scrolling/highlighting here
+                      break;
+                    }
+                  }
+                }
+              }
+            );
+          }
+          
           launchLesson(lesson, openBiome);
         }}
         protoOnly={protoOnly}
@@ -1085,6 +1139,28 @@ function AppContent(){
             setLast(nextLesson ? { biome, id: nextLesson.id } : null);
             return { ...prev, [biome]: nextSet };
           });
+          
+          // Check for assignment nudges after lesson completion
+          if (rosterContext?.activeLearner?.id) {
+            setTimeout(() => {
+              checkAssignmentNudges(
+                rosterContext.activeLearner.id,
+                enqueue,
+                (lessonId: string) => {
+                  // Focus pin functionality
+                  const targetLesson = Object.values(LESSONS).flat().find(l => l.id === lessonId);
+                  if (targetLesson) {
+                    for (const [biomeName, lessons] of Object.entries(LESSONS)) {
+                      if (lessons.some(l => l.id === lessonId)) {
+                        setOpenBiome(biomeName);
+                        break;
+                      }
+                    }
+                  }
+                }
+              );
+            }, 2000); // Delay slightly to avoid interference with completion celebrations
+          }
         }}
         protoOnly={protoOnly}
       />

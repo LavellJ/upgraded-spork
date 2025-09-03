@@ -77,7 +77,7 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Summary metrics */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
           <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
             <div className="flex items-center justify-between">
               <div>
@@ -95,6 +95,16 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
                 <p className="text-2xl font-bold text-yellow-700">{summary.actionableShown}</p>
               </div>
               <Target className="w-6 h-6 text-yellow-600" />
+            </div>
+          </div>
+          
+          <div className="bg-purple-50 rounded-lg p-3 border border-purple-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-purple-900">Assignment</p>
+                <p className="text-2xl font-bold text-purple-700">{analytics.assignmentNudges || 0}</p>
+              </div>
+              <Clock className="w-6 h-6 text-purple-600" />
             </div>
           </div>
           
