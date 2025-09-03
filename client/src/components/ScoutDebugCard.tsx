@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useScoutQueue } from '../hooks/useScoutQueue';
 import { useProfile } from '../profile/context';
+import { getScoutStats, resetScoutState, getScoutCooldownInfo } from '../learning/scoutQueue';
 
 interface LogEntry {
   timestamp: string;
@@ -38,13 +39,17 @@ export function ScoutDebugCard() {
   const { profile, updateProfile } = useProfile();
   const [isVisible, setIsVisible] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [scoutStats, setScoutStats] = useState(getScoutStats());
+  const [cooldownInfo, setCooldownInfo] = useState(getScoutCooldownInfo());
   
   if (!isDev) return null;
 
-  // Update logs periodically
+  // Update logs and stats periodically
   useEffect(() => {
     const interval = setInterval(() => {
       setLogs([...debugLogs]);
+      setScoutStats(getScoutStats());
+      setCooldownInfo(getScoutCooldownInfo());
     }, 500);
     
     return () => clearInterval(interval);
@@ -159,6 +164,33 @@ export function ScoutDebugCard() {
                 {profile.calmMode ? 'ON (4.5s)' : 'OFF (3s)'}
               </span>
             </div>
+          </div>
+        </div>
+
+        {/* Scout Stats & Cooldown */}
+        <div className="border-b border-gray-200 pb-2">
+          <h4 className="font-bold text-purple-600 mb-1">Scout Stats</h4>
+          <div className="space-y-1">
+            <div data-testid="debug-wrong-count">
+              Wrong Answers: <span className="text-red-600">{scoutStats.wrongAnswerCount}</span>
+            </div>
+            <div data-testid="debug-streak">
+              Current Streak: <span className="text-green-600">{scoutStats.currentStreak}</span>
+            </div>
+            <div data-testid="debug-help-count">
+              Help Requests: <span className="text-blue-600">{scoutStats.moreHelpCount}</span>
+            </div>
+            <div data-testid="debug-cooldown" className={cooldownInfo.isInCooldown ? 'text-red-600 font-bold' : 'text-gray-600'}>
+              Cooldown: {cooldownInfo.isInCooldown ? 'ACTIVE' : 'None'}
+            </div>
+            {cooldownInfo.isInCooldown && (
+              <div data-testid="debug-cooldown-details" className="text-xs text-red-500">
+                Sessions: {cooldownInfo.recentSessionCount}/2 in 10min
+                {cooldownInfo.nextCooldownReset && (
+                  <div>Resets: {new Date(cooldownInfo.nextCooldownReset).toLocaleTimeString()}</div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
