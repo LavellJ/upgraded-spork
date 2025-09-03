@@ -2,9 +2,7 @@ import { createRoot } from "react-dom/client";
 import React from "react";
 import App from "./App";
 import "./index.css";
-import { ProfileProvider } from "./profile/context";
-import { RosterProvider } from "./roster/context";
-import { GuideNoticeProvider } from "./guide/notices";
+import Providers from "./Providers";
 
 // Register service worker for PWA functionality
 if ('serviceWorker' in navigator) {
@@ -21,12 +19,8 @@ if ('serviceWorker' in navigator) {
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RosterProvider>
-      <ProfileProvider>
-        <GuideNoticeProvider>
-          <App />
-        </GuideNoticeProvider>
-      </ProfileProvider>
-    </RosterProvider>
+    <Providers>
+      <App />
+    </Providers>
   </React.StrictMode>
 );

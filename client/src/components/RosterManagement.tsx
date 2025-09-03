@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useRoster } from '../roster/context';
+import { useRosterOptional } from '@/roster';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { Button } from './ui/button';
@@ -186,7 +186,11 @@ function EditLearnerForm({ learner, onComplete, onCancel }: EditLearnerFormProps
 }
 
 export function RosterManagement() {
-  const { roster, activeLearner, isLoading, switchLearner, createLearner, editLearner, removeLearner } = useRoster();
+  const rosterContext = useRosterOptional();
+  if (!rosterContext) {
+    return <div className="p-4 text-sm text-fg-muted">No roster context available. Please ensure the RosterProvider wraps the app.</div>;
+  }
+  const { roster, activeLearner, isLoading, switchLearner, createLearner, editLearner, removeLearner } = rosterContext;
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingLearner, setEditingLearner] = useState<LearnerProfile | null>(null);
 
