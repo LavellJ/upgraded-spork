@@ -1,0 +1,61 @@
+{
+  "users": [
+    [
+      "test-user-1",
+      {
+        "roster": {
+          "learners": [
+            {
+              "id": "learner_1756864862766_veovuhi70",
+              "name": "Alice",
+              "avatarId": "avatar1",
+              "ageBand": "primary",
+              "createdAt": 1756864862766,
+              "updatedAt": 1756864862766
+            }
+          ]
+        },
+        "data": {
+          "learner_1756864862766_veovuhi70": {
+            "event-1": {
+              "kind": "event",
+              "id": "event-1",
+              "payload": {
+                "action": "completed",
+                "topic": "math"
+              },
+              "at": 1756864800000
+            },
+            "event-2": {
+              "kind": "event",
+              "id": "event-2",
+              "payload": {
+                "action": "started",
+                "topic": "reading"
+              },
+              "at": 1756864810000
+            },
+            "event-3": {
+              "kind": "event",
+              "id": "event-3",
+              "payload": {
+                "action": "paused",
+                "topic": "science"
+              },
+              "at": 1756864820000
+            }
+          }
+        }
+      }
+    ],
+    [
+      "test-user-2",
+      {
+        "roster": {
+          "learners": []
+        },
+        "data": {}
+      }
+    ]
+  ]
+}
