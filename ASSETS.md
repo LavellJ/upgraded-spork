@@ -199,3 +199,61 @@ During development, use a temporary blurred placeholder:
 - Replace with proper LQIPs during art finalization
 
 This ensures smooth loading transitions and prevents content layout shifts while maintaining development velocity.
+
+## Caption Files
+
+Caption files are stored in `client/src/assets/captions/` and follow a specific naming convention for consistency and easy lookup.
+
+### Naming Convention
+
+Caption files use the following format:
+```
+{lessonId}-{lang}.vtt
+```
+
+Where:
+- `{lessonId}` - The unique identifier for the lesson (e.g., "ocean-waves-001", "forest-phonics-001")
+- `{lang}` - The language code (ISO 639-1 format, e.g., "en", "es", "fr")
+- Extension is always `.vtt` (WebVTT format)
+
+### Examples
+
+- `ocean-waves-001-en.vtt` - English captions for ocean waves lesson 001
+- `forest-phonics-001-en.vtt` - English captions for forest phonics lesson 001
+- `desert-math-001-es.vtt` - Spanish captions for desert math lesson 001
+
+### File Format
+
+All caption files must be in WebVTT format, starting with the `WEBVTT` header:
+
+```
+WEBVTT
+
+00:00:00.000 --> 00:00:03.500
+Caption text here.
+
+00:00:03.500 --> 00:00:08.000
+More caption text.
+```
+
+### Offline Caching
+
+Caption files should be automatically cached by the service worker for offline access using the Workbox runtime caching strategy:
+- Strategy: StaleWhileRevalidate
+- Max entries: 100 files
+- Max age: 30 days
+- Pattern: `/\.vtt$/`
+
+### Development Tools
+
+Use the SRT→VTT converter utility for content authoring:
+
+```typescript
+import { srtToVtt, downloadVtt } from '@/tools/captions';
+
+// Convert SRT to VTT
+const vttContent = srtToVtt(srtString);
+
+// Download converted file (dev only)
+downloadVtt(vttContent, 'lesson-001-en');
+```
