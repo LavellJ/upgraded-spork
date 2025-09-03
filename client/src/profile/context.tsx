@@ -13,7 +13,12 @@ const ProfileContext = createContext<ProfileContextValue | null>(null);
 
 export function useProfile(): ProfileContextValue {
   const context = useContext(ProfileContext);
+  
+  // Debug: Log when useProfile is called and what context it finds
+  console.log('useProfile called, context found:', context);
+  
   if (!context) {
+    console.error('useProfile called outside ProfileProvider - no context found');
     throw new Error('useProfile must be used within a ProfileProvider');
   }
   return context;
@@ -26,6 +31,9 @@ interface ProfileProviderProps {
 export function ProfileProvider({ children }: ProfileProviderProps) {
   const [profile, setProfile] = useState<Profile>(() => loadProfile());
   const previousAgeBand = useRef(profile.ageBand);
+  
+  // Debug: Log when ProfileProvider renders
+  console.log('ProfileProvider rendering with profile:', profile);
 
   const updateProfile = (updates: Partial<Profile>) => {
     const updatedProfile = {
@@ -66,6 +74,9 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
     updateProfile,
     toggleCalmMode,
   };
+
+  // Debug: Log the context value being provided
+  console.log('ProfileProvider providing value:', value);
 
   return (
     <ProfileContext.Provider value={value}>

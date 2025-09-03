@@ -1,5 +1,21 @@
 import type { ProgressEvent } from '../progress';
 
+/**
+ * Get the current active learner ID from roster for CSV export
+ */
+function getCurrentLearnerId(): string {
+  try {
+    const rosterData = localStorage.getItem('qi.roster.v1');
+    if (rosterData) {
+      const roster = JSON.parse(rosterData);
+      return roster.activeId || 'unknown';
+    }
+  } catch (error) {
+    console.warn('Failed to get current learner ID for CSV export:', error);
+  }
+  return 'unknown';
+}
+
 export interface CsvExportOptions {
   includeHeaders?: boolean;
   dateFormat?: 'iso' | 'local';
@@ -24,7 +40,8 @@ export function buildCsv(events: ProgressEvent[], options: CsvExportOptions = {}
     'correct',
     'noticeId',
     'action',
-    'actor'
+    'actor',
+    'learnerId'
   ];
 
   const rows: string[] = [];
@@ -71,7 +88,10 @@ export function buildCsv(events: ProgressEvent[], options: CsvExportOptions = {}
       'action' in event && event.kind === 'guide_ack' ? event.action : '',
       
       // actor (for guide_ack events)
-      'actor' in event ? event.actor : ''
+      'actor' in event ? event.actor : '',
+      
+      // learnerId (from current active learner in roster)
+      getCurrentLearnerId()
     ];
 
     // Escape values and handle commas/quotes

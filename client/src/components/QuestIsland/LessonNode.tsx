@@ -1,8 +1,9 @@
+import React from "react";
 import { motion } from "framer-motion";
 import balloonIcon from '@assets/097fe560-b8ac-4192-b450-4f106e9ff693_1756279378478.png';
 import lockIcon from '@assets/9252541e-bdfc-4bfa-ab60-c69c63a4297e_1756279935456.png';
 import { getPinAriaLabel } from '../../data/meta';
-import { getActiveAssignedLessons } from '../../guide/assign';
+import { getActiveAssignedLessonsForCurrentLearner } from '../../guide/assign';
 
 interface LessonNodeProps {
   id: string;
@@ -16,8 +17,8 @@ interface LessonNodeProps {
 }
 
 export function LessonNode({ id, title, biome, position, completed, locked, onClick, isVisible = true }: LessonNodeProps) {
-  // Check if this lesson is part of an active assignment
-  const activeAssignedLessons = getActiveAssignedLessons();
+  // Check if this lesson is part of an active assignment for the current learner
+  const activeAssignedLessons = getActiveAssignedLessonsForCurrentLearner();
   const isAssigned = activeAssignedLessons.includes(id);
 
   const getNodeColor = () => {

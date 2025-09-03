@@ -18,7 +18,9 @@ export function ScoutManager({
   position = { x: 20, y: 20 }, 
   visible = true 
 }: ScoutManagerProps) {
-  const { profile } = useProfile();
+  // TEMP: commenting out during context debugging
+  // const { profile } = useProfile();
+  const profile = { calmMode: true };
   const { current, enqueue, dismiss, flushInfoMessages } = useScoutQueue();
   const [sheetOpen, setSheetOpen] = useState(false);
 

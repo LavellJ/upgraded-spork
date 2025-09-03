@@ -96,7 +96,9 @@ interface MCActivityProps {
 }
 
 function MCActivity({ biome, lesson, onSolved, onAttempt }: MCActivityProps) {
-  const { profile } = useProfile();
+  // TEMP: commenting out during context debugging
+  // const { profile } = useProfile();
+  const profile = { name: 'Explorer', calmMode: true };
   const { enqueue } = useScoutQueue();
   const accent = SUBJECTS[biome].color;
   const tpl = getTemplate(biome, lesson.id);
@@ -177,7 +179,9 @@ interface ActivityPlayerProps {
 }
 
 export function ActivityPlayer({ open, onClose, biome, lesson, onMarkComplete, protoOnly }: ActivityPlayerProps) {
-  const { profile } = useProfile();
+  // TEMP: commenting out during context debugging
+  // const { profile } = useProfile();
+  const profile = { calmMode: true };
   const { enqueue, flushInfoMessages } = useScoutQueue();
   const startTimeRef = useRef<number | null>(null);
   
