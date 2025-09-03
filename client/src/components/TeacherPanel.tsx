@@ -21,7 +21,6 @@ import { isGuide, toggleGuideMode } from '../guide/auth';
 import { getEventsByKind } from '../progress/events';
 import { AuditLogView } from './AuditLogView';
 import { RosterManagement } from './RosterManagement';
-import type { RosterContextValue } from '../roster/context';
 import { getAllAssignments, setVariant, getScoutDwellVariant, SCOUT_DWELL_VARIANTS } from '../ab/model';
 import { getScoutDwellAnalytics } from '../ab/analytics';
 
@@ -54,7 +53,6 @@ interface TeacherPanelProps {
   };
   onImport: (token: string) => void;
   onExport: () => string;
-  rosterContext?: RosterContextValue | null;
   lessons: any;
   loop: number;
   onResetCurrentLoop: () => void;
@@ -75,7 +73,7 @@ function saveSnaps(snaps: Snapshot[]) {
   try { localStorage.setItem(SNAP_KEY, JSON.stringify(snaps)); } catch {}
 }
 
-export function TeacherPanel({ open, onClose, frameworks, framework, setFramework, protoOnly, setProtoOnly, completed, onImport, onExport, lessons, loop, onResetCurrentLoop, onFactoryReset, teacherPins, setTeacherPins, onOpenJournal, rosterContext }: TeacherPanelProps) {
+export function TeacherPanel({ open, onClose, frameworks, framework, setFramework, protoOnly, setProtoOnly, completed, onImport, onExport, lessons, loop, onResetCurrentLoop, onFactoryReset, teacherPins, setTeacherPins, onOpenJournal }: TeacherPanelProps) {
   const [importValue, setImportValue] = useState('');
   const [exportLink, setExportLink] = useState('');
   const [snaps, setSnaps] = useState<Snapshot[]>(() => loadSnaps());
@@ -471,7 +469,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
             </div>
 
             {activeTab === 'roster' ? (
-              <RosterManagement rosterContext={rosterContext} />
+              <RosterManagement />
             ) : activeTab === 'overview' ? (
               <div>
                 <div className="text-sm font-semibold mb-2">Analytics (local)</div>

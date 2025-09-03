@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useRoster, type RosterContextValue } from '../roster/context';
+import { useRoster } from '../roster/context';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { Button } from './ui/button';
@@ -185,44 +185,8 @@ function EditLearnerForm({ learner, onComplete, onCancel }: EditLearnerFormProps
   );
 }
 
-interface RosterManagementProps {
-  rosterContext?: RosterContextValue | null;
-}
-
-export function RosterManagement({ rosterContext }: RosterManagementProps) {
-  // Try to get roster context from props first, fall back to hook if needed
-  let rosterData: RosterContextValue;
-  
-  if (rosterContext) {
-    rosterData = rosterContext;
-  } else {
-    try {
-      rosterData = useRoster();
-      console.log('RosterManagement using context from hook:', rosterData);
-    } catch (error) {
-      console.error('RosterManagement failed to access context:', error);
-      return (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Learners
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm text-red-500">
-              No roster context available. This component needs roster data to function.
-            </div>
-            <div className="text-xs text-gray-500 mt-2">
-              Please ensure the RosterProvider is properly configured.
-            </div>
-          </CardContent>
-        </Card>
-      );
-    }
-  }
-
-  const { roster, activeLearner, isLoading, switchLearner, createLearner, editLearner, removeLearner } = rosterData;
+export function RosterManagement() {
+  const { roster, activeLearner, isLoading, switchLearner, createLearner, editLearner, removeLearner } = useRoster();
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingLearner, setEditingLearner] = useState<LearnerProfile | null>(null);
 
@@ -236,7 +200,7 @@ export function RosterManagement({ rosterContext }: RosterManagementProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-gray-500">Initializing roster...</div>
+          <div className="text-sm text-gray-500">Loading...</div>
         </CardContent>
       </Card>
     );
