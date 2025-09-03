@@ -3,7 +3,9 @@ import { motion } from "framer-motion";
 import balloonIcon from '@assets/097fe560-b8ac-4192-b450-4f106e9ff693_1756279378478.png';
 import lockIcon from '@assets/9252541e-bdfc-4bfa-ab60-c69c63a4297e_1756279935456.png';
 import { getPinAriaLabel } from '../../data/meta';
-import { getActiveAssignedLessonsForCurrentLearner } from '../../guide/assign';
+import { getActiveAssignedLessonsForCurrentLearner, getActiveAssignments, getLessonAssignment, isDueSoon, isOverdue } from '../../guide/assign';
+import { AssignmentBadge, formatDue, type AssignmentState } from '../AssignmentBadge';
+import { useRosterOptional } from '../../roster';
 
 interface LessonNodeProps {
   id: string;
@@ -17,9 +19,40 @@ interface LessonNodeProps {
 }
 
 export function LessonNode({ id, title, biome, position, completed, locked, onClick, isVisible = true }: LessonNodeProps) {
-  // Check if this lesson is part of an active assignment for the current learner
-  const activeAssignedLessons = getActiveAssignedLessonsForCurrentLearner();
-  const isAssigned = activeAssignedLessons.includes(id);
+  const rosterContext = useRosterOptional();
+  
+  // Get assignment status using v2 system
+  const getAssignmentState = (): { isAssigned: boolean; state?: AssignmentState; dueAt?: number } => {
+    if (!rosterContext?.activeLearner) {
+      // Fallback to v1 system for legacy support
+      const activeAssignedLessons = getActiveAssignedLessonsForCurrentLearner();
+      return activeAssignedLessons.includes(id) ? { isAssigned: true, state: 'assigned' } : { isAssigned: false };
+    }
+    
+    const assignments = getActiveAssignments(rosterContext.activeLearner.id);
+    const lessonAssignment = getLessonAssignment(assignments, id);
+    
+    if (!lessonAssignment) {
+      return { isAssigned: false };
+    }
+    
+    if (lessonAssignment.status === 'done') {
+      return { isAssigned: true, state: 'done', dueAt: lessonAssignment.dueAt };
+    }
+    
+    if (lessonAssignment.dueAt && isOverdue(lessonAssignment.dueAt)) {
+      return { isAssigned: true, state: 'overdue', dueAt: lessonAssignment.dueAt };
+    }
+    
+    if (lessonAssignment.dueAt && isDueSoon(lessonAssignment.dueAt)) {
+      return { isAssigned: true, state: 'due_soon', dueAt: lessonAssignment.dueAt };
+    }
+    
+    return { isAssigned: true, state: 'assigned', dueAt: lessonAssignment.dueAt };
+  };
+  
+  const assignmentInfo = getAssignmentState();
+  const isAssigned = assignmentInfo.isAssigned;
 
   const getNodeColor = () => {
     if (isAssigned) {
@@ -47,7 +80,7 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
           onClick();
         }
       }}
-      aria-label={getPinAriaLabel({ title })}
+      aria-label={getEnhancedAriaLabel(title, assignmentInfo)}
       tabIndex={isVisible ? 0 : -1}
       aria-hidden={!isVisible}
       data-testid={`lesson-node-${id}`}
@@ -178,25 +211,44 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
         />
       )}
       
-      {/* Assignment Badge - shows target icon for assigned lessons */}
-      {isAssigned && !completed && (
-        <motion.div
-          className="absolute -top-2 -right-2 w-6 h-6 bg-blue-600 rounded-full shadow-lg flex items-center justify-center z-20"
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ 
-            scale: 1, 
-            rotate: 0,
-            y: [0, -2, 0]
-          }}
-          transition={{ 
-            scale: { duration: 0.3, ease: "backOut" },
-            rotate: { duration: 0.5, ease: "backOut" },
-            y: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-          }}
-        >
-          <span className="text-white text-xs">🎯</span>
-        </motion.div>
+      {/* Assignment Badge - shows status based on assignment state */}
+      {isAssigned && assignmentInfo.state && (
+        <AssignmentBadge 
+          state={assignmentInfo.state}
+          dueAt={assignmentInfo.dueAt}
+        />
       )}
     </button>
   );
+}
+
+/**
+ * Enhanced aria label that includes assignment status
+ */
+function getEnhancedAriaLabel(title: string, assignmentInfo: any): string {
+  const baseLabel = getPinAriaLabel({ title });
+  
+  if (!assignmentInfo.isAssigned || !assignmentInfo.state) {
+    return baseLabel;
+  }
+  
+  let statusText = '';
+  switch (assignmentInfo.state) {
+    case 'assigned':
+      statusText = 'Assigned';
+      break;
+    case 'due_soon':
+      statusText = 'Due soon';
+      break;
+    case 'overdue':
+      statusText = 'Overdue';
+      break;
+    case 'done':
+      statusText = 'Assignment complete';
+      break;
+  }
+  
+  const dueText = assignmentInfo.dueAt ? ` Due ${formatDue(assignmentInfo.dueAt)}` : '';
+  
+  return `${baseLabel}. ${statusText}.${dueText}`;
 }
