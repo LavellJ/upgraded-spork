@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useProfile } from '../profile/context';
 import { logEvent } from '../lib/analytics';
 import { pickScoutLine, type PickedScoutLine } from '../learning/scout';
+import { getScoutDwellTimes, getScoutDwellVariant } from '../ab/model';
 
 export type ScoutPriority = 'info' | 'actionable' | 'critical';
 
@@ -40,8 +41,12 @@ let currentMessageStartTime: number | null = null;
 // Constants
 const QUEUE_CAP = 3;
 const COALESCE_WINDOW_MS = 30 * 1000; // 30 seconds
-const DEFAULT_DISMISS_MS = 3000;
-const CALM_DISMISS_MS = 4500;
+
+// Dwell times are now A/B tested - see ab/model.ts
+function getDismissTimes() {
+  const { info, calm } = getScoutDwellTimes();
+  return { default: info, calm };
+}
 
 // Guardrail constants (per 10 minutes)
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
@@ -133,6 +138,7 @@ function emitAnalyticsEvent(
 ) {
   try {
     import('../progress').then(({ pushEvent, getSessionId }) => {
+      const scoutVariant = getScoutDwellVariant();
       pushEvent({
         kind: 'scout_analytics',
         at: Date.now(),
@@ -140,7 +146,10 @@ function emitAnalyticsEvent(
         priority,
         action,
         dwellMs,
-        sessionId: getSessionId()
+        sessionId: getSessionId(),
+        abVariant: {
+          'scout.dwell': scoutVariant
+        }
       });
     });
   } catch (error) {
@@ -202,7 +211,8 @@ function startDismissTimer(calmMode: boolean) {
     clearTimeout(dismissTimer);
   }
   
-  const delay = calmMode ? CALM_DISMISS_MS : DEFAULT_DISMISS_MS;
+  const { default: defaultMs, calm: calmMs } = getDismissTimes();
+  const delay = calmMode ? calmMs : defaultMs;
   
   dismissTimer = setTimeout(() => {
     if (globalCurrent) {

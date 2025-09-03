@@ -20,6 +20,8 @@ import { InsightsCard } from '../guide/InsightsCard';
 import { isGuide, toggleGuideMode } from '../guide/auth';
 import { getEventsByKind } from '../progress/events';
 import { AuditLogView } from './AuditLogView';
+import { getAllAssignments, setVariant, getScoutDwellVariant, SCOUT_DWELL_VARIANTS } from '../ab/model';
+import { getScoutDwellAnalytics } from '../ab/analytics';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -545,6 +547,77 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
               </div>
             ) : activeTab === 'audit' ? (
               <div className="max-h-96 overflow-y-auto space-y-4">
+                {/* DEV: A/B Experiments */}
+                {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
+                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-purple-600">🔬</span>
+                      <h3 className="font-medium text-purple-800">Experiments (DEV)</h3>
+                    </div>
+                    
+                    {(() => {
+                      const assignments = getAllAssignments();
+                      const scoutAnalytics = getScoutDwellAnalytics(7);
+                      const currentVariant = getScoutDwellVariant();
+                      
+                      return (
+                        <div className="space-y-3">
+                          {/* Current Assignments */}
+                          <div>
+                            <div className="text-xs font-medium text-purple-700 mb-2">Current Assignments</div>
+                            <div className="bg-white rounded p-2 text-xs">
+                              <div className="flex items-center justify-between">
+                                <span>scout.dwell:</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-mono bg-purple-100 px-1 rounded">{currentVariant}</span>
+                                  <select 
+                                    value={currentVariant}
+                                    onChange={(e) => {
+                                      setVariant('scout.dwell', e.target.value);
+                                      window.location.reload(); // Refresh to apply changes
+                                    }}
+                                    className="text-xs border rounded px-1"
+                                  >
+                                    {SCOUT_DWELL_VARIANTS.map(v => (
+                                      <option key={v} value={v}>Override: {v}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Variant Metrics */}
+                          <div>
+                            <div className="text-xs font-medium text-purple-700 mb-2">
+                              Scout Dwell Metrics (7 days) - {scoutAnalytics.totalImpressions} impressions
+                            </div>
+                            {scoutAnalytics.variants.length === 0 ? (
+                              <div className="text-xs text-purple-600 bg-white rounded p-2">
+                                No data yet. Interact with Scout messages to generate metrics.
+                              </div>
+                            ) : (
+                              <div className="bg-white rounded p-2 space-y-2">
+                                {scoutAnalytics.variants.map(variant => (
+                                  <div key={variant.variant} className="flex items-center justify-between text-xs">
+                                    <span className="font-mono">{variant.variant}:</span>
+                                    <div className="flex items-center gap-3 text-right">
+                                      <span>CTR: {(variant.ctr * 100).toFixed(1)}%</span>
+                                      <span>Dwell: {variant.medianDwellMs}ms</span>
+                                      <span className="text-purple-600">({variant.impressions})</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()
+                    }
+                  </div>
+                )}
+                
                 {/* Guide Mode Toggle */}
                 <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
                   <div className="flex items-center justify-between mb-3">
