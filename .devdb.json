@@ -97,6 +97,42 @@
           }
         }
       }
+    ],
+    [
+      "testuser",
+      {
+        "roster": {
+          "learners": []
+        },
+        "data": {
+          "learner123": {
+            "test1": {
+              "id": "test1",
+              "kind": "event",
+              "payload": {
+                "action": "progress"
+              },
+              "at": 1756884000000
+            }
+          }
+        }
+      }
+    ],
+    [
+      "user_test_guide_com",
+      {
+        "roster": {
+          "learners": [
+            {
+              "id": "learner1",
+              "name": "Test Student",
+              "createdAt": 1756884000000,
+              "updatedAt": 1756884000000
+            }
+          ]
+        },
+        "data": {}
+      }
     ]
   ]
 }
