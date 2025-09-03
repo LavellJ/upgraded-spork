@@ -6,3 +6,9 @@ export const JWT_SECRET = process.env.JWT_SECRET || (
 );
 
 export const TOKEN_TTL_DAYS = 30;
+
+// Data retention configuration
+export const RETAIN_DAYS = parseInt(process.env.RETAIN_DAYS || '365', 10);
+
+// Encryption configuration
+export const ENCRYPTION_ENABLED = process.env.ENCRYPTION_ENABLED !== 'false'; // Default: enabled

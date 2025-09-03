@@ -3,6 +3,8 @@ import fs from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
+import { encrypt, decrypt, encryptJSON, decryptJSON, type EncryptedPayload } from './crypto';
+import { JWT_SECRET, ENCRYPTION_ENABLED, RETAIN_DAYS } from './config';
 
 // User document structure
 export interface UserDoc {
@@ -31,7 +33,7 @@ export class FileUserStorage {
   constructor() {
     // Ensure directories exist
     this.ensureDirectories();
-    console.log('🗄️  FileUserStorage initialized');
+    console.log(`🗄️  FileUserStorage initialized (encryption: ${ENCRYPTION_ENABLED ? 'ON' : 'OFF'}, retention: ${RETAIN_DAYS} days)`);
   }
 
   private async ensureDirectories(): Promise<void> {
@@ -59,9 +61,17 @@ export class FileUserStorage {
   }
 
   /**
-   * Get file path for user document
+   * Get file path for user document (encrypted version preferred)
    */
   private getUserFilePath(email: string): string {
+    const sanitizedEmail = this.sanitizeEmail(email);
+    return path.join(this.dataDir, `user_${sanitizedEmail}.enc`);
+  }
+
+  /**
+   * Get legacy plaintext file path for migration
+   */
+  private getLegacyUserFilePath(email: string): string {
     const sanitizedEmail = this.sanitizeEmail(email);
     return path.join(this.dataDir, `user_${sanitizedEmail}.json`);
   }
@@ -118,24 +128,107 @@ export class FileUserStorage {
   }
 
   /**
+   * Apply data retention policy - compact old events
+   */
+  private applyRetentionPolicy(doc: UserDoc): UserDoc {
+    const cutoffDate = Date.now() - (RETAIN_DAYS * 24 * 60 * 60 * 1000);
+    const updatedDoc = { ...doc };
+    
+    // Process each learner's data
+    for (const [learnerId, learnerData] of Object.entries(updatedDoc.data)) {
+      const compactedData: Record<string, any> = {};
+      const dailySummaries: Record<string, any> = {};
+      
+      // Group events by date and type
+      for (const [itemId, item] of Object.entries(learnerData as Record<string, any>)) {
+        if (!item || typeof item !== 'object') {
+          compactedData[itemId] = item;
+          continue;
+        }
+        
+        // Check if it's an event with timestamp
+        if (item.kind === 'event' && item.at && item.at < cutoffDate) {
+          const dateKey = new Date(item.at).toISOString().split('T')[0]; // YYYY-MM-DD
+          
+          if (!dailySummaries[dateKey]) {
+            dailySummaries[dateKey] = {
+              id: `daily-summary-${dateKey}`,
+              kind: 'daily-summary',
+              date: dateKey,
+              events: 0,
+              actions: {},
+              at: item.at
+            };
+          }
+          
+          dailySummaries[dateKey].events += 1;
+          if (item.payload && item.payload.action) {
+            const action = item.payload.action;
+            dailySummaries[dateKey].actions[action] = (dailySummaries[dateKey].actions[action] || 0) + 1;
+          }
+        } else {
+          // Keep non-event items or recent events
+          compactedData[itemId] = item;
+        }
+      }
+      
+      // Add daily summaries to compacted data
+      Object.assign(compactedData, dailySummaries);
+      updatedDoc.data[learnerId] = compactedData;
+    }
+    
+    return updatedDoc;
+  }
+
+  /**
    * Load user document from disk or create new one
    */
   async getUserDoc(email: string): Promise<UserDoc> {
     console.debug(`Loading user doc for: ${email}`);
     const filePath = this.getUserFilePath(email);
+    const legacyPath = this.getLegacyUserFilePath(email);
 
     try {
-      const data = await fs.readFile(filePath, 'utf8');
-      const doc = JSON.parse(data) as UserDoc;
-      
-      // Validate structure
-      if (!doc.email || !doc.roster || !doc.data) {
-        throw new Error('Invalid user document structure');
-      }
+      // Try encrypted file first
+      if (ENCRYPTION_ENABLED && existsSync(filePath)) {
+        const encryptedData = await fs.readFile(filePath, 'utf8');
+        const payload = JSON.parse(encryptedData) as EncryptedPayload;
+        const doc = await decryptJSON(payload, JWT_SECRET) as UserDoc;
+        
+        // Validate structure
+        if (!doc.email || !doc.roster || !doc.data) {
+          throw new Error('Invalid user document structure');
+        }
 
-      return doc;
+        return doc;
+      }
+      
+      // Fallback to legacy plaintext file (migration)
+      if (existsSync(legacyPath)) {
+        console.log(`Migrating plaintext file for ${email} to encrypted storage`);
+        const data = await fs.readFile(legacyPath, 'utf8');
+        const doc = JSON.parse(data) as UserDoc;
+        
+        // Validate structure
+        if (!doc.email || !doc.roster || !doc.data) {
+          throw new Error('Invalid user document structure');
+        }
+
+        // Save as encrypted and remove plaintext
+        await this.saveUserDoc(email, doc);
+        try {
+          await fs.unlink(legacyPath);
+          console.log(`✅ Migrated ${email} to encrypted storage`);
+        } catch (err) {
+          console.warn(`Failed to remove legacy file for ${email}:`, err);
+        }
+        
+        return doc;
+      }
+      
+      throw new Error('File not found');
     } catch (error: any) {
-      if (error.code === 'ENOENT') {
+      if (error.message === 'File not found' || error.code === 'ENOENT') {
         // File doesn't exist, create new user doc
         const newDoc: UserDoc = {
           email,
@@ -176,7 +269,7 @@ export class FileUserStorage {
   }
 
   /**
-   * Internal save implementation with atomic writes
+   * Internal save implementation with atomic writes and encryption
    */
   private async doSaveUserDoc(email: string, doc: UserDoc): Promise<void> {
     let lockId: string | null = null;
@@ -192,14 +285,26 @@ export class FileUserStorage {
       doc.updatedAt = Date.now();
       doc.version = (doc.version || 0) + 1;
       doc.email = email; // Ensure email is set
+      
+      // Apply retention policy before saving
+      const retainedDoc = this.applyRetentionPolicy(doc);
 
-      // Write to temporary file first
-      await fs.writeFile(tempFilePath, JSON.stringify(doc, null, 2), 'utf8');
-      console.debug(`Wrote temp file: ${tempFilePath}`);
+      if (ENCRYPTION_ENABLED) {
+        // Encrypt the document
+        const encryptedPayload = await encryptJSON(retainedDoc, JWT_SECRET);
+        
+        // Write encrypted data to temporary file
+        await fs.writeFile(tempFilePath, JSON.stringify(encryptedPayload), 'utf8');
+        console.debug(`Wrote encrypted temp file: ${tempFilePath}`);
+      } else {
+        // Write plaintext (for testing/debugging)
+        await fs.writeFile(tempFilePath, JSON.stringify(retainedDoc, null, 2), 'utf8');
+        console.debug(`Wrote plaintext temp file: ${tempFilePath}`);
+      }
 
       // Atomic rename to replace existing file
       await fs.rename(tempFilePath, filePath);
-      console.log(`✅ Saved user doc for ${email} (version ${doc.version}) to ${filePath}`);
+      console.log(`✅ Saved user doc for ${email} (version ${retainedDoc.version}) to ${filePath}`);
     } catch (error) {
       console.error(`❌ Failed to save user doc for ${email}:`, error);
       throw error;
@@ -217,11 +322,16 @@ export class FileUserStorage {
   async listUsers(): Promise<string[]> {
     try {
       const files = await fs.readdir(this.dataDir);
-      const userFiles = files.filter(file => file.startsWith('user_') && file.endsWith('.json'));
+      const userFiles = files.filter(file => 
+        file.startsWith('user_') && (file.endsWith('.json') || file.endsWith('.enc'))
+      );
       
       return userFiles.map(file => {
         // Reverse the sanitization to get original email
-        const sanitized = file.replace('user_', '').replace('.json', '');
+        const sanitized = file
+          .replace('user_', '')
+          .replace('.json', '')
+          .replace('.enc', '');
         return sanitized
           .replace(/_at_/g, '@')
           .replace(/_dot_/g, '.')
@@ -236,10 +346,12 @@ export class FileUserStorage {
   /**
    * Get storage stats
    */
-  async getStats(): Promise<{ userCount: number; totalSize: number }> {
+  async getStats(): Promise<{ userCount: number; totalSize: number; encrypted: boolean; retentionDays: number }> {
     try {
       const files = await fs.readdir(this.dataDir);
-      const userFiles = files.filter(file => file.startsWith('user_') && file.endsWith('.json'));
+      const userFiles = files.filter(file => 
+        file.startsWith('user_') && (file.endsWith('.json') || file.endsWith('.enc'))
+      );
       
       let totalSize = 0;
       for (const file of userFiles) {
@@ -250,12 +362,41 @@ export class FileUserStorage {
 
       return {
         userCount: userFiles.length,
-        totalSize
+        totalSize,
+        encrypted: ENCRYPTION_ENABLED,
+        retentionDays: RETAIN_DAYS
       };
     } catch (error) {
       console.error('Failed to get storage stats:', error);
-      return { userCount: 0, totalSize: 0 };
+      return { userCount: 0, totalSize: 0, encrypted: ENCRYPTION_ENABLED, retentionDays: RETAIN_DAYS };
     }
+  }
+
+  /**
+   * Run retention compaction on all users
+   */
+  async runRetentionCompaction(): Promise<{ processed: number; errors: number }> {
+    console.log(`🗂️  Starting retention compaction (${RETAIN_DAYS} day retention)`);
+    
+    const users = await this.listUsers();
+    let processed = 0;
+    let errors = 0;
+    
+    for (const email of users) {
+      try {
+        const doc = await this.getUserDoc(email);
+        // Save will automatically apply retention policy
+        await this.saveUserDoc(email, doc);
+        processed++;
+        console.debug(`✅ Compacted data for ${email}`);
+      } catch (error) {
+        errors++;
+        console.error(`❌ Failed to compact data for ${email}:`, error);
+      }
+    }
+    
+    console.log(`🗂️  Retention compaction complete: ${processed} processed, ${errors} errors`);
+    return { processed, errors };
   }
 }
 
