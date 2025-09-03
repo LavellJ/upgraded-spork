@@ -1,7 +1,9 @@
 import bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
+import jwt from 'jsonwebtoken';
 import type { Request, Response, NextFunction } from 'express';
 import { storage } from './storage';
+import { JWT_SECRET, TOKEN_TTL_DAYS } from './config';
 
 // Hash password helper
 export async function hashPassword(password: string): Promise<string> {
@@ -76,4 +78,44 @@ export async function logParentActivity(
     studentId: studentId || null,
     details: details || null
   });
+}
+
+// JWT Authentication
+export function issueToken(user: { email: string; role: 'guide' | 'admin' }): string {
+  const payload = {
+    sub: user.email,
+    role: user.role,
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + (TOKEN_TTL_DAYS * 24 * 60 * 60)
+  };
+  
+  return jwt.sign(payload, JWT_SECRET);
+}
+
+export function verifyToken(authHeader: string | undefined): { email: string; role: string } | null {
+  try {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null;
+    }
+    
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    
+    if (!token || token.trim() === '') {
+      return null;
+    }
+    
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    
+    if (!decoded.sub || !decoded.role) {
+      return null;
+    }
+    
+    return {
+      email: decoded.sub,
+      role: decoded.role
+    };
+  } catch (error) {
+    // Token is invalid, expired, or malformed
+    return null;
+  }
 }

@@ -2,6 +2,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { Router } from "express";
 import { createServer, type Server } from "http";
+import { verifyToken, issueToken } from './auth';
 import fs from "fs";
 import path from "path";
 
@@ -68,23 +69,44 @@ function scheduleSave() {
 
 scheduleSave();
 
-// Auth middleware
+// Rate limiting (simple in-memory token bucket)
+const rateLimitStore = new Map<string, { tokens: number; lastRefill: number }>();
+const RATE_LIMIT_MAX_TOKENS = 60;
+const RATE_LIMIT_REFILL_RATE = 1; // tokens per minute
+
+function rateLimitMiddleware(req: Request, res: Response, next: NextFunction) {
+  const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+  const now = Date.now();
+  
+  let bucket = rateLimitStore.get(clientIP);
+  if (!bucket) {
+    bucket = { tokens: RATE_LIMIT_MAX_TOKENS, lastRefill: now };
+    rateLimitStore.set(clientIP, bucket);
+  }
+  
+  // Refill tokens based on time passed
+  const minutesPassed = (now - bucket.lastRefill) / 60000;
+  bucket.tokens = Math.min(RATE_LIMIT_MAX_TOKENS, bucket.tokens + (minutesPassed * RATE_LIMIT_REFILL_RATE));
+  bucket.lastRefill = now;
+  
+  if (bucket.tokens < 1) {
+    return res.status(429).json({ error: 'Rate limit exceeded' });
+  }
+  
+  bucket.tokens -= 1;
+  next();
+}
+
+// Auth middleware with JWT verification
 function authMiddleware(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
+  const user = verifyToken(req.headers.authorization);
   
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Missing or invalid Authorization header' });
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid or missing authentication token' });
   }
   
-  const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-  
-  // In DEV, accept any non-empty token
-  if (!token || token.trim() === '') {
-    return res.status(401).json({ error: 'Empty token' });
-  }
-  
-  // Store token in request for potential future use
-  (req as any).authToken = token;
+  // Attach user info to request
+  (req as any).user = user;
   next();
 }
 
@@ -144,8 +166,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Sync endpoints
-  api.post('/api/sync/batch', authMiddleware, (req, res) => {
+  // Development token issuing (DEV only)
+  if (process.env.NODE_ENV === 'development') {
+    api.get('/api/dev/issue', (req, res) => {
+      const email = req.query.email as string;
+      const role = (req.query.role as 'guide' | 'admin') || 'guide';
+      
+      if (!email) {
+        return res.status(400).json({ error: 'email parameter required' });
+      }
+      
+      const token = issueToken({ email, role });
+      res.json({ token, expires_in_days: 30 });
+    });
+  }
+  
+  // Sync endpoints (protected + rate limited)
+  api.post('/api/sync/batch', rateLimitMiddleware, authMiddleware, (req, res) => {
     try {
       const { userId, learnerId, items } = req.body;
       
@@ -181,7 +218,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Roster endpoints
+  // Roster endpoints (protected)
   api.get('/api/roster', authMiddleware, (req, res) => {
     try {
       const userId = req.query.userId as string;
@@ -198,7 +235,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  api.post('/api/roster', authMiddleware, (req, res) => {
+  api.post('/api/roster', rateLimitMiddleware, authMiddleware, (req, res) => {
     try {
       // Simple approach: accept entire roster object for sync
       const roster = req.body;
@@ -207,8 +244,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Invalid roster format' });
       }
       
-      // Derive userId from token (simplified for DEV)
-      const userId = `user_${(req as any).authToken.slice(-8)}`;
+      // Derive userId from authenticated user email
+      const userId = `user_${(req as any).user.email.replace('@', '_').replace('.', '_')}`;
       
       const userData = getUserData(userId);
       userData.roster = roster;
