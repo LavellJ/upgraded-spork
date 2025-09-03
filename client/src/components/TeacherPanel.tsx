@@ -13,6 +13,7 @@ import { Timeline } from '../guide/Timeline';
 import { Privacy } from '../settings/Privacy';
 // Import Consent component directly for now to debug
 import { Consent } from '../settings/Consent';
+import { QuickStart } from '../teacher/QuickStart';
 import { downloadCsv, getCsvStats } from '../guide/exportCsv';
 import { loadEvents, getEventsRange } from '../progress';
 import { Download } from 'lucide-react';
@@ -38,7 +39,7 @@ const SUBJECTS = {
 };
 
 // Define tab types and constants
-const TABS = ['overview', 'timeline', 'assignments', 'roster', 'privacy', 'consent', 'audit', 'funnel'] as const;
+const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'roster', 'privacy', 'consent', 'audit', 'funnel'] as const;
 type Tab = typeof TABS[number];
 
 // Progress encode/decode helpers (URL-safe Base64)
@@ -454,12 +455,6 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
           
           {/* Analytics & Timeline Section */}
           <div className="mt-4 border-t pt-3">
-            {/* Debug: Show current active tab */}
-            {isDev && (
-              <div className="mb-2 p-2 bg-yellow-100 rounded text-xs">
-                🐛 Debug: Active tab = <strong>{activeTab}</strong>
-              </div>
-            )}
             <div className="flex items-center gap-2 mb-3 flex-wrap" role="tablist" aria-label="Teacher Panel Navigation">
               <button 
                 type="button"
@@ -477,6 +472,23 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 data-testid="tab-overview"
               >
                 📊 Overview
+              </button>
+              <button 
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'quickstart'}
+                aria-controls="tab-content-quickstart"
+                id="tab-quickstart"
+                data-tab="quickstart"
+                onClick={handleTabClick}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                  activeTab === 'quickstart' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white border hover:bg-stone-50'
+                }`}
+                data-testid="tab-quickstart"
+              >
+                🚀 Quick Start
               </button>
               <button 
                 type="button"
@@ -673,6 +685,31 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                   )}
                 </div>
               </div>
+            ) : activeTab === 'quickstart' ? (
+              <div 
+                id="tab-content-quickstart" 
+                role="region" 
+                aria-live="polite" 
+                aria-labelledby="tab-quickstart"
+                className="max-h-96 overflow-y-auto space-y-4"
+              >
+                <QuickStart 
+                  onCreateLearner={() => {
+                    // Switch to Learners tab for roster management
+                    setActiveTab('roster');
+                  }}
+                  onStartLesson={() => {
+                    // Close Teacher Panel to show lessons
+                    onClose();
+                  }}
+                  onOpenJournal={() => {
+                    // Use existing journal function if available
+                    if (onOpenJournal) {
+                      onOpenJournal('quickstart.demo');
+                    }
+                  }}
+                />
+              </div>
             ) : activeTab === 'timeline' ? (
               <div className="max-h-96 overflow-y-auto">
                 <Timeline 
@@ -711,12 +748,6 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 aria-labelledby="tab-consent"
                 className="max-h-96 overflow-y-auto space-y-4"
               >
-                {/* Debug: Confirm we're trying to render Consent */}
-                {isDev && (
-                  <div className="mb-2 p-2 bg-green-100 rounded text-xs">
-                    🟢 Rendering Consent component...
-                  </div>
-                )}
                 <Consent open={true} onClose={() => setActiveTab('overview')} />
               </div>
             ) : activeTab === 'audit' ? (

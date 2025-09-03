@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ReadabilityControls } from './ReadabilityControls';
+import { useProjectorModeState } from '../hooks/useProjectorMode';
+import { Switch } from './ui/switch';
 
 interface HelpOverlayProps {
   open: boolean;
@@ -8,6 +10,7 @@ interface HelpOverlayProps {
 }
 
 export function HelpOverlay({ open, onClose }: HelpOverlayProps) {
+  const { isProjectorMode, toggleProjectorMode } = useProjectorModeState();
   // Handle Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -161,6 +164,43 @@ export function HelpOverlay({ open, onClose }: HelpOverlayProps) {
 
               {/* Readability Controls */}
               <ReadabilityControls />
+
+              {/* Projector-Safe Mode */}
+              <section>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <span className="text-lg">📽️</span>
+                  Projector-Safe Mode
+                </h3>
+                <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <div className="font-medium text-purple-900">Enable Projector Mode</div>
+                      <div className="text-sm text-purple-700">
+                        Perfect for classroom presentations and public displays
+                      </div>
+                    </div>
+                    <Switch
+                      checked={isProjectorMode}
+                      onCheckedChange={toggleProjectorMode}
+                      data-testid="projector-mode-toggle"
+                    />
+                  </div>
+                  
+                  <div className="text-sm text-purple-800 leading-relaxed space-y-2">
+                    <p><strong>When enabled:</strong></p>
+                    <ul className="list-disc ml-4 space-y-1">
+                      <li>Hides student names and personal information</li>
+                      <li>Increases font sizes for better visibility</li>
+                      <li>Disables confetti and sound effects</li>
+                      <li>Reduces animations for cleaner display</li>
+                    </ul>
+                    
+                    <div className="mt-3 p-2 bg-purple-100 rounded text-purple-900 text-xs">
+                      💡 <strong>Note:</strong> Projector mode resets when you refresh the page (session-only)
+                    </div>
+                  </div>
+                </div>
+              </section>
 
               {/* Calm Mode */}
               <section>
