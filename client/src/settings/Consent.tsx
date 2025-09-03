@@ -25,9 +25,10 @@ import { loadAuth, disableCloudSync } from '../auth/model';
 interface ConsentProps {
   open: boolean;
   onClose: () => void;
+  inline?: boolean; // When true, renders content directly without BottomSheet
 }
 
-export function Consent({ open, onClose }: ConsentProps) {
+export function Consent({ open, onClose, inline = false }: ConsentProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -125,21 +126,22 @@ export function Consent({ open, onClose }: ConsentProps) {
     }
   };
 
-  return (
-    <BottomSheet open={open} onClose={onClose}>
-      <div className="p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Shield className="w-6 h-6 text-blue-600" />
-            <h2 className="text-xl font-semibold text-gray-900">Privacy & Consent</h2>
-          </div>
+  const consentContent = (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Shield className="w-6 h-6 text-blue-600" />
+          <h2 className="text-xl font-semibold text-gray-900">Privacy & Consent</h2>
+        </div>
+        {!inline && (
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="w-4 h-4" />
           </Button>
-        </div>
+        )}
+      </div>
 
-        {/* Status Message */}
+      {/* Status Message */}
         <AnimatePresence>
           {statusMessage && (
             <motion.div
@@ -306,12 +308,24 @@ export function Consent({ open, onClose }: ConsentProps) {
           </CardContent>
         </Card>
 
-        {/* Footer */}
-        <div className="pt-4 border-t border-gray-200">
-          <p className="text-xs text-gray-500 text-center">
-            Questions about privacy? Contact your teacher or school administrator.
-          </p>
-        </div>
+      {/* Footer */}
+      <div className="pt-4 border-t border-gray-200">
+        <p className="text-xs text-gray-500 text-center">
+          Questions about privacy? Contact your teacher or school administrator.
+        </p>
+      </div>
+    </div>
+  );
+
+  // Render inline or in BottomSheet based on props
+  if (inline) {
+    return consentContent;
+  }
+
+  return (
+    <BottomSheet open={open} onClose={onClose}>
+      <div className="p-6">
+        {consentContent}
       </div>
     </BottomSheet>
   );

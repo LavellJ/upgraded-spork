@@ -779,7 +779,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 aria-labelledby="tab-consent"
                 className="max-h-96 overflow-y-auto space-y-4"
               >
-                <Consent open={true} onClose={() => setActiveTab('overview')} />
+                <Consent open={true} onClose={() => setActiveTab('overview')} inline={true} />
               </div>
             ) : activeTab === 'audit' ? (
               <div className="max-h-96 overflow-y-auto space-y-4">
