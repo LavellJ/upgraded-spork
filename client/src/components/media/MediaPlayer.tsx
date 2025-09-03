@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 
 interface CaptionTrack {
   src: string;
@@ -14,15 +14,16 @@ interface MediaPlayerProps {
   onShowTranscript?: () => void;
 }
 
-export function MediaPlayer({ 
+export const MediaPlayer = forwardRef<HTMLVideoElement, MediaPlayerProps>(({ 
   src, 
   type = 'video/mp4', 
   captions, 
   onShowTranscript 
-}: MediaPlayerProps) {
+}, ref) => {
   return (
     <figure className="w-full">
       <video
+        ref={ref}
         controls
         preload="metadata"
         className="w-full rounded-2xl bg-white shadow-sm"
@@ -55,4 +56,4 @@ export function MediaPlayer({
       )}
     </figure>
   );
-}
+});
