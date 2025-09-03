@@ -217,7 +217,7 @@ export function ActivityPlayer({ open, onClose, biome, lesson, activity, onMarkC
           <h2 id="activity-title" className="font-extrabold" style={{ color: accent }} tabIndex={-1} data-autofocus>{lesson.title}</h2>
           {external ? <a href={url} target="_blank" rel="noreferrer" className="ml-auto text-xs px-2 py-1 rounded-full bg-white border hover:bg-stone-50 transition ease-out">Open in new tab</a> : <span className="ml-auto text-[11px] px-2 py-1 rounded-full bg-white/70 border">Using in-app prototype</span>}
         </div>
-        <div className="mt-3 rounded-xl overflow-hidden border bg-white">
+        <div className="mt-3 rounded-xl overflow-hidden border bg-white font-readable max-line-length">
           {activity?.kind === 'video' ? (
             <div className="p-4">
               <MediaPlayer

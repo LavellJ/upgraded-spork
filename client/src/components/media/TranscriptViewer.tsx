@@ -119,17 +119,17 @@ export function TranscriptViewer({ transcript, title = 'Video Transcript', onClo
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 font-readable">
           {loading && (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-3 text-gray-600">Loading transcript...</span>
+              <span className="ml-3 text-gray-600 text-scalable">Loading transcript...</span>
             </div>
           )}
 
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-red-800">
+              <p className="text-red-800 text-scalable">
                 <strong>Error:</strong> {error}
               </p>
             </div>
@@ -137,7 +137,7 @@ export function TranscriptViewer({ transcript, title = 'Video Transcript', onClo
 
           {transcriptEntries.length > 0 && !loading && !error && (
             <div 
-              className="max-w-[65ch] mx-auto"
+              className="max-w-[65ch] mx-auto max-line-length"
               role="document"
               aria-label="Video transcript content"
             >
@@ -149,7 +149,7 @@ export function TranscriptViewer({ transcript, title = 'Video Transcript', onClo
                       {entry.type === 'timestamp' && entry.startTime !== undefined ? (
                         <div className="flex items-start gap-3">
                           <div className="flex-1">
-                            <span className="text-gray-700 text-base leading-8">
+                            <span className="text-gray-700 text-scalable leading-8">
                               {entry.text}
                             </span>
                           </div>
@@ -165,7 +165,7 @@ export function TranscriptViewer({ transcript, title = 'Video Transcript', onClo
                           )}
                         </div>
                       ) : (
-                        <span className="text-gray-700 text-base leading-8">
+                        <span className="text-gray-700 text-scalable leading-8">
                           {entry.text}
                         </span>
                       )}
@@ -176,7 +176,7 @@ export function TranscriptViewer({ transcript, title = 'Video Transcript', onClo
                 // Render as plain text paragraphs
                 <div className="space-y-4">
                   {transcriptEntries.map((entry, index) => (
-                    <p key={index} className="text-gray-700 text-base leading-8">
+                    <p key={index} className="text-gray-700 text-scalable leading-8">
                       {entry.text}
                     </p>
                   ))}

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ReadabilityControls } from './ReadabilityControls';
 
 interface HelpOverlayProps {
   open: boolean;
@@ -157,6 +158,9 @@ export function HelpOverlay({ open, onClose }: HelpOverlayProps) {
                   </div>
                 </div>
               </section>
+
+              {/* Readability Controls */}
+              <ReadabilityControls />
 
               {/* Calm Mode */}
               <section>
