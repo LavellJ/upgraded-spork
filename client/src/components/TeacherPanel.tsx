@@ -10,6 +10,7 @@ import { useProfile } from '../profile/context';
 import type { AgeBand } from '../profile/model';
 import { Timeline } from '../guide/Timeline';
 import { Privacy } from '../settings/Privacy';
+import { Consent } from '../settings/Consent';
 import { downloadCsv, getCsvStats } from '../guide/exportCsv';
 import { loadEvents, getEventsRange } from '../progress';
 import { Download } from 'lucide-react';
@@ -82,7 +83,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   const [snaps, setSnaps] = useState<Snapshot[]>(() => loadSnaps());
   const [showAuthoring, setShowAuthoring] = useState(false);
   const [selectedStandard, setSelectedStandard] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'assignments' | 'roster' | 'privacy' | 'audit' | 'funnel'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'assignments' | 'roster' | 'privacy' | 'consent' | 'audit' | 'funnel'>('overview');
   
   // Profile context - TEMP: commenting out during context debugging
   // const { profile, updateProfile } = useProfile();
@@ -448,6 +449,17 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 🛡️ Privacy
               </button>
               <button 
+                onClick={() => setActiveTab('consent')}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                  activeTab === 'consent' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white border hover:bg-stone-50'
+                }`}
+                data-testid="tab-consent"
+              >
+                ✋ Consent
+              </button>
+              <button 
                 onClick={() => setActiveTab('roster')}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
                   activeTab === 'roster' 
@@ -585,6 +597,10 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 <PrefetchSettings />
                 <InsightsCard timeRange={30} />
                 <Privacy open={false} onClose={() => {}} />
+              </div>
+            ) : activeTab === 'consent' ? (
+              <div className="max-h-96 overflow-y-auto space-y-4">
+                <Consent open={false} onClose={() => {}} />
               </div>
             ) : activeTab === 'audit' ? (
               <div className="max-h-96 overflow-y-auto space-y-4">
