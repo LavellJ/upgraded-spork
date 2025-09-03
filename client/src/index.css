@@ -409,3 +409,27 @@
   transition-duration: 0.001ms !important;
   scroll-behavior: auto !important;
 }
+
+/* Projector-safe mode styles */
+.projector-mode {
+  /* Boost font sizes for better visibility */
+  font-size: 120%;
+}
+
+.projector-mode h1 { font-size: 2.5rem; }
+.projector-mode h2 { font-size: 2rem; }
+.projector-mode h3 { font-size: 1.5rem; }
+.projector-mode .text-sm { font-size: 1rem; }
+.projector-mode .text-xs { font-size: 0.875rem; }
+
+/* Hide PII content in projector mode */
+.projector-mode .hide-in-projector { 
+  visibility: hidden; 
+}
+
+/* Reduce motion in projector mode */
+.reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
