@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Sparkles, Star, Heart, Zap } from "lucide-react";
+import { trackFunnelStep } from "../progress/events";
 import {
   LittleExplorerIcon,
   YoungAdventurerIcon, 
@@ -88,6 +89,10 @@ export default function ChildOnboarding() {
       });
       
       setIsComplete(true);
+      
+      // Track onboarding completion in funnel
+      trackFunnelStep('onboard');
+      
       setTimeout(() => setShowScoutIntro(true), 2000);
     },
   });

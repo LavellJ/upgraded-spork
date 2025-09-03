@@ -5,7 +5,7 @@ import type { JournalItem, JournalSession, JournalHistoryEntry, SkillLevel } fro
 import { getGenerator, getLevelFromMastery } from './generator';
 import { learnerCache } from '../learning/model';
 import { nanoid } from 'nanoid';
-import { pushEvent } from '../progress/events';
+import { pushEvent, trackFunnelStep } from '../progress/events';
 import { ReflectionPrompt } from '../reflections/ReflectionPrompt';
 import { useOnline } from '../pwa/useOnline';
 import { startOnTask, stopOnTask } from '../analytics/onTask';
@@ -115,6 +115,9 @@ export function JournalSheet({
         skillId,
         source
       });
+      
+      // Track first journal usage in funnel
+      trackFunnelStep('first_journal');
       
       // Set current skill ID for Scout system
       import('../learning/scoutQueue').then(({ setCurrentSkillId }) => {

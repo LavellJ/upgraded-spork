@@ -23,6 +23,7 @@ import { isGuide, toggleGuideMode } from '../guide/auth';
 import { getEventsByKind } from '../progress/events';
 import { AuditLogView } from './AuditLogView';
 import { RosterManagement } from './RosterManagement';
+import { FunnelViewer } from '../debug/FunnelViewer';
 import { getAllAssignments, setVariant, getScoutDwellVariant, SCOUT_DWELL_VARIANTS } from '../ab/model';
 import { getScoutDwellAnalytics } from '../ab/analytics';
 
@@ -468,6 +469,17 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
               >
                 📋 Admin
               </button>
+              <button 
+                onClick={() => setActiveTab('funnel')}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                  activeTab === 'funnel' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white border hover:bg-stone-50'
+                }`}
+                data-testid="tab-funnel"
+              >
+                🧪 Funnel
+              </button>
             </div>
 
             {activeTab === 'roster' ? (
@@ -683,6 +695,10 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                   <h3 className="font-medium text-gray-800 mb-3">📋 Audit Log</h3>
                   <AuditLogView />
                 </div>
+              </div>
+            ) : activeTab === 'funnel' ? (
+              <div className="max-h-96 overflow-y-auto">
+                <FunnelViewer />
               </div>
             ) : (
               <div>Unknown tab</div>

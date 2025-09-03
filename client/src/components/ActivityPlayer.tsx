@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { BottomSheet } from "./BottomSheet";
 import { useScoutQueue } from "../hooks/useScoutQueue";
 import { useProfile } from "../profile/context";
-import { pushEvent } from "../progress/events";
+import { pushEvent, trackFunnelStep, checkThreeCompletions } from "../progress/events";
 import { openJournalForSkill, inferPrimarySkillForCurrentLesson } from "../journal/open";
 import { MediaPlayer } from "./media/MediaPlayer";
 import { TranscriptViewer } from "./media/TranscriptViewer";
@@ -206,6 +206,9 @@ export function ActivityPlayer({ open, onClose, biome, lesson, activity, onMarkC
       
       // Start on-task tracking for lesson
       startOnTask('lesson');
+      
+      // Track first lesson start in funnel
+      trackFunnelStep('first_lesson_start');
     }
   }, [open, lesson?.id, biome]);
   
@@ -259,6 +262,10 @@ export function ActivityPlayer({ open, onClose, biome, lesson, activity, onMarkC
                   durationSec,
                   result: 'pass'
                 });
+                
+                // Track funnel milestones for first lesson finish and three completions
+                trackFunnelStep('first_lesson_finish');
+                checkThreeCompletions();
                 
                 // Flush any pending info messages before showing completion
                 flushInfoMessages();
