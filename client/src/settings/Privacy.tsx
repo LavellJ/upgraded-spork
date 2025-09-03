@@ -18,7 +18,8 @@ import {
   Cloud,
   RefreshCw,
   User,
-  FileCheck
+  FileCheck,
+  BookOpen
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { exportAll, importAll, clearAll, getDataSummary, downloadBackup, importServerSnapshot } from './backup';
@@ -332,6 +333,27 @@ export function Privacy({ open, onClose }: PrivacyProps) {
               </p>
             </div>
             
+            {isDev && (
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <BookOpen className="w-4 h-4 text-gray-600" />
+                  <p className="text-sm font-medium text-gray-800">Analytics Dictionary</p>
+                </div>
+                <p className="text-xs text-gray-600 mb-2">
+                  View detailed information about what learning data is collected and how it's used.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open('/docs/ANALYTICS_DICTIONARY.md', '_blank')}
+                  className="text-xs"
+                >
+                  <FileText className="w-3 h-3 mr-1" />
+                  View Analytics Documentation
+                </Button>
+              </div>
+            )}
+            
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className="space-y-1">
                 <p className="font-medium text-gray-800">What's Saved:</p>
@@ -340,6 +362,7 @@ export function Privacy({ open, onClose }: PrivacyProps) {
                   <li>• Learning progress & skills</li>
                   <li>• Practice sessions</li>
                   <li>• Your reflections</li>
+                  <li>• Focus time & engagement</li>
                 </ul>
               </div>
               <div className="space-y-1">

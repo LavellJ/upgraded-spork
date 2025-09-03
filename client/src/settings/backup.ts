@@ -83,7 +83,8 @@ export function exportAll(includeTelemetry: boolean = false): Blob {
       events: BASE_KEYS.progressHistory, 
       journal: BASE_KEYS.journalHistory,
       reflections: BASE_KEYS.reflections,
-      assignments: BASE_KEYS.assignedPaths
+      assignments: BASE_KEYS.assignedPaths,
+      onTask: BASE_KEYS.onTask
     };
 
     Object.entries(dataKeys).forEach(([exportKey, baseKey]) => {
