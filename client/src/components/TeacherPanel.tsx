@@ -11,8 +11,8 @@ import { useProfile } from '../profile/context';
 import type { AgeBand } from '../profile/model';
 import { Timeline } from '../guide/Timeline';
 import { Privacy } from '../settings/Privacy';
-// Lazy load Consent component
-const Consent = lazy(() => import('../settings/Consent').then(module => ({ default: module.Consent })));
+// Import Consent component directly for now to debug
+import { Consent } from '../settings/Consent';
 import { downloadCsv, getCsvStats } from '../guide/exportCsv';
 import { loadEvents, getEventsRange } from '../progress';
 import { Download } from 'lucide-react';
@@ -454,6 +454,12 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
           
           {/* Analytics & Timeline Section */}
           <div className="mt-4 border-t pt-3">
+            {/* Debug: Show current active tab */}
+            {isDev && (
+              <div className="mb-2 p-2 bg-yellow-100 rounded text-xs">
+                🐛 Debug: Active tab = <strong>{activeTab}</strong>
+              </div>
+            )}
             <div className="flex items-center gap-2 mb-3 flex-wrap" role="tablist" aria-label="Teacher Panel Navigation">
               <button 
                 type="button"
@@ -705,11 +711,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 aria-labelledby="tab-consent"
                 className="max-h-96 overflow-y-auto space-y-4"
               >
-                <ErrorBoundary fallback={<div className="p-4 text-red-600">Something went wrong in the Consent tab.</div>}>
-                  <Suspense fallback={<div className="p-4 text-sm text-fg-muted">Loading consent settings...</div>}>
-                    <Consent open={false} onClose={() => {}} />
-                  </Suspense>
-                </ErrorBoundary>
+                <Consent open={false} onClose={() => {}} />
               </div>
             ) : activeTab === 'audit' ? (
               <div className="max-h-96 overflow-y-auto space-y-4">
