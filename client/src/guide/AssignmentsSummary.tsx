@@ -7,7 +7,9 @@ import {
   Target, 
   TrendingUp,
   Filter,
-  ExternalLink
+  ExternalLink,
+  Calendar,
+  Download
 } from 'lucide-react';
 import { 
   getActiveAssignments, 
@@ -19,6 +21,7 @@ import {
   upsertPathV2,
   type AssignedPathV2 
 } from './assign';
+import { downloadAssignmentICS, canDownloadICS } from './exportIcs';
 import { useRosterOptional } from '../roster';
 import registryData from '../data/registry.json';
 import loop1Data from '../data/loop1.json';
@@ -285,8 +288,28 @@ export function AssignmentsSummary({ className = '', onOpenJournal }: Assignment
                   </div>
                 </div>
                 
-                <div className="text-xs text-gray-500">
-                  {progress.done}/{progress.total} ({progress.pct}%)
+                <div className="flex items-center gap-2">
+                  <div className="text-xs text-gray-500">
+                    {progress.done}/{progress.total} ({progress.pct}%)
+                  </div>
+                  
+                  {/* ICS Download Button */}
+                  {canDownloadICS() && path.dueAt && (
+                    <button
+                      onClick={() => {
+                        try {
+                          downloadAssignmentICS(path);
+                        } catch (error) {
+                          console.error('Failed to download ICS:', error);
+                        }
+                      }}
+                      className="p-1 text-gray-600 hover:bg-gray-100 rounded"
+                      title="Download .ics calendar file"
+                      data-testid={`button-download-ics-${path.id}`}
+                    >
+                      <Calendar className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
               </div>
 
