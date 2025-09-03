@@ -80,6 +80,12 @@ export function CloudSyncSettings({ className = '' }: CloudSyncSettingsProps) {
         setAuth(newAuth);
         showMessage('success', 'Signed out successfully. Your data stays local.');
       }
+    } else {
+      // Enable cloud sync - import enableCloudSync
+      const { enableCloudSync } = await import('./model');
+      const newAuth = enableCloudSync();
+      setAuth(newAuth);
+      showMessage('success', 'Cloud sync enabled! Complete authentication to start syncing.');
     }
   };
 
