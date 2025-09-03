@@ -200,7 +200,7 @@ export function RosterManagement() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-gray-500">Loading...</div>
+          <div className="text-sm text-gray-500">Initializing roster...</div>
         </CardContent>
       </Card>
     );
