@@ -711,7 +711,13 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 aria-labelledby="tab-consent"
                 className="max-h-96 overflow-y-auto space-y-4"
               >
-                <Consent open={false} onClose={() => {}} />
+                {/* Debug: Confirm we're trying to render Consent */}
+                {isDev && (
+                  <div className="mb-2 p-2 bg-green-100 rounded text-xs">
+                    🟢 Rendering Consent component...
+                  </div>
+                )}
+                <Consent open={true} onClose={() => {}} />
               </div>
             ) : activeTab === 'audit' ? (
               <div className="max-h-96 overflow-y-auto space-y-4">
