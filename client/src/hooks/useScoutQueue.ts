@@ -44,9 +44,22 @@ let messageHistory: Array<{ id: string; timestamp: number }> = [];
 
 // Session tracking for guardrails
 let sessionShownCounts: { info: number; actionable: number; critical: number } = { info: 0, actionable: 0, critical: 0 };
+let sessionRoutedCounts: { actionable: number } = { actionable: 0 };
 let sessionStartTime: number = Date.now();
 let lastRateLimitReset: number = Date.now();
 let currentMessageStartTime: number | null = null;
+
+// Enqueue outcome tracking for debugging
+interface EnqueueOutcome {
+  id: string;
+  priority: ScoutPriority;
+  shown: boolean;
+  routedToInbox?: boolean;
+  reason?: string;
+  timestamp: number;
+}
+
+let enqueueOutcomes: EnqueueOutcome[] = [];
 
 // Lesson-based guardrail tracking
 let shownActionableForLesson = new Set<string>();
@@ -109,7 +122,17 @@ function resetSessionCountsIfNeeded() {
   // Reset counters every 10 minutes
   if (now - lastRateLimitReset >= RATE_LIMIT_WINDOW_MS) {
     sessionShownCounts = { info: 0, actionable: 0, critical: 0 };
+    sessionRoutedCounts = { actionable: 0 };
     lastRateLimitReset = now;
+  }
+}
+
+function addEnqueueOutcome(outcome: EnqueueOutcome) {
+  enqueueOutcomes.push(outcome);
+  
+  // Keep only last 10 outcomes
+  if (enqueueOutcomes.length > 10) {
+    enqueueOutcomes.shift();
   }
 }
 
@@ -330,7 +353,19 @@ export function useScoutQueue() {
     
     // Check for coalescing - skip duplicates within window
     if (shouldCoalesce(fullMessage)) {
-      return { shown: false, reason: 'coalesced_duplicate' };
+      const outcome = { shown: false, reason: 'coalesced_duplicate' };
+      addEnqueueOutcome({
+        id: message.id,
+        priority: message.priority,
+        shown: outcome.shown,
+        routedToInbox: outcome.routedToInbox,
+        reason: outcome.reason,
+        timestamp: Date.now()
+      });
+      if (import.meta.env.DEV) {
+        console.debug('[scout] enqueue', { id: message.id, priority: message.priority, context, outcome });
+      }
+      return outcome;
     }
     
     // Check guardrails - respect session limits
@@ -344,10 +379,54 @@ export function useScoutQueue() {
           globalInbox.shift();
         }
         notifySubscribers();
-        return { shown: false, routedToInbox: true, reason };
+        const outcome = { shown: false, routedToInbox: true, reason };
+        sessionRoutedCounts.actionable++;
+        addEnqueueOutcome({
+          id: message.id,
+          priority: message.priority,
+          shown: outcome.shown,
+          routedToInbox: outcome.routedToInbox,
+          reason: outcome.reason,
+          timestamp: Date.now()
+        });
+        
+        // Log progress event for routed_inbox analytics
+        try {
+          import('../progress/events').then(({ pushEvent }) => {
+            import('../sync/queue').then(({ getSessionId }) => {
+              pushEvent({
+                kind: 'scout_analytics',
+                action: 'routed_inbox',
+                id: message.id,
+                priority: message.priority,
+                sessionId: getSessionId(),
+                at: Date.now()
+              });
+            });
+          });
+        } catch (error) {
+          console.warn('Failed to log routed_inbox analytics event:', error);
+        }
+        
+        if (import.meta.env.DEV) {
+          console.debug('[scout] enqueue', { id: message.id, priority: message.priority, context, outcome });
+        }
+        return outcome;
       }
       // Info messages are ignored when limits hit
-      return { shown: false, reason };
+      const outcome = { shown: false, reason };
+      addEnqueueOutcome({
+        id: message.id,
+        priority: message.priority,
+        shown: outcome.shown,
+        routedToInbox: outcome.routedToInbox,
+        reason: outcome.reason,
+        timestamp: Date.now()
+      });
+      if (import.meta.env.DEV) {
+        console.debug('[scout] enqueue', { id: message.id, priority: message.priority, context, outcome });
+      }
+      return outcome;
     }
     
     // Add to history for coalescing checks
@@ -382,7 +461,19 @@ export function useScoutQueue() {
       // Emit analytics event for critical message shown
       emitAnalyticsEvent(fullMessage.id, fullMessage.priority, 'shown');
       
-      return { shown: true };
+      const outcome = { shown: true };
+      addEnqueueOutcome({
+        id: message.id,
+        priority: message.priority,
+        shown: outcome.shown,
+        routedToInbox: outcome.routedToInbox,
+        reason: outcome.reason,
+        timestamp: Date.now()
+      });
+      if (import.meta.env.DEV) {
+        console.debug('[scout] enqueue', { id: message.id, priority: message.priority, context, outcome });
+      }
+      return outcome;
     }
     
     // Add to queue if not at capacity
@@ -396,7 +487,19 @@ export function useScoutQueue() {
         globalQueue.push(fullMessage);
       } else {
         // If no 'info' messages to replace, ignore the new message
-        return { shown: false, reason: 'queue_full' };
+        const outcome = { shown: false, reason: 'queue_full' };
+        addEnqueueOutcome({
+          id: message.id,
+          priority: message.priority,
+          shown: outcome.shown,
+          routedToInbox: outcome.routedToInbox,
+          reason: outcome.reason,
+          timestamp: Date.now()
+        });
+        if (import.meta.env.DEV) {
+          console.debug('[scout] enqueue', { id: message.id, priority: message.priority, context, outcome });
+        }
+        return outcome;
       }
     }
     
@@ -407,7 +510,19 @@ export function useScoutQueue() {
       processQueue();
     }
     
-    return { shown: true };
+    const outcome = { shown: true };
+    addEnqueueOutcome({
+      id: message.id,
+      priority: message.priority,
+      shown: outcome.shown,
+      routedToInbox: outcome.routedToInbox,
+      reason: outcome.reason,
+      timestamp: Date.now()
+    });
+    if (import.meta.env.DEV) {
+      console.debug('[scout] enqueue', { id: message.id, priority: message.priority, context, outcome });
+    }
+    return outcome;
   }, [profile.calmMode]);
 
   const enqueueScoutGroup = useCallback((
@@ -529,6 +644,8 @@ export function resetScoutQueue() {
   globalInbox = [];
   messageHistory = [];
   sessionShownCounts = { info: 0, actionable: 0, critical: 0 };
+  sessionRoutedCounts = { actionable: 0 };
+  enqueueOutcomes = [];
   shownActionableForLesson.clear();
   sessionStartTime = Date.now();
   lastRateLimitReset = Date.now();
@@ -545,7 +662,9 @@ export function getSessionStats() {
   resetSessionCountsIfNeeded();
   return {
     counts: { ...sessionShownCounts },
+    routedCounts: { ...sessionRoutedCounts },
     sessionDuration: Date.now() - sessionStartTime,
+    enqueueOutcomes: [...enqueueOutcomes],
     lastReset: lastRateLimitReset
   };
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useScoutQueue } from '../hooks/useScoutQueue';
+import { useScoutQueue, getSessionStats, resetScoutQueue } from '../hooks/useScoutQueue';
 import { useProfile } from '../profile/context';
 import { getScoutStats, resetScoutState, getScoutCooldownInfo } from '../learning/scoutQueue';
 
@@ -41,6 +41,7 @@ export function ScoutDebugCard() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [scoutStats, setScoutStats] = useState(getScoutStats());
   const [cooldownInfo, setCooldownInfo] = useState(getScoutCooldownInfo());
+  const [sessionStats, setSessionStats] = useState(getSessionStats());
   
   if (!isDev) return null;
 
@@ -50,6 +51,7 @@ export function ScoutDebugCard() {
       setLogs([...debugLogs]);
       setScoutStats(getScoutStats());
       setCooldownInfo(getScoutCooldownInfo());
+      setSessionStats(getSessionStats());
     }, 500);
     
     return () => clearInterval(interval);
@@ -164,6 +166,55 @@ export function ScoutDebugCard() {
                 {profile.calmMode ? 'ON (4.5s)' : 'OFF (3s)'}
               </span>
             </div>
+          </div>
+        </div>
+
+        {/* Session Counters */}
+        <div className="border-b border-gray-200 pb-2">
+          <h4 className="font-bold text-purple-600 mb-1">Session Counters</h4>
+          <div className="space-y-1 text-xs">
+            <div>Info shown: <span className="text-blue-600">{sessionStats.counts.info}</span></div>
+            <div>Actionable shown: <span className="text-green-600">{sessionStats.counts.actionable}</span></div>
+            <div>Actionable routed to inbox: <span className="text-orange-600">{sessionStats.routedCounts.actionable}</span></div>
+            <div>Critical shown: <span className="text-red-600">{sessionStats.counts.critical}</span></div>
+          </div>
+        </div>
+
+        {/* Enqueue Outcomes (Last 10) */}
+        <div className="border-b border-gray-200 pb-2">
+          <h4 className="font-bold text-purple-600 mb-1">Recent Enqueue Outcomes</h4>
+          <div className="space-y-1 max-h-32 overflow-y-auto">
+            {sessionStats.enqueueOutcomes.length === 0 ? (
+              <div className="text-gray-500 text-xs">No enqueue attempts yet</div>
+            ) : (
+              sessionStats.enqueueOutcomes.slice().reverse().map((outcome, index) => {
+                const timeAgo = new Date(outcome.timestamp).toLocaleTimeString('en-US', { 
+                  hour12: false, 
+                  hour: '2-digit', 
+                  minute: '2-digit', 
+                  second: '2-digit' 
+                });
+                const statusColor = outcome.shown ? 'text-green-600' : outcome.routedToInbox ? 'text-orange-600' : 'text-red-600';
+                const statusText = outcome.shown ? 'SHOWN' : outcome.routedToInbox ? 'INBOX' : 'DROPPED';
+                
+                return (
+                  <div key={`${outcome.id}-${index}`} className="text-xs border-l-2 border-gray-200 pl-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">{timeAgo}</span>
+                      <span className={`font-bold ${statusColor}`}>{statusText}</span>
+                    </div>
+                    <div className="text-gray-800">
+                      [{outcome.priority}] {outcome.id}
+                    </div>
+                    {outcome.reason && (
+                      <div className="text-gray-500 italic">
+                        Reason: {outcome.reason}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
 

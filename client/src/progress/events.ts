@@ -7,7 +7,7 @@ export type ProgressEvent =
   | { kind: 'journal_start'; at: number; skillId: string; source?: 'scout' | 'guide' | 'manual' }
   | { kind: 'journal_finish'; at: number; skillId: string; n: number; correct: number; durationSec?: number; source?: 'scout' | 'guide' | 'manual' }
   | { kind: 'scout_msg'; at: number; messageId: string; priority: 'info' | 'actionable' | 'critical'; text: string; cta?: { label: string; clicked?: boolean }; dismissed?: boolean }
-  | { kind: 'scout_analytics'; at: number; id: string; priority: 'info' | 'actionable' | 'critical'; action: 'shown' | 'clicked' | 'dismissed' | 'auto_dismiss'; dwellMs?: number; sessionId: string; abVariant?: Record<string, string> }
+  | { kind: 'scout_analytics'; at: number; id: string; priority: 'info' | 'actionable' | 'critical'; action: 'shown' | 'clicked' | 'dismissed' | 'auto_dismiss' | 'routed_inbox'; dwellMs?: number; sessionId: string; abVariant?: Record<string, string> }
   | { kind: 'guide_ack'; at: number; noticeId: string; action: 'shown' | 'ack' | 'dismiss'; actor: 'guide' };
 
 const STORAGE_KEY = 'qi.progress.history.v1';

@@ -201,6 +201,7 @@ export interface ScoutSummary {
   actionableShown: number;
   clickedCTAs: number;
   dismissals: number;
+  routedToInbox: number;
   topMessages: Array<{ messageId: string; count: number; priority: string }>;
 }
 
@@ -208,7 +209,7 @@ export function scoutSummary(events: ProgressEvent[], days: number = 7): ScoutSu
   const cutoff = Date.now() - (days * 24 * 60 * 60 * 1000);
   
   const scoutEvents = events.filter(event => 
-    event.kind === 'scout_msg' && event.at >= cutoff
+    (event.kind === 'scout_msg' || event.kind === 'scout_analytics') && event.at >= cutoff
   );
   
   if (scoutEvents.length === 0) {
@@ -217,6 +218,7 @@ export function scoutSummary(events: ProgressEvent[], days: number = 7): ScoutSu
       actionableShown: 0,
       clickedCTAs: 0,
       dismissals: 0,
+      routedToInbox: 0,
       topMessages: []
     };
   }
@@ -224,10 +226,12 @@ export function scoutSummary(events: ProgressEvent[], days: number = 7): ScoutSu
   let actionableShown = 0;
   let clickedCTAs = 0;
   let dismissals = 0;
+  let routedToInbox = 0;
   const messageCounts = new Map<string, { count: number; priority: string }>();
   
   scoutEvents.forEach(event => {
-    if ('priority' in event && 'messageId' in event) {
+    // Handle scout_msg events
+    if (event.kind === 'scout_msg' && 'priority' in event && 'messageId' in event) {
       // Count actionable messages
       if (event.priority === 'actionable') {
         actionableShown++;
@@ -251,6 +255,11 @@ export function scoutSummary(events: ProgressEvent[], days: number = 7): ScoutSu
         messageCounts.set(event.messageId, { count: 1, priority: event.priority });
       }
     }
+    
+    // Handle scout_analytics events for routed_inbox
+    if (event.kind === 'scout_analytics' && event.action === 'routed_inbox') {
+      routedToInbox++;
+    }
   });
   
   // Get top 3 messages by show count
@@ -264,10 +273,11 @@ export function scoutSummary(events: ProgressEvent[], days: number = 7): ScoutSu
     .slice(0, 3);
   
   return {
-    totalShown: scoutEvents.length,
+    totalShown: scoutEvents.filter(e => e.kind === 'scout_msg').length,
     actionableShown,
     clickedCTAs,
     dismissals,
+    routedToInbox,
     topMessages
   };
 }
