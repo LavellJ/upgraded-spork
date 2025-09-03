@@ -19,6 +19,12 @@ export function checkAssignmentNudges(
     return { nudged: false, reason: 'missing_params' };
   }
 
+  // Check if assignment nudges are disabled via feature flag
+  const nudgesEnabled = localStorage.getItem('qi.features.assignmentNudges') !== 'false';
+  if (!nudgesEnabled) {
+    return { nudged: false, reason: 'nudges_disabled' };
+  }
+
   const now = Date.now();
   
   // Check throttling (this will be handled by the useScoutQueue hook's throttling mechanism)

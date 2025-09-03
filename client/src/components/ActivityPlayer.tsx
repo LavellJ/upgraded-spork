@@ -9,6 +9,7 @@ import { TranscriptViewer } from "./media/TranscriptViewer";
 import { useMediaRef } from "./media/useMediaRef";
 import type { VideoActivity } from "../schema/lesson";
 import { startOnTask, stopOnTask } from "../analytics/onTask";
+import { ActivityPlayerErrorBoundary } from "./ActivityPlayerErrorBoundary";
 
 const cx = (...s: (string | false | undefined)[]): string => s.filter(Boolean).join(" ");
 
@@ -235,13 +236,23 @@ export function ActivityPlayer({ open, onClose, biome, lesson, activity, onMarkC
         <div className="mt-3 rounded-xl overflow-hidden border bg-white font-readable max-line-length">
           {activity?.kind === 'video' ? (
             <div className="p-4">
-              <MediaPlayer
-                ref={mediaRef}
-                src={activity.src}
-                type={activity.type}
-                captions={activity.captions}
-                onShowTranscript={activity.transcript ? () => setShowTranscript(true) : undefined}
-              />
+              <ActivityPlayerErrorBoundary 
+                activityTitle={lesson.title}
+                onRetry={() => {
+                  // Force re-render by toggling key
+                  if (mediaRef.current) {
+                    mediaRef.current.load();
+                  }
+                }}
+              >
+                <MediaPlayer
+                  ref={mediaRef}
+                  src={activity.src}
+                  type={activity.type}
+                  captions={activity.captions}
+                  onShowTranscript={activity.transcript ? () => setShowTranscript(true) : undefined}
+                />
+              </ActivityPlayerErrorBoundary>
             </div>
           ) : (
             <MCActivity 
