@@ -42,7 +42,9 @@ interface ProgressHUDProps {
 }
 
 export function ProgressHUD({ className = '' }: ProgressHUDProps) {
-  const { profile } = useProfile();
+  // TEMP: commenting out during context debugging
+  // const { profile } = useProfile();
+  const profile = { calmMode: true };
   const [isCollapsed, setIsCollapsed] = useState(() => {
     try {
       return localStorage.getItem(HUD_STORAGE_KEY) === 'true';

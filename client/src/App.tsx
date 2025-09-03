@@ -22,8 +22,7 @@ import { PwaUpdateToast } from "./components/PwaUpdateToast";
 import { OfflineBanner } from "./components/OfflineBanner";
 import { useScoutQueue } from './hooks/useScoutQueue';
 import { useSyncEngine } from './sync/engine';
-import { ProfileProvider, useProfile } from "./profile/context";
-import { RosterProvider } from "./roster/context";
+import { useProfile } from "./profile/context";
 import { Onboarding } from "./onboarding/Onboarding";
 import { decodeFromQuery, savePath } from "./guide/assign";
 import { GuideNoticeProvider } from "./guide/notices";
@@ -373,9 +372,9 @@ function AppContent(){
   useSyncEngine(); // Start sync loop
   
   // ---- Profile context for calm mode and other settings ----
-  const { profile, updateProfile } = useProfile();
-  const calm = profile.calmMode;
-  const setCalm = (value: boolean) => updateProfile({ calmMode: value });
+  // TEMP: Use default values while debugging context issue
+  const calm = true;
+  const setCalm = (value: boolean) => { console.log('setCalm called with:', value); };
 
   // ---- Global state (localStorage-backed) ----
   const [loop,setLoop]=useState(()=>{ try{return parseInt(localStorage.getItem(KEYS.loop)||'1');}catch{return 1;} });
@@ -430,7 +429,9 @@ function AppContent(){
   const [showCompassTour, setShowCompassTour] = useState(false);
   
   // Check if profile needs onboarding
-  const needsOnboarding = !profile.name || !profile.ageBand || !profile.avatarId;
+  // TEMP: hardcode during context debugging
+  // const needsOnboarding = !profile.name || !profile.ageBand || !profile.avatarId;
+  const needsOnboarding = false;
   
   // Show onboarding on mount if needed
   useEffect(() => {
@@ -844,7 +845,9 @@ function AppContent(){
     }
     
     // Use adaptive selection
-    const recommended = recommendNextPin(candidates, learnerState, loop, profile.ageBand);
+    // TEMP: hardcode during context debugging
+    // const recommended = recommendNextPin(candidates, learnerState, loop, profile.ageBand);
+    const recommended = recommendNextPin(candidates, learnerState, loop, 'primary');
     
     // Generate reasoning for DEV mode  
     let reasoning = '';
@@ -1024,7 +1027,8 @@ function AppContent(){
           enqueue({
             id: 'start_lesson',
             priority: 'info',
-            text: `Let's scout this together, ${profile.name || 'Explorer'}!`
+            // TEMP: hardcode during context debugging
+            text: `Let's scout this together, Explorer!`
           });
           
           launchLesson(lesson, openBiome);
@@ -1159,11 +1163,5 @@ function AppContent(){
 }
 
 export default function App() {
-  return (
-    <ProfileProvider>
-      <GuideNoticeProvider>
-        <AppContent />
-      </GuideNoticeProvider>
-    </ProfileProvider>
-  );
+  return <AppContent />;
 }

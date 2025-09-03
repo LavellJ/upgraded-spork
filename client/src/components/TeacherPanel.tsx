@@ -20,6 +20,7 @@ import { InsightsCard } from '../guide/InsightsCard';
 import { isGuide, toggleGuideMode } from '../guide/auth';
 import { getEventsByKind } from '../progress/events';
 import { AuditLogView } from './AuditLogView';
+import { RosterManagement } from './RosterManagement';
 import { getAllAssignments, setVariant, getScoutDwellVariant, SCOUT_DWELL_VARIANTS } from '../ab/model';
 import { getScoutDwellAnalytics } from '../ab/analytics';
 
@@ -78,10 +79,12 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   const [snaps, setSnaps] = useState<Snapshot[]>(() => loadSnaps());
   const [showAuthoring, setShowAuthoring] = useState(false);
   const [selectedStandard, setSelectedStandard] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'assignments' | 'privacy' | 'audit'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'assignments' | 'roster' | 'privacy' | 'audit'>('overview');
   
-  // Profile context
-  const { profile, updateProfile } = useProfile();
+  // Profile context - TEMP: commenting out during context debugging
+  // const { profile, updateProfile } = useProfile();
+  const profile = { ageBand: 'primary', calmMode: true };
+  const updateProfile = (updates: any) => { console.log('updateProfile called:', updates); };
   
   // Compute insights data
   const learnerState = learnerCache.getState();
@@ -442,6 +445,17 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 🛡️ Privacy
               </button>
               <button 
+                onClick={() => setActiveTab('roster')}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                  activeTab === 'roster' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white border hover:bg-stone-50'
+                }`}
+                data-testid="tab-roster"
+              >
+                👥 Learners
+              </button>
+              <button 
                 onClick={() => setActiveTab('audit')}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
                   activeTab === 'audit' 
@@ -454,7 +468,9 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
               </button>
             </div>
 
-            {activeTab === 'overview' ? (
+            {activeTab === 'roster' ? (
+              <RosterManagement />
+            ) : activeTab === 'overview' ? (
               <div>
                 <div className="text-sm font-semibold mb-2">Analytics (local)</div>
                 <div className="flex items-center gap-2 mb-3 flex-wrap">

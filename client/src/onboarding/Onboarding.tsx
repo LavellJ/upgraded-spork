@@ -14,7 +14,10 @@ interface OnboardingProps {
 type Step = 'welcome' | 'avatar' | 'name' | 'age' | 'settings';
 
 export function Onboarding({ open, onClose }: OnboardingProps) {
-  const { profile, updateProfile } = useProfile();
+  // TEMP: commenting out during context debugging
+  // const { profile, updateProfile } = useProfile();
+  const profile = { calmMode: true, name: '', ageBand: 'primary' as const };
+  const updateProfile = (updates: any) => { console.log('updateProfile called:', updates); };
   const [currentStep, setCurrentStep] = useState<Step>('welcome');
   const [selectedAvatar, setSelectedAvatar] = useState<AvatarId | null>(null);
   const [nameInput, setNameInput] = useState('');

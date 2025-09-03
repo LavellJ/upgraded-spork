@@ -320,7 +320,9 @@ function resumeDismissTimer(calmMode: boolean) {
 }
 
 export function useScoutQueue() {
-  const { profile } = useProfile();
+  // TEMP: commenting out during context debugging
+  // const { profile } = useProfile();
+  const profile = { calmMode: true };
   const [state, setState] = useState<ScoutQueueState>({
     current: globalCurrent,
     queue: [...globalQueue],

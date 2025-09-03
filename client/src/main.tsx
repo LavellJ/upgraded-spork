@@ -21,12 +21,12 @@ if ('serviceWorker' in navigator) {
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <GuideNoticeProvider>
-      <ProfileProvider>
+    <ProfileProvider>
+      <GuideNoticeProvider>
         <RosterProvider>
           <App />
         </RosterProvider>
-      </ProfileProvider>
-    </GuideNoticeProvider>
+      </GuideNoticeProvider>
+    </ProfileProvider>
   </React.StrictMode>
 );

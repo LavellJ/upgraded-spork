@@ -36,7 +36,10 @@ export function ScoutDebugCard() {
   const isDev = typeof window !== 'undefined' && window.location.hostname === 'localhost';
   
   const { current, pendingCount, inbox, enqueue, dismiss, flushInfoMessages, pauseTimer, resumeTimer } = useScoutQueue();
-  const { profile, updateProfile } = useProfile();
+  // TEMP: commenting out during context debugging
+  // const { profile, updateProfile } = useProfile();
+  const profile = { calmMode: true };
+  const updateProfile = (updates: any) => { console.log('updateProfile called:', updates); };
   const [isVisible, setIsVisible] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [scoutStats, setScoutStats] = useState(getScoutStats());

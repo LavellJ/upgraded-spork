@@ -175,6 +175,31 @@ export function getActiveAssignedLessons(learnerId?: string): string[] {
 }
 
 /**
+ * Get active assigned lesson IDs for the currently active learner
+ * Uses the roster context to get the active learner's ID
+ */
+export function getActiveAssignedLessonsForCurrentLearner(): string[] {
+  // This function will be called from components that have access to roster context
+  // For now, we'll use a fallback approach
+  try {
+    // Try to get the active learner from roster
+    const rosterData = localStorage.getItem('qi.roster.v1');
+    if (rosterData) {
+      const roster = JSON.parse(rosterData);
+      const activeLearnerId = roster.activeId;
+      if (activeLearnerId) {
+        return getActiveAssignedLessons(activeLearnerId);
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to get active learner for assignments:', error);
+  }
+  
+  // Fallback to legacy approach
+  return getActiveAssignedLessons();
+}
+
+/**
  * Get the next assigned lesson that hasn't been completed
  */
 export function getNextAssignedLesson(completedLessons: Set<string>, learnerId?: string): string | null {
