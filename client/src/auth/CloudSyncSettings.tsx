@@ -23,6 +23,8 @@ import {
   getExpiryCountdown 
 } from './api';
 import { useSyncStatus } from '../sync/engine';
+import { showGuideNotice } from '../guide/notices';
+import { isGuide } from '../guide/auth';
 
 interface CloudSyncSettingsProps {
   className?: string;
@@ -111,13 +113,12 @@ export function CloudSyncSettings({ className = '' }: CloudSyncSettingsProps) {
         return;
       }
 
-      const { showGuideNotice } = await import('../guide/notices');
-      const confirmed = await showGuideNotice('cloud-sync-enable', {
-        title: 'Enable Cloud Sync',
-        body: `This will enable cloud synchronization for your learning data using the email ${email.trim()}. Your data will be securely backed up and synchronized across devices.`,
+      const confirmed = await showGuideNotice('cloud-sync-enable-consent', {
+        title: 'Enable Cloud Sync & Data Processing',
+        body: `This will enable cloud synchronization for learning data with the email: ${email.trim()}.\n\nPurpose: Backup progress across devices and enable teacher insights.\nRetention: Data stored for 1 year, then automatically deleted.\nAudit Trail: All sync activities are logged for transparency.\n\nYour data will be encrypted and only accessible by your classroom/family.`,
         actions: {
-          acknowledge: 'Enable Cloud Sync',
-          cancel: 'Stay Local-Only'
+          acknowledge: 'I Consent to Cloud Sync',
+          cancel: 'Keep Data Local Only'
         }
       });
 
