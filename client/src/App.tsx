@@ -23,6 +23,7 @@ import { OfflineBanner } from "./components/OfflineBanner";
 import { useScoutQueue } from './hooks/useScoutQueue';
 import { useSyncEngine } from './sync/engine';
 import { ProfileProvider, useProfile } from "./profile/context";
+import { RosterProvider } from "./roster/context";
 import { Onboarding } from "./onboarding/Onboarding";
 import { decodeFromQuery, savePath } from "./guide/assign";
 import { GuideNoticeProvider } from "./guide/notices";

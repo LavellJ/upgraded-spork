@@ -11,11 +11,12 @@ export type Profile = {
   updatedAt: number;
 };
 
-const STORAGE_KEY = 'qi.profile.v1';
+import { ns, BASE_KEYS } from '../storage/namespace';
 
-export function loadProfile(): Profile {
+export function loadProfile(learnerId?: string): Profile {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const storageKey = learnerId ? ns(learnerId, BASE_KEYS.profile) : 'qi.profile.v1'; // fallback for legacy
+    const stored = localStorage.getItem(storageKey);
     if (stored) {
       const parsed = JSON.parse(stored);
       return {
@@ -37,14 +38,15 @@ export function loadProfile(): Profile {
   };
 }
 
-export function saveProfile(profile: Profile): void {
+export function saveProfile(profile: Profile, learnerId?: string): void {
   try {
     const toSave = {
       ...profile,
       version: 1,
       updatedAt: Date.now(),
     };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+    const storageKey = learnerId ? ns(learnerId, BASE_KEYS.profile) : 'qi.profile.v1'; // fallback for legacy
+    localStorage.setItem(storageKey, JSON.stringify(toSave));
   } catch (error) {
     console.error('Failed to save profile to localStorage:', error);
   }

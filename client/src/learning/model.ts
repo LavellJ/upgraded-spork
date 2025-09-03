@@ -14,12 +14,13 @@ export type LearnerState = {
   skills: Record<SkillId, Mastery>;
 };
 
-const STORAGE_KEY = 'qi.learner.v1';
+import { ns, BASE_KEYS } from '../storage/namespace';
 
 // Load learner state from localStorage
-export function loadLearner(): LearnerState {
+export function loadLearner(learnerId?: string): LearnerState {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const storageKey = learnerId ? ns(learnerId, BASE_KEYS.learner) : 'qi.learner.v1'; // fallback for legacy
+    const stored = localStorage.getItem(storageKey);
     if (stored) {
       const parsed = JSON.parse(stored);
       if (parsed.version === 1 && parsed.skills) {
@@ -38,9 +39,10 @@ export function loadLearner(): LearnerState {
 }
 
 // Save learner state to localStorage
-export function saveLearner(state: LearnerState): void {
+export function saveLearner(state: LearnerState, learnerId?: string): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const storageKey = learnerId ? ns(learnerId, BASE_KEYS.learner) : 'qi.learner.v1'; // fallback for legacy
+    localStorage.setItem(storageKey, JSON.stringify(state));
   } catch (error) {
     console.warn('Failed to save learner state:', error);
   }
@@ -169,14 +171,17 @@ class LearnerCache {
   private state: LearnerState;
   private subscribers: Set<(state: LearnerState) => void> = new Set();
   
-  constructor() {
-    this.state = loadLearner();
+  private learnerId?: string;
+  
+  constructor(learnerId?: string) {
+    this.learnerId = learnerId;
+    this.state = loadLearner(learnerId);
     
     // Apply decay on initialization
     const decayed = decayMastery(this.state);
     if (decayed !== this.state) {
       this.state = decayed;
-      saveLearner(this.state);
+      saveLearner(this.state, this.learnerId);
     }
   }
   
@@ -186,7 +191,7 @@ class LearnerCache {
   
   setState(newState: LearnerState): void {
     this.state = newState;
-    saveLearner(this.state);
+    saveLearner(this.state, this.learnerId);
     this.notifySubscribers();
   }
   
@@ -222,5 +227,10 @@ class LearnerCache {
   }
 }
 
-// Export singleton instance
+// Export singleton instance (will be updated to use active learner)
 export const learnerCache = new LearnerCache();
+
+// Create a learner cache for a specific learner
+export function createLearnerCache(learnerId: string): LearnerCache {
+  return new LearnerCache(learnerId);
+}

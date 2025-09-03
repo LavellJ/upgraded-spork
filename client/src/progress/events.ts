@@ -10,15 +10,17 @@ export type ProgressEvent =
   | { kind: 'scout_analytics'; at: number; id: string; priority: 'info' | 'actionable' | 'critical'; action: 'shown' | 'clicked' | 'dismissed' | 'auto_dismiss' | 'routed_inbox'; dwellMs?: number; sessionId: string; abVariant?: Record<string, string> }
   | { kind: 'guide_ack'; at: number; noticeId: string; action: 'shown' | 'ack' | 'dismiss'; actor: 'guide' };
 
-const STORAGE_KEY = 'qi.progress.history.v1';
+import { ns, BASE_KEYS } from '../storage/namespace';
+
 const MAX_EVENTS = 5000;
 
 /**
  * Load all progress events from localStorage, sorted by timestamp ascending
  */
-export function loadEvents(): ProgressEvent[] {
+export function loadEvents(learnerId?: string): ProgressEvent[] {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const storageKey = learnerId ? ns(learnerId, BASE_KEYS.progressHistory) : 'qi.progress.history.v1'; // fallback for legacy
+    const stored = localStorage.getItem(storageKey);
     if (!stored) return [];
     
     const events = JSON.parse(stored) as ProgressEvent[];
@@ -44,9 +46,9 @@ export function loadEvents(): ProgressEvent[] {
  * Maintains max events limit by removing oldest events
  * Also enqueues event for sync when online
  */
-export function pushEvent(event: ProgressEvent): void {
+export function pushEvent(event: ProgressEvent, learnerId?: string): void {
   try {
-    const events = loadEvents();
+    const events = loadEvents(learnerId);
     
     // Add new event
     events.push(event);
@@ -57,7 +59,8 @@ export function pushEvent(event: ProgressEvent): void {
       : events;
     
     // Persist to storage
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmedEvents));
+    const storageKey = learnerId ? ns(learnerId, BASE_KEYS.progressHistory) : 'qi.progress.history.v1'; // fallback for legacy
+    localStorage.setItem(storageKey, JSON.stringify(trimmedEvents));
     
     // Enqueue for sync to backend
     try {
@@ -68,7 +71,7 @@ export function pushEvent(event: ProgressEvent): void {
           payload: event,
           id: `event-${event.at}-${event.kind}`,
           at: event.at
-        });
+        }, learnerId);
       });
     } catch (syncError) {
       console.warn('Failed to enqueue event for sync:', syncError);
@@ -93,8 +96,8 @@ export function pushEvent(event: ProgressEvent): void {
  * Get events from the last N days (default: 30 days)
  * Returns events sorted by timestamp ascending
  */
-export function getEventsRange(days: number = 30): ProgressEvent[] {
-  const events = loadEvents();
+export function getEventsRange(days: number = 30, learnerId?: string): ProgressEvent[] {
+  const events = loadEvents(learnerId);
   
   if (days <= 0) return events;
   
@@ -106,8 +109,8 @@ export function getEventsRange(days: number = 30): ProgressEvent[] {
 /**
  * Get events for a specific date range
  */
-export function getEventsBetween(startTime: number, endTime: number): ProgressEvent[] {
-  const events = loadEvents();
+export function getEventsBetween(startTime: number, endTime: number, learnerId?: string): ProgressEvent[] {
+  const events = loadEvents(learnerId);
   
   return events.filter(event => 
     event.at >= startTime && event.at <= endTime
@@ -118,9 +121,10 @@ export function getEventsBetween(startTime: number, endTime: number): ProgressEv
  * Get events of a specific kind
  */
 export function getEventsByKind<T extends ProgressEvent['kind']>(
-  kind: T
+  kind: T,
+  learnerId?: string
 ): Extract<ProgressEvent, { kind: T }>[] {
-  const events = loadEvents();
+  const events = loadEvents(learnerId);
   
   return events.filter(event => event.kind === kind) as Extract<ProgressEvent, { kind: T }>[];
 }
@@ -128,9 +132,10 @@ export function getEventsByKind<T extends ProgressEvent['kind']>(
 /**
  * Clear all progress events (useful for testing)
  */
-export function clearEvents(): void {
+export function clearEvents(learnerId?: string): void {
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    const storageKey = learnerId ? ns(learnerId, BASE_KEYS.progressHistory) : 'qi.progress.history.v1'; // fallback for legacy
+    localStorage.removeItem(storageKey);
     if (process.env.NODE_ENV === 'development') {
       console.log('[Progress] Events cleared');
     }
@@ -142,8 +147,8 @@ export function clearEvents(): void {
 /**
  * Get total event count
  */
-export function getEventCount(): number {
-  return loadEvents().length;
+export function getEventCount(learnerId?: string): number {
+  return loadEvents(learnerId).length;
 }
 
 const SESSION_STORAGE_KEY = 'qi.session.id';
