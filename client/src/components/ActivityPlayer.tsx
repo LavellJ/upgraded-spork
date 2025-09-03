@@ -6,6 +6,7 @@ import { pushEvent } from "../progress/events";
 import { openJournalForSkill, inferPrimarySkillForCurrentLesson } from "../journal/open";
 import { MediaPlayer } from "./media/MediaPlayer";
 import { TranscriptViewer } from "./media/TranscriptViewer";
+import { useMediaRef } from "./media/useMediaRef";
 import type { VideoActivity } from "../schema/lesson";
 
 const cx = (...s: (string | false | undefined)[]): string => s.filter(Boolean).join(" ");
@@ -189,6 +190,7 @@ export function ActivityPlayer({ open, onClose, biome, lesson, activity, onMarkC
   const { enqueue, flushInfoMessages } = useScoutQueue();
   const startTimeRef = useRef<number | null>(null);
   const [showTranscript, setShowTranscript] = useState(false);
+  const { mediaRef, seekTo } = useMediaRef();
   
   // Track lesson start when component opens
   useEffect(() => {
@@ -219,6 +221,7 @@ export function ActivityPlayer({ open, onClose, biome, lesson, activity, onMarkC
           {activity?.kind === 'video' ? (
             <div className="p-4">
               <MediaPlayer
+                ref={mediaRef}
                 src={activity.src}
                 type={activity.type}
                 captions={activity.captions}
@@ -289,6 +292,7 @@ export function ActivityPlayer({ open, onClose, biome, lesson, activity, onMarkC
           transcript={activity.transcript}
           title={`${lesson?.title} - Video Transcript`}
           onClose={() => setShowTranscript(false)}
+          onSeek={seekTo}
         />
       )}
     </BottomSheet>
