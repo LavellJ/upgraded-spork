@@ -460,20 +460,55 @@ export function getLessonAssignment(paths: AssignedPathV2[], lessonId: string): 
 }
 
 /**
- * Check if due soon (≤48h)
+ * Start-of-day (local) timestamp
  */
-export function isDueSoon(dueAt?: number, now: number = Date.now()): boolean {
-  if (!dueAt) return false;
-  const hoursUntilDue = (dueAt - now) / (1000 * 60 * 60);
-  return hoursUntilDue <= 48 && hoursUntilDue > 0;
+export function startOfDay(ts: number): number {
+  const d = new Date(ts);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
 }
 
 /**
- * Check if overdue
+ * Human-friendly due label: "today", "tomorrow", "in 2 days", "3 days ago", or a short date if far away
  */
-export function isOverdue(dueAt?: number, now: number = Date.now()): boolean {
+export function formatDue(dueAt?: number, nowTs: number = Date.now()): string {
+  if (!dueAt) return '';
+  const dayMs = 86_400_000;
+  const today = startOfDay(nowTs);
+  const dueDay = startOfDay(dueAt);
+  const diffDays = Math.round((dueDay - today) / dayMs);
+
+  if (diffDays === 0) return 'today';
+  if (diffDays === 1) return 'tomorrow';
+  if (diffDays === -1) return 'yesterday';
+  if (diffDays > 1 && diffDays <= 14) return `in ${diffDays} days`;
+  if (diffDays < -1 && diffDays >= -14) return `${Math.abs(diffDays)} days ago`;
+
+  // For dates more than ~2 weeks away, show a short date in local format
+  const d = new Date(dueAt);
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+/**
+ * True if due within the next 48 hours (inclusive)
+ */
+export function isDueSoon(dueAt?: number, nowTs: number = Date.now()): boolean {
   if (!dueAt) return false;
-  return dueAt < now;
+  const dayMs = 86_400_000;
+  const today = startOfDay(nowTs);
+  const dueDay = startOfDay(dueAt);
+  const diffDays = Math.round((dueDay - today) / dayMs);
+  return diffDays >= 0 && diffDays <= 2;
+}
+
+/**
+ * True if past due (before today)
+ */
+export function isOverdue(dueAt?: number, nowTs: number = Date.now()): boolean {
+  if (!dueAt) return false;
+  const today = startOfDay(nowTs);
+  const dueDay = startOfDay(dueAt);
+  return dueDay < today;
 }
 
 /**

@@ -4,7 +4,8 @@ import balloonIcon from '@assets/097fe560-b8ac-4192-b450-4f106e9ff693_1756279378
 import lockIcon from '@assets/9252541e-bdfc-4bfa-ab60-c69c63a4297e_1756279935456.png';
 import { getPinAriaLabel } from '../../data/meta';
 import { getActiveAssignedLessonsForCurrentLearner, getActiveAssignments, getLessonAssignment, isDueSoon, isOverdue } from '../../guide/assign';
-import { AssignmentBadge, formatDue, type AssignmentState } from '../AssignmentBadge';
+import { AssignmentBadge, type AssignmentState } from '../AssignmentBadge';
+import { formatDue } from '../../guide/assign';
 import { useRosterOptional } from '../../roster';
 
 interface LessonNodeProps {
