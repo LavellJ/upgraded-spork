@@ -369,6 +369,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin retention compaction endpoint (DEV mode or admin role required)
+  api.post('/api/admin/retention/run', authMiddleware, async (req, res) => {
+    try {
+      const userRole = (req as any).user.role;
+      const isDev = process.env.NODE_ENV === 'development';
+      
+      // Check authorization
+      if (!isDev && userRole !== 'admin') {
+        return res.status(403).json({ error: 'Admin role required' });
+      }
+      
+      console.log(`📅 Manual retention compaction requested by ${(req as any).user.email}`);
+      const result = await userStorage.runRetentionCompaction();
+      
+      res.json({
+        ok: true,
+        compaction: result,
+        retention_days: (await import('./config')).RETAIN_DAYS,
+        completed_at: new Date().toISOString()
+      });
+    } catch (err) {
+      console.error('Error in POST /api/admin/retention/run:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   app.use(api);
 
   console.log('🗄️  File-backed user storage initialized');
