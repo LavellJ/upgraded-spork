@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { exportAll, importAll, clearAll, getDataSummary, downloadBackup, importServerSnapshot } from './backup';
-import { useRoster } from '../roster/context';
+import { useRosterOptional } from '@/roster';
 
 interface PrivacyProps {
   open: boolean;
@@ -37,7 +37,11 @@ export function Privacy({ open, onClose }: PrivacyProps) {
   const [showServerImport, setShowServerImport] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { roster } = useRoster();
+  const rosterContext = useRosterOptional();
+  if (!rosterContext) {
+    return <div className="p-4 text-sm text-fg-muted">No roster context available. Please ensure the RosterProvider wraps the app.</div>;
+  }
+  const { roster } = rosterContext;
   const dataSummary = getDataSummary();
   const isDev = process.env.NODE_ENV === 'development';
 

@@ -1,6 +1,11 @@
 // Roster context for multi-learner management
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+
+if (import.meta.env.DEV) {
+  // Should log ONCE; duplicates imply mixed import paths
+  console.debug('[RosterContext module]', import.meta.url);
+}
 import { 
   Roster, 
   LearnerProfile, 
@@ -198,4 +203,12 @@ export function useRoster(): RosterContextValue {
     throw new Error('useRoster must be used within a RosterProvider');
   }
   return context;
+}
+
+export function useRosterOptional(): RosterContextValue | null {
+  try {
+    return useContext(RosterContext) ?? null;
+  } catch {
+    return null;
+  }
 }
