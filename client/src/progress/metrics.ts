@@ -2,6 +2,7 @@
 // Provides completion tracking, streak calculation, and recap functionality
 
 import type { ProgressEvent } from './events';
+import { getOnTaskTicks, getDailyMinutes } from '../analytics/onTask';
 
 export interface CompletionMetrics {
   completed: number;
@@ -394,7 +395,6 @@ export function scoutAnalytics(events: ProgressEvent[], days: number = 7): Scout
  * @returns Object mapping ISO date strings (YYYY-MM-DD) to active minutes
  */
 export function onTaskMinutes(days: number = 7): { [dayISO: string]: number } {
-  const { getOnTaskTicks, getDailyMinutes } = require('../analytics/onTask');
   const events = getOnTaskTicks();
   const result: { [dayISO: string]: number } = {};
   

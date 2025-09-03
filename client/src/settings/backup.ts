@@ -1,7 +1,7 @@
 // Privacy & Data backup functionality for local-first storage management
 
 import type { Roster } from '../roster/model';
-import { loadRoster } from '../roster/model';
+import { loadRoster, saveRoster } from '../roster/model';
 import { ns, BASE_KEYS } from '../storage/namespace';
 import { mergeData, type MergeableData } from '../sync/merge';
 
@@ -181,7 +181,6 @@ export function importAll(jsonData: string, options: { merge: boolean; requireAc
  * Import V2 format data (roster + namespaced learner data)
  */
 function importV2(backupData: BackupDataV2, options: { merge: boolean; requireAck?: boolean }): void {
-  const { loadRoster, saveRoster } = require('../roster/model');
   
   // Import roster
   const currentRoster = loadRoster();
