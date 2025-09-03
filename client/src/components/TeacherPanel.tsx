@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { BottomSheet } from "./BottomSheet";
+import { ErrorBoundary } from "./ErrorBoundary";
 import { getEvents, clearEvents, downloadEventsCSV } from '../lib/analytics';
 import { getLastEvents, clearEvents as clearTelemetryEvents } from '../telemetry/events';
 import { ThemeToggle } from './ThemeToggle';
@@ -10,7 +11,8 @@ import { useProfile } from '../profile/context';
 import type { AgeBand } from '../profile/model';
 import { Timeline } from '../guide/Timeline';
 import { Privacy } from '../settings/Privacy';
-import { Consent } from '../settings/Consent';
+// Lazy load Consent component
+const Consent = lazy(() => import('../settings/Consent').then(module => ({ default: module.Consent })));
 import { downloadCsv, getCsvStats } from '../guide/exportCsv';
 import { loadEvents, getEventsRange } from '../progress';
 import { Download } from 'lucide-react';
@@ -34,6 +36,10 @@ const SUBJECTS = {
   ocean:  { label: "Science", color: "#3BA7B6" },
   night:  { label: "HASS", color: "#404A73" },
 };
+
+// Define tab types and constants
+const TABS = ['overview', 'timeline', 'assignments', 'roster', 'privacy', 'consent', 'audit', 'funnel'] as const;
+type Tab = typeof TABS[number];
 
 // Progress encode/decode helpers (URL-safe Base64)
 const b64urlEncode = (s: string) => { const bytes = new TextEncoder().encode(s); let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b)); return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
@@ -83,7 +89,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   const [snaps, setSnaps] = useState<Snapshot[]>(() => loadSnaps());
   const [showAuthoring, setShowAuthoring] = useState(false);
   const [selectedStandard, setSelectedStandard] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'assignments' | 'roster' | 'privacy' | 'consent' | 'audit' | 'funnel'>('overview');
+  const [activeTab, setActiveTab] = useState<Tab>('overview');
   
   // Profile context - TEMP: commenting out during context debugging
   // const { profile, updateProfile } = useProfile();
@@ -96,6 +102,51 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   
   // Check if we're in development mode
   const isDev = process.env.NODE_ENV === 'development';
+
+  // URL sync for tab navigation
+  useEffect(() => {
+    if (open) {
+      const params = new URLSearchParams(window.location.search);
+      const urlTab = params.get('tab') as Tab | null;
+      if (urlTab && TABS.includes(urlTab)) {
+        setActiveTab(urlTab);
+      }
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (open) {
+      const params = new URLSearchParams(window.location.search);
+      params.set('tab', activeTab);
+      window.history.replaceState(null, '', `?${params.toString()}`);
+    }
+  }, [activeTab, open]);
+
+  // Tab navigation handler
+  const handleTabClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const tab = event.currentTarget.dataset.tab as Tab;
+    if (tab && TABS.includes(tab)) {
+      setActiveTab(tab);
+    }
+  };
+
+  // Development helper
+  useEffect(() => {
+    if (isDev) {
+      (window as any).__openConsent = () => setActiveTab('consent');
+      (window as any).__openGuideTab = (tab: Tab) => {
+        if (TABS.includes(tab)) {
+          setActiveTab(tab);
+        }
+      };
+    }
+    return () => {
+      if (isDev) {
+        delete (window as any).__openConsent;
+        delete (window as any).__openGuideTab;
+      }
+    };
+  }, [isDev]);
   
   const handleExport = () => { const link = onExport(); setExportLink(link); };
   const handleImport = () => { 
@@ -403,9 +454,15 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
           
           {/* Analytics & Timeline Section */}
           <div className="mt-4 border-t pt-3">
-            <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <div className="flex items-center gap-2 mb-3 flex-wrap" role="tablist" aria-label="Teacher Panel Navigation">
               <button 
-                onClick={() => setActiveTab('overview')}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'overview'}
+                aria-controls="tab-content-overview"
+                id="tab-overview"
+                data-tab="overview"
+                onClick={handleTabClick}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
                   activeTab === 'overview' 
                     ? 'bg-blue-600 text-white' 
@@ -416,7 +473,13 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 📊 Overview
               </button>
               <button 
-                onClick={() => setActiveTab('timeline')}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'timeline'}
+                aria-controls="tab-content-timeline"
+                id="tab-timeline"
+                data-tab="timeline"
+                onClick={handleTabClick}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
                   activeTab === 'timeline' 
                     ? 'bg-blue-600 text-white' 
@@ -427,7 +490,13 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 📅 Timeline
               </button>
               <button 
-                onClick={() => setActiveTab('assignments')}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'assignments'}
+                aria-controls="tab-content-assignments"
+                id="tab-assignments"
+                data-tab="assignments"
+                onClick={handleTabClick}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
                   activeTab === 'assignments' 
                     ? 'bg-blue-600 text-white' 
@@ -438,7 +507,13 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 🎯 Assignments
               </button>
               <button 
-                onClick={() => setActiveTab('privacy')}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'privacy'}
+                aria-controls="tab-content-privacy"
+                id="tab-privacy"
+                data-tab="privacy"
+                onClick={handleTabClick}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
                   activeTab === 'privacy' 
                     ? 'bg-blue-600 text-white' 
@@ -449,7 +524,13 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 🛡️ Privacy
               </button>
               <button 
-                onClick={() => setActiveTab('consent')}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'consent'}
+                aria-controls="tab-content-consent"
+                id="tab-consent"
+                data-tab="consent"
+                onClick={handleTabClick}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
                   activeTab === 'consent' 
                     ? 'bg-blue-600 text-white' 
@@ -460,7 +541,13 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 ✋ Consent
               </button>
               <button 
-                onClick={() => setActiveTab('roster')}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'roster'}
+                aria-controls="tab-content-roster"
+                id="tab-roster"
+                data-tab="roster"
+                onClick={handleTabClick}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
                   activeTab === 'roster' 
                     ? 'bg-blue-600 text-white' 
@@ -471,7 +558,13 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 👥 Learners
               </button>
               <button 
-                onClick={() => setActiveTab('audit')}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'audit'}
+                aria-controls="tab-content-audit"
+                id="tab-audit"
+                data-tab="audit"
+                onClick={handleTabClick}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
                   activeTab === 'audit' 
                     ? 'bg-blue-600 text-white' 
@@ -482,7 +575,13 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 📋 Admin
               </button>
               <button 
-                onClick={() => setActiveTab('funnel')}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'funnel'}
+                aria-controls="tab-content-funnel"
+                id="tab-funnel"
+                data-tab="funnel"
+                onClick={handleTabClick}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
                   activeTab === 'funnel' 
                     ? 'bg-blue-600 text-white' 
@@ -599,8 +698,18 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 <Privacy open={false} onClose={() => {}} />
               </div>
             ) : activeTab === 'consent' ? (
-              <div className="max-h-96 overflow-y-auto space-y-4">
-                <Consent open={false} onClose={() => {}} />
+              <div 
+                id="tab-content-consent" 
+                role="region" 
+                aria-live="polite" 
+                aria-labelledby="tab-consent"
+                className="max-h-96 overflow-y-auto space-y-4"
+              >
+                <ErrorBoundary fallback={<div className="p-4 text-red-600">Something went wrong in the Consent tab.</div>}>
+                  <Suspense fallback={<div className="p-4 text-sm text-fg-muted">Loading consent settings...</div>}>
+                    <Consent open={false} onClose={() => {}} />
+                  </Suspense>
+                </ErrorBoundary>
               </div>
             ) : activeTab === 'audit' ? (
               <div className="max-h-96 overflow-y-auto space-y-4">
