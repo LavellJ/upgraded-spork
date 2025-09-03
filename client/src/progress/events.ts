@@ -4,8 +4,8 @@
 export type ProgressEvent =
   | { kind: 'lesson_start'; at: number; lessonId: string; biomeId: string }
   | { kind: 'lesson_finish'; at: number; lessonId: string; biomeId: string; durationSec?: number; result?: 'pass' | 'retry' }
-  | { kind: 'journal_start'; at: number; skillId: string }
-  | { kind: 'journal_finish'; at: number; skillId: string; n: number; correct: number; durationSec?: number }
+  | { kind: 'journal_start'; at: number; skillId: string; source?: 'scout' | 'guide' | 'manual' }
+  | { kind: 'journal_finish'; at: number; skillId: string; n: number; correct: number; durationSec?: number; source?: 'scout' | 'guide' | 'manual' }
   | { kind: 'scout_msg'; at: number; messageId: string; priority: 'info' | 'actionable' | 'critical'; text: string; cta?: { label: string; clicked?: boolean }; dismissed?: boolean }
   | { kind: 'scout_analytics'; at: number; id: string; priority: 'info' | 'actionable' | 'critical'; action: 'shown' | 'clicked' | 'dismissed' | 'auto_dismiss'; dwellMs?: number; sessionId: string; abVariant?: Record<string, string> }
   | { kind: 'guide_ack'; at: number; noticeId: string; action: 'shown' | 'ack' | 'dismiss'; actor: 'guide' };

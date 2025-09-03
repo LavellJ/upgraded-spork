@@ -404,10 +404,25 @@ function AppContent(){
   // ---- Scout system ----
   // Scout messaging now handled by ScoutManager component
   const { enqueue } = useScoutQueue();
+  
+  // Initialize journal opener function for Scout
+  useEffect(() => {
+    import('./learning/scoutQueue').then(({ setJournalOpener }) => {
+      setJournalOpener(openJournalFromScout);
+    });
+  }, []);
 
   // ---- Journal system ----
   const [showJournal, setShowJournal] = useState(false);
   const [journalSkillId, setJournalSkillId] = useState<string | null>(null);
+  const [journalSource, setJournalSource] = useState<'scout' | 'guide' | 'manual'>('manual');
+
+  // Helper function to open journal from Scout with specific skill
+  const openJournalFromScout = (skillId: string) => {
+    setJournalSkillId(skillId);
+    setJournalSource('scout');
+    setShowJournal(true);
+  };
 
   // ---- Onboarding system ----
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -963,7 +978,7 @@ function AppContent(){
 
       {/* UI Overlays */}
       <BackpackSheet open={showBP} onClose={()=>setShowBP(false)} bp={bp}/>
-      <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={comp} onExport={exportProgress} onImport={importFromToken} lessons={LESSONS} loop={loop} onResetCurrentLoop={resetCurrentLoop} onFactoryReset={factoryReset} teacherPins={teacherPins} setTeacherPins={setTeacherPins} onOpenJournal={(skillId) => { setJournalSkillId(skillId); setShowJournal(true); }}/>
+      <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={comp} onExport={exportProgress} onImport={importFromToken} lessons={LESSONS} loop={loop} onResetCurrentLoop={resetCurrentLoop} onFactoryReset={factoryReset} teacherPins={teacherPins} setTeacherPins={setTeacherPins} onOpenJournal={(skillId) => { setJournalSkillId(skillId); setJournalSource('guide'); setShowJournal(true); }}/>
       <HelpOverlay open={showHelp} onClose={()=>setShowHelp(false)} />
       
       {/* Lesson Sheet */}
@@ -1085,9 +1100,11 @@ function AppContent(){
         onClose={() => {
           setShowJournal(false);
           setJournalSkillId(null);
+          setJournalSource('manual');
         }}
         skillId={journalSkillId || undefined}
         calm={calm}
+        source={journalSource}
         onComplete={() => {
           flash('Great practice session!');
         }}

@@ -15,6 +15,7 @@ interface JournalSheetProps {
   skillId?: string;
   calm?: boolean;
   onComplete?: () => void;
+  source?: 'scout' | 'guide' | 'manual';
 }
 
 interface SessionResponse {
@@ -49,7 +50,8 @@ export function JournalSheet({
   onClose, 
   skillId, 
   calm = false,
-  onComplete 
+  onComplete,
+  source = 'manual'
 }: JournalSheetProps) {
   const { online } = useOnline();
   const [session, setSession] = useState<JournalSession | null>(null);
@@ -103,7 +105,13 @@ export function JournalSheet({
       pushEvent({
         kind: 'journal_start',
         at: newSession.startedAt,
-        skillId
+        skillId,
+        source
+      });
+      
+      // Set current skill ID for Scout system
+      import('../learning/scoutQueue').then(({ setCurrentSkillId }) => {
+        setCurrentSkillId(skillId);
       });
       
       setSession(newSession);
@@ -150,6 +158,17 @@ export function JournalSheet({
     // Update mastery immediately
     learnerCache.updateSkill(skillId!, isCorrect ? 'correct' : 'wrong');
     
+    // Trigger Scout event for wrong answers
+    if (!isCorrect) {
+      import('../learning/scoutQueue').then(({ triggerScoutEvent }) => {
+        const profile = JSON.parse(localStorage.getItem('qi.profile') || '{}');
+        triggerScoutEvent('answerWrong', {
+          ageBand: profile.ageBand,
+          name: profile.name
+        });
+      });
+    }
+    
     setShowFeedback(true);
     
     // Auto-advance after showing feedback
@@ -183,7 +202,8 @@ export function JournalSheet({
       skillId: session.skillId,
       n: session.items.length,
       correct: correctCount,
-      durationSec
+      durationSec,
+      source
     });
     
     // Save session history - extended with detailed data for review
@@ -215,6 +235,12 @@ export function JournalSheet({
     // Auto-close after showing completion (extended time for reflection)
     setTimeout(() => {
       onComplete?.();
+      
+      // Clear current skill ID from Scout system
+      import('../learning/scoutQueue').then(({ setCurrentSkillId }) => {
+        setCurrentSkillId(null);
+      });
+      
       onClose();
     }, calm ? 8000 : 10000);
   };

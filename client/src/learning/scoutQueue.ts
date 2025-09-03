@@ -19,6 +19,8 @@ interface ScoutState {
   lastMessageTime: number;
   recentMessages: string[]; // LRU cache for repeat suppression
   moreHelpCount: number; // Track consecutive "more help" requests
+  scoutJournalSessions: number[]; // Timestamps of scout-triggered journal sessions
+  isInCooldown: boolean;
 }
 
 // Global scout state
@@ -28,12 +30,18 @@ let scoutState: ScoutState = {
   lastMessageType: null,
   lastMessageTime: 0,
   recentMessages: [],
-  moreHelpCount: 0
+  moreHelpCount: 0,
+  scoutJournalSessions: [],
+  isInCooldown: false
 };
 
 // Global queue instance reference (will be set by useScoutQueue hook)
 let globalEnqueue: ((message: Omit<ScoutQueueMessage, 'timestamp'>) => void) | null = null;
 let globalFlushInfoMessages: (() => void) | null = null;
+
+// Global journal opener function (will be set by App component)
+let globalOpenJournalFromScout: ((skillId: string) => void) | null = null;
+let globalCurrentSkillId: string | null = null;
 
 // Set queue functions (called by components using the hook)
 export function setScoutQueueFunctions(
@@ -42,6 +50,61 @@ export function setScoutQueueFunctions(
 ) {
   globalEnqueue = enqueue;
   globalFlushInfoMessages = flushInfoMessages;
+}
+
+// Set journal opener function (called by App component)
+export function setJournalOpener(openJournal: (skillId: string) => void) {
+  globalOpenJournalFromScout = openJournal;
+}
+
+// Set current skill ID (called by journal sessions)
+export function setCurrentSkillId(skillId: string | null) {
+  globalCurrentSkillId = skillId;
+}
+
+// Track scout-triggered journal sessions for dosage safeguards
+export function trackScoutJournalSession() {
+  const now = Date.now();
+  
+  // Add current session timestamp
+  scoutState.scoutJournalSessions.push(now);
+  
+  // Remove sessions older than 10 minutes
+  const tenMinutesAgo = now - (10 * 60 * 1000);
+  scoutState.scoutJournalSessions = scoutState.scoutJournalSessions.filter(
+    timestamp => timestamp > tenMinutesAgo
+  );
+  
+  // Check if we've hit the dosage limit (2 sessions in 10 minutes)
+  if (scoutState.scoutJournalSessions.length >= 2) {
+    scoutState.isInCooldown = true;
+    
+    // Auto-exit cooldown after 10 minutes
+    setTimeout(() => {
+      scoutState.isInCooldown = false;
+    }, 10 * 60 * 1000);
+  }
+}
+
+// Check if Scout is in cooldown period
+export function isScoutInCooldown(): boolean {
+  return scoutState.isInCooldown;
+}
+
+// Get cooldown info for debug display
+export function getScoutCooldownInfo() {
+  const now = Date.now();
+  const tenMinutesAgo = now - (10 * 60 * 1000);
+  const recentSessions = scoutState.scoutJournalSessions.filter(
+    timestamp => timestamp > tenMinutesAgo
+  );
+  
+  return {
+    isInCooldown: scoutState.isInCooldown,
+    recentSessionCount: recentSessions.length,
+    nextCooldownReset: scoutState.isInCooldown ? 
+      Math.max(...scoutState.scoutJournalSessions) + (10 * 60 * 1000) : null
+  };
 }
 
 // Token replacement function
@@ -71,15 +134,16 @@ function getAgeBucket(ageBand?: AgeBand): '5-8' | '9-12' {
 }
 
 // Get random message from age-appropriate bucket with LRU suppression
-function getRandomMessage(messageData: Record<string, string[]>, ageBand?: AgeBand): string {
+function getRandomMessage(messageData: any, ageBand?: AgeBand): string {
   const bucket = getAgeBucket(ageBand);
-  const messages = messageData[bucket] || messageData['5-8'] || [];
+  const messageObjects = messageData[bucket] || messageData['all'] || messageData['5-8'] || [];
   
-  if (messages.length === 0) return "Let's keep exploring!";
+  if (messageObjects.length === 0) return "Let's keep exploring!";
   
-  // Filter out recently used messages if we have enough alternatives
-  const availableMessages = messages.filter(msg => !scoutState.recentMessages.includes(msg));
-  const messagesToUse = availableMessages.length > 0 ? availableMessages : messages;
+  // Extract text from message objects and filter by LRU
+  const messageTexts = messageObjects.map((msg: any) => msg.text);
+  const availableMessages = messageTexts.filter((msg: string) => !scoutState.recentMessages.includes(msg));
+  const messagesToUse = availableMessages.length > 0 ? availableMessages : messageTexts;
   
   const selectedMessage = messagesToUse[Math.floor(Math.random() * messagesToUse.length)];
   
@@ -139,8 +203,13 @@ function enqueueScoutMessage(
     cta: showJournalCTA ? {
       label: 'Try Journal',
       onClick: () => {
-        // Navigate to journal - this will be handled by the consuming component
-        console.log('Navigate to journal session');
+        if (globalOpenJournalFromScout && globalCurrentSkillId) {
+          // Track this scout-triggered journal session for dosage safeguards
+          trackScoutJournalSession();
+          globalOpenJournalFromScout(globalCurrentSkillId);
+        } else {
+          console.warn('Journal opener or skillId not available');
+        }
       }
     } : undefined
   };
@@ -169,7 +238,7 @@ export function triggerScoutEvent(
   switch (event) {
     case 'lessonStart':
       if (shouldShowMessage(event)) {
-        const message = getRandomMessage(scoutLines.start_lesson, ageBand);
+        const message = getRandomMessage(scoutLines.groups.start_lesson, ageBand);
         const processedMessage = replaceTokens(message, { name });
         
         enqueueScoutMessage(event, processedMessage);
@@ -179,12 +248,21 @@ export function triggerScoutEvent(
     case 'answerWrong':
       scoutState.wrongAnswerCount++;
       
-      // Trigger hint after 2 wrong answers
+      // Trigger hint after 2 wrong answers, but check dosage safeguards
       if (scoutState.wrongAnswerCount >= 2 && shouldShowMessage('fail_hint')) {
-        const message = getRandomMessage(scoutLines.fail_hint, ageBand);
-        const processedMessage = replaceTokens(message, { name });
-        
-        enqueueScoutMessage('fail_hint', processedMessage, undefined, true);
+        if (scoutState.isInCooldown) {
+          // In cooldown - downgrade to info message suggesting a break
+          const cooldownMessage = "Perhaps it's time for a quick break? Taking breaks helps us learn better!";
+          const processedMessage = replaceTokens(cooldownMessage, { name });
+          
+          enqueueScoutMessage('encourage', processedMessage);
+        } else {
+          // Normal fail_hint message with journal CTA
+          const message = getRandomMessage(scoutLines.groups.fail_hint, ageBand);
+          const processedMessage = replaceTokens(message, { name });
+          
+          enqueueScoutMessage('fail_hint', processedMessage, undefined, true);
+        }
         scoutState.wrongAnswerCount = 0; // Reset after showing hint
       }
       break;
@@ -203,13 +281,13 @@ export function triggerScoutEvent(
           
           // Check for streak message first (takes priority)
           if (scoutState.currentStreak >= 3 && shouldShowMessage('streak')) {
-            const message = getRandomMessage(scoutLines.streak, ageBand);
+            const message = getRandomMessage(scoutLines.groups.streak, ageBand);
             const processedMessage = replaceTokens(message, { name, n: scoutState.currentStreak });
             
             enqueueScoutMessage('streak', processedMessage, undefined, true);
           } else {
             // Regular finish message
-            const message = getRandomMessage(scoutLines.finish, ageBand);
+            const message = getRandomMessage(scoutLines.groups.finish, ageBand);
             const processedMessage = replaceTokens(message, { name });
             
             enqueueScoutMessage(event, processedMessage);
@@ -222,7 +300,7 @@ export function triggerScoutEvent(
       
     case 'encourage':
       if (shouldShowMessage(event)) {
-        const message = getRandomMessage(scoutLines.encourage, ageBand);
+        const message = getRandomMessage(scoutLines.groups.encourage, ageBand);
         const processedMessage = replaceTokens(message, { name });
         
         enqueueScoutMessage(event, processedMessage);
@@ -235,7 +313,13 @@ export function triggerScoutEvent(
 export function getScoutStats() {
   return {
     wrongAnswerCount: scoutState.wrongAnswerCount,
-    currentStreak: scoutState.currentStreak
+    currentStreak: scoutState.currentStreak,
+    lastMessageType: scoutState.lastMessageType,
+    lastMessageTime: scoutState.lastMessageTime,
+    recentMessages: [...scoutState.recentMessages],
+    moreHelpCount: scoutState.moreHelpCount,
+    scoutJournalSessions: [...scoutState.scoutJournalSessions],
+    isInCooldown: scoutState.isInCooldown
   };
 }
 
@@ -245,14 +329,14 @@ export function requestMoreHelp(ageBand?: AgeBand, learnerName?: string) {
   
   if (scoutState.moreHelpCount >= 2) {
     // After second help request, offer journal
-    const message = getRandomMessage(scoutLines.hint_2, ageBand);
+    const message = getRandomMessage(scoutLines.groups.journal_encourage, ageBand);
     const processedMessage = replaceTokens(message, { name: learnerName || 'Explorer' });
     
     enqueueScoutMessage('encourage', processedMessage, undefined, true);
     scoutState.moreHelpCount = 0; // Reset after offering journal
   } else {
     // First help request, provide encouragement
-    const message = getRandomMessage(scoutLines.hint_1, ageBand);
+    const message = getRandomMessage(scoutLines.groups.encourage, ageBand);
     const processedMessage = replaceTokens(message, { name: learnerName || 'Explorer' });
     
     enqueueScoutMessage('encourage', processedMessage);
@@ -267,6 +351,9 @@ export function resetScoutState() {
     lastMessageType: null,
     lastMessageTime: 0,
     recentMessages: [],
-    moreHelpCount: 0
+    moreHelpCount: 0,
+    scoutJournalSessions: [],
+    isInCooldown: false
   };
 }
+
