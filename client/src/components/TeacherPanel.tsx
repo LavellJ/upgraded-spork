@@ -788,7 +788,6 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 <CloudSyncSettings />
                 <PrefetchSettings />
                 <InsightsCard timeRange={30} />
-                <Privacy open={false} onClose={() => {}} />
               </div>
             ) : activeTab === 'consent' ? (
               <div 
