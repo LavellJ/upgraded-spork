@@ -1,9 +1,27 @@
+// Server with cloud-style API endpoints for development
+// Start with: npm run dev
+// Endpoints available:
+// - POST /api/sync/batch (with Authorization: Bearer <token>)
+// - GET /api/roster?userId=... (with Authorization: Bearer <token>)
+// - POST /api/roster (with Authorization: Bearer <token>)
+// Data persisted to .devdb.json automatically every 10 seconds
+
 import express, { type Request, Response, NextFunction } from "express";
+import cors from "cors";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 
 const app = express();
+
+// Add CORS for local development
+if (app.get("env") === "development") {
+  app.use(cors({
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5000'],
+    credentials: true
+  }));
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
