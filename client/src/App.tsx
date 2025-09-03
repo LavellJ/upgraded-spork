@@ -405,24 +405,24 @@ function AppContent(){
   // Scout messaging now handled by ScoutManager component
   const { enqueue } = useScoutQueue();
   
-  // Initialize journal opener function for Scout
-  useEffect(() => {
-    import('./learning/scoutQueue').then(({ setJournalOpener }) => {
-      setJournalOpener(openJournalFromScout);
-    });
-  }, []);
-
   // ---- Journal system ----
   const [showJournal, setShowJournal] = useState(false);
   const [journalSkillId, setJournalSkillId] = useState<string | null>(null);
   const [journalSource, setJournalSource] = useState<'scout' | 'guide' | 'manual'>('manual');
 
   // Helper function to open journal from Scout with specific skill
-  const openJournalFromScout = (skillId: string) => {
+  const openJournalFromScout = (skillId: string, itemCount?: number) => {
     setJournalSkillId(skillId);
     setJournalSource('scout');
     setShowJournal(true);
   };
+
+  // Initialize journal opener function for Scout
+  useEffect(() => {
+    import('./journal/open').then(({ setJournalOpener }) => {
+      setJournalOpener(openJournalFromScout);
+    });
+  }, []);
 
   // ---- Onboarding system ----
   const [showOnboarding, setShowOnboarding] = useState(false);

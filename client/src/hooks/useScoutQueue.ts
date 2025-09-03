@@ -17,6 +17,16 @@ export interface ScoutQueueMessage {
   timestamp: number;
 }
 
+export interface ScoutEnqueueContext {
+  lessonId?: string;
+}
+
+export interface ScoutEnqueueResult {
+  shown: boolean;
+  routedToInbox?: boolean;
+  reason?: string;
+}
+
 interface ScoutQueueState {
   current: ScoutQueueMessage | null;
   queue: ScoutQueueMessage[];
@@ -37,6 +47,9 @@ let sessionShownCounts: { info: number; actionable: number; critical: number } =
 let sessionStartTime: number = Date.now();
 let lastRateLimitReset: number = Date.now();
 let currentMessageStartTime: number | null = null;
+
+// Lesson-based guardrail tracking
+let shownActionableForLesson = new Set<string>();
 
 // Constants
 const QUEUE_CAP = 3;
@@ -109,19 +122,37 @@ function getSessionLimits(calmMode: boolean) {
   };
 }
 
-function canShowMessage(priority: ScoutPriority, calmMode: boolean): boolean {
+function canShowMessage(priority: ScoutPriority, calmMode: boolean, context?: ScoutEnqueueContext): { canShow: boolean; reason?: string } {
   resetSessionCountsIfNeeded();
   const limits = getSessionLimits(calmMode);
   
   switch (priority) {
     case 'info':
-      return sessionShownCounts.info < limits.info;
+      if (sessionShownCounts.info >= limits.info) {
+        return { canShow: false, reason: 'info_rate_limit_reached' };
+      }
+      return { canShow: true };
+      
     case 'actionable':
-      return sessionShownCounts.actionable < limits.actionable;
+      // First actionable per lesson always allowed
+      if (context?.lessonId && !shownActionableForLesson.has(context.lessonId)) {
+        return { canShow: true };
+      }
+      
+      // Otherwise apply normal guardrails
+      if (sessionShownCounts.actionable >= limits.actionable) {
+        return { canShow: false, reason: 'actionable_rate_limit_reached' };
+      }
+      return { canShow: true };
+      
     case 'critical':
-      return sessionShownCounts.critical < limits.critical;
+      if (sessionShownCounts.critical >= limits.critical) {
+        return { canShow: false, reason: 'critical_rate_limit_reached' };
+      }
+      return { canShow: true };
+      
     default:
-      return false;
+      return { canShow: false, reason: 'unknown_priority' };
   }
 }
 
@@ -291,7 +322,7 @@ export function useScoutQueue() {
     };
   }, [globalCurrent, profile.calmMode]);
   
-  const enqueue = useCallback((message: Omit<ScoutQueueMessage, 'timestamp'>) => {
+  const enqueue = useCallback((message: Omit<ScoutQueueMessage, 'timestamp'>, context?: ScoutEnqueueContext): ScoutEnqueueResult => {
     const fullMessage: ScoutQueueMessage = {
       ...message,
       timestamp: Date.now()
@@ -299,11 +330,13 @@ export function useScoutQueue() {
     
     // Check for coalescing - skip duplicates within window
     if (shouldCoalesce(fullMessage)) {
-      return;
+      return { shown: false, reason: 'coalesced_duplicate' };
     }
     
     // Check guardrails - respect session limits
-    if (!canShowMessage(message.priority, profile.calmMode)) {
+    const { canShow, reason } = canShowMessage(message.priority, profile.calmMode, context);
+    
+    if (!canShow) {
       // For actionable messages that hit limits, add to inbox only
       if (message.priority === 'actionable') {
         globalInbox.push(fullMessage);
@@ -311,13 +344,19 @@ export function useScoutQueue() {
           globalInbox.shift();
         }
         notifySubscribers();
+        return { shown: false, routedToInbox: true, reason };
       }
       // Info messages are ignored when limits hit
-      return;
+      return { shown: false, reason };
     }
     
     // Add to history for coalescing checks
     addToHistory(fullMessage);
+    
+    // Track first actionable per lesson
+    if (message.priority === 'actionable' && context?.lessonId) {
+      shownActionableForLesson.add(context.lessonId);
+    }
     
     // Critical messages bypass queue and open ScoutSheet
     if (message.priority === 'critical') {
@@ -343,7 +382,7 @@ export function useScoutQueue() {
       // Emit analytics event for critical message shown
       emitAnalyticsEvent(fullMessage.id, fullMessage.priority, 'shown');
       
-      return;
+      return { shown: true };
     }
     
     // Add to queue if not at capacity
@@ -355,8 +394,10 @@ export function useScoutQueue() {
       if (oldestInfoIndex !== -1) {
         globalQueue.splice(oldestInfoIndex, 1);
         globalQueue.push(fullMessage);
+      } else {
+        // If no 'info' messages to replace, ignore the new message
+        return { shown: false, reason: 'queue_full' };
       }
-      // If no 'info' messages to replace, ignore the new message
     }
     
     notifySubscribers();
@@ -365,6 +406,8 @@ export function useScoutQueue() {
     if (!globalCurrent) {
       processQueue();
     }
+    
+    return { shown: true };
   }, [profile.calmMode]);
 
   const enqueueScoutGroup = useCallback((
@@ -486,6 +529,7 @@ export function resetScoutQueue() {
   globalInbox = [];
   messageHistory = [];
   sessionShownCounts = { info: 0, actionable: 0, critical: 0 };
+  shownActionableForLesson.clear();
   sessionStartTime = Date.now();
   lastRateLimitReset = Date.now();
   currentMessageStartTime = null;
