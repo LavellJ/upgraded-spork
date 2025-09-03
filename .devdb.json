@@ -56,6 +56,47 @@
         },
         "data": {}
       }
+    ],
+    [
+      "dev-user",
+      {
+        "roster": {
+          "learners": []
+        },
+        "data": {
+          "learner_123": {
+            "test-event-1": {
+              "kind": "event",
+              "id": "test-event-1",
+              "payload": {
+                "action": "test"
+              },
+              "at": 1756867000000
+            }
+          }
+        }
+      }
+    ],
+    [
+      "dGVzdEBleGFtcGxlLmNvbQ",
+      {
+        "roster": {
+          "learners": []
+        },
+        "data": {
+          "learner_dGVzdA_1756800000000": {
+            "integration-test-1756867200": {
+              "kind": "event",
+              "id": "integration-test-1756867200",
+              "payload": {
+                "action": "integration_test",
+                "timestamp": "2025-09-03T02:40:00Z"
+              },
+              "at": 1756867200000
+            }
+          }
+        }
+      }
     ]
   ]
 }
