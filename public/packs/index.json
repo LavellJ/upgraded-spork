@@ -1,0 +1,50 @@
+[
+  {
+    "id": "extensions-au-phonics",
+    "name": "Extended Phonics Pack (AU)",
+    "version": "1.2.0",
+    "locale": "en-AU",
+    "description": "Advanced phonics lessons aligned with Australian curriculum standards",
+    "author": "LearnOz Education Team",
+    "downloadUrl": "/packs/extensions-au-phonics/",
+    "size": 15728640,
+    "meta": {
+      "ageRange": "5-8",
+      "subjects": ["literacy", "phonics"],
+      "difficulty": "intermediate",
+      "estimatedHours": 12
+    }
+  },
+  {
+    "id": "us-common-core-math",
+    "name": "Common Core Math Foundations",
+    "version": "2.1.0",
+    "locale": "en-US",
+    "description": "Foundational math concepts aligned with US Common Core standards",
+    "author": "Mathematics Education Collective",
+    "downloadUrl": "/packs/us-common-core-math/",
+    "size": 22020096,
+    "meta": {
+      "ageRange": "6-10",
+      "subjects": ["mathematics", "numeracy"],
+      "difficulty": "foundation",
+      "estimatedHours": 20
+    }
+  },
+  {
+    "id": "uk-early-years",
+    "name": "UK Early Years Foundation",
+    "version": "1.0.0",
+    "locale": "en-GB",
+    "description": "Early learning activities for UK Early Years Foundation Stage",
+    "author": "UK Education Partners",
+    "downloadUrl": "/packs/uk-early-years/",
+    "size": 18874368,
+    "meta": {
+      "ageRange": "3-5",
+      "subjects": ["literacy", "numeracy", "creativity"],
+      "difficulty": "foundation",
+      "estimatedHours": 15
+    }
+  }
+]

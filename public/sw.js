@@ -3,6 +3,7 @@ const CACHE_NAME = 'quest-island-v1';
 const CORE_CACHE = 'quest-island-core-v1';
 const ASSETS_CACHE = 'quest-island-assets-v1';
 const EXTERNAL_CACHE = 'quest-island-external-v1';
+const PACKS_CACHE = 'quest-island-packs-v1';
 
 const MAX_ASSET_ENTRIES = 50;
 const MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days
@@ -38,7 +39,7 @@ self.addEventListener('activate', event => {
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (![CORE_CACHE, ASSETS_CACHE, EXTERNAL_CACHE].includes(cacheName)) {
+            if (![CORE_CACHE, ASSETS_CACHE, EXTERNAL_CACHE, PACKS_CACHE].includes(cacheName)) {
               console.log('Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
@@ -64,6 +65,12 @@ self.addEventListener('fetch', event => {
   // Core app resources - CacheFirst strategy
   if (isCoreAppRequest(url)) {
     event.respondWith(cacheFirst(request, CORE_CACHE));
+    return;
+  }
+
+  // Content pack resources - StaleWhileRevalidate strategy
+  if (isPackRequest(url)) {
+    event.respondWith(staleWhileRevalidate(request, PACKS_CACHE));
     return;
   }
 
@@ -201,6 +208,14 @@ function isAssetRequest(url) {
     url.pathname.includes('/biomes/') ||
     url.pathname.includes('/generated_images/') ||
     url.pathname.match(/\.(png|jpg|jpeg|gif|svg|webp)$/)
+  );
+}
+
+function isPackRequest(url) {
+  return url.origin === self.location.origin && (
+    url.pathname.startsWith('/packs/') ||
+    url.pathname.includes('qi-pack.json') ||
+    url.pathname.match(/\.(png|jpg|jpeg|gif|svg|webp|mp3|wav|ogg|m4a|mp4|webm|mov|vtt|srt)$/)
   );
 }
 
