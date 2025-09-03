@@ -4,6 +4,9 @@ import { useScoutQueue } from "../hooks/useScoutQueue";
 import { useProfile } from "../profile/context";
 import { pushEvent } from "../progress/events";
 import { openJournalForSkill, inferPrimarySkillForCurrentLesson } from "../journal/open";
+import { MediaPlayer } from "./media/MediaPlayer";
+import { TranscriptViewer } from "./media/TranscriptViewer";
+import type { VideoActivity } from "../schema/lesson";
 
 const cx = (...s: (string | false | undefined)[]): string => s.filter(Boolean).join(" ");
 
@@ -174,16 +177,18 @@ interface ActivityPlayerProps {
   onClose: () => void;
   biome?: string;
   lesson?: { id: string; title: string };
+  activity?: VideoActivity | null; // Video activity data
   onMarkComplete: (id: string, outcome?: 'correct' | 'wrong') => void;
   protoOnly: boolean;
 }
 
-export function ActivityPlayer({ open, onClose, biome, lesson, onMarkComplete, protoOnly }: ActivityPlayerProps) {
+export function ActivityPlayer({ open, onClose, biome, lesson, activity, onMarkComplete, protoOnly }: ActivityPlayerProps) {
   // TEMP: commenting out during context debugging
   // const { profile } = useProfile();
   const profile = { calmMode: true };
   const { enqueue, flushInfoMessages } = useScoutQueue();
   const startTimeRef = useRef<number | null>(null);
+  const [showTranscript, setShowTranscript] = useState(false);
   
   // Track lesson start when component opens
   useEffect(() => {
@@ -211,61 +216,81 @@ export function ActivityPlayer({ open, onClose, biome, lesson, onMarkComplete, p
           {external ? <a href={url} target="_blank" rel="noreferrer" className="ml-auto text-xs px-2 py-1 rounded-full bg-white border hover:bg-stone-50 transition ease-out">Open in new tab</a> : <span className="ml-auto text-[11px] px-2 py-1 rounded-full bg-white/70 border">Using in-app prototype</span>}
         </div>
         <div className="mt-3 rounded-xl overflow-hidden border bg-white">
-          <MCActivity 
-            biome={biome!} 
-            lesson={lesson} 
-            onSolved={() => { 
-              // Calculate duration
-              const durationSec = startTimeRef.current 
-                ? Math.round((Date.now() - startTimeRef.current) / 1000)
-                : undefined;
-              
-              // Track lesson completion
-              pushEvent({
-                kind: 'lesson_finish',
-                at: Date.now(),
-                lessonId: lesson.id,
-                biomeId: biome!,
-                durationSec,
-                result: 'pass'
-              });
-              
-              // Flush any pending info messages before showing completion
-              flushInfoMessages();
-              
-              // Enqueue Scout celebration message for lesson completion
-              enqueue({
-                id: `lesson-complete-${lesson.id}-${Date.now()}`,
-                text: `Well done, ${profile.name || 'Explorer'}! You completed ${lesson.title}!`,
-                priority: 'info'
-              });
-              onMarkComplete(lesson.id, 'correct'); 
-              onClose(); 
-            }}
-            onAttempt={(outcome) => {
-              // Track attempts immediately when they happen
-              if (outcome === 'wrong') {
-                // Track failed attempt
+          {activity?.kind === 'video' ? (
+            <div className="p-4">
+              <MediaPlayer
+                src={activity.src}
+                type={activity.type}
+                captions={activity.captions}
+                onShowTranscript={activity.transcript ? () => setShowTranscript(true) : undefined}
+              />
+            </div>
+          ) : (
+            <MCActivity 
+              biome={biome!} 
+              lesson={lesson} 
+              onSolved={() => { 
+                // Calculate duration
                 const durationSec = startTimeRef.current 
                   ? Math.round((Date.now() - startTimeRef.current) / 1000)
                   : undefined;
                 
+                // Track lesson completion
                 pushEvent({
                   kind: 'lesson_finish',
                   at: Date.now(),
                   lessonId: lesson.id,
                   biomeId: biome!,
                   durationSec,
-                  result: 'retry'
+                  result: 'pass'
                 });
                 
-                onMarkComplete(lesson.id, 'wrong');
-              }
-            }}
-          />
+                // Flush any pending info messages before showing completion
+                flushInfoMessages();
+                
+                // Enqueue Scout celebration message for lesson completion
+                enqueue({
+                  id: `lesson-complete-${lesson.id}-${Date.now()}`,
+                  text: `Well done, Explorer! You completed ${lesson.title}!`,
+                  priority: 'info'
+                });
+                onMarkComplete(lesson.id, 'correct'); 
+                onClose(); 
+              }}
+              onAttempt={(outcome) => {
+                // Track attempts immediately when they happen
+                if (outcome === 'wrong') {
+                  // Track failed attempt
+                  const durationSec = startTimeRef.current 
+                    ? Math.round((Date.now() - startTimeRef.current) / 1000)
+                    : undefined;
+                  
+                  pushEvent({
+                    kind: 'lesson_finish',
+                    at: Date.now(),
+                    lessonId: lesson.id,
+                    biomeId: biome!,
+                    durationSec,
+                    result: 'retry'
+                  });
+                  
+                  onMarkComplete(lesson.id, 'wrong');
+                }
+              }}
+            />
+          )}
         </div>
         <div className="mt-3 flex items-center justify-end"><button onClick={onClose} className="px-3 py-2 rounded-full border bg-white hover:bg-stone-50 text-stone-700 transition ease-out">Close</button></div>
       </div>
+      
+      {/* Transcript Viewer */}
+      {showTranscript && activity?.transcript && (
+        <TranscriptViewer
+          transcript={activity.transcript}
+          title={`${lesson?.title} - Video Transcript`}
+          onClose={() => setShowTranscript(false)}
+        />
+      )}
     </BottomSheet>
   );
 }

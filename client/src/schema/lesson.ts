@@ -139,6 +139,51 @@ export const QuestionSetSchema = z.object({
 
 export type QuestionSet = z.infer<typeof QuestionSetSchema>;
 
+// ---- Activity schemas ----
+
+// Caption/subtitle track for video activities
+const CaptionTrackSchema = z.object({
+  src: z.string().url('Caption track source must be a valid URL'),
+  srclang: z.string().min(1, 'Language code is required'),
+  label: z.string().optional(),
+  default: z.boolean().optional()
+});
+
+// Transcript for video activities
+const TranscriptSchema = z.object({
+  src: z.string().url().optional(),
+  text: z.string().optional()
+}).refine(
+  (data) => data.src || data.text,
+  { message: 'Either src or text must be provided for transcript', path: ['src'] }
+);
+
+// Base activity schema
+const BaseActivitySchema = z.object({
+  kind: z.string().min(1, 'Activity kind is required'),
+  title: z.string().min(1, 'Activity title is required')
+});
+
+// Video activity with captions and transcript support
+const VideoActivitySchema = BaseActivitySchema.extend({
+  kind: z.literal('video'),
+  src: z.string().url('Video source must be a valid URL'),
+  type: z.string().optional().default('video/mp4'),
+  captions: z.array(CaptionTrackSchema).optional(),
+  transcript: TranscriptSchema.optional()
+});
+
+// General activity schema (discriminated union for different kinds)
+export const activitySchema = z.discriminatedUnion('kind', [
+  VideoActivitySchema
+  // Add other activity types here as needed
+]);
+
+export type Activity = z.infer<typeof activitySchema>;
+export type VideoActivity = z.infer<typeof VideoActivitySchema>;
+export type CaptionTrack = z.infer<typeof CaptionTrackSchema>;
+export type Transcript = z.infer<typeof TranscriptSchema>;
+
 // ---- Schema validation utilities ----
 
 /**
@@ -204,5 +249,6 @@ export const schemas = {
   LessonStepSchema,
   LessonContentSchema,
   QuizQuestionSchema,
-  QuestionSetSchema
+  QuestionSetSchema,
+  activitySchema
 } as const;
