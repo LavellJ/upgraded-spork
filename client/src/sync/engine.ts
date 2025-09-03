@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import type { SyncItem, SyncStatus } from './types';
 import { loadQueue, dequeueByIds, getPendingCount } from './queue';
-import { send, type EnhancedSyncResult, type TransportError } from './transport';
+import { send, type EnhancedSyncResult, type TransportError, getDevErrorLog } from './transport';
 import { useOnline } from '../pwa/useOnline';
 import { mergeSyncPayloads } from './merge';
 import { loadAuth, isCloudSyncReady } from '../auth/model';
@@ -72,7 +72,6 @@ export function useSyncStatus(): SyncStatus {
 // Export debug information for development
 export function getSyncDebugInfo() {
   if (process.env.NODE_ENV === 'development') {
-    const { getDevErrorLog } = require('./transport');
     return {
       status: syncStatus,
       paused: syncPaused,
