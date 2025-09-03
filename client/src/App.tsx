@@ -14,7 +14,7 @@ import IslandBackdrop from "./components/IslandBackdrop";
 import LOOP2 from "./data/loop2.json";
 import { logEvent } from "./lib/analytics";
 import { learnerCache } from "./learning/model";
-import { inferSkillIdsForLesson, getLessonById, recommendNextPin } from "./learning/policy";
+import { inferSkillIdsForLesson, getLessonById, recommendNextPin, getLastRecommendationReason } from "./learning/policy";
 import { ScoutManager } from "./components/ScoutManager";
 import { RouteListener } from "./components/RouteListener";
 import { ScoutDebugCard } from "./components/ScoutDebugCard";
@@ -847,12 +847,14 @@ function AppContent(){
     // Use adaptive selection
     // TEMP: hardcode during context debugging
     // const recommended = recommendNextPin(candidates, learnerState, loop, profile.ageBand);
-    const recommended = recommendNextPin(candidates, learnerState, loop, 'primary');
+    const recommended = recommendNextPin(candidates, learnerState, loop, undefined, rosterContext?.activeLearner?.id);
     
     // Generate reasoning for DEV mode  
     let reasoning = '';
     if (recommended && (import.meta.env?.DEV || teacherMode)) {
+      const assignmentReason = getLastRecommendationReason();
       const lessonInfo = candidateInfo.find(c => c.id === recommended);
+      
       if (lessonInfo) {
         const lesson = getLessonById(recommended);
         if (lesson) {
@@ -861,7 +863,13 @@ function AppContent(){
             const skill = learnerState.skills[skillId];
             return `${skillId}: ${skill ? (skill.p * 100).toFixed(0) : 50}%`;
           });
-          reasoning = `${lessonInfo.title} (${lessonInfo.biome})\nSkills: ${skillMasteries.join(', ')}`;
+          
+          // Include assignment reason if it's not the default learner model
+          const reasonPrefix = assignmentReason !== 'Learner model recommendation' 
+            ? `📋 ${assignmentReason}\n\n`
+            : '';
+          
+          reasoning = `${reasonPrefix}${lessonInfo.title} (${lessonInfo.biome})\nSkills: ${skillMasteries.join(', ')}`;
         }
       }
     }

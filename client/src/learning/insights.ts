@@ -106,7 +106,8 @@ export function computeInsights(
   learnerState: LearnerState, 
   framework: string = 'Generic',
   currentLoop: number = 1,
-  ageBand?: AgeBand
+  ageBand?: AgeBand,
+  learnerId?: string
 ): InsightsData {
   const availableSkillIds = getGenerator().getAvailableSkills();
   
@@ -164,7 +165,7 @@ export function computeInsights(
     
     // Try to recommend from need lessons first, fallback to all lessons
     const candidateLessons = needLessons.length > 0 ? needLessons : frameworkLessons;
-    const recommended = recommendNextPin(candidateLessons, learnerState, currentLoop, ageBand);
+    const recommended = recommendNextPin(candidateLessons, learnerState, currentLoop, ageBand, learnerId);
     
     if (recommended) {
       // Find biome for this lesson
