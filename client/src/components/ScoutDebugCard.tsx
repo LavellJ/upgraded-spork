@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useScoutQueue, getSessionStats, resetScoutQueue } from '../hooks/useScoutQueue';
+import { useScoutQueue, getSessionStats, resetScoutQueue, setGuardrailsEnabled } from '../hooks/useScoutQueue';
 import { useProfile } from '../profile/context';
 import { getScoutStats, resetScoutState, getScoutCooldownInfo } from '../learning/scoutQueue';
 
@@ -42,8 +42,17 @@ export function ScoutDebugCard() {
   const [scoutStats, setScoutStats] = useState(getScoutStats());
   const [cooldownInfo, setCooldownInfo] = useState(getScoutCooldownInfo());
   const [sessionStats, setSessionStats] = useState(getSessionStats());
+  const [qaMode, setQaMode] = useState(() => {
+    // Read QA mode from sessionStorage on mount
+    return sessionStorage.getItem('qi.qa.scout') === 'on';
+  });
   
   if (!isDev) return null;
+
+  // Set guardrails on mount based on sessionStorage
+  useEffect(() => {
+    setGuardrailsEnabled(!qaMode);
+  }, [qaMode]);
 
   // Update logs and stats periodically
   useEffect(() => {
@@ -108,12 +117,32 @@ export function ScoutDebugCard() {
     updateProfile({ calmMode: !profile.calmMode });
   };
 
+  const toggleQaMode = () => {
+    const newQaMode = !qaMode;
+    setQaMode(newQaMode);
+    
+    // Update guardrails
+    setGuardrailsEnabled(!newQaMode);
+    
+    // Update sessionStorage
+    if (newQaMode) {
+      sessionStorage.setItem('qi.qa.scout', 'on');
+    } else {
+      sessionStorage.removeItem('qi.qa.scout');
+    }
+  };
+
   if (!isVisible) {
     return (
       <div 
         data-testid="scout-debug-toggle"
         className="fixed bottom-4 right-4 z-50"
       >
+        {qaMode && (
+          <div className="bg-red-600 text-white text-xs px-2 py-1 rounded mb-2 font-mono text-center shadow-lg">
+            QA mode: guardrails off
+          </div>
+        )}
         <button
           onClick={() => setIsVisible(true)}
           className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-2 rounded-lg shadow-lg font-mono"
@@ -139,6 +168,12 @@ export function ScoutDebugCard() {
           ×
         </button>
       </div>
+      
+      {qaMode && (
+        <div className="bg-red-600 text-white text-xs px-3 py-1 font-mono text-center">
+          QA mode: guardrails off
+        </div>
+      )}
 
       <div className="p-3 text-xs font-mono space-y-3 overflow-y-auto max-h-80">
         {/* Current State */}
@@ -298,6 +333,20 @@ export function ScoutDebugCard() {
             >
               {profile.calmMode ? 'Calm ON' : 'Calm OFF'}
             </button>
+          </div>
+          <div className="grid grid-cols-2 gap-1 mt-1">
+            <button
+              data-testid="debug-qa-toggle"
+              onClick={toggleQaMode}
+              className={`px-2 py-1 rounded text-xs ${
+                qaMode 
+                  ? 'bg-red-100 hover:bg-red-200 text-red-800' 
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+              }`}
+            >
+              QA {qaMode ? 'ON' : 'OFF'}
+            </button>
+            <div></div>
           </div>
           <div className="mt-1">
             <button
