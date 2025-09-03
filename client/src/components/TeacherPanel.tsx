@@ -717,7 +717,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                     🟢 Rendering Consent component...
                   </div>
                 )}
-                <Consent open={true} onClose={() => {}} />
+                <Consent open={true} onClose={() => setActiveTab('overview')} />
               </div>
             ) : activeTab === 'audit' ? (
               <div className="max-h-96 overflow-y-auto space-y-4">
