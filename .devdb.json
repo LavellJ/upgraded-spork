@@ -141,6 +141,114 @@
         },
         "data": {}
       }
+    ],
+    [
+      "user_alice_example_com",
+      {
+        "roster": {
+          "learners": [
+            {
+              "id": "alice-learner-1",
+              "name": "Alice Jr",
+              "ageBand": "pre-primary",
+              "createdAt": 1756885928000,
+              "updatedAt": 1756885928000
+            }
+          ]
+        },
+        "data": {}
+      }
+    ],
+    [
+      "alice",
+      {
+        "roster": {
+          "learners": []
+        },
+        "data": {
+          "alice-learner-1": {
+            "progress-1": {
+              "id": "progress-1",
+              "kind": "event",
+              "payload": {
+                "action": "topic-complete",
+                "topicId": "beach-1"
+              },
+              "at": 1756885928000
+            }
+          }
+        }
+      }
+    ],
+    [
+      "user_bob_test_com",
+      {
+        "roster": {
+          "learners": [
+            {
+              "id": "bob-learner-1",
+              "name": "Bobby",
+              "ageBand": "primary",
+              "createdAt": 1756885949000,
+              "updatedAt": 1756885949000
+            }
+          ]
+        },
+        "data": {}
+      }
+    ],
+    [
+      "bob",
+      {
+        "roster": {
+          "learners": []
+        },
+        "data": {
+          "bob-learner-1": {
+            "progress-bob-1": {
+              "id": "progress-bob-1",
+              "kind": "event",
+              "payload": {
+                "action": "lesson-start",
+                "lessonId": "math-1"
+              },
+              "at": 1756885949000
+            }
+          }
+        }
+      }
+    ],
+    [
+      "user_debug_test_com",
+      {
+        "roster": {
+          "learners": [
+            {
+              "id": "debug-learner",
+              "name": "Debug User",
+              "createdAt": 1756885970000,
+              "updatedAt": 1756885970000
+            }
+          ]
+        },
+        "data": {}
+      }
+    ],
+    [
+      "user_final-test_example_com",
+      {
+        "roster": {
+          "learners": [
+            {
+              "id": "final-test-learner",
+              "name": "Final Test",
+              "createdAt": 1756885996000,
+              "updatedAt": 1756885996000
+            }
+          ]
+        },
+        "data": {}
+      }
     ]
   ]
 }

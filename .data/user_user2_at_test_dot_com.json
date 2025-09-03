@@ -1,0 +1,17 @@
+{
+  "email": "user2@test.com",
+  "roster": {
+    "learners": [
+      {
+        "id": "user2-learner",
+        "name": "User 2 Child",
+        "ageBand": "primary",
+        "createdAt": 1756886031000,
+        "updatedAt": 1756886031000
+      }
+    ]
+  },
+  "data": {},
+  "updatedAt": 1756886031114,
+  "version": 3
+}
