@@ -1,0 +1,27 @@
+{
+  "email": "restart-test@example.com",
+  "roster": {
+    "learners": [
+      {
+        "id": "restart-test-learner",
+        "name": "Restart Test",
+        "createdAt": 1756886014000,
+        "updatedAt": 1756886014000
+      }
+    ]
+  },
+  "data": {
+    "restart-test-learner": {
+      "sync-test-1": {
+        "id": "sync-test-1",
+        "kind": "event",
+        "payload": {
+          "action": "test"
+        },
+        "at": 1756886014000
+      }
+    }
+  },
+  "updatedAt": 1756886014865,
+  "version": 4
+}
