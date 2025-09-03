@@ -5,7 +5,6 @@ import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { AlertTriangle, Shield, Bell, Monitor } from 'lucide-react';
 import { setGuardrailsEnabled } from '../hooks/useScoutQueue';
-import { useProjectorMode } from '../hooks/useProjectorMode';
 
 /**
  * FeatureFlagsPanel - Development feature toggles for safe pilot switches
@@ -25,8 +24,10 @@ export function FeatureFlagsPanel() {
     return localStorage.getItem('qi.features.assignmentNudges') !== 'false';
   });
   
-  // Projector mode
-  const { isProjectorMode, toggleProjectorMode } = useProjectorMode();
+  // Projector mode state (without requiring provider)
+  const [isProjectorMode, setIsProjectorMode] = useState(() => {
+    return document.body.classList.contains('projector-mode');
+  });
   
   // Projector mode default state
   const [projectorModeDefault, setProjectorModeDefault] = useState(() => {
@@ -48,6 +49,21 @@ export function FeatureFlagsPanel() {
     window.dispatchEvent(new CustomEvent('assignment-nudges-toggle', { 
       detail: { enabled } 
     }));
+  };
+
+  const toggleProjectorMode = () => {
+    const body = document.body;
+    const newMode = !isProjectorMode;
+    
+    if (newMode) {
+      body.classList.add('projector-mode');
+      body.classList.add('reduce-motion');
+    } else {
+      body.classList.remove('projector-mode');
+      body.classList.remove('reduce-motion');
+    }
+    
+    setIsProjectorMode(newMode);
   };
 
   const handleProjectorModeDefaultToggle = (enabled: boolean) => {
