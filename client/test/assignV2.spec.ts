@@ -47,6 +47,9 @@ describe('Assignment V2 System', () => {
 
   describe('V1 to V2 Migration', () => {
     it('should migrate v1 paths to v2 format', () => {
+      // Ensure clean state - no V2 data exists
+      mockLocalStorage.removeItem(`qi:${testLearnerId}:assigned.paths.v2`);
+      
       // Setup v1 data
       const v1Paths: AssignedPath[] = [
         {
@@ -84,6 +87,9 @@ describe('Assignment V2 System', () => {
     });
 
     it('should not migrate if v2 data already exists', () => {
+      // Ensure clean state first
+      mockLocalStorage.clear();
+      
       // Setup both v1 and v2 data
       const v1Paths: AssignedPath[] = [{ id: 'v1-path', name: 'V1 Path', lessonIds: ['lesson-1'], createdAt: Date.now() }];
       const v2Paths: AssignedPathV2[] = [{
