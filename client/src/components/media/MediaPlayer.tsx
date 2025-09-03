@@ -38,6 +38,16 @@ export const MediaPlayer = forwardRef<HTMLVideoElement, MediaPlayerProps>(({
             srcLang={track.srclang}
             label={track.label ?? track.srclang}
             default={!!track.default}
+            onError={(e) => {
+              if (process.env.NODE_ENV === 'development') {
+                console.warn(`Failed to load caption track: ${track.src}`, e);
+              }
+              // Hide the track from the menu if it fails to load
+              const trackElement = e.target as HTMLTrackElement;
+              if (trackElement) {
+                trackElement.style.display = 'none';
+              }
+            }}
           />
         ))}
         Your browser does not support the video element.
