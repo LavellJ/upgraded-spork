@@ -87,6 +87,13 @@ export async function flushOnce(): Promise<boolean> {
           isSyncing: false,
           lastError: result.error || 'Sync failed'
         });
+        
+        // If authentication expired, pause the sync engine
+        if (result.authExpired) {
+          console.warn('Authentication expired, pausing sync engine');
+          return false; // This will stop the sync loop
+        }
+        
         return false;
       }
       
