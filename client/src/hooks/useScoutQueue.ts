@@ -64,6 +64,9 @@ let enqueueOutcomes: EnqueueOutcome[] = [];
 // Lesson-based guardrail tracking
 let shownActionableForLesson = new Set<string>();
 
+// QA mode: guardrails control
+let guardrailsEnabled = true;
+
 // Constants
 const QUEUE_CAP = 3;
 const COALESCE_WINDOW_MS = 30 * 1000; // 30 seconds
@@ -191,19 +194,28 @@ function emitAnalyticsEvent(
   dwellMs?: number
 ) {
   try {
-    import('../progress').then(({ pushEvent, getSessionId }) => {
-      const scoutVariant = getScoutDwellVariant();
-      pushEvent({
-        kind: 'scout_analytics',
-        at: Date.now(),
-        id: messageId,
-        priority,
-        action,
-        dwellMs,
-        sessionId: getSessionId(),
-        abVariant: {
+    import('../progress').then(({ pushEvent }) => {
+      import('../sync/queue').then(({ getSessionId }) => {
+        const scoutVariant = getScoutDwellVariant();
+        const abVariant: Record<string, string> = {
           'scout.dwell': scoutVariant
+        };
+        
+        // Add QA tag when guardrails are disabled
+        if (!guardrailsEnabled) {
+          abVariant.qa = 'on';
         }
+        
+        pushEvent({
+          kind: 'scout_analytics',
+          at: Date.now(),
+          id: messageId,
+          priority,
+          action,
+          dwellMs,
+          sessionId: getSessionId(),
+          abVariant
+        });
       });
     });
   } catch (error) {
@@ -351,8 +363,8 @@ export function useScoutQueue() {
       timestamp: Date.now()
     };
     
-    // Check for coalescing - skip duplicates within window
-    if (shouldCoalesce(fullMessage)) {
+    // Check for coalescing - skip duplicates within window (only if guardrails enabled)
+    if (guardrailsEnabled && shouldCoalesce(fullMessage)) {
       const outcome = { shown: false, reason: 'coalesced_duplicate' };
       addEnqueueOutcome({
         id: message.id,
@@ -368,8 +380,10 @@ export function useScoutQueue() {
       return outcome;
     }
     
-    // Check guardrails - respect session limits
-    const { canShow, reason } = canShowMessage(message.priority, profile.calmMode, context);
+    // Check guardrails - respect session limits (only if guardrails enabled)
+    const { canShow, reason } = guardrailsEnabled ? 
+      canShowMessage(message.priority, profile.calmMode, context) : 
+      { canShow: true, reason: undefined };
     
     if (!canShow) {
       // For actionable messages that hit limits, add to inbox only
@@ -667,4 +681,9 @@ export function getSessionStats() {
     enqueueOutcomes: [...enqueueOutcomes],
     lastReset: lastRateLimitReset
   };
+}
+
+// Export function to control guardrails (useful for QA)
+export function setGuardrailsEnabled(enabled: boolean) {
+  guardrailsEnabled = enabled;
 }
