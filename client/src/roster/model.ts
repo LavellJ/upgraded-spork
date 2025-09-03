@@ -153,6 +153,22 @@ export function generateLearnerId(): string {
 }
 
 /**
+ * Fallback getter for non-React modules that need the active learner ID
+ * This should only be used by utility modules during initialization.
+ * React components should always use the useRoster hook instead.
+ */
+export function getActiveLearnerIdFallback(): string | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed.activeId ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Gets the active learner from the roster
  */
 export function getActiveLearner(roster: Roster): LearnerProfile | null {
