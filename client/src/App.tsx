@@ -6,6 +6,18 @@ import { BackpackSheet } from "./components/BackpackSheet";
 import { ActivityPlayer } from "./components/ActivityPlayer";
 import { LessonSheet } from "./components/LessonSheet";
 import { TeacherPanel } from "./components/TeacherPanel";
+import { useRoster } from "./roster/context";
+
+// Wrapper component to bridge the roster context to TeacherPanel
+function TeacherPanelWithRoster(props: any) {
+  try {
+    const rosterContext = useRoster();
+    return <TeacherPanel {...props} rosterContext={rosterContext} />;
+  } catch (error) {
+    console.error('TeacherPanelWithRoster: Failed to access roster context:', error);
+    return <TeacherPanel {...props} rosterContext={null} />;
+  }
+}
 import { HelpOverlay } from "./components/HelpOverlay";
 import { CompassTour } from "./components/CompassTour";
 import { JournalSheet } from './journal/JournalSheet';
@@ -982,7 +994,7 @@ function AppContent(){
 
       {/* UI Overlays */}
       <BackpackSheet open={showBP} onClose={()=>setShowBP(false)} bp={bp}/>
-      <TeacherPanel open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={comp} onExport={exportProgress} onImport={importFromToken} lessons={LESSONS} loop={loop} onResetCurrentLoop={resetCurrentLoop} onFactoryReset={factoryReset} teacherPins={teacherPins} setTeacherPins={setTeacherPins} onOpenJournal={(skillId) => { setJournalSkillId(skillId); setJournalSource('guide'); setShowJournal(true); }}/>
+      <TeacherPanelWithRoster open={showTeacher} onClose={()=>setShowTeacher(false)} frameworks={STANDARDS.frameworkOptions} framework={framework} setFramework={setFramework} protoOnly={protoOnly} setProtoOnly={setProtoOnly} completed={comp} onExport={exportProgress} onImport={importFromToken} lessons={LESSONS} loop={loop} onResetCurrentLoop={resetCurrentLoop} onFactoryReset={factoryReset} teacherPins={teacherPins} setTeacherPins={setTeacherPins} onOpenJournal={(skillId) => { setJournalSkillId(skillId); setJournalSource('guide'); setShowJournal(true); }}/>
       <HelpOverlay open={showHelp} onClose={()=>setShowHelp(false)} />
       
       {/* Lesson Sheet */}
