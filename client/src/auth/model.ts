@@ -5,6 +5,7 @@ export type Auth = {
   email?: string;
   verified: boolean;
   token?: string;
+  exp?: number; // JWT expiration timestamp
   updatedAt: number;
 };
 
@@ -73,9 +74,11 @@ export function enableCloudSync(email: string): Auth {
 }
 
 /**
- * Send magic link (DEV stub - just marks as verified)
+ * Send magic link (DEPRECATED - use requestMagicLink from ./api.ts instead)
  */
 export function sendMagicLink(auth: Auth): Auth {
+  console.warn('sendMagicLink is deprecated, use requestMagicLink from ./api.ts');
+  
   if (!auth.enabled || !auth.email) {
     throw new Error('Cloud sync must be enabled with email first');
   }

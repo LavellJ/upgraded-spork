@@ -78,9 +78,19 @@ class CloudTransport implements SyncTransport {
       });
       
       if (response.status === 401) {
+        // Authentication failed - mark auth as invalid and pause sync
+        const { disableCloudSync } = await import('../auth/model');
+        disableCloudSync();
+        
+        // Dispatch a custom event to notify settings UI
+        window.dispatchEvent(new CustomEvent('auth-expired', {
+          detail: { message: 'Authentication expired. Please sign in again to continue syncing.' }
+        }));
+        
         return {
           ok: false,
-          error: 'Authentication failed - please verify your email'
+          error: 'Authentication expired - please sign in again',
+          authExpired: true
         };
       }
       

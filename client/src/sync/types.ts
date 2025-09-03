@@ -23,6 +23,7 @@ export type SyncStatus = {
 export type SyncResult = {
   ok: boolean;
   error?: string;
+  authExpired?: boolean; // Flag to indicate authentication failure
   // Optional server data for merging (when server has conflicting state)
   mergeData?: {
     kind: string;

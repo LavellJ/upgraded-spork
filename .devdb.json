@@ -113,6 +113,14 @@
                 "action": "progress"
               },
               "at": 1756884000000
+            },
+            "auth-flow-test": {
+              "id": "auth-flow-test",
+              "kind": "event",
+              "payload": {
+                "action": "test"
+              },
+              "at": 1756885279000
             }
           }
         }
