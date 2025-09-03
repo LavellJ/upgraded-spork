@@ -8,6 +8,7 @@ import { MediaPlayer } from "./media/MediaPlayer";
 import { TranscriptViewer } from "./media/TranscriptViewer";
 import { useMediaRef } from "./media/useMediaRef";
 import type { VideoActivity } from "../schema/lesson";
+import { startOnTask, stopOnTask } from "../analytics/onTask";
 
 const cx = (...s: (string | false | undefined)[]): string => s.filter(Boolean).join(" ");
 
@@ -202,8 +203,19 @@ export function ActivityPlayer({ open, onClose, biome, lesson, activity, onMarkC
         lessonId: lesson.id,
         biomeId: biome
       });
+      
+      // Start on-task tracking for lesson
+      startOnTask('lesson');
     }
   }, [open, lesson?.id, biome]);
+  
+  // Track lesson close when component closes
+  useEffect(() => {
+    return () => {
+      // Stop on-task tracking when activity player closes
+      stopOnTask();
+    };
+  }, []);
   
   if (!open || !lesson) return null;
   const url = resolveActivityUrl(biome!, lesson.id, protoOnly);

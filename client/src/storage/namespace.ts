@@ -37,7 +37,8 @@ export const BASE_KEYS = {
   assignedPaths: 'assigned.paths.v1',
   syncQueue: 'sync.queue.v1',
   progressHistory: 'progress.history.v1',
-  telemetryBuffer: 'telemetry.buffer.v1'
+  telemetryBuffer: 'telemetry.buffer.v1',
+  onTask: 'onTask.v1'
 } as const;
 
 /**

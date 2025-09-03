@@ -8,6 +8,7 @@ import { nanoid } from 'nanoid';
 import { pushEvent } from '../progress/events';
 import { ReflectionPrompt } from '../reflections/ReflectionPrompt';
 import { useOnline } from '../pwa/useOnline';
+import { startOnTask, stopOnTask } from '../analytics/onTask';
 
 interface JournalSheetProps {
   open: boolean;
@@ -68,6 +69,9 @@ export function JournalSheet({
   useEffect(() => {
     if (open && !session) {
       initializeSession();
+      
+      // Start on-task tracking for journal
+      startOnTask('journal');
     } else if (!open) {
       // Reset state when closed
       setSession(null);
@@ -77,6 +81,9 @@ export function JournalSheet({
       setResponses([]);
       setIsComplete(false);
       setShowReflection(false);
+      
+      // Stop on-task tracking when journal closes
+      stopOnTask();
     }
   }, [open, skillId]);
 

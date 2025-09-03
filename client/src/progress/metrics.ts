@@ -384,3 +384,31 @@ export function scoutAnalytics(events: ProgressEvent[], days: number = 7): Scout
     assignmentNudges
   };
 }
+
+/**
+ * Get on-task minutes for the last N days
+ * Returns a map of ISO date strings to minutes spent actively engaged
+ * Excludes idle time and tracks only active engagement
+ * 
+ * @param days Number of days to include (default: 7)
+ * @returns Object mapping ISO date strings (YYYY-MM-DD) to active minutes
+ */
+export function onTaskMinutes(days: number = 7): { [dayISO: string]: number } {
+  const { getOnTaskTicks, getDailyMinutes } = require('../analytics/onTask');
+  const events = getOnTaskTicks();
+  const result: { [dayISO: string]: number } = {};
+  
+  const now = new Date();
+  
+  for (let i = 0; i < days; i++) {
+    const date = new Date(now);
+    date.setDate(date.getDate() - i);
+    
+    const dayISO = date.toISOString().split('T')[0]; // YYYY-MM-DD format
+    const dayMinutes = getDailyMinutes(events, date.getTime());
+    
+    result[dayISO] = Math.round(dayMinutes * 10) / 10; // Round to 1 decimal place
+  }
+  
+  return result;
+}
