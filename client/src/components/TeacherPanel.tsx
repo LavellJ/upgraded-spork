@@ -14,6 +14,7 @@ import { Privacy } from '../settings/Privacy';
 // Import Consent component directly for now to debug
 import { Consent } from '../settings/Consent';
 import { QuickStart } from '../teacher/QuickStart';
+import { QAPanel } from './QAPanel';
 import { downloadCsv, getCsvStats } from '../guide/exportCsv';
 import { loadEvents, getEventsRange } from '../progress';
 import { Download } from 'lucide-react';
@@ -39,7 +40,7 @@ const SUBJECTS = {
 };
 
 // Define tab types and constants
-const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'roster', 'privacy', 'consent', 'audit', 'funnel'] as const;
+const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'roster', 'privacy', 'consent', 'audit', 'funnel', 'qa'] as const;
 type Tab = typeof TABS[number];
 
 // Progress encode/decode helpers (URL-safe Base64)
@@ -96,6 +97,16 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   // const { profile, updateProfile } = useProfile();
   const profile = { ageBand: 'primary', calmMode: true };
   const updateProfile = (updates: any) => { console.log('updateProfile called:', updates); };
+  
+  // Helper to get current biome for QA panel
+  const getCurrentBiome = (): 'forest' | 'desert' | 'ocean' | 'night' => {
+    // Map time of day to biomes - simplified for QA testing
+    const hour = new Date().getHours();
+    if (hour >= 6 && hour < 12) return 'forest';
+    if (hour >= 12 && hour < 18) return 'desert'; 
+    if (hour >= 18 && hour < 22) return 'ocean';
+    return 'night';
+  };
   
   // Compute insights data
   const learnerState = learnerCache.getState();
@@ -609,6 +620,26 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
               >
                 🧪 Funnel
               </button>
+              {/* QA Panel - DEV only */}
+              {process.env.NODE_ENV === 'development' && (
+                <button 
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === 'qa'}
+                  aria-controls="tab-content-qa"
+                  id="tab-qa"
+                  data-tab="qa"
+                  onClick={handleTabClick}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                    activeTab === 'qa' 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-white border hover:bg-stone-50'
+                  }`}
+                  data-testid="tab-qa"
+                >
+                  📱 QA
+                </button>
+              )}
             </div>
 
             {activeTab === 'roster' ? (
@@ -863,6 +894,16 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
             ) : activeTab === 'funnel' ? (
               <div className="max-h-96 overflow-y-auto">
                 <FunnelViewer />
+              </div>
+            ) : activeTab === 'qa' && process.env.NODE_ENV === 'development' ? (
+              <div 
+                id="tab-content-qa" 
+                role="region" 
+                aria-live="polite" 
+                aria-labelledby="tab-qa"
+                className="max-h-96 overflow-y-auto space-y-4"
+              >
+                <QAPanel currentBiome={getCurrentBiome()} />
               </div>
             ) : (
               <div>Unknown tab</div>
