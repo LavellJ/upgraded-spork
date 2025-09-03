@@ -1,4 +1,5 @@
 import type { ProgressEvent } from '../progress';
+import { getActiveAssignments, getLessonAssignment, type AssignedPathV2 } from './assign';
 
 /**
  * Get the current active learner ID from roster for CSV export
@@ -14,6 +15,60 @@ function getCurrentLearnerId(): string {
     console.warn('Failed to get current learner ID for CSV export:', error);
   }
   return 'unknown';
+}
+
+/**
+ * Get assignment data for a lesson
+ */
+function getAssignmentData(lessonId: string, learnerId: string): {
+  assignmentId: string;
+  assignmentName: string;
+  pathDueAt: string;
+  lessonDueAt: string;
+  lessonStatus: string;
+  completedAt: string;
+} {
+  try {
+    const assignments = getActiveAssignments(learnerId, { includeArchived: true });
+    const lessonAssignment = getLessonAssignment(assignments, lessonId);
+    
+    if (!lessonAssignment) {
+      return {
+        assignmentId: '',
+        assignmentName: '',
+        pathDueAt: '',
+        lessonDueAt: '',
+        lessonStatus: '',
+        completedAt: ''
+      };
+    }
+    
+    // Find the path that contains this lesson
+    const path = assignments.find(p => 
+      p.lessons.some(l => l.lessonId === lessonId)
+    );
+    
+    const lesson = path?.lessons.find(l => l.lessonId === lessonId);
+    
+    return {
+      assignmentId: path?.id || '',
+      assignmentName: path?.name || '',
+      pathDueAt: path?.dueAt ? new Date(path.dueAt).toISOString() : '',
+      lessonDueAt: lesson?.dueAt ? new Date(lesson.dueAt).toISOString() : '',
+      lessonStatus: lesson?.status || '',
+      completedAt: lesson?.completedAt ? new Date(lesson.completedAt).toISOString() : ''
+    };
+  } catch (error) {
+    console.warn('Failed to get assignment data for lesson:', lessonId, error);
+    return {
+      assignmentId: '',
+      assignmentName: '',
+      pathDueAt: '',
+      lessonDueAt: '',
+      lessonStatus: '',
+      completedAt: ''
+    };
+  }
 }
 
 export interface CsvExportOptions {
@@ -41,7 +96,13 @@ export function buildCsv(events: ProgressEvent[], options: CsvExportOptions = {}
     'noticeId',
     'action',
     'actor',
-    'learnerId'
+    'learnerId',
+    'assignmentId',
+    'assignmentName',
+    'pathDueAt',
+    'lessonDueAt',
+    'lessonStatus',
+    'completedAt'
   ];
 
   const rows: string[] = [];
@@ -51,6 +112,17 @@ export function buildCsv(events: ProgressEvent[], options: CsvExportOptions = {}
   }
 
   events.forEach(event => {
+    const currentLearnerId = getCurrentLearnerId();
+    const lessonId = 'lessonId' in event ? event.lessonId : '';
+    const assignmentData = lessonId ? getAssignmentData(lessonId, currentLearnerId) : {
+      assignmentId: '',
+      assignmentName: '',
+      pathDueAt: '',
+      lessonDueAt: '',
+      lessonStatus: '',
+      completedAt: ''
+    };
+
     const row: (string | number | undefined)[] = [
       // dateISO
       dateFormat === 'iso' 
@@ -64,7 +136,7 @@ export function buildCsv(events: ProgressEvent[], options: CsvExportOptions = {}
       'biomeId' in event ? event.biomeId : '',
       
       // lessonId  
-      'lessonId' in event ? event.lessonId : '',
+      lessonId,
       
       // skillId
       'skillId' in event ? event.skillId : '',
@@ -91,7 +163,15 @@ export function buildCsv(events: ProgressEvent[], options: CsvExportOptions = {}
       'actor' in event ? event.actor : '',
       
       // learnerId (from current active learner in roster)
-      getCurrentLearnerId()
+      currentLearnerId,
+      
+      // Assignment data (new v2 columns)
+      assignmentData.assignmentId,
+      assignmentData.assignmentName,
+      assignmentData.pathDueAt,
+      assignmentData.lessonDueAt,
+      assignmentData.lessonStatus,
+      assignmentData.completedAt
     ];
 
     // Escape values and handle commas/quotes

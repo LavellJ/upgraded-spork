@@ -14,6 +14,8 @@ import { downloadCsv, getCsvStats } from '../guide/exportCsv';
 import { loadEvents, getEventsRange } from '../progress';
 import { Download } from 'lucide-react';
 import { AssignmentCreator } from '../guide/AssignmentCreator';
+import { AssignmentsManager } from '../guide/AssignmentsManager';
+import { AssignmentsSummary } from '../guide/AssignmentsSummary';
 import { CloudSyncSettings } from '../auth/CloudSyncSettings';
 import { PrefetchSettings } from './PrefetchSettings';
 import { InsightsCard } from '../guide/InsightsCard';
@@ -551,8 +553,19 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 />
               </div>
             ) : activeTab === 'assignments' ? (
-              <div className="max-h-96 overflow-y-auto">
-                <AssignmentCreator selectedFramework={framework} />
+              <div className="max-h-96 overflow-y-auto space-y-4">
+                <AssignmentsSummary onOpenJournal={onOpenJournal} />
+                <AssignmentsManager />
+                
+                {/* Legacy Assignment Creator */}
+                <details className="mt-4">
+                  <summary className="text-sm font-medium text-gray-600 cursor-pointer hover:text-gray-800">
+                    Legacy Assignment Creator (V1)
+                  </summary>
+                  <div className="mt-2 p-3 border rounded bg-gray-50">
+                    <AssignmentCreator selectedFramework={framework} />
+                  </div>
+                </details>
               </div>
             ) : activeTab === 'privacy' ? (
               <div className="max-h-96 overflow-y-auto space-y-4">
