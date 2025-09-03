@@ -186,7 +186,34 @@ function EditLearnerForm({ learner, onComplete, onCancel }: EditLearnerFormProps
 }
 
 export function RosterManagement() {
-  const { roster, activeLearner, isLoading, switchLearner, createLearner, editLearner, removeLearner } = useRoster();
+  // Temporary debug version - try to access context with error handling
+  let rosterData;
+  try {
+    rosterData = useRoster();
+    console.log('RosterManagement successfully accessed context:', rosterData);
+  } catch (error) {
+    console.error('RosterManagement failed to access context:', error);
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Learners (Debug Mode)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-sm text-red-500">
+            Debug: Context access failed - {error instanceof Error ? error.message : 'Unknown error'}
+          </div>
+          <div className="text-xs text-gray-500 mt-2">
+            This suggests an architectural issue with provider placement.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { roster, activeLearner, isLoading, switchLearner, createLearner, editLearner, removeLearner } = rosterData;
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingLearner, setEditingLearner] = useState<LearnerProfile | null>(null);
 
