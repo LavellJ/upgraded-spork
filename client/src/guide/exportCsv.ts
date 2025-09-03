@@ -18,6 +18,26 @@ function getCurrentLearnerId(): string {
 }
 
 /**
+ * Get cloud sync status for CSV export
+ */
+function getCloudSyncStatus(): string {
+  try {
+    const authData = localStorage.getItem('qi.auth.v1');
+    if (authData) {
+      const auth = JSON.parse(authData);
+      if (auth.enabled && auth.verified && auth.token) {
+        return 'enabled';
+      } else if (auth.enabled) {
+        return 'pending';
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to get cloud sync status for CSV export:', error);
+  }
+  return 'local-only';
+}
+
+/**
  * Get assignment data for a lesson
  */
 function getAssignmentData(lessonId: string, learnerId: string): {
@@ -102,7 +122,8 @@ export function buildCsv(events: ProgressEvent[], options: CsvExportOptions = {}
     'pathDueAt',
     'lessonDueAt',
     'lessonStatus',
-    'completedAt'
+    'completedAt',
+    'cloudSyncStatus'
   ];
 
   const rows: string[] = [];
@@ -113,6 +134,7 @@ export function buildCsv(events: ProgressEvent[], options: CsvExportOptions = {}
 
   events.forEach(event => {
     const currentLearnerId = getCurrentLearnerId();
+    const cloudSyncStatus = getCloudSyncStatus();
     const lessonId = 'lessonId' in event ? event.lessonId : '';
     const assignmentData = lessonId ? getAssignmentData(lessonId, currentLearnerId) : {
       assignmentId: '',
@@ -171,7 +193,10 @@ export function buildCsv(events: ProgressEvent[], options: CsvExportOptions = {}
       assignmentData.pathDueAt,
       assignmentData.lessonDueAt,
       assignmentData.lessonStatus,
-      assignmentData.completedAt
+      assignmentData.completedAt,
+      
+      // Cloud sync status
+      cloudSyncStatus
     ];
 
     // Escape values and handle commas/quotes
