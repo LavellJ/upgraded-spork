@@ -18,6 +18,10 @@ export type SyncStatus = {
   lastError?: string;
   isOnline: boolean;
   isSyncing: boolean;
+  lastErrorCode?: number;
+  lastErrorType?: 'fatal' | 'retryable' | 'network';
+  lastErrorUserMessage?: string;
+  isPaused?: boolean;
 };
 
 export type SyncResult = {

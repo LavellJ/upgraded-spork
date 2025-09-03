@@ -3,9 +3,10 @@
 import { useState, useEffect, useRef } from 'react';
 import type { SyncItem, SyncStatus } from './types';
 import { loadQueue, dequeueByIds, getPendingCount } from './queue';
-import { send } from './transport';
+import { send, type EnhancedSyncResult, type TransportError } from './transport';
 import { useOnline } from '../pwa/useOnline';
 import { mergeSyncPayloads } from './merge';
+import { loadAuth, isCloudSyncReady } from '../auth/model';
 
 // Sync engine configuration
 const DEFAULT_INTERVAL_MS = 5000;
@@ -16,8 +17,30 @@ const MAX_BACKOFF_MS = 60000;
 let syncStatus: SyncStatus = {
   pending: 0,
   isOnline: false,
-  isSyncing: false
+  isSyncing: false,
+  isPaused: false
 };
+
+let syncPaused = false;
+let pauseReason: 'auth' | 'fatal' | null = null;
+
+// Auth change listener to resume sync
+function handleAuthChange(): void {
+  const auth = loadAuth();
+  
+  if (isCloudSyncReady(auth) && pauseReason === 'auth') {
+    console.log('✅ Auth restored, resuming sync');
+    syncPaused = false;
+    pauseReason = null;
+    updateSyncStatus({ isPaused: false, lastError: undefined, lastErrorType: undefined });
+  }
+}
+
+// Set up auth change listener
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', handleAuthChange);
+  window.addEventListener('auth-restored', handleAuthChange);
+}
 
 const statusListeners = new Set<(status: SyncStatus) => void>();
 
@@ -44,6 +67,30 @@ export function useSyncStatus(): SyncStatus {
   }, []);
   
   return status;
+}
+
+// Export debug information for development
+export function getSyncDebugInfo() {
+  if (process.env.NODE_ENV === 'development') {
+    const { getDevErrorLog } = require('./transport');
+    return {
+      status: syncStatus,
+      paused: syncPaused,
+      pauseReason,
+      errorLog: getDevErrorLog()
+    };
+  }
+  return null;
+}
+
+// Force resume sync (for debugging or manual recovery)
+export function forceSyncResume() {
+  if (process.env.NODE_ENV === 'development') {
+    console.log('📜 Force resuming sync engine');
+    syncPaused = false;
+    pauseReason = null;
+    updateSyncStatus({ isPaused: false, lastError: undefined, lastErrorType: undefined });
+  }
 }
 
 // Group sync items by kind for batched processing
@@ -80,20 +127,29 @@ export async function flushOnce(): Promise<boolean> {
     for (const [kind, groupItems] of Object.entries(groups)) {
       console.debug(`Syncing ${groupItems.length} ${kind} items`);
       
-      const result = await send(groupItems);
+      const result = await send(groupItems) as EnhancedSyncResult;
       
       if (!result.ok) {
+        const errorDetails = result.errorDetails;
+        
         updateSyncStatus({ 
           isSyncing: false,
-          lastError: result.error || 'Sync failed'
+          lastError: result.error || 'Sync failed',
+          lastErrorCode: errorDetails?.code,
+          lastErrorType: errorDetails?.type,
+          lastErrorUserMessage: errorDetails?.userMessage
         });
         
-        // If authentication expired, pause the sync engine
-        if (result.authExpired) {
-          console.warn('Authentication expired, pausing sync engine');
-          return false; // This will stop the sync loop
+        // Handle fatal errors - pause sync engine
+        if (result.authExpired || errorDetails?.type === 'fatal') {
+          console.warn(`⏸️ Pausing sync engine due to ${errorDetails?.type || 'auth'} error:`, result.error);
+          syncPaused = true;
+          pauseReason = result.authExpired ? 'auth' : 'fatal';
+          updateSyncStatus({ isPaused: true });
+          return false;
         }
         
+        // For retryable errors, continue with backoff
         return false;
       }
       
@@ -160,7 +216,7 @@ export function startSyncLoop({ intervalMs = DEFAULT_INTERVAL_MS } = {}) {
   updateSyncStatus({ pending: getPendingCount() });
   
   async function trySync(): Promise<void> {
-    if (!syncStatus.isOnline || isRunning) {
+    if (!syncStatus.isOnline || isRunning || syncPaused) {
       return;
     }
     
