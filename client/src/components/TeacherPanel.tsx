@@ -82,7 +82,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   const [snaps, setSnaps] = useState<Snapshot[]>(() => loadSnaps());
   const [showAuthoring, setShowAuthoring] = useState(false);
   const [selectedStandard, setSelectedStandard] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'assignments' | 'roster' | 'privacy' | 'audit'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'assignments' | 'roster' | 'privacy' | 'audit' | 'funnel'>('overview');
   
   // Profile context - TEMP: commenting out during context debugging
   // const { profile, updateProfile } = useProfile();
