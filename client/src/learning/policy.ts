@@ -1,7 +1,14 @@
 import registryData from '../data/registry.json';
 import prototypesData from '../data/prototypes.json';
 import type { LearnerState, SkillId, AgeBand } from './model';
-import { getNextAssignedLesson } from '../guide/assign';
+import { 
+  getNextAssignedLesson,
+  getActiveAssignments,
+  isDueSoon,
+  isOverdue,
+  type AssignedPathV2,
+  type AssignedLesson
+} from '../guide/assign';
 
 type RegistryEntry = {
   url?: string;
@@ -131,36 +138,89 @@ function getAgeBandBonus(lesson: LessonInfo, skillIds: SkillId[], ageBand: AgeBa
   return skillIds.length > 0 ? (alignedSkills / skillIds.length) * 0.15 : 0;
 }
 
-// Recommend next lesson pin based on mastery and novelty
+// Global variable for storing the recommendation reason (for DEV tooltips)
+let _lastRecommendationReason: string = '';
+
+// Get the reason for the last recommendation (for DEV mode)
+export function getLastRecommendationReason(): string {
+  return _lastRecommendationReason;
+}
+
+// Helper to find matching candidate for a lesson ID
+function findCandidateForLesson(candidates: string[], lessonId: string): string | null {
+  return candidates.find(candidate => {
+    // Handle both "biome.lessonId" and "lessonId" formats
+    const candidateLessonId = candidate.includes('.') ? candidate.split('.')[1] : candidate;
+    return candidateLessonId === lessonId;
+  }) || null;
+}
+
+// Recommend next lesson pin based on assignment priorities, then mastery and novelty
 export function recommendNextPin(
   candidates: string[], 
   learner: LearnerState,
   currentLoop: number = 1,
-  ageBand?: AgeBand
+  ageBand?: AgeBand,
+  learnerId?: string
 ): string | null {
   if (candidates.length === 0) return null;
   
-  // First, check for assigned lessons that haven't been completed
-  const completedSet = new Set<string>();
+  // Check assignment priorities first if we have a learner ID
+  if (learnerId) {
+    const assignmentCandidates = getAssignmentPriorityCandidates(learnerId);
+    
+    // 1. Highest priority: Overdue assigned lessons
+    if (assignmentCandidates.overdue.length > 0) {
+      for (const candidate of assignmentCandidates.overdue) {
+        const matchingCandidate = findCandidateForLesson(candidates, candidate.lessonId);
+        if (matchingCandidate) {
+          _lastRecommendationReason = `Overdue in "${candidate.pathName}"`;
+          console.log('[Compass] Prioritizing overdue assigned lesson:', matchingCandidate, '- Reason:', _lastRecommendationReason);
+          return matchingCandidate;
+        }
+      }
+    }
+    
+    // 2. Second priority: Due soon assigned lessons (≤48h)
+    if (assignmentCandidates.dueSoon.length > 0) {
+      for (const candidate of assignmentCandidates.dueSoon) {
+        const matchingCandidate = findCandidateForLesson(candidates, candidate.lessonId);
+        if (matchingCandidate) {
+          _lastRecommendationReason = `Due soon in "${candidate.pathName}"`;
+          console.log('[Compass] Prioritizing due soon assigned lesson:', matchingCandidate, '- Reason:', _lastRecommendationReason);
+          return matchingCandidate;
+        }
+      }
+    }
+    
+    // 3. Third priority: Next assigned not_started lessons
+    if (assignmentCandidates.assigned.length > 0) {
+      for (const candidate of assignmentCandidates.assigned) {
+        const matchingCandidate = findCandidateForLesson(candidates, candidate.lessonId);
+        if (matchingCandidate) {
+          _lastRecommendationReason = `Next in "${candidate.pathName}"`;
+          console.log('[Compass] Prioritizing next assigned lesson:', matchingCandidate, '- Reason:', _lastRecommendationReason);
+          return matchingCandidate;
+        }
+      }
+    }
+  }
   
-  // Build completed set from all sources (this could be passed in as a parameter)
-  // For now, we'll check against the available candidates to avoid breaking existing logic
+  // Fallback: Legacy assignment check (for backward compatibility)
+  const completedSet = new Set<string>();
   const nextAssignedLesson = getNextAssignedLesson(completedSet);
   
-  // If there's a next assigned lesson and it's in our candidates, prioritize it
   if (nextAssignedLesson) {
-    // Check if the assigned lesson is available in candidates
-    const assignedCandidate = candidates.find(candidate => {
-      // Handle both "biome.lessonId" and "lessonId" formats
-      const lessonId = candidate.includes('.') ? candidate.split('.')[1] : candidate;
-      return lessonId === nextAssignedLesson;
-    });
-    
+    const assignedCandidate = findCandidateForLesson(candidates, nextAssignedLesson);
     if (assignedCandidate) {
-      console.log('[Compass] Prioritizing assigned lesson:', assignedCandidate);
+      _lastRecommendationReason = 'Legacy assignment (V1)';
+      console.log('[Compass] Prioritizing legacy assigned lesson:', assignedCandidate);
       return assignedCandidate;
     }
   }
+  
+  // 4. Normal policy fallback: Use learner model scoring
+  _lastRecommendationReason = 'Learner model recommendation';
   
   const TARGET_MASTERY = 0.75;
   const allLessons = getAllLessons();
@@ -241,4 +301,69 @@ export function getAllSkillIds(): SkillId[] {
   }
   
   return Array.from(skillIds).sort();
+}
+
+// Assignment priority candidate with metadata
+interface AssignmentCandidate {
+  lessonId: string;
+  pathName: string;
+  dueAt?: number;
+  priority: 'overdue' | 'due_soon' | 'assigned';
+  pathOrder: number; // Position in the assignment path
+}
+
+// Get assignment priority candidates for a learner
+export function getAssignmentPriorityCandidates(learnerId: string): {
+  overdue: AssignmentCandidate[];
+  dueSoon: AssignmentCandidate[];
+  assigned: AssignmentCandidate[];
+} {
+  const now = Date.now();
+  const assignments = getActiveAssignments(learnerId);
+  
+  const overdue: AssignmentCandidate[] = [];
+  const dueSoon: AssignmentCandidate[] = [];
+  const assigned: AssignmentCandidate[] = [];
+  
+  assignments.forEach(path => {
+    path.lessons.forEach((lesson, index) => {
+      // Skip completed lessons
+      if (lesson.status === 'done') return;
+      
+      const effectiveDueAt = lesson.dueAt || path.dueAt;
+      const candidate: AssignmentCandidate = {
+        lessonId: lesson.lessonId,
+        pathName: path.name,
+        dueAt: effectiveDueAt,
+        priority: 'assigned',
+        pathOrder: index
+      };
+      
+      // Categorize by due status
+      if (effectiveDueAt && isOverdue(effectiveDueAt, now)) {
+        candidate.priority = 'overdue';
+        overdue.push(candidate);
+      } else if (effectiveDueAt && isDueSoon(effectiveDueAt, now)) {
+        candidate.priority = 'due_soon';
+        dueSoon.push(candidate);
+      } else {
+        // Only include the next not_started lesson in path order
+        if (lesson.status === 'not_started') {
+          // Check if this is the first not_started lesson in this path
+          const firstNotStarted = path.lessons.findIndex(l => l.status === 'not_started');
+          if (firstNotStarted === index) {
+            assigned.push(candidate);
+          }
+        }
+      }
+    });
+  });
+  
+  // Sort each category by path order (earliest first)
+  const sortByPathOrder = (a: AssignmentCandidate, b: AssignmentCandidate) => a.pathOrder - b.pathOrder;
+  overdue.sort(sortByPathOrder);
+  dueSoon.sort(sortByPathOrder);
+  assigned.sort(sortByPathOrder);
+  
+  return { overdue, dueSoon, assigned };
 }
