@@ -322,3 +322,61 @@
   --input: hsl(0 0% 95%);
   --ring: hsl(220 100% 35%);
 }
+
+/* Readability variables */
+:root {
+  --text-scale: 1.0;
+  --font-readable: var(--font-body);
+  --line-length-max: none;
+}
+
+/* Dyslexia-friendly mode */
+[data-readability="dyslexia"] {
+  --font-readable: 'Atkinson Hyperlegible', var(--font-body);
+  
+  /* Enhanced text metrics for dyslexia support */
+  letter-spacing: 0.03em;
+  word-spacing: 0.04em;
+  line-height: 1.6;
+}
+
+[data-readability="dyslexia"] * {
+  letter-spacing: inherit;
+  word-spacing: inherit;
+  line-height: inherit;
+}
+
+/* Text scaling utility */
+.text-scalable {
+  font-size: calc(1rem * var(--text-scale));
+}
+
+.text-scalable-sm {
+  font-size: calc(0.875rem * var(--text-scale));
+}
+
+.text-scalable-lg {
+  font-size: calc(1.125rem * var(--text-scale));
+}
+
+.text-scalable-xl {
+  font-size: calc(1.25rem * var(--text-scale));
+}
+
+.text-scalable-2xl {
+  font-size: calc(1.5rem * var(--text-scale));
+}
+
+/* Line length constraint */
+.max-line-length {
+  max-width: var(--line-length-max, none);
+}
+
+.max-line-length.constrained {
+  max-width: 65ch;
+}
+
+/* Apply readability font family */
+.font-readable {
+  font-family: var(--font-readable);
+}
