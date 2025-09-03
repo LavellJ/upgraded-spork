@@ -75,11 +75,6 @@ export function RosterProvider({ children }: RosterProviderProps) {
 
   const activeLearner = roster ? getActiveLearner(roster) : null;
 
-  // Don't provide context value until roster is fully loaded
-  if (isLoading) {
-    return <div className="flex items-center justify-center py-8 text-gray-500">Initializing roster...</div>;
-  }
-
   const switchLearner = (learnerId: string) => {
     if (!roster) return;
     
