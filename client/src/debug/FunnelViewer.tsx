@@ -25,7 +25,7 @@ export function FunnelViewer({ learnerId }: FunnelViewerProps) {
   const completedSteps = new Set(
     funnelEvents
       .map(event => 'step' in event ? event.step : '')
-      .filter((step): step is string => step !== '')
+      .filter(step => step !== '')
   );
   const totalUsers = 1; // For demo purposes, assuming one user
   
