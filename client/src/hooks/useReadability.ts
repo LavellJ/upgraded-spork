@@ -4,6 +4,7 @@ interface ReadabilitySettings {
   dyslexiaMode: boolean;
   textScale: number;
   maxLineLength: boolean;
+  reducedMotion: boolean;
 }
 
 const STORAGE_KEY = 'qi.readability';
@@ -12,6 +13,7 @@ const defaultSettings: ReadabilitySettings = {
   dyslexiaMode: false,
   textScale: 1.0,
   maxLineLength: false,
+  reducedMotion: false,
 };
 
 export function useReadability() {
@@ -41,13 +43,20 @@ export function useReadability() {
   }, [settings]);
 
   const applySettings = (newSettings: ReadabilitySettings) => {
-    const { dyslexiaMode, textScale, maxLineLength } = newSettings;
+    const { dyslexiaMode, textScale, maxLineLength, reducedMotion } = newSettings;
     
     // Apply dyslexia mode
     if (dyslexiaMode) {
       document.documentElement.dataset.readability = 'dyslexia';
     } else {
       delete document.documentElement.dataset.readability;
+    }
+    
+    // Apply reduced motion
+    if (reducedMotion) {
+      document.documentElement.dataset.reducedMotion = 'true';
+    } else {
+      delete document.documentElement.dataset.reducedMotion;
     }
     
     // Apply text scale
@@ -78,6 +87,10 @@ export function useReadability() {
     updateSettings({ maxLineLength: !settings.maxLineLength });
   };
 
+  const toggleReducedMotion = () => {
+    updateSettings({ reducedMotion: !settings.reducedMotion });
+  };
+
   const resetSettings = () => {
     setSettings(defaultSettings);
   };
@@ -87,6 +100,7 @@ export function useReadability() {
     toggleDyslexiaMode,
     setTextScale,
     toggleMaxLineLength,
+    toggleReducedMotion,
     resetSettings,
     updateSettings,
   };

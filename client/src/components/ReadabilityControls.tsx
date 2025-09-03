@@ -2,7 +2,7 @@ import React from 'react';
 import { useReadability } from '../hooks/useReadability';
 
 export function ReadabilityControls() {
-  const { settings, toggleDyslexiaMode, setTextScale, toggleMaxLineLength, resetSettings } = useReadability();
+  const { settings, toggleDyslexiaMode, setTextScale, toggleMaxLineLength, toggleReducedMotion, resetSettings } = useReadability();
 
   const handleTextScaleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTextScale(parseFloat(event.target.value));
@@ -108,6 +108,37 @@ export function ReadabilityControls() {
           </div>
           <p className="text-sm text-green-700">
             Wrap text at ~65 characters for optimal reading comfort
+          </p>
+        </div>
+
+        {/* Reduced motion toggle */}
+        <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+          <div className="flex items-center justify-between mb-2">
+            <label htmlFor="reduced-motion-toggle" className="font-medium text-orange-900">
+              Reduce motion
+            </label>
+            <button
+              id="reduced-motion-toggle"
+              onClick={toggleReducedMotion}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
+                settings.reducedMotion 
+                  ? 'bg-orange-600' 
+                  : 'bg-gray-300'
+              }`}
+              role="switch"
+              aria-checked={settings.reducedMotion}
+              aria-label={`${settings.reducedMotion ? 'Disable' : 'Enable'} reduced motion`}
+              data-testid="toggle-reduced-motion"
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  settings.reducedMotion ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+          <p className="text-sm text-orange-700">
+            Disable animations and transitions for a calmer experience
           </p>
         </div>
 
