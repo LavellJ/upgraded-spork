@@ -108,7 +108,11 @@ class CloudTransport implements SyncTransport {
       const result = await response.json();
       console.debug('Sync batch sent:', { accepted: result.accepted, total: batch.length });
       
-      return { ok: true };
+      // Return merge data if server provided it
+      return { 
+        ok: true,
+        mergeData: result.mergeData || undefined
+      };
       
     } catch (error) {
       return {
