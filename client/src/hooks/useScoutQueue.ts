@@ -64,6 +64,10 @@ let enqueueOutcomes: EnqueueOutcome[] = [];
 // Lesson-based guardrail tracking
 let shownActionableForLesson = new Set<string>();
 
+// Assignment nudge throttling (max 1 per 10 minutes)
+let lastAssignmentNudgeTime: number | null = null;
+const ASSIGNMENT_NUDGE_THROTTLE_MS = 10 * 60 * 1000; // 10 minutes
+
 // QA mode: guardrails control
 let guardrailsEnabled = true;
 
@@ -97,6 +101,13 @@ function notifySubscribers() {
 
 function shouldCoalesce(newMessage: ScoutQueueMessage): boolean {
   const now = Date.now();
+  
+  // Special throttling for assignment nudges
+  if (newMessage.id === 'assign_nudge') {
+    if (lastAssignmentNudgeTime && (now - lastAssignmentNudgeTime) < ASSIGNMENT_NUDGE_THROTTLE_MS) {
+      return true; // Block if within throttle window
+    }
+  }
   
   // Check if same message ID appeared within coalesce window
   const recentDuplicate = messageHistory.find(
@@ -451,6 +462,11 @@ export function useScoutQueue() {
     // Track first actionable per lesson
     if (message.priority === 'actionable' && context?.lessonId) {
       shownActionableForLesson.add(context.lessonId);
+    }
+    
+    // Track assignment nudge timing
+    if (fullMessage.id === 'assign_nudge') {
+      lastAssignmentNudgeTime = Date.now();
     }
     
     // Critical messages bypass queue and open ScoutSheet

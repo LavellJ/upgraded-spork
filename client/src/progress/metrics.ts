@@ -290,6 +290,7 @@ export interface ScoutAnalytics {
   ctaCtr: number;         // clicked/shownActionable
   medianDwellMs: number;  // P50 dwell across dismiss/auto_dismiss
   sessionDoseP95: number; // 95th percentile of shown per session
+  assignmentNudges: number; // Count of assignment nudges shown
 }
 
 export function scoutAnalytics(events: ProgressEvent[], days: number = 7): ScoutAnalytics {
@@ -304,7 +305,8 @@ export function scoutAnalytics(events: ProgressEvent[], days: number = 7): Scout
       showRate: 0,
       ctaCtr: 0,
       medianDwellMs: 0,
-      sessionDoseP95: 0
+      sessionDoseP95: 0,
+      assignmentNudges: 0
     };
   }
   
@@ -366,10 +368,19 @@ export function scoutAnalytics(events: ProgressEvent[], days: number = 7): Scout
     ? doses[Math.floor(doses.length * 0.95)] || doses[doses.length - 1]
     : 0;
   
+  // Count assignment nudges
+  const assignmentNudges = analyticsEvents.filter(event => 
+    'action' in event && 
+    event.action === 'shown' &&
+    'id' in event && 
+    event.id === 'assign_nudge'
+  ).length;
+  
   return {
     showRate: Math.round(showRate * 100) / 100, // Round to 2 decimal places
     ctaCtr: Math.round(ctaCtr * 100) / 100,
     medianDwellMs: Math.round(medianDwellMs),
-    sessionDoseP95
+    sessionDoseP95,
+    assignmentNudges
   };
 }
