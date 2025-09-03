@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useReadability } from '../hooks/useReadability';
 
 interface ShimmerImageProps {
   src: string;
@@ -28,6 +29,11 @@ export function ShimmerImage({
   const [isError, setIsError] = useState(false);
   const [showLQIP, setShowLQIP] = useState(!!lqipSrc);
   const imgRef = useRef<HTMLImageElement>(null);
+  const { settings } = useReadability();
+  
+  // Check for reduced motion preference
+  const shouldReduceMotion = settings.reducedMotion || 
+    (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   // Reserve aspect ratio to prevent layout shifts
   const aspectRatio = height / width;
@@ -59,9 +65,11 @@ export function ShimmerImage({
       {/* Shimmer background animation */}
       {!isLoaded && !isError && (
         <div 
-          className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]"
+          className={`absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] ${
+            shouldReduceMotion ? '' : 'animate-[shimmer_1.5s_ease-in-out_infinite]'
+          }`}
           style={{
-            animation: 'shimmer 1.5s ease-in-out infinite',
+            animation: shouldReduceMotion ? 'none' : 'shimmer 1.5s ease-in-out infinite',
             backgroundImage: 'linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%)',
             backgroundSize: '200% 100%'
           }}
@@ -90,7 +98,7 @@ export function ShimmerImage({
         onError={handleError}
         initial={{ opacity: 0 }}
         animate={{ opacity: isLoaded ? 1 : 0 }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
+        transition={shouldReduceMotion ? { duration: 0.001 } : { duration: 0.3, ease: 'easeOut' }}
         style={{ 
           willChange: isLoaded ? 'auto' : 'opacity'
         }}

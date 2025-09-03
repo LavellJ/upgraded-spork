@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useScoutQueue, type ScoutQueueMessage } from '../hooks/useScoutQueue';
+import { useReadability } from '../hooks/useReadability';
 
 interface ScoutBubbleProps {
   onClick?: () => void;
@@ -16,6 +17,11 @@ export function ScoutBubble({
   visible = true 
 }: ScoutBubbleProps) {
   const { current, dismiss, pauseTimer, resumeTimer } = useScoutQueue();
+  const { settings } = useReadability();
+  
+  // Check for reduced motion preference
+  const shouldReduceMotion = settings.reducedMotion || 
+    (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   
   if (!visible || !current) return null;
 
@@ -25,17 +31,17 @@ export function ScoutBubble({
       opacity: 1, 
       scale: 1, 
       y: 0,
-      transition: calm ? { duration: 0.2 } : {
+      transition: (calm || shouldReduceMotion) ? { duration: 0.001 } : {
         type: "spring",
         damping: 15,
         stiffness: 300
       }
     },
-    hover: calm ? {} : { scale: 1.05 },
-    tap: calm ? {} : { scale: 0.95 }
+    hover: (calm || shouldReduceMotion) ? {} : { scale: 1.05 },
+    tap: (calm || shouldReduceMotion) ? {} : { scale: 0.95 }
   };
 
-  const avatarBounce = calm ? {} : {
+  const avatarBounce = (calm || shouldReduceMotion) ? {} : {
     y: [0, -2, 0],
     transition: {
       duration: 2,
@@ -109,7 +115,9 @@ export function ScoutBubble({
         
         {/* Active indicator */}
         <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white">
-          <div className="w-full h-full bg-green-400 rounded-full animate-ping opacity-75"></div>
+          <div className={`w-full h-full bg-green-400 rounded-full opacity-75 ${
+            shouldReduceMotion ? '' : 'animate-ping'
+          }`}></div>
         </div>
       </motion.div>
 

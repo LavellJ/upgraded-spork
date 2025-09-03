@@ -380,3 +380,32 @@
 .font-readable {
   font-family: var(--font-readable);
 }
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Reduced motion utility classes */
+.motion-safe:motion-reduce {
+  animation: none !important;
+  transition: none !important;
+}
+
+.motion-reduce-duration {
+  animation-duration: 0.001ms !important;
+  transition-duration: 0.001ms !important;
+}
+
+/* Force reduced motion for specific user setting */
+[data-reduced-motion="true"] * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
