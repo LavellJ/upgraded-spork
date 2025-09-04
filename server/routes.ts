@@ -151,6 +151,12 @@ async function saveUserDoc(email: string, doc: UserDoc): Promise<void> {
 export async function registerRoutes(app: Express): Promise<Server> {
   const api = Router();
 
+  // Serve the teacher quick start guide as a static file
+  app.get('/teacher-quick-start-guide.html', (req, res) => {
+    const filePath = path.join(import.meta.dirname, '../public/teacher-quick-start-guide.html');
+    res.sendFile(filePath);
+  });
+
   // Basic health check
   api.get("/api/health", (_req, res) => {
     res.json({ ok: true });
