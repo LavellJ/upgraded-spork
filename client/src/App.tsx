@@ -37,6 +37,7 @@ import { NewPackBadge } from "./components/NewPackBadge";
 import { FeedbackWidget } from "./feedback/Widget";
 import { ClassJoinBanner } from "./components/ClassJoinBanner";
 import { processClassDeepLink } from "./utils/classDeepLink";
+import { SharePrompt } from "./components/SharePrompt";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -1301,6 +1302,11 @@ function AppContent(){
 
       {/* Class Join Banner for deep links */}
       <ClassJoinBanner />
+
+      {/* Share/Rate Prompts (gentle opt-in after positive signals) */}
+      <SharePrompt 
+        learnerId={rosterContext?.activeLearner?.id}
+      />
 
       {/* Toast region for accessibility */}
       <div 

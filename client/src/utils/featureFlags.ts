@@ -38,10 +38,34 @@ export function isIssueReporterEnabled(): boolean {
 }
 
 /**
+ * Check if share prompts are enabled
+ */
+export function isSharePromptEnabled(): boolean {
+  // Default to enabled in development, disabled in production
+  if (process.env.NODE_ENV !== 'development') {
+    return false;
+  }
+  
+  return localStorage.getItem('qi.features.enableSharePrompt') !== 'false';
+}
+
+/**
+ * Check if rate prompts are enabled
+ */
+export function isRatePromptEnabled(): boolean {
+  // Default to enabled in development, disabled in production
+  if (process.env.NODE_ENV !== 'development') {
+    return false;
+  }
+  
+  return localStorage.getItem('qi.features.enableRatePrompt') !== 'false';
+}
+
+/**
  * Listen for feature flag changes
  */
 export function useFeatureFlagListener(
-  flag: 'feedback-widget' | 'nps' | 'issue-reporter',
+  flag: 'feedback-widget' | 'nps' | 'issue-reporter' | 'share-prompt' | 'rate-prompt',
   callback: (enabled: boolean) => void
 ): () => void {
   const eventName = `${flag}-toggle`;
