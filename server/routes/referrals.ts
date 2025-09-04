@@ -111,6 +111,52 @@ router.post('/create', requireAuth, async (req, res) => {
 });
 
 /**
+ * GET /api/referrals/stats
+ * Get aggregated referral statistics for the authenticated user
+ */
+router.get('/stats', requireAuth, async (req, res) => {
+  try {
+    const userEmail = (req as any).user.email;
+    const now = Date.now();
+    const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000);
+    
+    // Get all referrals for this user
+    const referrals = statements.getReferralsByOwner.all(userEmail);
+    
+    // Calculate total clicks
+    const totalClicks = referrals.reduce((sum: number, ref: any) => sum + (ref.clicks || 0), 0);
+    
+    // Calculate clicks in last 7 days
+    const clicks7d = referrals.reduce((sum: number, ref: any) => {
+      if (ref.lastClickAt && ref.lastClickAt >= sevenDaysAgo) {
+        return sum + (ref.clicks || 0);
+      }
+      return sum;
+    }, 0);
+    
+    // Get recent clicks (simplified - in real implementation, would need click history table)
+    const lastClicks = referrals
+      .filter((ref: any) => ref.lastClickAt)
+      .map((ref: any) => ({ at: ref.lastClickAt }))
+      .sort((a: any, b: any) => b.at - a.at)
+      .slice(0, 10);
+    
+    res.json({
+      success: true,
+      stats: {
+        totalClicks,
+        clicks7d,
+        lastClicks
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error in GET /api/referrals/stats:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
  * GET /api/referrals
  * Get referrals for the current user
  */

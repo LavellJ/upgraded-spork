@@ -4,7 +4,7 @@ import PageHeader from './layout/PageHeader'
 import SubTabs, { type TabItem } from './layout/SubTabs'
 
 const Insights = lazy(() => import('./InsightsCard').then(m => ({ default: m.InsightsCard })))
-const Reports = lazy(() => import('./reports/Trends').then(m => ({ default: m.Trends })))
+const Reports = lazy(() => import('./reports/Reports').then(m => ({ default: m.Reports })))
 const Assign = lazy(() => import('./AssignmentsManager').then(m => ({ default: m.AssignmentsManager })))
 const Learners = lazy(() => import('../components/RosterManagement').then(m => ({ default: m.RosterManagement })))
 const Classes = lazy(() => import('./Classes').then(m => ({ default: m.Classes })))
@@ -36,7 +36,7 @@ export default function GuidePanel() {
           tab === 'classes' ? 'Classes' : 'Settings'
         }
         subtitle={
-          tab === 'reports' ? 'Multi-week class performance' :
+          tab === 'reports' ? 'Analytics and growth metrics' :
           tab === 'assign' ? 'Manage due dates and paths' :
           tab === 'classes' ? 'Rosters, codes, and projector presets' :
           tab === 'insights' ? 'Signals at a glance' : undefined
