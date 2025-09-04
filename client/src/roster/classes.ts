@@ -12,6 +12,8 @@ export type ClassInfo = {
   projectorPreset?: {
     fontScale?: number;
     hideNames?: boolean;
+    muteSFX?: boolean;
+    largeCursor?: boolean;
   };
   code?: string; // short alphanumeric, e.g. 6 chars
 };
