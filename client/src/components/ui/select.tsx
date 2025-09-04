@@ -4,7 +4,7 @@ import * as React from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
 import { Check, ChevronDown, ChevronUp } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "../../lib/utils"
 
 const Select = SelectPrimitive.Root
 
@@ -12,23 +12,44 @@ const SelectGroup = SelectPrimitive.Group
 
 const SelectValue = SelectPrimitive.Value
 
+interface SelectTriggerProps extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> {
+  error?: string;
+  helpText?: string;
+}
+
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
-      className
+  SelectTriggerProps
+>(({ className, children, error, helpText, ...props }, ref) => (
+  <div className="space-y-1">
+    <SelectPrimitive.Trigger
+      ref={ref}
+      className={cn(
+        "flex h-10 w-full items-center justify-between rounded-md border bg-bg-card px-3 py-2 text-sm ring-offset-background data-[placeholder]:text-fg-muted focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+        "data-[density='compact']:h-8 data-[density='compact']:px-2",
+        error ? "border-danger focus:ring-danger" : "border-border",
+        className
+      )}
+      aria-invalid={error ? 'true' : 'false'}
+      aria-describedby={error ? `${props.id}-error` : helpText ? `${props.id}-help` : undefined}
+      {...props}
+    >
+      {children}
+      <SelectPrimitive.Icon asChild>
+        <ChevronDown className="h-4 w-4 opacity-50" />
+      </SelectPrimitive.Icon>
+    </SelectPrimitive.Trigger>
+    {error && (
+      <p id={`${props.id}-error`} className="text-sm text-danger">
+        {error}
+      </p>
     )}
-    {...props}
-  >
-    {children}
-    <SelectPrimitive.Icon asChild>
-      <ChevronDown className="h-4 w-4 opacity-50" />
-    </SelectPrimitive.Icon>
-  </SelectPrimitive.Trigger>
+    {helpText && !error && (
+      <p id={`${props.id}-help`} className="subtle">
+        {helpText}
+      </p>
+    )}
+  </div>
 ))
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
 
@@ -118,7 +139,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-bg-subtle focus:text-fg-default data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props}
