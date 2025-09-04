@@ -82,6 +82,10 @@
   --volcano-red: 220 20 60;
   --lagoon-cyan: 0 206 209;
   --quest-amber: 255 191 0;
+
+  /* Projector Preset Variables */
+  --projector-font-scale: 1.0;
+  --projector-hide-names: 0;
   
   /* Semantic Color Tokens - Default Theme */
   --bg-base: hsl(43.6364 60% 95%);
@@ -410,9 +414,22 @@
   scroll-behavior: auto !important;
 }
 
-/* Projector-safe mode styles */
+/* Dynamic Projector Preset Styles */
+html[data-projector-font-scale] {
+  font-size: calc(1rem * var(--projector-font-scale));
+}
+
+/* Hide learner names when projector preset is active */
+html[data-projector-hide-names="true"] .learner-name {
+  visibility: hidden;
+}
+
+html[data-projector-hide-names="true"] .hide-on-projector {
+  display: none !important;
+}
+
+/* Static projector-safe mode styles for backwards compatibility */
 .projector-mode {
-  /* Boost font sizes for better visibility */
   font-size: 120%;
 }
 
