@@ -206,7 +206,7 @@ function emitAnalyticsEvent(
 ) {
   try {
     import('../progress').then(({ pushEvent }) => {
-      import('../sync/queue').then(({ getSessionId }) => {
+      import('../analytics/session').then(({ getSessionId }) => {
         const scoutVariant = getScoutDwellVariant();
         const abVariant: Record<string, string> = {
           'scout.dwell': scoutVariant
@@ -420,7 +420,7 @@ export function useScoutQueue() {
         // Log progress event for routed_inbox analytics
         try {
           import('../progress/events').then(({ pushEvent }) => {
-            import('../sync/queue').then(({ getSessionId }) => {
+            import('../analytics/session').then(({ getSessionId }) => {
               pushEvent({
                 kind: 'scout_analytics',
                 action: 'routed_inbox',

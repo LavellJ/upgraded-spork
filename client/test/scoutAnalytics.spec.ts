@@ -3,7 +3,8 @@
 
 import { describe, test, expect, beforeEach, vi, afterEach } from 'vitest';
 import { resetScoutQueue, getSessionStats } from '../src/hooks/useScoutQueue';
-import { clearEvents, pushEvent, getSessionId, loadEvents } from '../src/progress/events';
+import { clearEvents, pushEvent, loadEvents } from '../src/progress/events';
+import { getSessionId } from '../src/analytics/session';
 import { scoutAnalytics, scoutSummary } from '../src/progress/metrics';
 import { 
   pickScoutLine, 
