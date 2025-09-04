@@ -171,8 +171,8 @@ export class DatabaseUserStorage {
       
       // Save learner data by distributing into appropriate buckets
       for (const [learnerId, learnerData] of Object.entries(doc.data)) {
-        // Group data by bucket type based on item kind/type
-        const buckets: Record<BucketType, any> = {
+        // Group data by bucket type based on item kind/type  
+        const buckets = {
           events: {},
           model: {},
           journal: {},

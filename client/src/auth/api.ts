@@ -5,37 +5,96 @@ import type { Auth } from './model';
 
 /**
  * Request magic link for authentication
- * In DEV: calls /api/dev/issue to get a JWT token
- * In PROD: stub that would send actual magic link email
+ * Calls the hardened /api/auth/magic-link endpoint in both dev and production
+ * Fallback to dev endpoint for direct token generation in development
  */
 export async function requestMagicLink(email: string): Promise<{ success: boolean; token?: string; message: string }> {
-  if (process.env.NODE_ENV === 'development') {
-    try {
-      const response = await fetch(`/api/dev/issue?email=${encodeURIComponent(email)}&role=guide`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      
-      return {
-        success: true,
-        token: data.token,
-        message: 'Development token generated successfully'
-      };
-    } catch (error) {
-      console.error('Failed to request magic link:', error);
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Failed to generate development token'
-      };
+  try {
+    // Use production magic link endpoint
+    const response = await fetch('/api/auth/magic-link', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-  } else {
-    // Production: would send magic link email via backend
+    
+    const data = await response.json();
+    
     return {
-      success: true,
-      message: 'Magic link sent to your email! Please check your inbox and click the link to sign in.'
+      success: data.success,
+      message: data.message || 'Magic link sent! Please check your email.'
+    };
+  } catch (error) {
+    console.error('Failed to request magic link:', error);
+    
+    // Fallback to dev endpoint in development
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        const response = await fetch(`/api/dev/issue?email=${encodeURIComponent(email)}&role=guide`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        return {
+          success: true,
+          token: data.token,
+          message: 'Development token generated successfully'
+        };
+      } catch (devError) {
+        console.error('Dev fallback failed:', devError);
+        return {
+          success: false,
+          message: 'Unable to generate authentication. Please try again.'
+        };
+      }
+    }
+    
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to send magic link'
+    };
+  }
+}
+
+/**
+ * Verify magic link token received via email or URL
+ */
+export async function verifyMagicLinkToken(token: string): Promise<{ success: boolean; user?: any; token?: string; message: string }> {
+  try {
+    const response = await fetch('/api/auth/verify-token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token }),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Token verification failed');
+    }
+    
+    const data = await response.json();
+    
+    return {
+      success: data.success,
+      user: data.user,
+      token: data.token,
+      message: 'Successfully signed in!'
+    };
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Invalid or expired magic link'
     };
   }
 }
