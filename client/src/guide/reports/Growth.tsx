@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import { Button } from '../../components/ui/button';
 import { useToast } from '../../hooks/use-toast';
 import { useReferrals } from '../../hooks/useReferrals';
+import { isCoTeacherInvitesEnabled, isReferralsEnabled } from '../../utils/featureFlags';
 import { Users, Share2, Download, Copy, QrCode, UserPlus, Calendar, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -18,6 +19,10 @@ export function Growth() {
   const { referrals, loading, refresh: fetchReferrals, createReferral } = useReferrals();
   const { toast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
+
+  // Feature flags
+  const coTeacherInvitesFlag = isCoTeacherInvitesEnabled();
+  const referralsFlag = isReferralsEnabled();
 
   // Fetch referrals on component mount
   useEffect(() => {
@@ -282,129 +287,147 @@ export function Growth() {
       {/* Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Co-teacher Invites Sent (7d) */}
-        <Card data-testid="co-teacher-invites-sent-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Co-teacher Invites Sent</CardTitle>
-            <UserPlus className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{growthMetrics.coTeacherInvitesSent7d}</div>
-            <p className="text-xs text-muted-foreground">Last 7 days</p>
-          </CardContent>
-        </Card>
+        {coTeacherInvitesFlag && (
+          <Card data-testid="co-teacher-invites-sent-card">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Co-teacher Invites Sent</CardTitle>
+              <UserPlus className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{growthMetrics.coTeacherInvitesSent7d}</div>
+              <p className="text-xs text-muted-foreground">Last 7 days</p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Co-teacher Invites Accepted (7d) */}
-        <Card data-testid="co-teacher-invites-accepted-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Co-teacher Invites Accepted</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{growthMetrics.coTeacherInvitesAccepted7d}</div>
-            <p className="text-xs text-muted-foreground">Last 7 days</p>
-          </CardContent>
-        </Card>
+        {coTeacherInvitesFlag && (
+          <Card data-testid="co-teacher-invites-accepted-card">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Co-teacher Invites Accepted</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{growthMetrics.coTeacherInvitesAccepted7d}</div>
+              <p className="text-xs text-muted-foreground">Last 7 days</p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Referral Clicks (7d) */}
-        <Card data-testid="referral-clicks-7d-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Referral Clicks</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{growthMetrics.referralClicks7d}</div>
-            <p className="text-xs text-muted-foreground">Last 7 days</p>
-          </CardContent>
-        </Card>
+        {referralsFlag && (
+          <Card data-testid="referral-clicks-7d-card">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Referral Clicks</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{growthMetrics.referralClicks7d}</div>
+              <p className="text-xs text-muted-foreground">Last 7 days</p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Total Referral Clicks */}
-        <Card data-testid="referral-clicks-total-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Referral Clicks</CardTitle>
-            <Share2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{growthMetrics.referralClicksTotal}</div>
-            <p className="text-xs text-muted-foreground">All time</p>
-          </CardContent>
-        </Card>
+        {referralsFlag && (
+          <Card data-testid="referral-clicks-total-card">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Referral Clicks</CardTitle>
+              <Share2 className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{growthMetrics.referralClicksTotal}</div>
+              <p className="text-xs text-muted-foreground">All time</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Actions */}
-      <Card data-testid="growth-actions-card">
-        <CardHeader>
-          <CardTitle className="text-lg">Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-3">
-            <Button 
-              onClick={handleCopyReferralLink}
-              className="flex items-center gap-2"
-              data-testid="copy-referral-link-button"
-            >
-              <Copy className="h-4 w-4" />
-              Copy Referral Link
-            </Button>
-            <Button 
-              variant="outline"
-              onClick={handlePrintQRPoster}
-              className="flex items-center gap-2"
-              data-testid="print-qr-poster-button"
-            >
-              <QrCode className="h-4 w-4" />
-              Print QR Poster
-            </Button>
-            <Button 
-              variant="outline"
-              onClick={handleSendCoTeacherInvite}
-              className="flex items-center gap-2"
-              data-testid="send-co-teacher-invite-button"
-            >
-              <UserPlus className="h-4 w-4" />
-              Send Co-teacher Invite
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {(referralsFlag || coTeacherInvitesFlag) && (
+        <Card data-testid="growth-actions-card">
+          <CardHeader>
+            <CardTitle className="text-lg">Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-3">
+              {referralsFlag && (
+                <>
+                  <Button 
+                    onClick={handleCopyReferralLink}
+                    className="flex items-center gap-2"
+                    data-testid="copy-referral-link-button"
+                  >
+                    <Copy className="h-4 w-4" />
+                    Copy Referral Link
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={handlePrintQRPoster}
+                    className="flex items-center gap-2"
+                    data-testid="print-qr-poster-button"
+                  >
+                    <QrCode className="h-4 w-4" />
+                    Print QR Poster
+                  </Button>
+                </>
+              )}
+              {coTeacherInvitesFlag && (
+                <Button 
+                  variant="outline"
+                  onClick={handleSendCoTeacherInvite}
+                  className="flex items-center gap-2"
+                  data-testid="send-co-teacher-invite-button"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  Send Co-teacher Invite
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Recent Referral Clicks Table */}
-      <Card data-testid="recent-clicks-card">
-        <CardHeader>
-          <CardTitle className="text-lg">Recent Referral Clicks (Last 30)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {growthMetrics.lastReferralClicks.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <Calendar className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <p>No recent referral clicks found</p>
-              <p className="text-sm">Share your referral link to start tracking clicks!</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm" data-testid="recent-clicks-table">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2 px-3">Timestamp</th>
-                    <th className="text-left py-2 px-3">Referral Code</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {growthMetrics.lastReferralClicks.map((click, index) => (
-                    <tr key={index} className="border-b">
-                      <td className="py-2 px-3" data-testid={`click-timestamp-${index}`}>
-                        {format(new Date(click.timestamp), 'MMM dd, yyyy HH:mm')}
-                      </td>
-                      <td className="py-2 px-3 font-mono" data-testid={`click-code-${index}`}>
-                        {click.code}
-                      </td>
+      {referralsFlag && (
+        <Card data-testid="recent-clicks-card">
+          <CardHeader>
+            <CardTitle className="text-lg">Recent Referral Clicks (Last 30)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {growthMetrics.lastReferralClicks.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Calendar className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <p>No recent referral clicks found</p>
+                <p className="text-sm">Share your referral link to start tracking clicks!</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm" data-testid="recent-clicks-table">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2 px-3">Timestamp</th>
+                      <th className="text-left py-2 px-3">Referral Code</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                  </thead>
+                  <tbody>
+                    {growthMetrics.lastReferralClicks.map((click, index) => (
+                      <tr key={index} className="border-b">
+                        <td className="py-2 px-3" data-testid={`click-timestamp-${index}`}>
+                          {format(new Date(click.timestamp), 'MMM dd, yyyy HH:mm')}
+                        </td>
+                        <td className="py-2 px-3 font-mono" data-testid={`click-code-${index}`}>
+                          {click.code}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

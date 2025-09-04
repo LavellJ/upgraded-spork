@@ -27,6 +27,12 @@ const mockReferrals = [
   }
 ];
 
+// Mock feature flags
+vi.mock('../../src/utils/featureFlags', () => ({
+  isCoTeacherInvitesEnabled: vi.fn(() => true),
+  isReferralsEnabled: vi.fn(() => true)
+}));
+
 const mockRefresh = vi.fn();
 const mockCreateReferral = vi.fn();
 
@@ -97,7 +103,7 @@ describe('Growth Dashboard', () => {
       expect(screen.getByText('Track referrals and co-teacher invitations')).toBeInTheDocument();
     });
 
-    it('should render all metric cards', () => {
+    it('should render all metric cards when feature flags are enabled', () => {
       render(<Growth />);
 
       expect(screen.getByTestId('co-teacher-invites-sent-card')).toBeInTheDocument();
@@ -106,7 +112,31 @@ describe('Growth Dashboard', () => {
       expect(screen.getByTestId('referral-clicks-total-card')).toBeInTheDocument();
     });
 
-    it('should render action buttons', () => {
+    it('should hide co-teacher cards when feature flag is disabled', async () => {
+      const { isCoTeacherInvitesEnabled } = await import('../../src/utils/featureFlags');
+      vi.mocked(isCoTeacherInvitesEnabled).mockReturnValue(false);
+
+      render(<Growth />);
+
+      expect(screen.queryByTestId('co-teacher-invites-sent-card')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('co-teacher-invites-accepted-card')).not.toBeInTheDocument();
+      expect(screen.getByTestId('referral-clicks-7d-card')).toBeInTheDocument();
+      expect(screen.getByTestId('referral-clicks-total-card')).toBeInTheDocument();
+    });
+
+    it('should hide referral cards when feature flag is disabled', async () => {
+      const { isReferralsEnabled } = await import('../../src/utils/featureFlags');
+      vi.mocked(isReferralsEnabled).mockReturnValue(false);
+
+      render(<Growth />);
+
+      expect(screen.getByTestId('co-teacher-invites-sent-card')).toBeInTheDocument();
+      expect(screen.getByTestId('co-teacher-invites-accepted-card')).toBeInTheDocument();
+      expect(screen.queryByTestId('referral-clicks-7d-card')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('referral-clicks-total-card')).not.toBeInTheDocument();
+    });
+
+    it('should render action buttons when features are enabled', () => {
       render(<Growth />);
 
       expect(screen.getByTestId('copy-referral-link-button')).toBeInTheDocument();
@@ -115,11 +145,46 @@ describe('Growth Dashboard', () => {
       expect(screen.getByTestId('export-growth-csv-button')).toBeInTheDocument();
     });
 
-    it('should render recent clicks table when there are clicks', () => {
+    it('should hide action buttons when both feature flags are disabled', async () => {
+      const { isCoTeacherInvitesEnabled, isReferralsEnabled } = await import('../../src/utils/featureFlags');
+      vi.mocked(isCoTeacherInvitesEnabled).mockReturnValue(false);
+      vi.mocked(isReferralsEnabled).mockReturnValue(false);
+
+      render(<Growth />);
+
+      expect(screen.queryByTestId('growth-actions-card')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('copy-referral-link-button')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('print-qr-poster-button')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('send-co-teacher-invite-button')).not.toBeInTheDocument();
+    });
+
+    it('should show only referral buttons when only referrals enabled', async () => {
+      const { isCoTeacherInvitesEnabled, isReferralsEnabled } = await import('../../src/utils/featureFlags');
+      vi.mocked(isCoTeacherInvitesEnabled).mockReturnValue(false);
+      vi.mocked(isReferralsEnabled).mockReturnValue(true);
+
+      render(<Growth />);
+
+      expect(screen.getByTestId('copy-referral-link-button')).toBeInTheDocument();
+      expect(screen.getByTestId('print-qr-poster-button')).toBeInTheDocument();
+      expect(screen.queryByTestId('send-co-teacher-invite-button')).not.toBeInTheDocument();
+    });
+
+    it('should render recent clicks table when referrals enabled and there are clicks', () => {
       render(<Growth />);
 
       expect(screen.getByTestId('recent-clicks-card')).toBeInTheDocument();
       expect(screen.getByTestId('recent-clicks-table')).toBeInTheDocument();
+    });
+
+    it('should hide recent clicks table when referrals disabled', async () => {
+      const { isReferralsEnabled } = await import('../../src/utils/featureFlags');
+      vi.mocked(isReferralsEnabled).mockReturnValue(false);
+
+      render(<Growth />);
+
+      expect(screen.queryByTestId('recent-clicks-card')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('recent-clicks-table')).not.toBeInTheDocument();
     });
   });
 

@@ -49,11 +49,26 @@ export function FeatureFlagsPanel() {
 
   // Share/Rate prompt flags
   const [sharePromptEnabled, setSharePromptEnabled] = useState(() => {
-    return localStorage.getItem('qi.features.enableSharePrompt') !== 'false';
+    return localStorage.getItem('qi.features.enableSharePrompt') === 'true';
   });
 
   const [ratePromptEnabled, setRatePromptEnabled] = useState(() => {
-    return localStorage.getItem('qi.features.enableRatePrompt') !== 'false';
+    return localStorage.getItem('qi.features.enableRatePrompt') === 'true';
+  });
+
+  // Growth feature flags
+  const [coTeacherInvitesEnabled, setCoTeacherInvitesEnabled] = useState(() => {
+    if (process.env.NODE_ENV !== 'development') {
+      return localStorage.getItem('qi.features.enableCoTeacherInvites') === 'true';
+    }
+    return localStorage.getItem('qi.features.enableCoTeacherInvites') !== 'false';
+  });
+
+  const [referralsEnabled, setReferralsEnabled] = useState(() => {
+    if (process.env.NODE_ENV !== 'development') {
+      return localStorage.getItem('qi.features.enableReferrals') === 'true';
+    }
+    return localStorage.getItem('qi.features.enableReferrals') !== 'false';
   });
 
   if (!isDev) return null;
@@ -139,6 +154,24 @@ export function FeatureFlagsPanel() {
     localStorage.setItem('qi.features.enableRatePrompt', enabled ? 'true' : 'false');
     // Dispatch custom event to notify rate prompt system
     window.dispatchEvent(new CustomEvent('rate-prompt-toggle', { 
+      detail: { enabled } 
+    }));
+  };
+
+  const handleCoTeacherInvitesToggle = (enabled: boolean) => {
+    setCoTeacherInvitesEnabled(enabled);
+    localStorage.setItem('qi.features.enableCoTeacherInvites', enabled ? 'true' : 'false');
+    // Dispatch custom event to notify growth components
+    window.dispatchEvent(new CustomEvent('co-teacher-invites-toggle', { 
+      detail: { enabled } 
+    }));
+  };
+
+  const handleReferralsToggle = (enabled: boolean) => {
+    setReferralsEnabled(enabled);
+    localStorage.setItem('qi.features.enableReferrals', enabled ? 'true' : 'false');
+    // Dispatch custom event to notify growth components
+    window.dispatchEvent(new CustomEvent('referrals-toggle', { 
       detail: { enabled } 
     }));
   };
@@ -377,6 +410,57 @@ export function FeatureFlagsPanel() {
           </div>
         </div>
 
+        {/* Growth Features */}
+        <div className="flex items-center justify-between p-3 rounded-lg bg-white border">
+          <div className="flex items-start gap-3">
+            <Share2 className="w-5 h-5 text-blue-600 mt-0.5" />
+            <div className="flex-1">
+              <Label className="text-sm font-medium">Co-teacher Invites</Label>
+              <p className="text-xs text-gray-600 mt-1">
+                Enable teachers to invite colleagues to collaborate on classes and share resources.
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant={coTeacherInvitesEnabled ? "default" : "secondary"} className="text-xs">
+                  {coTeacherInvitesEnabled ? 'Enabled' : 'Disabled'}
+                </Badge>
+                {coTeacherInvitesEnabled && (
+                  <span className="text-xs text-blue-600">Collaboration</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <Switch
+            checked={coTeacherInvitesEnabled}
+            onCheckedChange={handleCoTeacherInvitesToggle}
+            data-testid="co-teacher-invites-toggle"
+          />
+        </div>
+
+        <div className="flex items-center justify-between p-3 rounded-lg bg-white border">
+          <div className="flex items-start gap-3">
+            <Share2 className="w-5 h-5 text-purple-600 mt-0.5" />
+            <div className="flex-1">
+              <Label className="text-sm font-medium">Referral Links</Label>
+              <p className="text-xs text-gray-600 mt-1">
+                Generate and track referral links for organic growth and teacher sharing.
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant={referralsEnabled ? "default" : "secondary"} className="text-xs">
+                  {referralsEnabled ? 'Enabled' : 'Disabled'}
+                </Badge>
+                {referralsEnabled && (
+                  <span className="text-xs text-purple-600">Growth tracking</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <Switch
+            checked={referralsEnabled}
+            onCheckedChange={handleReferralsToggle}
+            data-testid="referrals-toggle"
+          />
+        </div>
+
         {/* Status Summary */}
         <div className="p-3 rounded-lg bg-gray-50 border-t">
           <div className="text-xs text-gray-600 space-y-1">
@@ -390,6 +474,8 @@ export function FeatureFlagsPanel() {
               <span>• Issues: {issueReporterEnabled ? 'Enabled' : 'Disabled'}</span>
               <span>• Share: {sharePromptEnabled ? 'Enabled' : 'Disabled'}</span>
               <span>• Rate: {ratePromptEnabled ? 'Enabled' : 'Disabled'}</span>
+              <span>• Co-teacher: {coTeacherInvitesEnabled ? 'Enabled' : 'Disabled'}</span>
+              <span>• Referrals: {referralsEnabled ? 'Enabled' : 'Disabled'}</span>
             </div>
           </div>
         </div>
