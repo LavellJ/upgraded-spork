@@ -9,7 +9,9 @@ export type ProgressEvent =
   | { kind: 'scout_msg'; at: number; messageId: string; priority: 'info' | 'actionable' | 'critical'; text: string; cta?: { label: string; clicked?: boolean }; dismissed?: boolean }
   | { kind: 'scout_analytics'; at: number; id: string; priority: 'info' | 'actionable' | 'critical'; action: 'shown' | 'clicked' | 'dismissed' | 'auto_dismiss' | 'routed_inbox'; dwellMs?: number; sessionId: string; abVariant?: Record<string, string> }
   | { kind: 'guide_ack'; at: number; noticeId: string; action: 'shown' | 'ack' | 'dismiss'; actor: 'guide' }
-  | { kind: 'funnel'; at: number; step: 'onboard' | 'first_lesson_start' | 'first_lesson_finish' | 'first_journal' | 'assignment_received' | 'three_completions' };
+  | { kind: 'funnel'; at: number; step: 'onboard' | 'first_lesson_start' | 'first_lesson_finish' | 'first_journal' | 'assignment_received' | 'three_completions' }
+  | { kind: 'tuning_applied'; at: number; id: string; difficultyDelta?: number; hintsAdded: number; hasWording: boolean }
+  | { kind: 'difficulty_adjusted'; at: number; skillId: string; baseLevel: string; adjustedLevel: string; delta: number; tuningNoteId: string };
 
 import { ns, BASE_KEYS } from '../storage/namespace';
 

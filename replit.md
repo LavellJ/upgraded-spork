@@ -2,6 +2,15 @@
 
 This is a full-stack educational web application called "LearnOz" that provides AI-powered learning for the Australian curriculum. The application features an immersive, meditative design inspired by the visual style of Alto's Odyssey, with adaptive learning content tailored to different age groups (pre-primary, primary, upper-primary). Campfire learning trail serves as the app's central dashboard, replacing traditional dashboard interfaces with an immersive learning hub featuring watercolor biome illustrations and animated skill trees. The system includes AI-powered question generation, interactive progress showcase, progress tracking, Pomodoro timer functionality for focused learning sessions, and beautiful animated UI components.
 
+# Recent Changes
+
+## Content Tuning Pipeline (Completed)
+- **TuningNote System**: Created comprehensive tuning notes schema with TuningNote type for difficulty adjustments, hint additions, and wording modifications without full content rewrites
+- **Content Studio Integration**: Enhanced Content Studio with dedicated Tuning tab panel for creating, managing, and applying tuning notes to lessons
+- **Journal Generator Enhancement**: Modified journal generator to respect tuning notes by applying difficulty adjustments using getAdjustedDifficultyLevel function
+- **Analytics Integration**: Added progress event logging for tuning_applied and difficulty_adjusted events for impact tracking
+- **Storage**: Tuning notes stored in localStorage 'qi.tuning.v1' with comprehensive CRUD operations
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
