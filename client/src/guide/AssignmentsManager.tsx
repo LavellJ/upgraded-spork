@@ -21,6 +21,10 @@ import { Table, THead, TBody, TR, TH, TD } from '../components/ui/table';
 import { Chip } from '../components/ui/chip';
 import { Field, Input, Select } from '../components/ui/field';
 import { Button } from '../components/ui/button';
+import { EmptyState } from '../components/ui/empty';
+import { Skeleton } from '../components/ui/skeleton';
+import { InlineError } from '../components/ui/inline-error';
+import { useToast } from '../components/ui/toast';
 import { 
   loadPathsV2, 
   savePathsV2, 
@@ -48,6 +52,9 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
   
   // Form state
   const [formData, setFormData] = useState({
@@ -122,9 +129,20 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
       priority: formData.priority
     };
     
-    upsertPathV2(path, learnerId);
-    loadAssignments();
-    resetForm();
+    try {
+      upsertPathV2(path, learnerId);
+      loadAssignments();
+      resetForm();
+      toast.push({
+        kind: "success",
+        text: editingId ? "Assignment updated successfully" : "Assignment created successfully"
+      });
+    } catch (error) {
+      toast.push({
+        kind: "error",
+        text: "Failed to save assignment"
+      });
+    }
   };
 
   const handleEdit = (assignment: AssignedPathV2) => {
@@ -142,8 +160,19 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
   const handleDelete = (id: string) => {
     if (!learnerId) return;
     if (confirm('Are you sure you want to delete this assignment? This action cannot be undone.')) {
-      deletePathV2(id, learnerId);
-      loadAssignments();
+      try {
+        deletePathV2(id, learnerId);
+        loadAssignments();
+        toast.push({
+          kind: "success",
+          text: "Assignment deleted successfully"
+        });
+      } catch (error) {
+        toast.push({
+          kind: "error",
+          text: "Failed to delete assignment"
+        });
+      }
     }
   };
 
@@ -153,8 +182,19 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
     if (!assignment) return;
     
     const updated = { ...assignment, archived, updatedAt: Date.now() };
-    upsertPathV2(updated, learnerId);
-    loadAssignments();
+    try {
+      upsertPathV2(updated, learnerId);
+      loadAssignments();
+      toast.push({
+        kind: "success",
+        text: archived ? "Assignment archived" : "Assignment restored"
+      });
+    } catch (error) {
+      toast.push({
+        kind: "error",
+        text: "Failed to update assignment"
+      });
+    }
   };
 
   const resetForm = () => {
@@ -295,8 +335,14 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
           <TBody>
             {filteredAssignments.length === 0 ? (
               <TR>
-                <TD colSpan={6} className="text-center py-8 text-gray-500">
-                  {showArchived ? 'No assignments found.' : 'No active assignments. Create one to get started.'}
+                <TD colSpan={6} className="p-0">
+                  <EmptyState 
+                    icon={<Plus className="w-8 h-8" />}
+                    title={showArchived ? "No archived assignments" : "No assignments yet"}
+                    message={showArchived ? "Archived assignments will appear here" : "Create your first assignment to get started"}
+                    actionLabel={showArchived ? undefined : "Create Assignment"}
+                    onAction={showArchived ? undefined : () => setShowForm(true)}
+                  />
                 </TD>
               </TR>
             ) : (

@@ -18,6 +18,10 @@ import { Table, TBody, TD, TH, THead, TR } from '../../components/ui/table';
 import { Checkbox } from '../../components/ui/checkbox';
 import { Badge } from '../../components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../components/ui/tooltip';
+import { EmptyState } from '../../components/ui/empty';
+import { Skeleton } from '../../components/ui/skeleton';
+import { InlineError } from '../../components/ui/inline-error';
+import { useToast } from '../../components/ui/toast';
 
 interface TrendsProps {
   onClose?: () => void;
@@ -92,6 +96,12 @@ export function Trends({ onClose }: TrendsProps) {
   const [sortField, setSortField] = useState<SortField>('week');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [includeLearnerCount, setIncludeLearnerCount] = useState(false);
+  
+  // UI state management
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const toast = useToast();
 
   // Get available classes
   const availableClasses = useMemo(() => {
