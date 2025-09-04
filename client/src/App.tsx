@@ -32,6 +32,7 @@ import { GuideNoticeProvider } from "./guide/notices";
 import { trackFunnelStep } from "./progress/events";
 import { JoinClass } from "./components/JoinClass";
 import { ProjectorPresetApplier } from "./guide/ProjectorPresetApplier";
+import { ClassModeCTA } from "./components/classmode/ClassModeCTA";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -414,6 +415,9 @@ function AppContent(){
   
   // Check for assignment nudges on map entry (once per session)
   const [mapEntryNudgeChecked, setMapEntryNudgeChecked] = useState(false);
+  
+  // Class mode state
+  const [showClassModeCTA, setShowClassModeCTA] = useState(true);
   
   useEffect(() => {
     if (!mapEntryNudgeChecked && rosterContext?.activeLearner?.id) {
@@ -956,6 +960,50 @@ function AppContent(){
           </div>
         </header>
 
+        {/* Class Mode CTA */}
+        {showClassModeCTA && (
+          <div className="absolute top-20 left-4 z-30 max-w-sm" data-testid="class-mode-overlay">
+            <ClassModeCTA
+              onStartActivity={(classCode) => {
+                console.log('[ClassMode] Starting activity for class:', classCode);
+                // Focus on the map and trigger assignment nudges
+                if (rosterContext?.activeLearner?.id) {
+                  checkAssignmentNudges(
+                    rosterContext.activeLearner.id,
+                    enqueue,
+                    (lessonId: string) => {
+                      // Focus on the biome containing this lesson
+                      const targetLesson = Object.values(LESSONS).flat().find(l => l.id === lessonId);
+                      if (targetLesson) {
+                        for (const [biomeName, lessons] of Object.entries(LESSONS)) {
+                          if (lessons.some(l => l.id === lessonId)) {
+                            setOpenBiome(biomeName);
+                            break;
+                          }
+                        }
+                      }
+                    }
+                  );
+                }
+                setShowClassModeCTA(false);
+              }}
+              onFocusLesson={(lessonId) => {
+                // Focus on the biome containing this lesson
+                const targetLesson = Object.values(LESSONS).flat().find(l => l.id === lessonId);
+                if (targetLesson) {
+                  for (const [biomeName, lessons] of Object.entries(LESSONS)) {
+                    if (lessons.some(l => l.id === lessonId)) {
+                      setOpenBiome(biomeName);
+                      break;
+                    }
+                  }
+                }
+              }}
+              onDismiss={() => setShowClassModeCTA(false)}
+            />
+          </div>
+        )}
+        
         {/* Quest Island Map */}
         <main id="main" className="flex-1 relative p-8">
           <div className="max-w-6xl mx-auto h-full relative min-h-[560px]">
