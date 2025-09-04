@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnOz Teacher Quick Start Guide</title>
+    <style>
+        @page {
+            margin: 0.75in;
+            size: letter;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.4;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            background: white;
+            font-size: 14px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 1rem;
+        }
+        
+        .logo {
+            width: 50px;
+            height: auto;
+            margin-bottom: 0.5rem;
+        }
+        
+        h1 {
+            font-size: 1.75rem;
+            margin: 0.5rem 0;
+            color: #1e293b;
+        }
+        
+        .subtitle {
+            color: #64748b;
+            font-size: 1rem;
+            margin: 0;
+        }
+        
+        .step {
+            margin-bottom: 1.25rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            break-inside: avoid;
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .step-number {
+            background: #3b82f6;
+            color: white;
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 0;
+            color: #1e40af;
+        }
+        
+        .step-content {
+            margin-left: 2.5rem;
+        }
+        
+        .step-content p {
+            margin: 0.5rem 0;
+            color: #374151;
+        }
+        
+        .tip {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin: 1rem 0;
+            break-inside: avoid;
+        }
+        
+        .tip-header {
+            font-weight: bold;
+            color: #92400e;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .reference-section {
+            margin-top: 1.5rem;
+            break-inside: avoid;
+        }
+        
+        .reference-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+            color: #1e293b;
+        }
+        
+        .reference-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .reference-table th,
+        .reference-table td {
+            border: 1px solid #e2e8f0;
+            padding: 0.4rem;
+            text-align: left;
+        }
+        
+        .reference-table th {
+            background: #f8fafc;
+            font-weight: bold;
+            color: #374151;
+        }
+        
+        .kbd {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 3px;
+            padding: 0.1rem 0.3rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+        
+        @media print {
+            body {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="/brand/logo.png" alt="LearnOz Logo" class="logo">
+        <h1>LearnOz Teacher Quick Start Guide</h1>
+        <p class="subtitle">Get started in 3 simple steps</p>
+    </div>
+
+    <div class="step">
+        <div class="step-header">
+            <div class="step-number">1</div>
+            <h2 class="step-title">Set Up Your Class</h2>
+        </div>
+        <div class="step-content">
+            <p><strong>Create your class:</strong> Go to Teacher Panel → Classes → "Add New Class"</p>
+            <p><strong>Get your class code:</strong> Share the 6-digit code with students for easy joining</p>
+            <p><strong>Customize settings:</strong> Set grade level, learning goals, and assessment preferences</p>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">
+            <div class="step-number">2</div>
+            <h2 class="step-title">Add Students</h2>
+        </div>
+        <div class="step-content">
+            <p><strong>Bulk import:</strong> Upload a CSV file with student names and details</p>
+            <p><strong>Manual entry:</strong> Add students one by one through the Students tab</p>
+            <p><strong>Self-registration:</strong> Students can join using your class code</p>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">
+            <div class="step-number">3</div>
+            <h2 class="step-title">Assign Learning Path</h2>
+        </div>
+        <div class="step-content">
+            <p><strong>Choose content:</strong> Select from Australian Curriculum-aligned lessons</p>
+            <p><strong>Set parameters:</strong> Choose difficulty level and learning objectives</p>
+            <p><strong>Monitor progress:</strong> Track student advancement through the dashboard</p>
+        </div>
+    </div>
+
+    <div class="tip">
+        <div class="tip-header">💡 Pro Tips for Success</div>
+        <p><strong>Projector Mode:</strong> Press <span class="kbd">?</span> then enable projector-safe mode to hide student names and increase font size for classroom presentations.</p>
+        <p><strong>Offline Learning:</strong> Content auto-caches for uninterrupted learning even with poor connectivity.</p>
+        <p><strong>Progress Monitor:</strong> Use the Timeline view to see real-time student activity and identify who needs help.</p>
+    </div>
+
+    <div class="reference-section">
+        <h3 class="reference-title">Quick Reference</h3>
+        <table class="reference-table">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Create Class</td>
+                    <td>Teacher Panel → Classes</td>
+                </tr>
+                <tr>
+                    <td>Add Students</td>
+                    <td>Teacher Panel → Students</td>
+                </tr>
+                <tr>
+                    <td>View Progress</td>
+                    <td>Teacher Panel → Analytics</td>
+                </tr>
+                <tr>
+                    <td>Assign Lessons</td>
+                    <td>Compass → Lesson Library</td>
+                </tr>
+                <tr>
+                    <td>Print Reports</td>
+                    <td>Teacher Panel → Reports</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="reference-table">
+            <thead>
+                <tr>
+                    <th>Keyboard Shortcut</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="kbd">T</span></td>
+                    <td>Open Teacher Panel</td>
+                </tr>
+                <tr>
+                    <td><span class="kbd">C</span></td>
+                    <td>Open Compass</td>
+                </tr>
+                <tr>
+                    <td><span class="kbd">B</span></td>
+                    <td>Open Backpack</td>
+                </tr>
+                <tr>
+                    <td><span class="kbd">?</span></td>
+                    <td>Show Help & Settings</td>
+                </tr>
+                <tr>
+                    <td><span class="kbd">R</span></td>
+                    <td>Resume Last Lesson</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 0.9rem;">
+        <p>Need help? Visit <strong>help.learnoz.com</strong> or use the <span class="kbd">?</span> key for in-app support</p>
+        <p style="margin-top: 0.5rem;">LearnOz - Australian Curriculum Learning Platform</p>
+    </div>
+</body>
+</html>
