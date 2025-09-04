@@ -415,6 +415,7 @@ export function ReportsTab() {
                   disabled={isGenerating}
                   className="flex items-center gap-2"
                   data-testid="download-csv"
+                  aria-label={isGenerating ? 'Generating CSV file' : 'Download weekly engagement data as CSV file'}
                 >
                   <Download className="w-4 h-4" />
                   {isGenerating ? 'Generating...' : 'Download CSV'}

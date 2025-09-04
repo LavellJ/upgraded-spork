@@ -415,6 +415,51 @@
   scroll-behavior: auto !important;
 }
 
+/* Video Caption Styling */
+:root {
+  --caption-font-size: 1rem;
+  --caption-bg-opacity: 0.3;
+  --caption-position: auto;
+}
+
+/* WebVTT Caption styles using ::cue pseudo-element */
+video::cue {
+  font-size: var(--caption-font-size);
+  background-color: rgba(0, 0, 0, var(--caption-bg-opacity));
+  color: white;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+  padding: 0.2em 0.5em;
+  border-radius: 0.2em;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* Position-specific caption styles */
+[data-caption-position="bottom"] video::cue {
+  position: fixed;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Size-specific caption styles */
+[data-caption-size="S"] video::cue {
+  font-size: 0.875rem;
+}
+
+[data-caption-size="M"] video::cue {
+  font-size: 1rem;
+}
+
+[data-caption-size="L"] video::cue {
+  font-size: 1.25rem;
+}
+
+/* Enhanced contrast for better readability */
+video::cue-region {
+  background: transparent;
+}
+
 /* Dynamic Projector Preset Styles */
 html[data-projector-font-scale] {
   font-size: calc(1rem * var(--projector-font-scale));

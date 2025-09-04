@@ -19,7 +19,7 @@ export function AssignmentBadge({ state, dueAt, className = '' }: AssignmentBadg
     switch (state) {
       case 'assigned':
         return {
-          bg: 'bg-blue-500',
+          bg: 'bg-blue-600',
           text: 'text-white',
           label: 'Assigned',
           icon: '📋',
@@ -27,7 +27,7 @@ export function AssignmentBadge({ state, dueAt, className = '' }: AssignmentBadg
         };
       case 'due_soon':
         return {
-          bg: 'bg-amber-500',
+          bg: 'bg-amber-600',
           text: 'text-white',
           label: 'Due soon',
           icon: '⏰',
@@ -35,7 +35,7 @@ export function AssignmentBadge({ state, dueAt, className = '' }: AssignmentBadg
         };
       case 'overdue':
         return {
-          bg: 'bg-red-500',
+          bg: 'bg-red-600',
           text: 'text-white',
           label: 'Overdue',
           icon: '⚠️',
@@ -43,7 +43,7 @@ export function AssignmentBadge({ state, dueAt, className = '' }: AssignmentBadg
         };
       case 'done':
         return {
-          bg: 'bg-green-500',
+          bg: 'bg-green-600',
           text: 'text-white',
           label: 'Complete',
           icon: '✓',
