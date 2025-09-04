@@ -512,7 +512,6 @@ export function Trends({ onClose }: TrendsProps) {
               </Tooltip>
             </div>
           </div>
-          </div>
         </CardContent>
       </Card>
 
