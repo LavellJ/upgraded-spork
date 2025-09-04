@@ -33,6 +33,7 @@ import { FunnelViewer } from '../debug/FunnelViewer';
 import { getAllAssignments, setVariant, getScoutDwellVariant, SCOUT_DWELL_VARIANTS } from '../ab/model';
 import { getScoutDwellAnalytics } from '../ab/analytics';
 import { FeatureFlagsPanel } from './FeatureFlagsPanel';
+import { ContentStudio } from '../authoring/Studio';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -42,7 +43,7 @@ const SUBJECTS = {
 };
 
 // Define tab types and constants
-const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'roster', 'privacy', 'consent', 'audit', 'pilot', 'funnel', 'qa', 'reports'] as const;
+const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'roster', 'privacy', 'consent', 'audit', 'studio', 'pilot', 'funnel', 'qa', 'reports'] as const;
 type Tab = typeof TABS[number];
 
 // Progress encode/decode helpers (URL-safe Base64)
@@ -605,6 +606,26 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
               >
                 📋 Admin
               </button>
+              {/* Content Studio - DEV only */}
+              {process.env.NODE_ENV === 'development' && (
+                <button 
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === 'studio'}
+                  aria-controls="tab-content-studio"
+                  id="tab-studio"
+                  data-tab="studio"
+                  onClick={handleTabClick}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                    activeTab === 'studio' 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-white border hover:bg-stone-50'
+                  }`}
+                  data-testid="tab-studio"
+                >
+                  🔧 Studio
+                </button>
+              )}
               {/* Pilot Controls - DEV only */}
               {process.env.NODE_ENV === 'development' && (
                 <button 
@@ -819,6 +840,16 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 className="max-h-96 overflow-y-auto space-y-4"
               >
                 <Consent open={true} onClose={() => setActiveTab('overview')} inline={true} />
+              </div>
+            ) : activeTab === 'studio' && process.env.NODE_ENV === 'development' ? (
+              <div 
+                id="tab-content-studio" 
+                role="region" 
+                aria-live="polite" 
+                aria-labelledby="tab-studio"
+                className="h-96 overflow-hidden"
+              >
+                <ContentStudio />
               </div>
             ) : activeTab === 'pilot' ? (
               <div 
