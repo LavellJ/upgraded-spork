@@ -30,6 +30,7 @@ import { Onboarding } from "./onboarding/Onboarding";
 import { decodeFromQuery, savePath } from "./guide/assign";
 import { GuideNoticeProvider } from "./guide/notices";
 import { trackFunnelStep } from "./progress/events";
+import { JoinClass } from "./components/JoinClass";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -915,6 +916,11 @@ function AppContent(){
   };
   
   const showAnyPins = (teacherMode && teacherPins) || hasEquipped(bp, 'tool_compass');
+
+  // Check for join-class route
+  if (window.location.hash === '#/join-class') {
+    return <JoinClass />;
+  }
 
   return (
     <div className={cx("relative min-h-screen bg-gradient-to-br overflow-hidden", BG_BY_TOD[tod])}>
