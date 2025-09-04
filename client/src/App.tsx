@@ -31,6 +31,7 @@ import { decodeFromQuery, savePath } from "./guide/assign";
 import { GuideNoticeProvider } from "./guide/notices";
 import { trackFunnelStep } from "./progress/events";
 import { JoinClass } from "./components/JoinClass";
+import { ProjectorPresetApplier } from "./guide/ProjectorPresetApplier";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -1230,6 +1231,9 @@ function AppContent(){
           markCompassTourShown();
         }}
       />
+
+      {/* Projector Preset Applier - Manages global projector settings */}
+      <ProjectorPresetApplier />
 
       {/* Toast region for accessibility */}
       <div 

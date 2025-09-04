@@ -36,6 +36,7 @@ import { getScoutDwellAnalytics } from '../ab/analytics';
 import { FeatureFlagsPanel } from './FeatureFlagsPanel';
 import { ContentStudio } from '../authoring/Studio';
 import { CoverageReportComponent } from '../authoring/CoverageReport';
+import { Classes } from '../guide/Classes';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -45,7 +46,7 @@ const SUBJECTS = {
 };
 
 // Define tab types and constants
-const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'content', 'roster', 'privacy', 'consent', 'audit', 'studio', 'pilot', 'funnel', 'qa', 'reports'] as const;
+const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'content', 'roster', 'classes', 'privacy', 'consent', 'audit', 'studio', 'pilot', 'funnel', 'qa', 'reports'] as const;
 type Tab = typeof TABS[number];
 
 // Progress encode/decode helpers (URL-safe Base64)
@@ -611,6 +612,23 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
               <button 
                 type="button"
                 role="tab"
+                aria-selected={activeTab === 'classes'}
+                aria-controls="tab-content-classes"
+                id="tab-classes"
+                data-tab="classes"
+                onClick={handleTabClick}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                  activeTab === 'classes' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white border hover:bg-stone-50'
+                }`}
+                data-testid="tab-classes"
+              >
+                🏫 Classes
+              </button>
+              <button 
+                type="button"
+                role="tab"
                 aria-selected={activeTab === 'audit'}
                 aria-controls="tab-content-audit"
                 id="tab-audit"
@@ -1018,6 +1036,16 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 className="max-h-96 overflow-y-auto space-y-4"
               >
                 <QAPanel currentBiome={getCurrentBiome()} />
+              </div>
+            ) : activeTab === 'classes' ? (
+              <div 
+                id="tab-content-classes" 
+                role="region" 
+                aria-live="polite" 
+                aria-labelledby="tab-classes"
+                className="max-h-96 overflow-y-auto space-y-4"
+              >
+                <Classes />
               </div>
             ) : activeTab === 'reports' ? (
               <div 
