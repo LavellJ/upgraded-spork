@@ -10,6 +10,7 @@ import {
 } from './model';
 import { useRosterOptional } from '../roster/context';
 import { getActiveClass } from '../roster/classes';
+import { IssueReporter } from './IssueReporter';
 
 interface FeedbackWidgetProps {
   /** Only show in development mode */
@@ -20,6 +21,7 @@ interface FeedbackWidgetProps {
 
 export function FeedbackWidget({ devMode = false, cloudEnabled = false }: FeedbackWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [showIssueReporter, setShowIssueReporter] = useState(false);
   const [kind, setKind] = useState<FeedbackKind>('idea');
   const [text, setText] = useState('');
   const [email, setEmail] = useState('');
@@ -212,6 +214,24 @@ export function FeedbackWidget({ devMode = false, cloudEnabled = false }: Feedba
                   </>
                 )}
               </Button>
+              
+              {/* Issue Reporter Link */}
+              <div className="pt-2 border-t border-gray-200">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsOpen(false);
+                    setShowIssueReporter(true);
+                  }}
+                  className="w-full flex items-center gap-1 text-xs text-muted-foreground"
+                  data-testid="button-open-issue-reporter"
+                >
+                  <Bug className="w-3 h-3" />
+                  Report Detailed Issue
+                </Button>
+              </div>
 
               {/* Privacy Note */}
               <p className="text-xs text-gray-500 text-center">
@@ -222,6 +242,13 @@ export function FeedbackWidget({ devMode = false, cloudEnabled = false }: Feedba
           )}
         </CardContent>
       </Card>
+      
+      {/* Issue Reporter Modal */}
+      <IssueReporter
+        isOpen={showIssueReporter}
+        onClose={() => setShowIssueReporter(false)}
+        prefilledSnapshot={true}
+      />
     </div>
   );
 }
