@@ -20,6 +20,7 @@ import { Switch } from '../components/ui/switch';
 import { createPrintableQRSheet } from '../utils/qr';
 import { EmptyState } from '../components/ui/empty';
 import { InlineError } from '../components/ui/inline-error';
+import { CollaboratorsCard } from '../components/CollaboratorsCard';
 import { useToast } from '../components/ui/toast';
 
 export function Classes() {
@@ -441,6 +442,15 @@ export function Classes() {
           </>
         )}
       </Card>
+
+      {/* Collaborators Management */}
+      {activeClass && (
+        <CollaboratorsCard 
+          classId={activeClass.id}
+          currentUserEmail={activeLearner?.id} // TODO: Replace with actual user email when auth is implemented
+          isOwner={true} // TODO: Determine ownership based on collaborator data
+        />
+      )}
 
     </div>
   );

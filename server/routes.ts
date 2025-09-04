@@ -40,6 +40,7 @@ const DB = {
 // Import observability components
 import { metricsRouter } from './routes/metrics';
 import { parentSummaryRouter } from './routes/parentSummary';
+import { classesRouter } from './routes/classes';
 import { syncBatchSLO, trackSLO } from './metrics/slo';
 import { asyncHandler, AppError, ValidationError, NotFoundError } from './middleware/errorHandler';
 import { log } from './log';
@@ -627,6 +628,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Mount parent summary routes
   app.use(parentSummaryRouter);
+  
+  // Mount classes routes
+  app.use('/api/classes', classesRouter);
 
   console.log('🗄️  File-backed user storage initialized');
   console.log('📁  Data directory: .data/');
