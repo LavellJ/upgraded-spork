@@ -63,37 +63,36 @@ export function QuickStartPrint({ onClose }: QuickStartPrintProps) {
             display: none !important; 
           }
           
-          /* Ensure print content is positioned correctly */
+          /* Ensure print content flows naturally */
           .print-page {
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
+            position: static !important;
             width: 100% !important;
             max-width: none !important;
             margin: 0 !important;
-            padding: 0 !important;
+            padding: 0.75rem !important;
             background: white !important;
+            page-break-inside: avoid;
           }
           
           .print-header {
-            text-align: center;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 1rem;
+            text-align: center !important;
+            margin-bottom: 1rem !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            padding-bottom: 0.5rem !important;
           }
           
           .print-logo {
-            max-height: 60px;
-            margin: 0 auto 1rem auto;
-            display: block;
+            max-height: 40px !important;
+            margin: 0 auto 0.5rem auto !important;
+            display: block !important;
           }
           
           .step-container {
-            break-inside: avoid;
-            margin-bottom: 1.5rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 1rem;
+            break-inside: avoid !important;
+            margin-bottom: 0.75rem !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 6px !important;
+            padding: 0.75rem !important;
           }
           
           .step-number {
@@ -111,24 +110,26 @@ export function QuickStartPrint({ onClose }: QuickStartPrintProps) {
           }
           
           .pro-tip {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            border-radius: 6px;
-            padding: 1rem;
-            margin: 1rem 0;
+            background: #fef3c7 !important;
+            border: 1px solid #f59e0b !important;
+            border-radius: 4px !important;
+            padding: 0.6rem !important;
+            margin: 0.6rem 0 !important;
+            font-size: 0.85rem !important;
           }
           
           .reference-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
+            width: 100% !important;
+            border-collapse: collapse !important;
+            margin: 0.75rem 0 !important;
+            font-size: 0.8rem !important;
           }
           
           .reference-table th,
           .reference-table td {
-            border: 1px solid #e2e8f0;
-            padding: 0.5rem;
-            text-align: left;
+            border: 1px solid #e2e8f0 !important;
+            padding: 0.3rem !important;
+            text-align: left !important;
           }
           
           .reference-table th {
