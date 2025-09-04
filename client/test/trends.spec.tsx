@@ -1,5 +1,7 @@
+import React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { Trends } from '../src/guide/reports/Trends';
 import { exportTrendsCSV, getCsvContent } from '../src/guide/reports/exportCsv';
 import type { CohortSlice } from '../src/progress/cohort';
@@ -30,6 +32,14 @@ vi.mock('./exportCsv', () => ({
 }));
 
 // Mock UI components that may not be available in test environment
+// Mock UI components with tooltips support
+vi.mock('../src/components/ui/tooltip', () => ({
+  Tooltip: ({ children }: any) => <div>{children}</div>,
+  TooltipContent: ({ children }: any) => <div data-testid="tooltip-content">{children}</div>,
+  TooltipProvider: ({ children }: any) => <div>{children}</div>,
+  TooltipTrigger: ({ children }: any) => <div>{children}</div>
+}));
+
 vi.mock('../src/components/ui/select', () => ({
   Select: ({ children, onValueChange, value }: any) => (
     <div data-testid="select" onClick={() => onValueChange && onValueChange('8')}>

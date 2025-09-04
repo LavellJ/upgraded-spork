@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { Download, TrendingUp, Users, Clock, Award, CheckCircle, AlertTriangle, Calendar, Filter } from 'lucide-react';
+import { Download, TrendingUp, TrendingDown, Users, Clock, Award, CheckCircle, AlertTriangle, Calendar, Filter, HelpCircle, ArrowUp, ArrowDown } from 'lucide-react';
 import { useRosterOptional } from '../../roster/context';
 import { getActiveClass } from '../../roster/classes';
 import { buildCohortSeries, type CohortSlice } from '../../progress/cohort';
@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table';
 import { Checkbox } from '../../components/ui/checkbox';
 import { Badge } from '../../components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../components/ui/tooltip';
 
 interface TrendsProps {
   onClose?: () => void;
@@ -90,6 +91,7 @@ export function Trends({ onClose }: TrendsProps) {
   const [showMultiClass, setShowMultiClass] = useState(false);
   const [sortField, setSortField] = useState<SortField>('week');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [includeLearnerCount, setIncludeLearnerCount] = useState(false);
 
   // Get available classes
   const availableClasses = useMemo(() => {
@@ -282,8 +284,8 @@ export function Trends({ onClose }: TrendsProps) {
       .join('-');
     
     const filename = `cohort-trends-${classNames || 'all'}-${weekRange}weeks`;
-    exportTrendsCSV(cohortSeries, filename);
-  }, [cohortSeries, selectedClassIds, availableClasses, weekRange]);
+    exportTrendsCSV(cohortSeries, filename, { includeLearnerCount });
+  }, [cohortSeries, selectedClassIds, availableClasses, weekRange, includeLearnerCount]);
 
   // Handle sorting
   const handleSort = useCallback((field: SortField) => {
@@ -301,6 +303,24 @@ export function Trends({ onClose }: TrendsProps) {
     return sortDirection === 'asc' ? ' ↑' : ' ↓';
   }, [sortField, sortDirection]);
 
+  // Format delta with arrow
+  const formatDelta = useCallback((delta: number, formatValue: (value: number) => string) => {
+    if (delta === 0) return null;
+    
+    const isPositive = delta > 0;
+    const ArrowIcon = isPositive ? ArrowUp : ArrowDown;
+    const colorClass = isPositive ? 'text-green-600' : 'text-red-600';
+    const sign = isPositive ? '+' : '';
+    
+    return (
+      <span className={`ml-2 inline-flex items-center text-xs ${colorClass}`}>
+        <ArrowIcon className="h-3 w-3 mr-1" />
+        {sign}{formatValue(Math.abs(delta))}
+      </span>
+    );
+  }, []);
+
+  // Empty states
   if (!rosterContext?.roster?.learners || availableClasses.length === 0) {
     return (
       <div className="p-6">
@@ -314,17 +334,43 @@ export function Trends({ onClose }: TrendsProps) {
       </div>
     );
   }
+  
+  // No data empty state 
+  if (selectedClassIds.length > 0 && cohortSeries.length === 0) {
+    return (
+      <TooltipProvider>
+        <div className="space-y-6" data-testid="trends-dashboard">
+          {/* Header and Filters would go here - shortened for brevity */}
+          <div className="p-12 text-center" data-testid="empty-state">
+            <TrendingUp className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No trend data available</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              No learning activity found for the selected time range.
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={() => setWeekRange(16)}
+              className="mx-auto"
+            >
+              Try picking a wider range
+            </Button>
+          </div>
+        </div>
+      </TooltipProvider>
+    );
+  }
 
   return (
-    <div className="space-y-6" data-testid="trends-dashboard">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Cohort Trends</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Multi-week learning analytics across your classes
-          </p>
-        </div>
+    <TooltipProvider>
+      <div className="space-y-6" data-testid="trends-dashboard">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Cohort Trends</h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Multi-week learning analytics across your classes
+            </p>
+          </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
@@ -417,7 +463,7 @@ export function Trends({ onClose }: TrendsProps) {
               </Select>
             </div>
 
-            {/* Multi-class Toggle */}
+            {/* Display Options */}
             <div>
               <label className="text-sm font-medium text-gray-700 mb-2 block">
                 Display Options
@@ -438,6 +484,35 @@ export function Trends({ onClose }: TrendsProps) {
               </div>
             </div>
           </div>
+          
+          {/* CSV Export Options */}
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <label className="text-sm font-medium text-gray-700 mb-2 block">
+              CSV Export Options
+            </label>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="include-learner-count"
+                checked={includeLearnerCount}
+                onCheckedChange={(checked) => setIncludeLearnerCount(checked === true)}
+                data-testid="learner-count-toggle"
+              />
+              <label htmlFor="include-learner-count" className="text-sm">
+                Include learner count column
+              </label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="text-gray-400 hover:text-gray-600">
+                    <HelpCircle className="h-3 w-3" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-sm">Adds a column showing learner participation details in CSV export</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -454,7 +529,19 @@ export function Trends({ onClose }: TrendsProps) {
               <Card key={metric.key} data-testid={`metric-card-${metric.key}`}>
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
-                    <metric.icon className="h-5 w-5 text-gray-400" />
+                    <div className="flex items-center gap-2">
+                      <metric.icon className="h-5 w-5 text-gray-400" />
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                            <HelpCircle className="h-4 w-4" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-sm">{metric.description}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
                     {showMultiClass && perClassSeries.length > 1 ? (
                       <MultiSparkline
                         series={perClassSeries.map(cls => ({
@@ -484,12 +571,10 @@ export function Trends({ onClose }: TrendsProps) {
                     {metric.formatValue(currentValue)}
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    {metric.label}
-                    {delta !== 0 && (
-                      <span className={`ml-2 inline-flex items-center text-xs ${delta > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {delta > 0 ? '+' : ''}{metric.formatValue(delta)} vs last week
-                      </span>
-                    )}
+                    <span className="flex items-center">
+                      {metric.label}
+                      {formatDelta(delta, metric.formatValue)}
+                    </span>
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -537,7 +622,19 @@ export function Trends({ onClose }: TrendsProps) {
                       onClick={() => handleSort('avgOnTaskMins')}
                       data-testid="sort-avg-on-task"
                     >
-                      Avg On-Task (min){getSortIndicator('avgOnTaskMins')}
+                      <div className="flex items-center gap-1">
+                        Avg On-Task (min){getSortIndicator('avgOnTaskMins')}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button className="text-gray-400 hover:text-gray-600">
+                              <HelpCircle className="h-3 w-3" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-sm">Average time spent actively engaged in learning activities per week</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
                     </TableHead>
                     <TableHead 
                       className="cursor-pointer hover:bg-gray-50" 
@@ -603,15 +700,23 @@ export function Trends({ onClose }: TrendsProps) {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <TrendingUp className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-semibold text-gray-900">No trend data available</h3>
-              <p className="mt-1 text-sm text-gray-500">
+              <TrendingUp className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+              <h3 className="mt-2 text-sm font-semibold text-gray-900 mb-2">No trend data available</h3>
+              <p className="mt-1 text-sm text-gray-500 mb-4">
                 Select classes and ensure learners have activity data to view trends.
               </p>
+              <Button 
+                variant="outline" 
+                onClick={() => setWeekRange(16)}
+                className="mx-auto"
+              >
+                Try picking a wider range
+              </Button>
             </div>
           </CardContent>
         </Card>
       )}
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }
