@@ -6,7 +6,22 @@ interface QuickStartPrintProps {
 
 export function QuickStartPrint({ onClose }: QuickStartPrintProps) {
   const handlePrint = () => {
-    window.print();
+    // Ensure images are loaded before printing
+    const images = document.querySelectorAll('img');
+    const imagePromises = Array.from(images).map(img => {
+      if (img.complete) return Promise.resolve();
+      return new Promise((resolve) => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    });
+    
+    Promise.all(imagePromises).then(() => {
+      // Small delay to ensure styles are applied
+      setTimeout(() => {
+        window.print();
+      }, 100);
+    });
   };
 
   return (
@@ -19,10 +34,19 @@ export function QuickStartPrint({ onClose }: QuickStartPrintProps) {
             size: letter; 
           }
           
+          * { 
+            -webkit-print-color-adjust: exact !important;
+            color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          
           body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            line-height: 1.5;
-            color: #1e293b;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
+            line-height: 1.5 !important;
+            color: #1e293b !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
           }
           
           .no-print { 
@@ -34,9 +58,10 @@ export function QuickStartPrint({ onClose }: QuickStartPrintProps) {
           }
           
           .print-page {
-            max-width: none;
-            margin: 0;
-            padding: 0;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
           }
           
           .print-header {
@@ -109,6 +134,12 @@ export function QuickStartPrint({ onClose }: QuickStartPrintProps) {
             background: white;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
             min-height: 11in;
+            border: 1px solid #e2e8f0;
+          }
+          
+          /* Ensure content is visible on screen */
+          .print-preview * {
+            color: inherit !important;
           }
         }
       `}</style>
