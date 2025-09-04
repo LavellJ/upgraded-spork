@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { Badge } from './ui/badge';
-import { AlertTriangle, Shield, Bell, Monitor, MessageSquare, Star, Bug } from 'lucide-react';
+import { AlertTriangle, Shield, Bell, Monitor, MessageSquare, Star, Bug, Share2 } from 'lucide-react';
 import { setGuardrailsEnabled } from '../hooks/useScoutQueue';
 
 /**
@@ -45,6 +45,15 @@ export function FeatureFlagsPanel() {
 
   const [issueReporterEnabled, setIssueReporterEnabled] = useState(() => {
     return localStorage.getItem('qi.features.enableIssueReporter') !== 'false';
+  });
+
+  // Share/Rate prompt flags
+  const [sharePromptEnabled, setSharePromptEnabled] = useState(() => {
+    return localStorage.getItem('qi.features.enableSharePrompt') !== 'false';
+  });
+
+  const [ratePromptEnabled, setRatePromptEnabled] = useState(() => {
+    return localStorage.getItem('qi.features.enableRatePrompt') !== 'false';
   });
 
   if (!isDev) return null;
@@ -112,6 +121,24 @@ export function FeatureFlagsPanel() {
     localStorage.setItem('qi.features.enableIssueReporter', enabled ? 'true' : 'false');
     // Dispatch custom event to notify issue reporter
     window.dispatchEvent(new CustomEvent('issue-reporter-toggle', { 
+      detail: { enabled } 
+    }));
+  };
+
+  const handleSharePromptToggle = (enabled: boolean) => {
+    setSharePromptEnabled(enabled);
+    localStorage.setItem('qi.features.enableSharePrompt', enabled ? 'true' : 'false');
+    // Dispatch custom event to notify share prompt system
+    window.dispatchEvent(new CustomEvent('share-prompt-toggle', { 
+      detail: { enabled } 
+    }));
+  };
+
+  const handleRatePromptToggle = (enabled: boolean) => {
+    setRatePromptEnabled(enabled);
+    localStorage.setItem('qi.features.enableRatePrompt', enabled ? 'true' : 'false');
+    // Dispatch custom event to notify rate prompt system
+    window.dispatchEvent(new CustomEvent('rate-prompt-toggle', { 
       detail: { enabled } 
     }));
   };
@@ -297,6 +324,57 @@ export function FeatureFlagsPanel() {
               data-testid="issue-reporter-toggle"
             />
           </div>
+
+          {/* Share/Rate Prompts */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-white border">
+            <div className="flex items-start gap-3">
+              <Share2 className="w-5 h-5 text-blue-600 mt-0.5" />
+              <div className="flex-1">
+                <Label className="text-sm font-medium">Enable Share Prompts</Label>
+                <p className="text-xs text-gray-600 mt-1">
+                  Show gentle opt-in prompts to share referral links (NPS ≥ 9 OR streaker ≥ 40%).
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant={sharePromptEnabled ? "default" : "secondary"} className="text-xs">
+                    {sharePromptEnabled ? 'Active' : 'Disabled'}
+                  </Badge>
+                  {sharePromptEnabled && (
+                    <span className="text-xs text-blue-600">21-day throttle</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <Switch
+              checked={sharePromptEnabled}
+              onCheckedChange={handleSharePromptToggle}
+              data-testid="share-prompt-toggle"
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-3 rounded-lg bg-white border">
+            <div className="flex items-start gap-3">
+              <Star className="w-5 h-5 text-orange-600 mt-0.5" />
+              <div className="flex-1">
+                <Label className="text-sm font-medium">Enable Rate Prompts</Label>
+                <p className="text-xs text-gray-600 mt-1">
+                  Show gentle opt-in prompts to rate experience and give feedback.
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant={ratePromptEnabled ? "default" : "secondary"} className="text-xs">
+                    {ratePromptEnabled ? 'Active' : 'Disabled'}
+                  </Badge>
+                  {ratePromptEnabled && (
+                    <span className="text-xs text-orange-600">A/B testing</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <Switch
+              checked={ratePromptEnabled}
+              onCheckedChange={handleRatePromptToggle}
+              data-testid="rate-prompt-toggle"
+            />
+          </div>
         </div>
 
         {/* Status Summary */}
@@ -310,6 +388,8 @@ export function FeatureFlagsPanel() {
               <span>• Feedback: {feedbackWidgetEnabled ? 'Enabled' : 'Disabled'}</span>
               <span>• NPS: {npsEnabled ? 'Enabled' : 'Disabled'}</span>
               <span>• Issues: {issueReporterEnabled ? 'Enabled' : 'Disabled'}</span>
+              <span>• Share: {sharePromptEnabled ? 'Enabled' : 'Disabled'}</span>
+              <span>• Rate: {ratePromptEnabled ? 'Enabled' : 'Disabled'}</span>
             </div>
           </div>
         </div>
