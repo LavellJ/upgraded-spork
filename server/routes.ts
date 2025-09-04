@@ -37,6 +37,12 @@ const DB = {
   users: new Map<string, { roster: Roster; data: Record<string, any> }>()
 };
 
+// Import observability components
+import { metricsRouter } from './routes/metrics';
+import { syncBatchSLO, trackSLO } from './metrics/slo';
+import { asyncHandler, AppError, ValidationError, NotFoundError } from './middleware/errorHandler';
+import { log } from './log';
+
 // File backing (optional)
 const DB_FILE = '.devdb.json';
 let dbSaveTimer: NodeJS.Timeout | null = null;
@@ -207,50 +213,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   }
   
-  // Sync endpoints (protected + rate limited)
-  api.post('/api/sync/batch', rateLimitMiddleware, authMiddleware, async (req, res) => {
-    try {
-      const { userId, learnerId, items } = req.body;
-      
-      if (!userId || !learnerId || !Array.isArray(items)) {
-        return res.status(400).json({ error: 'Missing required fields: userId, learnerId, items' });
-      }
-      
-      // Use authenticated user email as namespace
-      const userEmail = (req as any).user.email;
-      const userDoc = await getUserDoc(userEmail);
-      
-      // Ensure learner data exists in document
-      if (!userDoc.data[learnerId]) {
-        userDoc.data[learnerId] = {};
-      }
-      
-      let accepted = 0;
-      
-      // Process each item with idempotency
-      for (const item of items) {
-        if (!item.id) continue;
-        
-        // Check if we've already seen this item
-        if (!userDoc.data[learnerId][item.id]) {
-          userDoc.data[learnerId][item.id] = item;
-          accepted++;
-        }
-        // If already exists, ignore (idempotent)
-      }
-      
-      // Save updated document
-      await saveUserDoc(userEmail, userDoc);
-      
-      // Audit log sync batch processing
-      auditLog.syncBatch(userEmail, accepted, req.ip);
-      
-      res.json({ ok: true, accepted });
-    } catch (err) {
-      console.error('Error in /api/sync/batch:', err);
-      res.status(500).json({ error: 'Internal server error' });
+  // Sync endpoints (protected + rate limited + SLO tracked)
+  api.post('/api/sync/batch', trackSLO('sync_batch_latency'), rateLimitMiddleware, authMiddleware, asyncHandler(async (req, res) => {
+    const { userId, learnerId, items } = req.body;
+    
+    if (!userId || !learnerId || !Array.isArray(items)) {
+      throw new ValidationError('Missing required fields: userId, learnerId, items');
     }
-  });
+    
+    // Use authenticated user email as namespace
+    const userEmail = (req as any).user.email;
+    const userDoc = await getUserDoc(userEmail);
+    
+    // Ensure learner data exists in document
+    if (!userDoc.data[learnerId]) {
+      userDoc.data[learnerId] = {};
+    }
+    
+    let accepted = 0;
+    
+    // Process each item with idempotency
+    for (const item of items) {
+      if (!item.id) continue;
+      
+      // Check if we've already seen this item
+      if (!userDoc.data[learnerId][item.id]) {
+        userDoc.data[learnerId][item.id] = item;
+        accepted++;
+      }
+      // If already exists, ignore (idempotent)
+    }
+    
+    // Save updated document
+    await saveUserDoc(userEmail, userDoc);
+    
+    // Structured logging for sync operation
+    req.logger.sync('batch_sync', accepted, process.hrtime(req.startTime)[1] / 1000000, {
+      userId,
+      learnerId,
+      totalItems: items.length,
+    });
+    
+    // Audit log sync batch processing
+    auditLog.syncBatch(userEmail, accepted, req.ip);
+    
+    res.json({ ok: true, accepted });
+  }));
   
   // Roster endpoints (protected)
   api.get('/api/roster', authMiddleware, async (req, res) => {
@@ -527,6 +535,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.use(api);
+  
+  // Mount metrics routes
+  app.use(metricsRouter);
 
   console.log('🗄️  File-backed user storage initialized');
   console.log('📁  Data directory: .data/');
