@@ -29,6 +29,7 @@ import { isGuide, toggleGuideMode } from '../guide/auth';
 import { getEventsByKind } from '../progress/events';
 import { AuditLogView } from './AuditLogView';
 import { RosterManagement } from './RosterManagement';
+import { RosterImport } from '../guide/RosterImport';
 import { FunnelViewer } from '../debug/FunnelViewer';
 import { getAllAssignments, setVariant, getScoutDwellVariant, SCOUT_DWELL_VARIANTS } from '../ab/model';
 import { getScoutDwellAnalytics } from '../ab/analytics';
@@ -722,7 +723,12 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
             </div>
 
             {activeTab === 'roster' ? (
-              <RosterManagement />
+              <div className="space-y-6">
+                <RosterImport />
+                <div className="border-t pt-6">
+                  <RosterManagement />
+                </div>
+              </div>
             ) : activeTab === 'overview' ? (
               <div>
                 <div className="text-sm font-semibold mb-2">Analytics (local)</div>
