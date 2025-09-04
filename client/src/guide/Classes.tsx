@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Users, Copy, Trash2, Plus, Star, Projector, Check } from 'lucide-react';
+import { Settings, Users, Copy, Trash2, Plus, Star, Projector, Check, QrCode } from 'lucide-react';
 import { useRosterOptional } from '../roster/context';
 import { 
   ClassInfo, 
@@ -14,6 +14,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Slider } from '../components/ui/slider';
 import { Switch } from '../components/ui/switch';
+import { createPrintableQRSheet } from '../utils/qr';
 
 export function Classes() {
   const rosterContext = useRosterOptional();
@@ -179,6 +180,29 @@ export function Classes() {
     toast({
       title: "Code copied",
       description: `Class code ${code} copied to clipboard.`
+    });
+  };
+
+  const handlePrintQR = (classInfo: ClassInfo) => {
+    const printableQRSheet = createPrintableQRSheet(
+      classInfo.code,
+      classInfo.name,
+      window.location.origin
+    );
+    
+    // Open print window with QR sheet
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(printableQRSheet);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    }
+    
+    toast({
+      title: "QR Sheet Generated",
+      description: `Print-ready QR code for class ${classInfo.name} opened.`
     });
   };
 
@@ -373,6 +397,17 @@ export function Classes() {
                     >
                       <Copy className="w-4 h-4" />
                       Copy Code
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handlePrintQR(classInfo)}
+                      data-testid={`button-print-qr-${classInfo.id}`}
+                      title="Print QR sheet for class code"
+                    >
+                      <QrCode className="w-4 h-4" />
+                      Print QR
                     </Button>
 
                     {!isEditing && (

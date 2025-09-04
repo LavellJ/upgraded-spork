@@ -9,9 +9,11 @@ import {
   CheckCircle, 
   ArrowRight,
   User,
-  Lightbulb
+  Lightbulb,
+  Download
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { QuickStartPrint } from '../components/print/QuickStartPrint';
 
 interface QuickStartProps {
   onCreateLearner?: () => void;
@@ -21,6 +23,7 @@ interface QuickStartProps {
 
 export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: QuickStartProps) {
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const [showPrintPreview, setShowPrintPreview] = useState(false);
 
   const steps = [
     {
@@ -64,14 +67,30 @@ export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: Qu
   const isStepCompleted = (stepId: number) => completedSteps.has(stepId);
   const completedCount = completedSteps.size;
 
+  if (showPrintPreview) {
+    return <QuickStartPrint onClose={() => setShowPrintPreview(false)} />;
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
-          <span className="text-2xl">🚀</span>
-          Teacher Quick Start
-        </h1>
+        <div className="flex items-center justify-center gap-4 mb-4">
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
+            <span className="text-2xl">🚀</span>
+            Teacher Quick Start
+          </h1>
+          <Button
+            onClick={() => setShowPrintPreview(true)}
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            data-testid="download-quickstart-pdf"
+          >
+            <Download className="w-4 h-4" />
+            Download 1-pager (PDF)
+          </Button>
+        </div>
         <p className="text-gray-600 max-w-2xl mx-auto">
           Get started with LearnOz in 3 simple steps. Perfect for first-time presentations or new classroom setups.
         </p>
