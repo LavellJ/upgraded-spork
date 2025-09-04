@@ -3,6 +3,10 @@ import React from "react";
 import App from "./App";
 import "./index.css";
 import Providers from "./Providers";
+import { initUiPrefs } from './ui/theme';
+
+// Initialize UI preferences
+initUiPrefs();
 
 // Register service worker for PWA functionality
 if ('serviceWorker' in navigator) {
