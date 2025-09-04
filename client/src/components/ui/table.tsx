@@ -30,8 +30,8 @@ export function TR({ children, className }:{ children: ReactNode; className?: st
   return <tr className={clsx('border-b border-[rgb(var(--border))]', className)}>{children}</tr>
 }
 
-export function TH({ children, className }:{ children: ReactNode; className?: string }) {
-  return <th scope="col" className={clsx('text-left font-medium px-3 py-[calc(12px*var(--density))]', className)}>{children}</th>
+export function TH({ children, className, onClick, ...props }:{ children: ReactNode; className?: string; onClick?: () => void; } & React.ThHTMLAttributes<HTMLTableHeaderCellElement>) {
+  return <th scope="col" className={clsx('text-left font-medium px-3 py-[calc(12px*var(--density))]', className)} onClick={onClick} {...props}>{children}</th>
 }
 
 export function TD({ children, className }:{ children: ReactNode; className?: string }) {
