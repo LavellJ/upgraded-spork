@@ -9,6 +9,11 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: "1rem",
+        "2xl": "1.25rem",
+      },
+      boxShadow: {
+        card: "0 6px 18px rgba(0,0,0,.06)",
       },
       colors: {
         background: "var(--background)",
@@ -41,7 +46,6 @@ export default {
           DEFAULT: "var(--destructive)",
           foreground: "var(--destructive-foreground)",
         },
-        border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
         chart: {
@@ -75,25 +79,35 @@ export default {
         'charcoal': 'var(--charcoal)',
         'soft-white': 'var(--soft-white)',
         'evening-dark': 'var(--evening-dark)',
-        // Semantic color tokens
+        // Design Token Colors
         bg: {
-          base: 'var(--bg-base)',
-          subtle: 'var(--bg-subtle)',
+          page: 'var(--bg-page)',
           card: 'var(--bg-card)',
-          overlay: 'var(--bg-overlay)',
-          surface: 'var(--bg-surface)',
         },
         fg: {
-          base: 'var(--fg-base)',
+          default: 'var(--fg-default)',
           muted: 'var(--fg-muted)',
-          subtle: 'var(--fg-subtle)',
-          accent: 'var(--fg-accent)',
         },
         brand: {
-          primary: 'var(--brand-primary)',
-          secondary: 'var(--brand-secondary)',
-          accent: 'var(--brand-accent)',
+          DEFAULT: 'var(--brand)',
+          600: 'var(--brand-600)',
+          700: 'var(--brand-700)',
         },
+        border: 'var(--border)',
+        positive: 'var(--positive)',
+        warning: 'var(--warning)',
+        danger: 'var(--danger)',
+        // Legacy semantic color tokens (preserved for compatibility)
+        'bg-base': 'var(--bg-base)',
+        'bg-subtle': 'var(--bg-subtle)',
+        'bg-overlay': 'var(--bg-overlay)',
+        'bg-surface': 'var(--bg-surface)',
+        'fg-base': 'var(--fg-base)',
+        'fg-subtle': 'var(--fg-subtle)',
+        'fg-accent': 'var(--fg-accent)',
+        'brand-primary': 'var(--brand-primary)',
+        'brand-secondary': 'var(--brand-secondary)',
+        'brand-accent': 'var(--brand-accent)',
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
