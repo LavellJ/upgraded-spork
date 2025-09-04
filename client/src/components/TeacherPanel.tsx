@@ -41,6 +41,9 @@ import { Classes } from '../guide/Classes';
 import { Dashboard } from '../guide/Dashboard';
 import { FeedbackPanel } from '../feedback/FeedbackPanel';
 
+// Import TriageBoard for development mode
+import { TriageBoard } from '../guide/dev/TriageBoard';
+
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
   desert: { label: "Math", color: "#C96A2B" },
@@ -49,7 +52,7 @@ const SUBJECTS = {
 };
 
 // Define tab types and constants
-const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'content', 'roster', 'classes', 'dashboard', 'privacy', 'consent', 'audit', 'studio', 'pilot', 'funnel', 'qa', 'reports'] as const;
+const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'content', 'roster', 'classes', 'dashboard', 'privacy', 'consent', 'audit', 'studio', 'pilot', 'funnel', 'qa', 'reports', 'dev'] as const;
 type Tab = typeof TABS[number];
 
 // Progress encode/decode helpers (URL-safe Base64)
@@ -758,6 +761,26 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
               >
                 📊 Reports
               </button>
+              {/* Dev Tab - development only */}
+              {isDev && (
+                <button 
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === 'dev'}
+                  aria-controls="tab-content-dev"
+                  id="tab-dev"
+                  data-tab="dev"
+                  onClick={handleTabClick}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                    activeTab === 'dev' 
+                      ? 'bg-purple-600 text-white' 
+                      : 'bg-white border hover:bg-stone-50'
+                  }`}
+                  data-testid="tab-dev"
+                >
+                  🐛 Triage
+                </button>
+              )}
             </div>
 
             {activeTab === 'roster' ? (
@@ -1088,6 +1111,16 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 className="max-h-96 overflow-y-auto space-y-4"
               >
                 <ReportsTab />
+              </div>
+            ) : activeTab === 'dev' && isDev ? (
+              <div 
+                id="tab-content-dev" 
+                role="region" 
+                aria-live="polite" 
+                aria-labelledby="tab-dev"
+                className="max-h-96 overflow-y-auto space-y-4"
+              >
+                <TriageBoard userId="dev-user" />
               </div>
             ) : (
               <div>Unknown tab</div>
