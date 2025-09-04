@@ -1,0 +1,67 @@
+{
+  "version": 2,
+  "id": "marine-conservation-v1",
+  "biomeId": "ocean",
+  "title": {
+    "en-AU": "Marine Conservation"
+  },
+  "summary": {
+    "en-AU": "Use problem-solving and number skills to help protect the Great Barrier Reef"
+  },
+  "skills": ["problem-solving", "number.real-world"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Protecting Our Reef"
+      },
+      "content": {
+        "en-AU": "The Great Barrier Reef needs our help! Scientists use maths to count coral health, track fish populations, and measure water quality. Let's use our number skills to solve real conservation problems."
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Conservation Calculator"
+      },
+      "interactionType": "problem-solver",
+      "config": {
+        "scenarios": ["plastic-cleanup", "coral-planting", "fish-counting"]
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Conservation Maths"
+      },
+      "questionSetId": "marine-conservation-problems"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Reef Heroes"
+      },
+      "src": "https://example.com/marine-conservation.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/marine-conservation-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ],
+      "transcript": {
+        "text": "Every action counts in protecting our reef. By using mathematics to solve conservation problems, young scientists can make a real difference in protecting this natural wonder for future generations."
+      }
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMNA033"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACSSU044"
+    }
+  ]
+}

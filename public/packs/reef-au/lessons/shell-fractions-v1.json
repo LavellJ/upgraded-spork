@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "id": "shell-fractions-v1",
+  "biomeId": "ocean",
+  "title": {
+    "en-AU": "Shell Fractions"
+  },
+  "summary": {
+    "en-AU": "Explore fractions using seashells and learn about parts of a whole"
+  },
+  "skills": ["number.fractions", "number.parts-whole"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Broken Shells Tell Stories"
+      },
+      "content": {
+        "en-AU": "Sometimes shells break into pieces on the beach. These pieces help us understand fractions! A fraction shows us parts of a whole shell. Let's collect shell pieces and learn about halves, quarters, and thirds."
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Shell Puzzle"
+      },
+      "interactionType": "fraction-assembly",
+      "config": {
+        "shellTypes": ["conch", "scallop", "cowrie"],
+        "fractions": ["1/2", "1/3", "1/4"]
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Fraction Recognition"
+      },
+      "questionSetId": "shell-fractions-basic"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Seashell Fraction Fun"
+      },
+      "src": "https://example.com/shell-fractions.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/shell-fractions-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMNA058"
+    }
+  ]
+}

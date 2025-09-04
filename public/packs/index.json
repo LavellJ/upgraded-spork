@@ -1,5 +1,37 @@
 [
   {
+    "id": "reef-au",
+    "name": "Reef Coast AU v1",
+    "version": "1.0.0",
+    "locale": "en-AU",
+    "description": "Year 2-4 number and fractions with marine science tie-ins, exploring the Great Barrier Reef ecosystem",
+    "author": "LearnOz Education Team",
+    "downloadUrl": "/packs/reef-au/",
+    "size": 12500000,
+    "meta": {
+      "ageRange": "6-10",
+      "subjects": ["mathematics", "science"],
+      "difficulty": "foundation",
+      "estimatedHours": 16
+    }
+  },
+  {
+    "id": "alpine-au",
+    "name": "Alpine Ridge AU v1",
+    "version": "1.0.0",
+    "locale": "en-AU",
+    "description": "Year 4-6 measurement, data, and multi-step problem solving set in the Australian Alps",
+    "author": "LearnOz Education Team",
+    "downloadUrl": "/packs/alpine-au/",
+    "size": 14200000,
+    "meta": {
+      "ageRange": "8-12",
+      "subjects": ["mathematics", "problem-solving"],
+      "difficulty": "intermediate",
+      "estimatedHours": 18
+    }
+  },
+  {
     "id": "extensions-au-phonics",
     "name": "Extended Phonics Pack (AU)",
     "version": "1.2.0",

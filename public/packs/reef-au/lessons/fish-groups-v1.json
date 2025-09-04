@@ -1,0 +1,65 @@
+{
+  "version": 2,
+  "id": "fish-groups-v1",
+  "biomeId": "ocean",
+  "title": {
+    "en-AU": "Fish Groups"
+  },
+  "summary": {
+    "en-AU": "Learn addition and subtraction by watching schools of fish swim together and apart"
+  },
+  "skills": ["number.addition", "number.subtraction"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Schools of Fish"
+      },
+      "content": {
+        "en-AU": "Fish love swimming together in groups called schools. When more fish join the group, we add them up. When some swim away to find food, we subtract them. Let's practice maths with our fishy friends!"
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Fish Counter"
+      },
+      "interactionType": "drag-and-drop",
+      "config": {
+        "maxFish": 20,
+        "operations": ["addition", "subtraction"]
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Fish Maths Problems"
+      },
+      "questionSetId": "fish-addition-subtraction"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Swimming Together"
+      },
+      "src": "https://example.com/fish-groups.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/fish-groups-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMNA015"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACMNA016"
+    }
+  ]
+}

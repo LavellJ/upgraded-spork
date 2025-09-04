@@ -1,0 +1,69 @@
+{
+  "version": 2,
+  "id": "snow-depth-v1",
+  "biomeId": "desert",
+  "title": {
+    "en-AU": "Snow Depth"
+  },
+  "summary": {
+    "en-AU": "Learn measurement with decimals by studying snowfall patterns and snow depth data"
+  },
+  "skills": ["decimals.measurement", "decimals.comparison", "measurement.precision"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Measuring Alpine Snow"
+      },
+      "content": {
+        "en-AU": "Snow depth changes constantly in the mountains. Scientists measure snow to centimetre and millimetre precision using decimal numbers like 1.25 metres or 47.8 centimetres. Accurate snow measurement helps predict avalanches and water supplies."
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Snow Depth Gauge"
+      },
+      "interactionType": "decimal-measurement",
+      "config": {
+        "units": ["centimetres", "metres"],
+        "precision": 0.1,
+        "maxDepth": 300.0
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Decimal Measurement Quiz"
+      },
+      "questionSetId": "snow-depth-decimals"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Precision Snow Science"
+      },
+      "src": "https://example.com/snow-depth.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/snow-depth-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ],
+      "transcript": {
+        "src": "https://example.com/transcripts/snow-depth-v1.txt"
+      }
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMNA128"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACMMG108"
+    }
+  ]
+}

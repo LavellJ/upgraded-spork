@@ -1,0 +1,66 @@
+{
+  "version": 2,
+  "id": "hiking-planning-v1",
+  "biomeId": "desert",
+  "title": {
+    "en-AU": "Hiking Planning"
+  },
+  "summary": {
+    "en-AU": "Solve complex multi-step problems by planning a week-long alpine hiking expedition"
+  },
+  "skills": ["problem-solving.complex", "planning.logistics", "calculation.multi-step"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Expedition Planning"
+      },
+      "content": {
+        "en-AU": "Planning a hiking expedition requires careful calculation! We need to work out food amounts, water needs, equipment weight, weather windows, and emergency plans. Every calculation must be accurate for safety in the mountains."
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Expedition Calculator"
+      },
+      "interactionType": "multi-step-planner",
+      "config": {
+        "variables": ["food", "water", "weight", "time", "weather"],
+        "days": 7,
+        "hikers": 4
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Complex Planning Problems"
+      },
+      "questionSetId": "expedition-planning-problems"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Mountain Expedition Success"
+      },
+      "src": "https://example.com/hiking-planning.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/hiking-planning-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMNA123"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACMMG108"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "version": 2,
+  "id": "alpine-plants-v1",
+  "biomeId": "desert",
+  "title": {
+    "en-AU": "Alpine Plants"
+  },
+  "summary": {
+    "en-AU": "Learn classification and measurement by studying unique plants that survive in harsh mountain conditions"
+  },
+  "skills": ["classification.scientific", "measurement.accuracy", "data.recording"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Mountain Plant Survivors"
+      },
+      "content": {
+        "en-AU": "Alpine plants are amazing survivors! They grow low to the ground, have thick leaves, and bloom quickly in summer. Scientists measure and classify these plants to understand how they adapt to extreme mountain conditions."
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Plant Classification Lab"
+      },
+      "interactionType": "scientific-classification",
+      "config": {
+        "plants": ["snow-gum", "alpine-daisy", "mountain-plum-pine"],
+        "attributes": ["height", "leaf-size", "flower-count"],
+        "seasons": ["summer", "winter"]
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Plant Measurement Quiz"
+      },
+      "questionSetId": "alpine-plant-classification"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Botanical Field Study"
+      },
+      "src": "https://example.com/alpine-plants.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/alpine-plants-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACSSU072"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACMMG061"
+    }
+  ]
+}

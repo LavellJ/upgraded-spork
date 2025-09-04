@@ -1,0 +1,65 @@
+{
+  "version": 2,
+  "id": "weather-data-v1",
+  "biomeId": "desert",
+  "title": {
+    "en-AU": "Weather Data"
+  },
+  "summary": {
+    "en-AU": "Collect and interpret weather data from alpine weather stations using graphs and statistics"
+  },
+  "skills": ["data.collection", "statistics.interpretation", "graphs.reading"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Alpine Weather Patterns"
+      },
+      "content": {
+        "en-AU": "Weather in the mountains changes quickly! Meteorologists collect data on temperature, rainfall, and snow depth. We can use graphs and charts to understand these patterns and make predictions."
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Weather Data Analyser"
+      },
+      "interactionType": "data-interpretation",
+      "config": {
+        "dataTypes": ["temperature", "rainfall", "snow-depth"],
+        "timeFrames": ["daily", "weekly", "monthly"]
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Reading Weather Graphs"
+      },
+      "questionSetId": "weather-data-analysis"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Mountain Weather Science"
+      },
+      "src": "https://example.com/weather-data.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/weather-data-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMSP096"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACMSP097"
+    }
+  ]
+}

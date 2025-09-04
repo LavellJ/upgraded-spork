@@ -1,0 +1,73 @@
+{
+  "version": 2,
+  "id": "conservation-project-v1",
+  "biomeId": "desert",
+  "title": {
+    "en-AU": "Conservation Project"
+  },
+  "summary": {
+    "en-AU": "Apply all mathematical skills to design and plan a real alpine conservation project"
+  },
+  "skills": ["problem-solving.real-world", "project.planning", "mathematics.application"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Saving Alpine Ecosystems"
+      },
+      "content": {
+        "en-AU": "Alpine ecosystems face threats from climate change, invasive species, and human impact. Conservation projects require careful planning using all our mathematical skills: measurement, data analysis, statistics, and problem-solving. Let's design a real conservation project!"
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Conservation Project Designer"
+      },
+      "interactionType": "project-planner",
+      "config": {
+        "projectTypes": ["habitat-restoration", "species-monitoring", "erosion-control"],
+        "resources": ["budget", "volunteers", "equipment", "time"],
+        "duration": "1-year"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Conservation Mathematics"
+      },
+      "questionSetId": "conservation-project-problems"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Young Conservation Heroes"
+      },
+      "src": "https://example.com/conservation-project.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/conservation-project-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ],
+      "transcript": {
+        "text": "Through mathematics and science, young people can make a real difference in protecting Australia's unique alpine environments. Every calculation, every measurement, every analysis contributes to conservation success."
+      }
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMNA123"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACSSU112"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACMSP120"
+    }
+  ]
+}

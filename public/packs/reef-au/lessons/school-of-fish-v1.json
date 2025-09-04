@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "id": "school-of-fish-v1",
+  "biomeId": "ocean",
+  "title": {
+    "en-AU": "School of Fish"
+  },
+  "summary": {
+    "en-AU": "Introduction to multiplication by counting equal groups of fish"
+  },
+  "skills": ["number.multiplication", "number.equal-groups"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Fish Swimming in Groups"
+      },
+      "content": {
+        "en-AU": "When fish swim in schools, they form equal groups for protection. If we see 3 groups of 4 fish each, we can count them by adding 4 + 4 + 4 = 12, or we can multiply 3 × 4 = 12. Both ways give us the same answer!"
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Group the Fish"
+      },
+      "interactionType": "equal-groups",
+      "config": {
+        "maxGroups": 6,
+        "maxPerGroup": 8
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Multiplication Practice"
+      },
+      "questionSetId": "fish-multiplication"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Groups of Fish"
+      },
+      "src": "https://example.com/school-of-fish.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/school-of-fish-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMNA031"
+    }
+  ]
+}

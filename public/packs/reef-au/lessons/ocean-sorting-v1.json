@@ -1,0 +1,47 @@
+{
+  "version": 2,
+  "id": "ocean-sorting-v1",
+  "biomeId": "ocean",
+  "title": {
+    "en-AU": "Ocean Sorting"
+  },
+  "summary": {
+    "en-AU": "Learn classification and data collection by sorting marine life into groups"
+  },
+  "skills": ["data.collection", "classification.skills"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Sorting Sea Creatures"
+      },
+      "content": {
+        "en-AU": "Marine biologists sort sea creatures into groups to study them better. We can sort by size, colour, where they live, or what they eat. This helps us understand the reef ecosystem better."
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Creature Classifier"
+      },
+      "interactionType": "sorting-activity",
+      "config": {
+        "categories": ["fish", "coral", "shells", "mammals"],
+        "items": 24
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Classification Challenge"
+      },
+      "questionSetId": "ocean-classification"
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACSIS037"
+    }
+  ]
+}

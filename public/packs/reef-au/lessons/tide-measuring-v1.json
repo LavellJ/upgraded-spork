@@ -1,0 +1,65 @@
+{
+  "version": 2,
+  "id": "tide-measuring-v1",
+  "biomeId": "ocean",
+  "title": {
+    "en-AU": "Tide Measuring"
+  },
+  "summary": {
+    "en-AU": "Learn measurement and time by tracking ocean tides around the reef"
+  },
+  "skills": ["measurement.length", "time.reading"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "High Tide, Low Tide"
+      },
+      "content": {
+        "en-AU": "The ocean level changes throughout the day due to tides. At high tide, water covers more of the reef. At low tide, we can see more coral exposed. Scientists measure these changes to understand ocean patterns."
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Tide Gauge Reader"
+      },
+      "interactionType": "measurement-tool",
+      "config": {
+        "units": ["metres", "centimetres"],
+        "maxHeight": 300
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Measuring Practice"
+      },
+      "questionSetId": "tide-measurement"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Tracking the Tides"
+      },
+      "src": "https://example.com/tide-measuring.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/tide-measuring-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMMG037"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACMMG039"
+    }
+  ]
+}

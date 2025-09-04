@@ -1,0 +1,66 @@
+{
+  "version": 2,
+  "id": "wildlife-survey-v1",
+  "biomeId": "desert",
+  "title": {
+    "en-AU": "Wildlife Survey"
+  },
+  "summary": {
+    "en-AU": "Conduct statistical analysis using real wildlife survey data from the Australian Alps"
+  },
+  "skills": ["statistics.analysis", "data.interpretation", "graphs.advanced"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Counting Mountain Wildlife"
+      },
+      "content": {
+        "en-AU": "Wildlife biologists conduct surveys to count animals and track population changes. They use statistical methods like averages, medians, and ranges to analyse their data and make important conservation decisions."
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Survey Data Analyser"
+      },
+      "interactionType": "statistical-analysis",
+      "config": {
+        "species": ["wombat", "wallaby", "possum", "echidna"],
+        "dataSize": 50,
+        "statistics": ["mean", "median", "mode", "range"]
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Statistical Analysis Challenge"
+      },
+      "questionSetId": "wildlife-statistics"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Alpine Wildlife Research"
+      },
+      "src": "https://example.com/wildlife-survey.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/wildlife-survey-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMSP120"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACMSP121"
+    }
+  ]
+}

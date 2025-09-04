@@ -1,0 +1,65 @@
+{
+  "version": 2,
+  "id": "wave-counting-v1",
+  "biomeId": "ocean",
+  "title": {
+    "en-AU": "Wave Counting"
+  },
+  "summary": {
+    "en-AU": "Learn skip counting and number patterns by counting waves hitting the reef"
+  },
+  "skills": ["number.skip-counting", "number.patterns"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Rhythms of the Sea"
+      },
+      "content": {
+        "en-AU": "Waves hit the reef in regular patterns. Sometimes they come in groups of 2, 3, or 5. We can count by 2s, 5s, or 10s as we watch the waves. This is called skip counting!"
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Wave Counter"
+      },
+      "interactionType": "rhythm-counter",
+      "config": {
+        "skipValues": [2, 5, 10],
+        "maxWaves": 50
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Skip Counting Waves"
+      },
+      "questionSetId": "wave-skip-counting"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Counting Ocean Waves"
+      },
+      "src": "https://example.com/wave-counting.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/wave-counting-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMNA012"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACMNA035"
+    }
+  ]
+}
