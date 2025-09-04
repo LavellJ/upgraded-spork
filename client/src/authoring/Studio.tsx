@@ -30,6 +30,16 @@ import { validateLessonV2 } from '../authoring/schema';
 import { tI18n } from '../i18n/text';
 import { useLocale } from '../i18n/locale';
 import type { LessonV2 } from '../authoring/schema';
+import { 
+  getAllTuningNotes, 
+  getTuningNotesById, 
+  saveTuningNote, 
+  deleteTuningNote, 
+  createTuningId, 
+  getTuningStats,
+  type TuningNote 
+} from '../authoring/tuning';
+import { TuningPanel } from './TuningPanel';
 
 interface ContentStudioProps {
   selectedLessonId?: string;
@@ -497,10 +507,11 @@ export function ContentStudio({ selectedLessonId, onLessonChange, onClose }: Con
                   
                   <div className="p-6">
                     <Tabs defaultValue="overview" className="w-full">
-                      <TabsList className="grid w-full grid-cols-4">
+                      <TabsList className="grid w-full grid-cols-5">
                         <TabsTrigger value="overview">Overview</TabsTrigger>
                         <TabsTrigger value="activities">Activities</TabsTrigger>
                         <TabsTrigger value="skills">Skills</TabsTrigger>
+                        <TabsTrigger value="tuning">Tuning</TabsTrigger>
                         <TabsTrigger value="raw">Raw JSON</TabsTrigger>
                       </TabsList>
                       
@@ -569,6 +580,10 @@ export function ContentStudio({ selectedLessonId, onLessonChange, onClose }: Con
                             <p className="text-sm text-gray-500">No skills defined</p>
                           )}
                         </div>
+                      </TabsContent>
+                      
+                      <TabsContent value="tuning" className="mt-6">
+                        <TuningPanel lessonId={selectedLesson.id} />
                       </TabsContent>
                       
                       <TabsContent value="raw" className="mt-6">

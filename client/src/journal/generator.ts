@@ -1,6 +1,7 @@
 import type { JournalItem, SkillLevel } from '../schema/journal';
 import { nanoid } from 'nanoid';
 import { allBanks, getItemsForSkill, getAllAvailableSkills } from './banks';
+import { getAdjustedDifficultyLevel } from '../authoring/tuning';
 import type { AgeBand } from '../learning/model';
 
 // Map mastery probability to difficulty level based on age band
@@ -199,8 +200,11 @@ const LEGACY_ITEM_BANKS: Record<string, Record<SkillLevel, Array<Omit<JournalIte
 // Local generator implementation
 class LocalGenerator implements JournalGenerator {
   async generate(skillId: string, level: SkillLevel, n: number): Promise<JournalItem[]> {
+    // Apply tuning adjustments to the requested difficulty level
+    const adjustedLevel = getAdjustedDifficultyLevel(skillId, level);
+    
     // First try to get items from the new bank files
-    const bankItems = getItemsForSkill(skillId, level);
+    const bankItems = getItemsForSkill(skillId, adjustedLevel);
     
     if (bankItems.length > 0) {
       // Use items from bank files, cycling if needed
@@ -218,10 +222,10 @@ class LocalGenerator implements JournalGenerator {
     const skillBank = LEGACY_ITEM_BANKS[skillId];
     if (!skillBank) {
       // Fallback to a generic skill if not found
-      return this.generateFallback(skillId, level, n);
+      return this.generateFallback(skillId, adjustedLevel, n);
     }
 
-    const levelBank = skillBank[level];
+    const levelBank = skillBank[adjustedLevel];
     if (!levelBank || levelBank.length === 0) {
       // Try other levels if current level is empty
       const allLevels: SkillLevel[] = ['easy', 'core', 'stretch'];
@@ -230,7 +234,7 @@ class LocalGenerator implements JournalGenerator {
           return this.generate(skillId, fallbackLevel, n);
         }
       }
-      return this.generateFallback(skillId, level, n);
+      return this.generateFallback(skillId, adjustedLevel, n);
     }
 
     // Select items (with repetition if needed)
