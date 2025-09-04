@@ -1,0 +1,120 @@
+/* Print-specific styles for parent email summaries and reports */
+
+@media print {
+  /* General print styling */
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.5;
+    color: #000;
+    background: white;
+  }
+
+  /* Hide navigation and controls when printing */
+  .print-hidden,
+  button,
+  .no-print,
+  nav,
+  .sidebar {
+    display: none !important;
+  }
+
+  /* Email preview styling for print */
+  .print-friendly {
+    max-height: none !important;
+    overflow: visible !important;
+    border: none !important;
+    background: white !important;
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+
+  .email-preview {
+    break-inside: avoid;
+  }
+
+  /* Specific email content styling */
+  .email-preview .container {
+    box-shadow: none !important;
+    margin: 0 !important;
+    border: 1px solid #ddd;
+  }
+
+  .email-preview .header {
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  .email-preview .content {
+    break-inside: avoid;
+  }
+
+  .email-preview .section {
+    break-inside: avoid;
+    margin-bottom: 20px;
+  }
+
+  .email-preview .stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 15px !important;
+  }
+
+  .email-preview .stat-card {
+    border: 1px solid #ddd !important;
+    page-break-inside: avoid;
+  }
+
+  .email-preview .accomplishments-list,
+  .email-preview .next-steps-list {
+    page-break-inside: avoid;
+    border: 1px solid #ddd !important;
+  }
+
+  .email-preview .footer {
+    break-before: avoid;
+  }
+
+  /* Ensure colors print correctly */
+  .email-preview * {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  /* Page breaks */
+  .page-break {
+    page-break-before: always;
+  }
+
+  .no-page-break {
+    page-break-inside: avoid;
+  }
+
+  /* Print header/footer */
+  @page {
+    margin: 1in;
+    @top-center {
+      content: "LearnOz Parent Summary";
+    }
+    @bottom-center {
+      content: counter(page);
+    }
+  }
+
+  /* Trends dashboard print styles */
+  .trends-dashboard .container {
+    box-shadow: none !important;
+  }
+
+  .trends-dashboard .metrics-cards {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .trends-dashboard .data-table {
+    font-size: 10pt;
+  }
+
+  .trends-dashboard .sparkline {
+    display: none; /* SVG sparklines may not print well */
+  }
+}

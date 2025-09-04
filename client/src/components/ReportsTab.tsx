@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Calendar, Download, FileText, Users, TrendingUp } from 'lucide-react';
+import { Calendar, Download, FileText, Users, TrendingUp, Mail } from 'lucide-react';
 import { buildWeeklyEngagement, downloadWeeklyEngagementCSV } from '../analytics/weeklyEngagement';
 import { Trends } from '../guide/reports/Trends';
+import { ParentEmail } from '../reports/parentEmail';
 
-type ReportView = 'overview' | 'trends' | 'weekly';
+type ReportView = 'overview' | 'trends' | 'weekly' | 'parent-email';
 
 export function ReportsTab() {
   const [currentView, setCurrentView] = useState<ReportView>('overview');
@@ -55,6 +56,11 @@ export function ReportsTab() {
     return <Trends onClose={() => setCurrentView('overview')} />;
   }
 
+  // Render the parent email view if selected
+  if (currentView === 'parent-email') {
+    return <ParentEmail onClose={() => setCurrentView('overview')} />;
+  }
+
   return (
     <div className="space-y-6">
       {/* Header with Navigation */}
@@ -83,6 +89,15 @@ export function ReportsTab() {
             <Button
               variant="outline"
               size="sm"
+              onClick={() => setCurrentView('parent-email')}
+              className="flex items-center gap-2"
+            >
+              <Mail className="w-4 h-4" />
+              Parent Email
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setCurrentView('weekly')}
               className="flex items-center gap-2"
             >
@@ -95,7 +110,7 @@ export function ReportsTab() {
 
       {/* Overview Cards */}
       {currentView === 'overview' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setCurrentView('trends')}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -110,6 +125,24 @@ export function ReportsTab() {
               </p>
               <div className="mt-3 flex items-center text-sm text-blue-600">
                 <span>View trends →</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setCurrentView('parent-email')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Mail className="w-5 h-5 text-purple-600" />
+                Parent Email
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Send weekly learning summaries to parents via email or generate 
+                printable HTML reports. Includes progress, accomplishments, and next steps.
+              </p>
+              <div className="mt-3 flex items-center text-sm text-blue-600">
+                <span>Send summaries →</span>
               </div>
             </CardContent>
           </Card>
