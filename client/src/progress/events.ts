@@ -152,29 +152,6 @@ export function getEventCount(learnerId?: string): number {
   return loadEvents(learnerId).length;
 }
 
-const SESSION_STORAGE_KEY = 'qi.session.id';
-
-/**
- * Get or create a session ID that persists until browser reload
- * Used for tracking Scout analytics per session
- */
-export function getSessionId(): string {
-  try {
-    let sessionId = sessionStorage.getItem(SESSION_STORAGE_KEY);
-    
-    if (!sessionId) {
-      // Generate new session ID using timestamp + random
-      sessionId = `sess_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-      sessionStorage.setItem(SESSION_STORAGE_KEY, sessionId);
-    }
-    
-    return sessionId;
-  } catch (error) {
-    // Fallback if sessionStorage is not available
-    console.warn('Failed to access sessionStorage for session ID:', error);
-    return `sess_${Date.now()}_fallback`;
-  }
-}
 
 /**
  * Check if a funnel step has already been reached

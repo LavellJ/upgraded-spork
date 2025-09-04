@@ -11,8 +11,7 @@ export {
   getEventsBetween,
   getEventsByKind,
   clearEvents,
-  getEventCount,
-  getSessionId
+  getEventCount
 } from './events';
 
 export {
