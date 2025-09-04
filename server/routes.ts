@@ -41,6 +41,7 @@ const DB = {
 import { metricsRouter } from './routes/metrics';
 import { parentSummaryRouter } from './routes/parentSummary';
 import { classesRouter } from './routes/classes';
+import invitesRouter from './routes/invites';
 import { syncBatchSLO, trackSLO } from './metrics/slo';
 import { asyncHandler, AppError, ValidationError, NotFoundError } from './middleware/errorHandler';
 import { log } from './log';
@@ -631,6 +632,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Mount classes routes
   app.use('/api/classes', classesRouter);
+  
+  // Mount invites routes
+  app.use('/api/invite', invitesRouter);
 
   console.log('🗄️  File-backed user storage initialized');
   console.log('📁  Data directory: .data/');

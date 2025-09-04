@@ -174,6 +174,89 @@ export async function verifyEmailConfig(): Promise<boolean> {
   }
 }
 
+/**
+ * Send co-teacher invitation email
+ */
+export async function sendInviteEmail(email: string, inviter: string, className: string, token: string): Promise<void> {
+  const { renderInvite } = await import('./emailTemplates/inviteCoTeacher');
+  const inviteUrl = `${APP_BASE_URL}/api/invite/accept?token=${token}`;
+  
+  const { subject, html, text } = renderInvite({
+    inviter,
+    className,
+    link: inviteUrl
+  });
+
+  if (EMAIL_PREVIEW_MODE) {
+    // Development preview mode - log to console instead of sending
+    console.log('\n📧 CO-TEACHER INVITE EMAIL PREVIEW');
+    console.log('=========================================');
+    console.log(`To: ${email}`);
+    console.log(`From: ${inviter}`);
+    console.log(`Class: ${className}`);
+    console.log(`Subject: ${subject}`);
+    console.log(`Invite Link: ${inviteUrl}`);
+    console.log('=========================================\n');
+    
+    // Log audit event
+    statements.insertAuditLog.run(Date.now(), email, 'invite_preview', JSON.stringify({
+      inviter,
+      className,
+      url: inviteUrl,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+    }));
+    
+    return;
+  }
+
+  if (!EMAIL_ENABLED || !transporter) {
+    console.error('❌ Email not configured. Set SMTP_HOST, SMTP_USER, SMTP_PASS environment variables.');
+    
+    // Log audit event
+    statements.insertAuditLog.run(Date.now(), email, 'email_send_error', JSON.stringify({
+      error: 'SMTP not configured',
+      inviter,
+      className,
+      url: inviteUrl
+    }));
+    
+    throw new Error('Email service not configured');
+  }
+
+  try {
+    await transporter.sendMail({
+      from: SMTP_FROM,
+      to: email,
+      subject,
+      text,
+      html,
+    });
+
+    console.log(`✅ Co-teacher invite email sent to ${email} for class "${className}"`);
+    
+    // Log successful send
+    statements.insertAuditLog.run(Date.now(), email, 'invite_sent', JSON.stringify({
+      inviter,
+      className,
+      url: inviteUrl,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+    }));
+    
+  } catch (error) {
+    console.error(`❌ Failed to send invite email to ${email}:`, error);
+    
+    // Log send error
+    statements.insertAuditLog.run(Date.now(), email, 'email_send_error', JSON.stringify({
+      error: error.message,
+      inviter,
+      className,
+      url: inviteUrl
+    }));
+    
+    throw new Error('Failed to send invite email');
+  }
+}
+
 // TODO: Webhook handling for bounces/complaints
 // export async function handleEmailWebhook(req: Request, res: Response) {
 //   // Handle bounce/complaint webhooks from email provider
