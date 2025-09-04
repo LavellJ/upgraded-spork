@@ -10,6 +10,7 @@ import { getCronJobStatus } from './cron';
 import { userStorage, type UserDoc } from './userStorage';
 import { dbUserStorage } from './dbStorage';
 import { auditLog, getAuditLogPath } from './audit';
+import { statements } from './db';
 import fs from "fs";
 import path from "path";
 
@@ -42,6 +43,7 @@ import { metricsRouter } from './routes/metrics';
 import { parentSummaryRouter } from './routes/parentSummary';
 import { classesRouter } from './routes/classes';
 import invitesRouter from './routes/invites';
+import referralsRouter from './routes/referrals';
 import { syncBatchSLO, trackSLO } from './metrics/slo';
 import { asyncHandler, AppError, ValidationError, NotFoundError } from './middleware/errorHandler';
 import { log } from './log';
@@ -163,6 +165,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Basic health check
   api.get("/api/health", (_req, res) => {
     res.json({ ok: true });
+  });
+
+  // Referral redirect endpoint (must be outside /api path)
+  app.get('/r/:code', async (req, res) => {
+    try {
+      const { code } = req.params;
+      
+      if (!code || typeof code !== 'string') {
+        return res.status(404).send('Invalid referral code');
+      }
+      
+      // Get referral from database
+      const referral = statements.getReferral.get(code);
+      
+      if (!referral) {
+        return res.status(404).send('Referral code not found');
+      }
+      
+      // Update click count and last click time
+      const now = Date.now();
+      statements.updateReferralClicks.run(now, code);
+      
+      // Audit log referral click
+      statements.insertAuditLog.run(
+        now,
+        null, // No user email for anonymous clicks
+        'referral_click',
+        JSON.stringify({
+          code,
+          ownerEmail: referral.ownerEmail,
+          ip: req.ip,
+          userAgent: req.get('User-Agent') || ''
+        })
+      );
+      
+      // Build redirect URL with UTM parameters
+      const baseUrl = process.env.APP_BASE_URL || `${req.protocol}://${req.get('host')}`;
+      const redirectUrl = `${baseUrl}/?utm_source=teacher_referral&utm_medium=share&utm_campaign=pilot&ref=${code}`;
+      
+      res.redirect(302, redirectUrl);
+      
+    } catch (error) {
+      console.error('Error in referral redirect:', error);
+      res.status(500).send('Internal server error');
+    }
   });
 
   // Ping external URLs for reachability
@@ -635,6 +682,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Mount invites routes
   app.use('/api/invite', invitesRouter);
+  
+  // Mount referrals routes
+  app.use('/api/referrals', referralsRouter);
 
   console.log('🗄️  File-backed user storage initialized');
   console.log('📁  Data directory: .data/');

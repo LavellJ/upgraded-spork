@@ -59,6 +59,16 @@ db.exec(`
     FOREIGN KEY (email) REFERENCES users(email)
   );
 
+  -- Referrals table for teacher referral links with short codes and click tracking
+  CREATE TABLE IF NOT EXISTS referrals (
+    code TEXT PRIMARY KEY,            -- short base36 (e.g., 6 chars)
+    ownerEmail TEXT NOT NULL,
+    createdAt INTEGER NOT NULL,
+    clicks INTEGER NOT NULL DEFAULT 0,
+    lastClickAt INTEGER,
+    FOREIGN KEY (ownerEmail) REFERENCES users(email)
+  );
+
   -- Indexes for better query performance
   CREATE INDEX IF NOT EXISTS idx_user_docs_email ON user_docs(email);
   CREATE INDEX IF NOT EXISTS idx_user_docs_learner ON user_docs(email, learnerId);
@@ -66,6 +76,8 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_audit_log_at ON audit_log(at);
   CREATE INDEX IF NOT EXISTS idx_class_collaborators_email ON class_collaborators(email);
   CREATE INDEX IF NOT EXISTS idx_class_collaborators_class ON class_collaborators(classId);
+  CREATE INDEX IF NOT EXISTS idx_referrals_owner ON referrals(ownerEmail);
+  CREATE INDEX IF NOT EXISTS idx_referrals_created ON referrals(createdAt);
 `);
 
 // Prepared statements for common operations
@@ -132,6 +144,28 @@ export const statements = {
   
   getClassesByCollaborator: db.prepare(`
     SELECT classId, role FROM class_collaborators WHERE email = ?
+  `),
+
+  // Referrals
+  insertReferral: db.prepare(`
+    INSERT INTO referrals (code, ownerEmail, createdAt, clicks, lastClickAt)
+    VALUES (?, ?, ?, ?, ?)
+  `),
+  
+  getReferral: db.prepare(`
+    SELECT * FROM referrals WHERE code = ?
+  `),
+  
+  getReferralsByOwner: db.prepare(`
+    SELECT * FROM referrals WHERE ownerEmail = ? ORDER BY createdAt DESC
+  `),
+  
+  updateReferralClicks: db.prepare(`
+    UPDATE referrals SET clicks = clicks + 1, lastClickAt = ? WHERE code = ?
+  `),
+  
+  deleteReferral: db.prepare(`
+    DELETE FROM referrals WHERE code = ? AND ownerEmail = ?
   `)
 };
 
@@ -158,6 +192,14 @@ export interface CollaboratorRow {
   email: string;
   role: 'owner' | 'co_teacher' | 'viewer';
   addedAt: number;
+}
+
+export interface ReferralRow {
+  code: string;
+  ownerEmail: string;
+  createdAt: number;
+  clicks: number;
+  lastClickAt: number | null;
 }
 
 // Close database on process exit
