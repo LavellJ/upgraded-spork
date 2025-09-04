@@ -4,6 +4,7 @@ import { Router } from "express";
 import { createServer, type Server } from "http";
 import { verifyToken, issueToken } from './auth';
 import { userStorage, type UserDoc } from './userStorage';
+import { dbUserStorage } from './dbStorage';
 import { auditLog, getAuditLogPath } from './audit';
 import fs from "fs";
 import path from "path";
@@ -125,12 +126,13 @@ function getUserData(userId: string) {
 
 // Helper to get user doc from file storage
 async function getUserDoc(email: string): Promise<UserDoc> {
-  return userStorage.getUserDoc(email);
+  // Use database storage instead of file storage
+  return dbUserStorage.getUserDoc(email);
 }
 
-// Helper to save user doc to file storage
+// Helper to save user doc to database storage
 async function saveUserDoc(email: string, doc: UserDoc): Promise<void> {
-  await userStorage.saveUserDoc(email, doc);
+  await dbUserStorage.saveUserDoc(email, doc);
 }
 
 /**
