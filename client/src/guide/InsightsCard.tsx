@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { MessageSquare, Target, MousePointer, X, Info, Clock, Activity, TrendingUp, Calendar, Zap } from 'lucide-react';
+import { MessageSquare, Target, MousePointer, X, Info, Clock, Activity, TrendingUp, Calendar, Zap, Heart } from 'lucide-react';
 import { getEventsRange, scoutSummary, scoutAnalytics, type ScoutSummary, type ScoutAnalytics } from '../progress';
 import { onTaskMinutes, weeklyReturn, sessionStreak } from '../progress/metrics';
 import { loadEvents } from '../progress/events';

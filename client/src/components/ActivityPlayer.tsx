@@ -10,6 +10,8 @@ import { useMediaRef } from "./media/useMediaRef";
 import type { VideoActivity } from "../schema/lesson";
 import { startOnTask, stopOnTask } from "../analytics/onTask";
 import { ActivityPlayerErrorBoundary } from "./ActivityPlayerErrorBoundary";
+import { useRosterOptional } from "../roster";
+import { useNps } from "../feedback/NpsProvider";
 
 const cx = (...s: (string | false | undefined)[]): string => s.filter(Boolean).join(" ");
 
@@ -191,6 +193,8 @@ export function ActivityPlayer({ open, onClose, biome, lesson, activity, onMarkC
   const profile = { calmMode: true };
   const { enqueue, flushInfoMessages } = useScoutQueue();
   const startTimeRef = useRef<number | null>(null);
+  const rosterContext = useRosterOptional();
+  const { triggerNpsCheck } = useNps();
   const [showTranscript, setShowTranscript] = useState(false);
   const { mediaRef, seekTo } = useMediaRef();
   
@@ -287,6 +291,16 @@ export function ActivityPlayer({ open, onClose, biome, lesson, activity, onMarkC
                   text: `Well done, Explorer! You completed ${lesson.title}!`,
                   priority: 'info'
                 });
+                
+                // Check if NPS survey should be triggered
+                const learnerId = rosterContext?.activeLearner?.id;
+                if (learnerId) {
+                  // Delay NPS check slightly to allow celebration to show first
+                  setTimeout(() => {
+                    triggerNpsCheck(learnerId);
+                  }, 1500);
+                }
+                
                 onMarkComplete(lesson.id, 'correct'); 
                 onClose(); 
               }}
