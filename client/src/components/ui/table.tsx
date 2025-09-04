@@ -1,6 +1,7 @@
 import * as React from "react"
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "../../lib/utils"
 
 const Table = React.forwardRef<
   HTMLTableElement,
@@ -9,7 +10,11 @@ const Table = React.forwardRef<
   <div className="relative w-full overflow-auto">
     <table
       ref={ref}
-      className={cn("w-full caption-bottom text-sm", className)}
+      className={cn(
+        "w-full caption-bottom text-sm text-fg-default", // Use design tokens
+        "data-[density='compact']:text-xs",
+        className
+      )}
       {...props}
     />
   </div>
@@ -18,9 +23,19 @@ Table.displayName = "Table"
 
 const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
+  React.HTMLAttributes<HTMLTableSectionElement> & {
+    sticky?: boolean;
+  }
+>(({ className, sticky = false, ...props }, ref) => (
+  <thead 
+    ref={ref} 
+    className={cn(
+      "[&_tr]:border-b [&_tr]:border-border",
+      sticky && "sticky top-0 z-10 bg-bg-card",
+      className
+    )} 
+    {...props} 
+  />
 ))
 TableHeader.displayName = "TableHeader"
 
@@ -58,7 +73,8 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+      "border-b border-border transition-colors hover:bg-bg-subtle data-[state=selected]:bg-bg-subtle",
+      "data-[density='compact']:h-8", // Compact row height
       className
     )}
     {...props}
@@ -66,19 +82,49 @@ const TableRow = React.forwardRef<
 ))
 TableRow.displayName = "TableRow"
 
+interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
+  sortable?: boolean;
+  sortDirection?: 'asc' | 'desc' | 'none';
+  onSort?: () => void;
+}
+
 const TableHead = React.forwardRef<
   HTMLTableCellElement,
-  React.ThHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
-  <th
-    ref={ref}
-    className={cn(
-      "h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
-      className
-    )}
-    {...props}
-  />
-))
+  TableHeadProps
+>(({ className, sortable, sortDirection = 'none', onSort, children, ...props }, ref) => {
+  const SortIcon = sortDirection === 'asc' ? ArrowUp : sortDirection === 'desc' ? ArrowDown : ArrowUpDown;
+  
+  const content = (
+    <>
+      {children}
+      {sortable && (
+        <SortIcon className="ml-2 h-4 w-4 inline-block opacity-50" />
+      )}
+    </>
+  );
+  
+  return (
+    <th
+      ref={ref}
+      className={cn(
+        "h-12 px-4 text-left align-middle font-medium text-fg-muted [&:has([role=checkbox])]:pr-0",
+        "data-[density='compact']:h-8 data-[density='compact']:px-3",
+        sortable && "cursor-pointer hover:text-fg-default transition-colors select-none",
+        className
+      )}
+      onClick={sortable ? onSort : undefined}
+      {...props}
+    >
+      {sortable ? (
+        <div className="flex items-center">
+          {content}
+        </div>
+      ) : (
+        content
+      )}
+    </th>
+  );
+})
 TableHead.displayName = "TableHead"
 
 const TableCell = React.forwardRef<
@@ -87,7 +133,11 @@ const TableCell = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <td
     ref={ref}
-    className={cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", className)}
+    className={cn(
+      "p-4 align-middle [&:has([role=checkbox])]:pr-0",
+      "data-[density='compact']:p-3",
+      className
+    )}
     {...props}
   />
 ))
@@ -99,7 +149,7 @@ const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn("mt-4 text-sm text-muted-foreground", className)}
+    className={cn("mt-4 text-sm text-fg-muted", className)} // Use design tokens
     {...props}
   />
 ))
