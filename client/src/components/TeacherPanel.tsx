@@ -39,6 +39,7 @@ import { CoverageReportComponent } from '../authoring/CoverageReport';
 import { ContentPackSettings } from './ContentPackSettings';
 import { Classes } from '../guide/Classes';
 import { Dashboard } from '../guide/Dashboard';
+import { FeedbackPanel } from '../feedback/FeedbackPanel';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -931,6 +932,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 aria-labelledby="tab-pilot"
                 className="max-h-96 overflow-y-auto space-y-4"
               >
+                <FeedbackPanel />
                 <FeatureFlagsPanel />
               </div>
             ) : activeTab === 'audit' ? (
