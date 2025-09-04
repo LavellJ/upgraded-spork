@@ -9,20 +9,47 @@ import type { WeeklyEngagementRow } from '../../analytics/weeklyEngagement';
 
 // V2 Schema: Standardized CSV column definitions
 export const CSV_HEADERS = {
-  // Trends CSV columns (v2 schema)
+  // Trends CSV columns (v2 schema) - Enhanced with delta columns
   TRENDS: [
     'Week',
     'Week Start (ISO)',
     'Total Learners', 
     'Active Learners',
     'Avg On-Task Minutes',
+    'Avg On-Task Minutes Delta vs Prev',
     'Median On-Task Minutes',
     'Return Within 7 Days (%)',
+    'Return Within 7 Days Delta vs Prev',
     'Assignments Done (%)',
+    'Assignments Done Delta vs Prev',
+    'Assignments Due Soon',
+    'Assignments Overdue', 
+    'Completions per Learner',
+    'Completions per Learner Delta vs Prev',
+    'Streakers (%)',
+    'Streakers Delta vs Prev'
+  ] as const,
+
+  // Optional learner count column
+  TRENDS_WITH_LEARNER_COUNT: [
+    'Week',
+    'Week Start (ISO)',
+    'Total Learners',
+    'Learner Names',
+    'Active Learners',
+    'Avg On-Task Minutes',
+    'Avg On-Task Minutes Delta vs Prev',
+    'Median On-Task Minutes',
+    'Return Within 7 Days (%)',
+    'Return Within 7 Days Delta vs Prev',
+    'Assignments Done (%)', 
+    'Assignments Done Delta vs Prev',
     'Assignments Due Soon',
     'Assignments Overdue',
     'Completions per Learner',
-    'Streakers (%)'
+    'Completions per Learner Delta vs Prev',
+    'Streakers (%)',
+    'Streakers Delta vs Prev'
   ] as const,
 
   // Weekly engagement CSV columns (v2 schema)
@@ -68,46 +95,82 @@ export interface TeacherDigestRow {
 }
 
 /**
- * Export trends data as CSV file using v2 schema
+ * Enhanced export trends data as CSV file with delta calculations and optional learner count
  * @param series - Array of cohort slices containing trend data
  * @param filename - Name for the downloaded file (without .csv extension)
+ * @param options - Export options including learner count toggle
  */
-export function exportTrendsCSV(series: CohortSlice[], filename: string = 'cohort-trends'): void {
+export function exportTrendsCSV(
+  series: CohortSlice[], 
+  filename: string = 'cohort-trends',
+  options: { includeLearnerCount?: boolean } = {}
+): void {
   if (series.length === 0) {
     console.warn('No trends data to export');
     return;
   }
 
-  const csvContent = generateTrendsCSV(series);
+  const csvContent = generateTrendsCSV(series, options);
   downloadCSVFile(csvContent, `${filename}.csv`);
 }
 
 /**
- * Generate trends CSV content with v2 schema (type-safe)
+ * Generate trends CSV content with v2 schema including delta calculations
+ * @param series - Array of cohort slices
+ * @param options - Export options
  */
-export function generateTrendsCSV(series: CohortSlice[]): string {
+export function generateTrendsCSV(
+  series: CohortSlice[], 
+  options: { includeLearnerCount?: boolean } = {}
+): string {
   if (series.length === 0) {
     return '';
   }
 
-  // Use standardized v2 headers
-  const headers = [...CSV_HEADERS.TRENDS];
+  // Use appropriate headers based on options
+  const headers = options.includeLearnerCount 
+    ? [...CSV_HEADERS.TRENDS_WITH_LEARNER_COUNT]
+    : [...CSV_HEADERS.TRENDS];
 
-  // Convert data to CSV rows with consistent ordering
-  const rows = series.map(slice => [
-    getWeekDisplayName(slice.weekStartISO),
-    slice.weekStartISO,
-    slice.learners.toString(),
-    slice.activeLearners.toString(),
-    slice.avgOnTaskMins.toFixed(1),
-    slice.medianOnTaskMins.toFixed(1),
-    slice.return7dPct.toFixed(1),
-    slice.assignments.donePct.toFixed(1),
-    slice.assignments.dueSoon.toString(),
-    slice.assignments.overdue.toString(),
-    slice.completionsPerLearner.toFixed(1),
-    slice.streakersPct.toFixed(1)
-  ]);
+  // Helper function to calculate delta vs previous week
+  const getDelta = (current: number, index: number, getValueFn: (slice: CohortSlice) => number): string => {
+    if (index === 0) return 'N/A'; // No previous week
+    const previous = getValueFn(series[index - 1]);
+    const delta = current - previous;
+    return delta === 0 ? '0' : (delta > 0 ? `+${delta.toFixed(1)}` : delta.toFixed(1));
+  };
+
+  // Helper to get learner names from roster (if available)
+  const getLearnerNames = (slice: CohortSlice): string => {
+    // This would need access to roster context - for now return placeholder
+    return `${slice.activeLearners} active learners`;
+  };
+
+  // Convert data to CSV rows with delta calculations
+  const rows = series.map((slice, index) => {
+    const baseRow = [
+      getWeekDisplayName(slice.weekStartISO),
+      slice.weekStartISO,
+      slice.learners.toString(),
+      ...(options.includeLearnerCount ? [getLearnerNames(slice)] : []),
+      slice.activeLearners.toString(),
+      slice.avgOnTaskMins.toFixed(1),
+      getDelta(slice.avgOnTaskMins, index, s => s.avgOnTaskMins),
+      slice.medianOnTaskMins.toFixed(1),
+      slice.return7dPct.toFixed(1),
+      getDelta(slice.return7dPct, index, s => s.return7dPct),
+      slice.assignments.donePct.toFixed(1),
+      getDelta(slice.assignments.donePct, index, s => s.assignments.donePct),
+      slice.assignments.dueSoon.toString(),
+      slice.assignments.overdue.toString(),
+      slice.completionsPerLearner.toFixed(1),
+      getDelta(slice.completionsPerLearner, index, s => s.completionsPerLearner),
+      slice.streakersPct.toFixed(1),
+      getDelta(slice.streakersPct, index, s => s.streakersPct)
+    ];
+    
+    return baseRow;
+  });
 
   return formatCSVContent([headers, ...rows]);
 }
