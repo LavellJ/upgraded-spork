@@ -541,6 +541,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin teacher digest manual trigger (DEV mode or admin role required)
+  api.post('/api/admin/digest/run', authMiddleware, async (req, res) => {
+    try {
+      const userRole = (req as any).user.role;
+      const isDev = process.env.NODE_ENV === 'development';
+      
+      // Check authorization (same pattern as other admin endpoints)
+      if (!isDev && userRole !== 'admin') {
+        return res.status(403).json({ error: 'Admin role required' });
+      }
+      
+      const { weekStartISO } = req.body;
+      
+      console.log(`📧 Manual teacher digest trigger by ${(req as any).user.email}`);
+      
+      // Import the function here to avoid circular dependencies
+      const { sendTeacherDigestToAll } = await import('./analytics/teacherDigest');
+      
+      // Run the digest in background
+      setImmediate(() => {
+        sendTeacherDigestToAll(weekStartISO);
+      });
+      
+      // Audit log
+      auditLog.adminAction((req as any).user.email, 'teacher_digest_manual_trigger', req.ip);
+      
+      res.json({ 
+        success: true, 
+        message: 'Teacher digest job started in background',
+        weekStartISO: weekStartISO || 'auto'
+      });
+    } catch (err) {
+      console.error('Error in POST /api/admin/digest/run:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   // Admin feedback endpoint for cloud submission (DEV mode or admin role required)
   api.post('/api/admin/feedback', async (req, res) => {
     try {

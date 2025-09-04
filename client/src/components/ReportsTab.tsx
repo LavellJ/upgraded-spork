@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Calendar, Download, FileText, Users, TrendingUp, Mail } from 'lucide-react';
+import { Switch } from './ui/switch';
+import { Label } from './ui/label';
+import { Calendar, Download, FileText, Users, TrendingUp, Mail, Settings, Send, Clock } from 'lucide-react';
 import { buildWeeklyEngagement, downloadWeeklyEngagementCSV } from '../analytics/weeklyEngagement';
 import { Trends } from '../guide/reports/Trends';
 import { ParentEmail } from '../reports/parentEmail';
+import { useToast } from '../hooks/use-toast';
 
-type ReportView = 'overview' | 'trends' | 'weekly' | 'parent-email';
+type ReportView = 'overview' | 'trends' | 'weekly' | 'parent-email' | 'digest-settings';
 
 export function ReportsTab() {
   const [currentView, setCurrentView] = useState<ReportView>('overview');
@@ -20,6 +23,12 @@ export function ReportsTab() {
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [previewData, setPreviewData] = useState<ReturnType<typeof buildWeeklyEngagement> | null>(null);
+  const [digestEnabled, setDigestEnabled] = useState(() => {
+    // Load digest preference from localStorage (simplified for now)
+    return localStorage.getItem('teacher-digest-enabled') === 'true';
+  });
+  const [isSendingDigest, setIsSendingDigest] = useState(false);
+  const { toast } = useToast();
 
   const handleGeneratePreview = () => {
     try {
@@ -59,6 +68,142 @@ export function ReportsTab() {
   // Render the parent email view if selected
   if (currentView === 'parent-email') {
     return <ParentEmail onClose={() => setCurrentView('overview')} />;
+  }
+
+  // Render the digest settings view if selected
+  if (currentView === 'digest-settings') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <Settings className="w-5 h-5 text-blue-600" />
+              Teacher Digest Settings
+            </h3>
+            <p className="text-sm text-gray-600 mt-1">
+              Configure weekly email summaries for class performance
+            </p>
+          </div>
+          <Button variant="ghost" size="sm" onClick={() => setCurrentView('overview')}>
+            ← Back to Reports
+          </Button>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Mail className="w-5 h-5 text-purple-600" />
+              Weekly Digest Email
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <Label htmlFor="digest-enabled" className="text-sm font-medium">
+                  Enable weekly digest emails
+                </Label>
+                <p className="text-sm text-gray-600">
+                  Receive automated class performance summaries every Monday at 7:30 AM
+                </p>
+              </div>
+              <Switch
+                id="digest-enabled"
+                checked={digestEnabled}
+                onCheckedChange={(checked) => {
+                  setDigestEnabled(checked);
+                  localStorage.setItem('teacher-digest-enabled', checked.toString());
+                  toast({
+                    title: checked ? "Digest enabled" : "Digest disabled",
+                    description: checked 
+                      ? "You'll receive weekly class summaries on Monday mornings"
+                      : "Weekly digest emails have been turned off"
+                  });
+                }}
+                data-testid="digest-toggle-switch"
+              />
+            </div>
+
+            {digestEnabled && (
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h4 className="font-medium text-blue-900 mb-2">What you'll receive:</h4>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• Class engagement metrics (active learners, on-task time)</li>
+                  <li>• Assignment completion summaries</li>
+                  <li>• Learning streaks and achievements</li>
+                  <li>• CSV file with detailed per-learner data</li>
+                  <li>• Delivered every Monday at 7:30 AM</li>
+                </ul>
+              </div>
+            )}
+
+            {process.env.NODE_ENV === 'development' && (
+              <div className="border-t pt-6">
+                <h4 className="font-medium text-gray-900 mb-3">Development Tools</h4>
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      setIsSendingDigest(true);
+                      try {
+                        const response = await fetch('/api/admin/digest/run', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            weekStartISO: selectedWeek
+                          })
+                        });
+                        
+                        if (response.ok) {
+                          toast({
+                            title: "Digest triggered",
+                            description: "Teacher digest job started in background. Check console logs."
+                          });
+                        } else {
+                          throw new Error('Failed to trigger digest');
+                        }
+                      } catch (error) {
+                        toast({
+                          title: "Error",
+                          description: "Failed to trigger digest. Check your permissions.",
+                          variant: "destructive"
+                        });
+                      } finally {
+                        setIsSendingDigest(false);
+                      }
+                    }}
+                    disabled={isSendingDigest}
+                    className="flex items-center gap-2"
+                    data-testid="manual-digest-trigger"
+                  >
+                    {isSendingDigest ? (
+                      <Clock className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Send className="w-4 h-4" />
+                    )}
+                    {isSendingDigest ? 'Sending...' : 'Send Test Digest'}
+                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="test-week" className="text-sm">Week:</Label>
+                    <input
+                      id="test-week"
+                      type="date"
+                      value={selectedWeek}
+                      onChange={(e) => setSelectedWeek(e.target.value)}
+                      className="px-2 py-1 text-sm border rounded"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  This will send a digest to all users in the database.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -104,13 +249,22 @@ export function ReportsTab() {
               <Calendar className="w-4 h-4" />
               Weekly Export
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentView('digest-settings')}
+              className="flex items-center gap-2"
+            >
+              <Settings className="w-4 h-4" />
+              Digest Settings
+            </Button>
           </div>
         )}
       </div>
 
       {/* Overview Cards */}
       {currentView === 'overview' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setCurrentView('trends')}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -161,6 +315,24 @@ export function ReportsTab() {
               </p>
               <div className="mt-3 flex items-center text-sm text-blue-600">
                 <span>Export data →</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setCurrentView('digest-settings')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Settings className="w-5 h-5 text-orange-600" />
+                Digest Settings
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Configure weekly teacher digest emails with class performance summaries, 
+                KPI tracking, and automated CSV reports delivered every Monday.
+              </p>
+              <div className="mt-3 flex items-center text-sm text-blue-600">
+                <span>Configure digest →</span>
               </div>
             </CardContent>
           </Card>
