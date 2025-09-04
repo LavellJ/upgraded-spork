@@ -11,6 +11,16 @@ This is a full-stack educational web application called "LearnOz" that provides 
 - **Analytics Integration**: Added progress event logging for tuning_applied and difficulty_adjusted events for impact tracking
 - **Storage**: Tuning notes stored in localStorage 'qi.tuning.v1' with comprehensive CRUD operations
 
+## UP3: Standardized UI Components (In Progress)
+- **Card Components**: Created standardized Card, CardHeader, CardTitle, CardContent with density-aware spacing
+- **Table Components**: Built Table, THead, TBody, TR, TH, TD with var(--density) calc-based padding and design token integration
+- **Toolbar Components**: Standardized Toolbar with left/right content slots and compact density support
+- **Field Components**: Created Field wrapper with Input/Select controls using design tokens
+- **Chip Components**: Built status chips (assigned/due/overdue/done/info) with color-coded variants
+- **Test Coverage**: Added ui-kit.spec.tsx testing density modes, accessibility attributes, and proper component structure
+- **Component Retrofit**: Updated Trends component to use new Table components (TH/TD/TR vs legacy TableHead/TableCell/TableRow)
+- **Design Integration**: All components use RGB-based design tokens (--fg-default, --bg-card, --border) and density variable
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
