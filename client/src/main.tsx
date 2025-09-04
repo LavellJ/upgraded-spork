@@ -4,6 +4,7 @@ import App from "./App";
 import "./index.css";
 import Providers from "./Providers";
 import { initUiPrefs } from './ui/theme';
+import { ToastProvider } from '@/components/ui/toast';
 
 // Initialize UI preferences
 initUiPrefs();
@@ -23,8 +24,10 @@ if ('serviceWorker' in navigator) {
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Providers>
-      <App />
-    </Providers>
+    <ToastProvider>
+      <Providers>
+        <App />
+      </Providers>
+    </ToastProvider>
   </React.StrictMode>
 );

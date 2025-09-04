@@ -17,15 +17,15 @@ import { Button } from '../components/ui/button';
 import { Slider } from '../components/ui/slider';
 import { Switch } from '../components/ui/switch';
 import { createPrintableQRSheet } from '../utils/qr';
+import { EmptyState } from '../components/ui/empty';
+import { InlineError } from '../components/ui/inline-error';
+import { useToast } from '../components/ui/toast';
 
 export function Classes() {
   const rosterContext = useRosterOptional();
   const activeLearner = rosterContext?.activeLearner;
   
-  // Simple toast implementation
-  const toast = (message: { title: string; description?: string; variant?: string }) => {
-    alert(`${message.title}${message.description ? '\n' + message.description : ''}`);
-  };
+  const toast = useToast();
 
   const [classes, setClasses] = useState<ClassInfo[]>([]);
   const [activeClassId, setActiveClassId] = useState<string | undefined>();
@@ -60,15 +60,14 @@ export function Classes() {
     try {
       setActiveClass(activeLearner.id, classId);
       setActiveClassId(classId);
-      toast({
-        title: "Active class updated",
-        description: "Class is now active and its projector settings will be applied."
+      toast.push({
+        kind: "success",
+        text: "Active class updated - projector settings applied"
       });
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to set active class",
-        variant: "destructive"
+      toast.push({
+        kind: "error",
+        text: "Failed to set active class"
       });
     }
   };
@@ -79,15 +78,14 @@ export function Classes() {
     try {
       setActiveClass(activeLearner.id, undefined);
       setActiveClassId(undefined);
-      toast({
-        title: "Active class cleared",
-        description: "No class is now active."
+      toast.push({
+        kind: "success",
+        text: "Active class cleared - no class is now active"
       });
     } catch (error) {
-      toast({
-        title: "Error", 
-        description: "Failed to clear active class",
-        variant: "destructive"
+      toast.push({
+        kind: "error",
+        text: "Failed to clear active class"
       });
     }
   };
@@ -113,15 +111,14 @@ export function Classes() {
       setEditName('');
       refreshData();
       
-      toast({
-        title: "Class updated",
-        description: "Class name has been updated."
+      toast.push({
+        kind: "success",
+        text: "Class name updated successfully"
       });
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update class name",
-        variant: "destructive"
+      toast.push({
+        kind: "error",
+        text: "Failed to update class name"
       });
     }
   };
@@ -134,15 +131,14 @@ export function Classes() {
       refreshData();
       setDeleteConfirm(null);
       
-      toast({
-        title: "Class deleted",
-        description: "Class has been removed."
+      toast.push({
+        kind: "success",
+        text: "Class deleted successfully"
       });
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete class",
-        variant: "destructive"
+      toast.push({
+        kind: "error",
+        text: "Failed to delete class"
       });
     }
   };
@@ -164,24 +160,23 @@ export function Classes() {
       setShowAddForm(false);
       refreshData();
 
-      toast({
-        title: "Class created",
-        description: `Class "${newClass.name}" has been created with code ${newClass.code}.`
+      toast.push({
+        kind: "success",
+        text: `Class "${newClass.name}" created with code ${newClass.code}`
       });
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create class",
-        variant: "destructive"
+      toast.push({
+        kind: "error",
+        text: "Failed to create class"
       });
     }
   };
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
-    toast({
-      title: "Code copied",
-      description: `Class code ${code} copied to clipboard.`
+    toast.push({
+      kind: "success",
+      text: `Class code ${code} copied to clipboard`
     });
   };
 
@@ -202,9 +197,9 @@ export function Classes() {
       printWindow.close();
     }
     
-    toast({
-      title: "QR Sheet Generated",
-      description: `Print-ready QR code for class ${classInfo.name} opened.`
+    toast.push({
+      kind: "success",
+      text: `Print-ready QR code for class ${classInfo.name} opened`
     });
   };
 
@@ -225,10 +220,9 @@ export function Classes() {
       
       refreshData();
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update projector settings",
-        variant: "destructive"
+      toast.push({
+        kind: "error",
+        text: "Failed to update projector settings"
       });
     }
   };
@@ -249,10 +243,13 @@ export function Classes() {
         <CardContent className="p-0">
           <div className="space-y-1">
             {classes.length === 0 ? (
-              <div className="text-center py-8 text-gray-500 px-4">
-                <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No classes yet</p>
-              </div>
+              <EmptyState 
+                icon={<Users className="w-8 h-8" />}
+                title="No classes yet"
+                message="Create your first class to get started with teaching"
+                actionLabel="Create Class"
+                onAction={() => setShowAddForm(true)}
+              />
             ) : (
               classes.map((classInfo) => (
                 <button
