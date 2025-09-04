@@ -189,6 +189,18 @@ export function createPrintableQRSheet(
   className: string,
   baseUrl: string = window.location.origin
 ): string {
+  return createPrintableQRSheetAdvanced(classCode, className, baseUrl, 'letter');
+}
+
+/**
+ * Create enhanced printable QR sheets with format options
+ */
+export function createPrintableQRSheetAdvanced(
+  classCode: string, 
+  className: string,
+  baseUrl: string = window.location.origin,
+  format: 'letter' | 'a4' | 'a5' = 'letter'
+): string {
   const qrCode = generateClassCodeQR(classCode, baseUrl);
   const joinUrl = `${baseUrl}/?class=${encodeURIComponent(classCode)}`;
 
@@ -254,30 +266,31 @@ export function createPrintableQRSheet(
       </div>
 
       <div class="instructions">
-        <h2 style="color: #1e293b; margin-bottom: 1rem;">How Students Join:</h2>
+        <h2 style="color: #1e293b; margin-bottom: 1rem;">🚀 How Students Join (3 Simple Steps)</h2>
         
         <div class="step">
           <div class="step-number">1</div>
-          <strong>Scan QR Code</strong><br>
-          Use any smartphone or tablet camera to scan the code above
+          <div style="margin-left: 0;">
+            <strong>Scan the QR Code</strong><br>
+            <span style="color: #64748b; font-size: 0.9rem;">Open your phone's camera app and point it at the QR code above. Tap the notification that appears.</span>
+          </div>
         </div>
         
         <div class="step">
           <div class="step-number">2</div>
-          <strong>Or Visit Manually</strong><br>
-          Go to: <div class="url">${joinUrl}</div>
+          <div style="margin-left: 0;">
+            <strong>Or Visit the Website</strong><br>
+            <span style="color: #64748b; font-size: 0.9rem;">Go to LearnOz and enter the class code:</span>
+            <div class="url">${baseUrl.replace('https://', '').replace('http://', '')} → Enter code: ${classCode}</div>
+          </div>
         </div>
         
         <div class="step">
           <div class="step-number">3</div>
-          <strong>Create Profile</strong><br>
-          Students enter their name and create their learner profile
-        </div>
-        
-        <div class="step">
-          <div class="step-number">4</div>
-          <strong>Start Learning</strong><br>
-          Access assignments and begin curriculum activities
+          <div style="margin-left: 0;">
+            <strong>Start Learning!</strong><br>
+            <span style="color: #64748b; font-size: 0.9rem;">Create your avatar and begin your learning adventure. No account required!</span>
+          </div>
         </div>
       </div>
 

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LearnOz Class QR Code - A4 Template</title>
+  <style>
+    @page { 
+      margin: 0.75in; 
+      size: A4; 
+      color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      max-width: 21cm;
+      margin: 0 auto;
+      padding: 0;
+      line-height: 1.4;
+      color: #1e293b;
+    }
+    
+    .header { 
+      text-align: center; 
+      margin-bottom: 1.5rem;
+      border-bottom: 3px solid #3b82f6;
+      padding-bottom: 1rem;
+    }
+    
+    .logo { 
+      font-size: 2.2rem; 
+      font-weight: bold; 
+      color: #1e293b; 
+      margin-bottom: 0.25rem; 
+    }
+    
+    .subtitle { 
+      color: #64748b; 
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    
+    .class-info { 
+      background: #f8fafc; 
+      padding: 1.5rem; 
+      border-radius: 12px; 
+      margin: 1.5rem 0;
+      border-left: 4px solid #3b82f6;
+      text-align: center;
+    }
+    
+    .class-name {
+      margin: 0 0 0.5rem 0;
+      color: #1e293b;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+    
+    .class-code {
+      margin: 0;
+      color: #64748b;
+      font-size: 1.1rem;
+    }
+    
+    .class-code strong {
+      color: #1e293b;
+      font-size: 1.4rem;
+      font-family: 'Courier New', monospace;
+      background: #e2e8f0;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+    
+    .qr-container { 
+      text-align: center; 
+      margin: 2rem 0;
+    }
+    
+    .qr-code { 
+      border: 3px solid #e2e8f0; 
+      border-radius: 12px; 
+      padding: 1.5rem; 
+      display: inline-block;
+      background: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .qr-instructions {
+      margin-top: 1rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+    
+    .instructions { 
+      margin: 2rem 0;
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 2px solid #e2e8f0;
+    }
+    
+    .instructions h2 {
+      color: #1e293b;
+      margin-bottom: 1.2rem;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    
+    .step { 
+      margin: 1.2rem 0; 
+      padding-left: 3rem; 
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+    }
+    
+    .step-number { 
+      position: absolute; 
+      left: 0; 
+      top: 0.1rem; 
+      background: #3b82f6; 
+      color: white; 
+      width: 2rem; 
+      height: 2rem; 
+      border-radius: 50%; 
+      text-align: center; 
+      font-size: 1rem; 
+      line-height: 2rem;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+    }
+    
+    .step-content {
+      flex: 1;
+    }
+    
+    .step-title {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: #1e293b;
+    }
+    
+    .step-desc {
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+    
+    .url { 
+      font-family: 'Courier New', monospace; 
+      background: #f1f5f9; 
+      padding: 0.7rem; 
+      border-radius: 6px; 
+      word-break: break-all;
+      border: 1px solid #cbd5e1;
+      margin: 0.5rem 0;
+    }
+    
+    .offline-notice {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1.5rem 0;
+      text-align: center;
+    }
+    
+    .offline-notice strong {
+      color: #92400e;
+    }
+    
+    .footer { 
+      text-align: center; 
+      margin-top: 2rem; 
+      padding-top: 1.5rem; 
+      border-top: 1px solid #e2e8f0; 
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+    
+    @media print {
+      .no-print { display: none; }
+      body { margin: 0; }
+      .header { break-after: avoid; }
+      .class-info { break-inside: avoid; }
+      .qr-container { break-inside: avoid; }
+      .instructions { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">🎓 LearnOz</div>
+    <div class="subtitle">Classroom Learning Platform</div>
+  </div>
+
+  <div class="class-info">
+    <h1 class="class-name">[CLASS_NAME]</h1>
+    <p class="class-code">Class Code: <strong>[CLASS_CODE]</strong></p>
+  </div>
+
+  <div class="qr-container">
+    <div class="qr-code">
+      <!-- QR Code will be inserted here -->
+      <div style="width: 200px; height: 200px; background: #f1f5f9; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 0.9rem;">
+        [QR_CODE_PLACEHOLDER]
+      </div>
+    </div>
+    <p class="qr-instructions">📱 Point any camera app at this code</p>
+  </div>
+
+  <div class="instructions">
+    <h2>🚀 How Students Join (3 Simple Steps)</h2>
+    
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-title">Scan the QR Code</div>
+        <div class="step-desc">Open your phone's camera app and point it at the QR code above. Tap the notification that appears.</div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-title">Or Visit the Website</div>
+        <div class="step-desc">Go to LearnOz and enter the class code:</div>
+        <div class="url">[SHORT_URL] → Enter code: [CLASS_CODE]</div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-title">Start Learning!</div>
+        <div class="step-desc">Create your avatar and begin your learning adventure. No account required!</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="offline-notice">
+    <p style="margin: 0;"><strong>📡 Works Offline!</strong> Students can continue learning without internet and sync when reconnected.</p>
+  </div>
+
+  <div class="footer">
+    <p>Need help? Visit the Guide → Settings → Documentation</p>
+    <p style="font-size: 0.8rem; margin-top: 0.5rem;">LearnOz Teacher Communications Pack • Generated [DATE]</p>
+  </div>
+</body>
+</html>

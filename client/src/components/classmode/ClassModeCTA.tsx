@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Users, ArrowRight, X, Info } from 'lucide-react';
+import { Users, ArrowRight, X, Info, LogOut, Target } from 'lucide-react';
 import { findByCode } from '../../roster/classes';
 import { useProjectorSafeName } from '../../hooks/useProjectorMode';
 import { checkAssignmentNudges } from '../../utils/assignmentNudges';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { useActiveClass } from '../../guide/useActiveClass';
 
 interface ClassModeInfo {
   classCode: string;
@@ -21,6 +22,7 @@ interface ClassModeCTAProps {
 export function ClassModeCTA({ onStartActivity, onFocusLesson, onDismiss }: ClassModeCTAProps) {
   const [classModeInfo, setClassModeInfo] = useState<ClassModeInfo | null>(null);
   const [showConsentInfo, setShowConsentInfo] = useState(false);
+  const { activeClass } = useActiveClass();
   
   // Use projector-safe name (will show generic name if projector mode is on)
   const displayClassName = useProjectorSafeName(
@@ -156,23 +158,36 @@ export function ClassModeCTA({ onStartActivity, onFocusLesson, onDismiss }: Clas
         <div className="flex flex-col gap-3">
           <Button
             onClick={handleStartActivity}
-            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2"
-            data-testid="button-start-activity"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white flex items-center justify-center gap-2 shadow-lg text-lg py-3"
+            data-testid="button-start-now"
           >
+            <Target className="h-5 w-5" />
             <span>
               {classModeInfo.hasAssignments 
-                ? 'Start next activity' 
-                : 'Continue learning'
+                ? 'Start Now' 
+                : 'Continue Learning'
               }
             </span>
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRight className="h-5 w-5" />
           </Button>
           
           {classModeInfo.hasAssignments && (
-            <p className="text-xs text-blue-700 text-center">
-              You have assignments ready to complete
+            <p className="text-sm text-blue-700 text-center font-medium">
+              🎯 Compass recommended activities ready
             </p>
           )}
+          
+          {/* Exit class mode link */}
+          <div className="flex justify-center">
+            <button
+              onClick={handleDismissClass}
+              className="text-xs text-blue-600 hover:text-blue-800 underline flex items-center gap-1"
+              data-testid="link-exit-class-mode"
+            >
+              <LogOut className="h-3 w-3" />
+              Exit class mode
+            </button>
+          </div>
         </div>
       </CardContent>
     </Card>

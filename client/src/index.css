@@ -429,6 +429,22 @@ html[data-projector-hide-names="true"] .hide-on-projector {
   display: none !important;
 }
 
+/* Mute SFX when projector preset is active */
+html[data-projector-mute-sfx="true"] audio,
+html[data-projector-mute-sfx="true"] video {
+  muted: true;
+  volume: 0;
+}
+
+/* Large cursor when projector preset is active */
+html[data-projector-large-cursor="true"] {
+  cursor: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEgMUwxIDI4TDkgMjBMMTcgMzFMMjMgMjVMMTUgMTRMMzEgMTRMMSAxWiIgZmlsbD0iIzAwMCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+') 0 0, auto !important;
+}
+
+html[data-projector-large-cursor="true"] * {
+  cursor: inherit !important;
+}
+
 /* Static projector-safe mode styles for backwards compatibility */
 .projector-mode {
   font-size: 120%;
