@@ -2,11 +2,11 @@
  * Cloud Sync Error Display Component
  * Shows human-readable error messages with structured error handling
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, RefreshCw, X, WifiOff, Server, Clock, AlertTriangle } from 'lucide-react';
+import { AlertCircle, RefreshCw, X, WifiOff, Server, Clock, AlertTriangle, CloudOff } from 'lucide-react';
 
 interface SyncError {
   code: string;
@@ -258,3 +258,186 @@ export function useSyncErrors() {
 }
 
 export type { SyncError };
+
+// Degraded mode state interface
+interface DegradedModeState {
+  isActive: boolean;
+  startTime: number | null;
+  consecutiveFailures: number;
+  lastSuccessTime: number;
+}
+
+// Enhanced hook with degraded mode detection
+export function useSyncErrorsWithDegradedMode() {
+  const [errors, setErrors] = useState<SyncError[]>([]);
+  const [degradedMode, setDegradedMode] = useState<DegradedModeState>({
+    isActive: false,
+    startTime: null,
+    consecutiveFailures: 0,
+    lastSuccessTime: Date.now(),
+  });
+
+  const degradedTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const addError = (error: Omit<SyncError, 'timestamp' | 'retryable'>) => {
+    const syncError: SyncError = {
+      ...error,
+      timestamp: Date.now(),
+      retryable: ['RATE_LIMIT', 'NETWORK_ERROR', 'INTERNAL_ERROR'].includes(error.code),
+    };
+    
+    setErrors(prev => [...prev, syncError]);
+
+    // Check if this is a server error (5xx) or network error
+    if (error.code.startsWith('5') || error.code === 'NETWORK_ERROR' || error.code === 'INTERNAL_ERROR') {
+      setDegradedMode(prev => {
+        const newConsecutiveFailures = prev.consecutiveFailures + 1;
+        const newState = {
+          ...prev,
+          consecutiveFailures: newConsecutiveFailures,
+        };
+
+        // Start degraded mode timer if we have multiple consecutive failures
+        if (newConsecutiveFailures >= 3 && !prev.isActive && !prev.startTime) {
+          newState.startTime = Date.now();
+          
+          // Set timer for 5 minutes
+          if (degradedTimeoutRef.current) {
+            clearTimeout(degradedTimeoutRef.current);
+          }
+          
+          degradedTimeoutRef.current = setTimeout(() => {
+            setDegradedMode(prev => ({
+              ...prev,
+              isActive: true,
+            }));
+          }, 5 * 60 * 1000); // 5 minutes
+        }
+
+        return newState;
+      });
+    }
+  };
+
+  const recordSuccess = () => {
+    const now = Date.now();
+    setDegradedMode(prev => ({
+      isActive: false,
+      startTime: null,
+      consecutiveFailures: 0,
+      lastSuccessTime: now,
+    }));
+
+    // Clear any pending degraded mode timeout
+    if (degradedTimeoutRef.current) {
+      clearTimeout(degradedTimeoutRef.current);
+      degradedTimeoutRef.current = null;
+    }
+  };
+
+  const retryError = (error: SyncError) => {
+    // Remove the error from the list
+    setErrors(prev => prev.filter(e => 
+      !(e.code === error.code && e.timestamp === error.timestamp)
+    ));
+  };
+
+  const dismissError = (errorId: string) => {
+    const [code, timestamp] = errorId.split('-');
+    setErrors(prev => prev.filter(e => 
+      !(e.code === code && e.timestamp === parseInt(timestamp))
+    ));
+  };
+
+  const dismissDegradedMode = () => {
+    setDegradedMode(prev => ({
+      ...prev,
+      isActive: false,
+    }));
+  };
+
+  const clearAllErrors = () => {
+    setErrors([]);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (degradedTimeoutRef.current) {
+        clearTimeout(degradedTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  return {
+    errors,
+    degradedMode,
+    addError,
+    recordSuccess,
+    retryError,
+    dismissError,
+    dismissDegradedMode,
+    clearAllErrors,
+  };
+}
+
+// Degraded mode ribbon component
+export function DegradedModeRibbon({ 
+  isVisible, 
+  onDismiss 
+}: { 
+  isVisible: boolean; 
+  onDismiss: () => void; 
+}) {
+  if (!isVisible) return null;
+
+  return (
+    <div className="fixed top-0 left-0 right-0 z-50 bg-orange-500 text-white text-sm py-2 px-4 flex items-center justify-between shadow-md animate-in slide-in-from-top-2 duration-300">
+      <div className="flex items-center gap-2">
+        <CloudOff className="h-4 w-4" />
+        <span className="font-medium">
+          Cloud sync temporarily unavailable
+        </span>
+        <span className="opacity-90">
+          • App remains fully functional offline
+        </span>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onDismiss}
+        className="h-6 w-6 p-0 text-white hover:bg-orange-600"
+        data-testid="button-dismiss-degraded-ribbon"
+      >
+        <X className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+}
+
+// Example usage component combining error display and degraded mode
+export function SyncErrorsContainer() {
+  const { 
+    errors, 
+    degradedMode, 
+    retryError, 
+    dismissError, 
+    dismissDegradedMode 
+  } = useSyncErrorsWithDegradedMode();
+
+  return (
+    <>
+      <DegradedModeRibbon
+        isVisible={degradedMode.isActive}
+        onDismiss={dismissDegradedMode}
+      />
+      
+      <div className="fixed bottom-4 right-4 max-w-md z-40">
+        <CloudSyncErrorDisplay
+          errors={errors}
+          onRetry={retryError}
+          onDismiss={dismissError}
+        />
+      </div>
+    </>
+  );
+}
