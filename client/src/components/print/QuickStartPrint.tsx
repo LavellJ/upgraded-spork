@@ -34,17 +34,21 @@ export function QuickStartPrint({ onClose }: QuickStartPrintProps) {
             size: letter; 
           }
           
-          /* Hide everything by default when printing */
+          /* Ensure colors print correctly */
           * { 
-            visibility: hidden !important;
             -webkit-print-color-adjust: exact !important;
             color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
           
-          /* Show only our print content */
-          .print-page, .print-page * {
-            visibility: visible !important;
+          /* Hide non-print elements */
+          body > *:not(.print-page) {
+            display: none !important;
+          }
+          
+          /* Ensure print content is visible */
+          .print-page {
+            display: block !important;
           }
           
           /* Reset body styles for printing */
@@ -59,7 +63,6 @@ export function QuickStartPrint({ onClose }: QuickStartPrintProps) {
           
           /* Hide screen-only elements */
           .no-print { 
-            visibility: hidden !important;
             display: none !important; 
           }
           
