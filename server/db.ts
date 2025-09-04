@@ -67,6 +67,10 @@ export const statements = {
   getUser: db.prepare(`
     SELECT * FROM users WHERE email = ?
   `),
+  
+  getAllUsers: db.prepare(`
+    SELECT email, role FROM users ORDER BY email
+  `),
 
   // User documents
   upsertUserDoc: db.prepare(`

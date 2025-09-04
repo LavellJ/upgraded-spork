@@ -3,6 +3,7 @@ import cron from 'node-cron';
 import { runBackupRoutine } from './backup';
 import { dbUserStorage } from './dbStorage';
 import { statements } from './db';
+import { sendTeacherDigestToAll } from './analytics/teacherDigest';
 
 /**
  * Initialize all scheduled tasks
@@ -101,10 +102,25 @@ export function initializeCronJobs(): void {
     timezone: 'UTC'
   });
   
+  // Weekly teacher digest at Monday 07:30 (server local time)
+  cron.schedule('30 7 * * 1', async () => {
+    console.log('📧 Running weekly teacher digest...');
+    try {
+      await sendTeacherDigestToAll();
+      console.log('✅ Weekly teacher digest completed');
+    } catch (error) {
+      console.error('❌ Weekly teacher digest failed:', error);
+    }
+  }, {
+    name: 'weekly-teacher-digest',
+    timezone: 'UTC' // Note: using UTC for consistency, adjust as needed
+  });
+  
   console.log('✅ Scheduled tasks initialized:');
   console.log('  • Daily backup: 02:30 UTC');
   console.log('  • Daily retention: 03:00 UTC');
   console.log('  • Weekly audit cleanup: 04:00 UTC Sunday');
+  console.log('  • Weekly teacher digest: 07:30 UTC Monday');
 }
 
 /**
@@ -115,8 +131,8 @@ export function getCronJobStatus(): Array<{ name: string; running: boolean; next
   
   return Array.from(tasks.entries()).map(([name, task]) => ({
     name,
-    running: task.running || false,
-    nextExecution: task.nextDate ? task.nextDate().toISOString() : null
+    running: (task as any).running !== undefined ? (task as any).running : false,
+    nextExecution: (task as any).nextDate ? (task as any).nextDate().toISOString() : null
   }));
 }
 
@@ -127,7 +143,8 @@ export function startCronJobs(): void {
   const tasks = cron.getTasks();
   
   tasks.forEach((task, name) => {
-    if (!task.running) {
+    const running = (task as any).running !== undefined ? (task as any).running : false;
+    if (!running) {
       task.start();
       console.log(`▶️  Started cron job: ${name}`);
     }
@@ -141,7 +158,8 @@ export function stopCronJobs(): void {
   const tasks = cron.getTasks();
   
   tasks.forEach((task, name) => {
-    if (task.running) {
+    const running = (task as any).running !== undefined ? (task as any).running : false;
+    if (running) {
       task.stop();
       console.log(`⏸️  Stopped cron job: ${name}`);
     }
