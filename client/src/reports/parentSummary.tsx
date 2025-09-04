@@ -245,11 +245,20 @@ export function ParentSummary({ learnerId, weekStartISO }: ParentSummaryProps) {
 
       {/* Screen-only action buttons */}
       <div className="no-print flex gap-2 mb-6">
-        <Button onClick={handlePrint} className="flex items-center gap-2">
+        <Button 
+          onClick={handlePrint} 
+          className="flex items-center gap-2"
+          aria-label="Print parent summary report"
+        >
           <Printer className="h-4 w-4" />
           Print
         </Button>
-        <Button onClick={handleDownloadPDF} variant="outline" className="flex items-center gap-2">
+        <Button 
+          onClick={handleDownloadPDF} 
+          variant="outline" 
+          className="flex items-center gap-2"
+          aria-label="Save parent summary report as PDF"
+        >
           <Download className="h-4 w-4" />
           Download PDF
         </Button>

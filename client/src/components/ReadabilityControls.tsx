@@ -2,7 +2,17 @@ import React from 'react';
 import { useReadability } from '../hooks/useReadability';
 
 export function ReadabilityControls() {
-  const { settings, toggleDyslexiaMode, setTextScale, toggleMaxLineLength, toggleReducedMotion, resetSettings } = useReadability();
+  const { 
+    settings, 
+    toggleDyslexiaMode, 
+    setTextScale, 
+    toggleMaxLineLength, 
+    toggleReducedMotion, 
+    setCaptionTextSize,
+    setCaptionBackgroundOpacity,
+    setCaptionPosition,
+    resetSettings 
+  } = useReadability();
 
   const handleTextScaleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTextScale(parseFloat(event.target.value));
@@ -139,6 +149,82 @@ export function ReadabilityControls() {
           </div>
           <p className="text-sm text-orange-700">
             Disable animations and transitions for a calmer experience
+          </p>
+        </div>
+
+        {/* Caption preferences */}
+        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+            <span className="text-lg">💬</span>
+            Video Captions
+          </h4>
+          
+          {/* Caption text size */}
+          <div className="space-y-2 mb-4">
+            <label className="text-sm font-medium text-gray-800">Text size</label>
+            <div className="flex gap-2">
+              {(['S', 'M', 'L'] as const).map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setCaptionTextSize(size)}
+                  className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                    settings.captions.textSize === size
+                      ? 'bg-gray-800 text-white'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
+                  }`}
+                  data-testid={`caption-size-${size.toLowerCase()}`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Background opacity */}
+          <div className="space-y-2 mb-4">
+            <label htmlFor="caption-opacity" className="text-sm font-medium text-gray-800">
+              Background opacity: {settings.captions.backgroundOpacity}%
+            </label>
+            <input
+              id="caption-opacity"
+              type="range"
+              min="0"
+              max="60"
+              value={settings.captions.backgroundOpacity}
+              onChange={(e) => setCaptionBackgroundOpacity(parseInt(e.target.value))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              data-testid="caption-opacity-slider"
+            />
+            <div className="flex justify-between text-xs text-gray-600">
+              <span>0%</span>
+              <span>30%</span>
+              <span>60%</span>
+            </div>
+          </div>
+          
+          {/* Caption position */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-800">Position</label>
+            <div className="flex gap-2">
+              {([['auto', 'Auto'], ['bottom', 'Bottom']] as const).map(([value, label]) => (
+                <button
+                  key={value}
+                  onClick={() => setCaptionPosition(value)}
+                  className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                    settings.captions.position === value
+                      ? 'bg-gray-800 text-white'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
+                  }`}
+                  data-testid={`caption-position-${value}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          <p className="text-sm text-gray-600 mt-3">
+            Customize how video captions appear on screen
           </p>
         </div>
 

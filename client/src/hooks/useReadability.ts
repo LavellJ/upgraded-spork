@@ -1,19 +1,34 @@
 import { useState, useEffect } from 'react';
 
+interface CaptionSettings {
+  textSize: 'S' | 'M' | 'L';
+  backgroundOpacity: number; // 0-60%
+  position: 'auto' | 'bottom';
+}
+
 interface ReadabilitySettings {
   dyslexiaMode: boolean;
   textScale: number;
   maxLineLength: boolean;
   reducedMotion: boolean;
+  captions: CaptionSettings;
 }
 
 const STORAGE_KEY = 'qi.readability';
+const CAPTIONS_STORAGE_KEY = 'qi.readability.captions';
+
+const defaultCaptionSettings: CaptionSettings = {
+  textSize: 'M',
+  backgroundOpacity: 30,
+  position: 'auto'
+};
 
 const defaultSettings: ReadabilitySettings = {
   dyslexiaMode: false,
   textScale: 1.0,
   maxLineLength: false,
   reducedMotion: false,
+  captions: defaultCaptionSettings,
 };
 
 export function useReadability() {
@@ -43,7 +58,7 @@ export function useReadability() {
   }, [settings]);
 
   const applySettings = (newSettings: ReadabilitySettings) => {
-    const { dyslexiaMode, textScale, maxLineLength, reducedMotion } = newSettings;
+    const { dyslexiaMode, textScale, maxLineLength, reducedMotion, captions } = newSettings;
     
     // Apply dyslexia mode
     if (dyslexiaMode) {
@@ -67,6 +82,23 @@ export function useReadability() {
       '--line-length-max', 
       maxLineLength ? '65ch' : 'none'
     );
+    
+    // Apply caption settings
+    applyCaptionSettings(captions);
+  };
+  
+  const applyCaptionSettings = (captionSettings: CaptionSettings) => {
+    const { textSize, backgroundOpacity, position } = captionSettings;
+    
+    // Set CSS variables for caption styling
+    const fontSizeMap = { 'S': '0.875rem', 'M': '1rem', 'L': '1.25rem' };
+    document.documentElement.style.setProperty('--caption-font-size', fontSizeMap[textSize]);
+    document.documentElement.style.setProperty('--caption-bg-opacity', (backgroundOpacity / 100).toString());
+    document.documentElement.style.setProperty('--caption-position', position === 'bottom' ? 'bottom' : 'auto');
+    
+    // Set data attributes for CSS selectors
+    document.documentElement.setAttribute('data-caption-size', textSize);
+    document.documentElement.setAttribute('data-caption-position', position);
   };
 
   const updateSettings = (updates: Partial<ReadabilitySettings>) => {
@@ -91,6 +123,19 @@ export function useReadability() {
     updateSettings({ reducedMotion: !settings.reducedMotion });
   };
 
+  const setCaptionTextSize = (size: 'S' | 'M' | 'L') => {
+    updateSettings({ captions: { ...settings.captions, textSize: size } });
+  };
+  
+  const setCaptionBackgroundOpacity = (opacity: number) => {
+    const clampedOpacity = Math.max(0, Math.min(60, opacity));
+    updateSettings({ captions: { ...settings.captions, backgroundOpacity: clampedOpacity } });
+  };
+  
+  const setCaptionPosition = (position: 'auto' | 'bottom') => {
+    updateSettings({ captions: { ...settings.captions, position } });
+  };
+
   const resetSettings = () => {
     setSettings(defaultSettings);
   };
@@ -101,6 +146,9 @@ export function useReadability() {
     setTextScale,
     toggleMaxLineLength,
     toggleReducedMotion,
+    setCaptionTextSize,
+    setCaptionBackgroundOpacity,
+    setCaptionPosition,
     resetSettings,
     updateSettings,
   };
