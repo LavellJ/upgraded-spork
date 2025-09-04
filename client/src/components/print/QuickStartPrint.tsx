@@ -30,114 +30,92 @@ export function QuickStartPrint({ onClose }: QuickStartPrintProps) {
       <style>{`
         @media print {
           @page { 
-            margin: 1in; 
+            margin: 0.5in; 
             size: letter; 
           }
           
-          /* Ensure colors print correctly */
+          /* Simple approach - just show our content */
           * { 
             -webkit-print-color-adjust: exact !important;
             color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
           
-          /* Hide non-print elements */
-          body > *:not(.print-page) {
-            display: none !important;
-          }
-          
-          /* Ensure print content is visible */
-          .print-page {
-            display: block !important;
-          }
-          
-          /* Reset body styles for printing */
-          body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
-            line-height: 1.5 !important;
-            color: #1e293b !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            background: white !important;
-          }
-          
-          /* Hide screen-only elements */
+          /* Hide screen controls */
           .no-print { 
             display: none !important; 
           }
           
-          /* Ensure print content flows naturally */
-          .print-page {
-            position: static !important;
+          /* Make sure print content is visible */
+          #printable-content {
+            display: block !important;
+            position: relative !important;
             width: 100% !important;
-            max-width: none !important;
+            padding: 0 !important;
             margin: 0 !important;
-            padding: 0.75rem !important;
             background: white !important;
-            page-break-inside: avoid;
+            color: black !important;
           }
           
-          .print-header {
+          #printable-content h1 {
             text-align: center !important;
             margin-bottom: 1rem !important;
-            border-bottom: 1px solid #e2e8f0 !important;
-            padding-bottom: 0.5rem !important;
+            font-size: 1.5rem !important;
+            color: black !important;
           }
           
-          .print-logo {
+          #printable-content img {
             max-height: 40px !important;
             margin: 0 auto 0.5rem auto !important;
             display: block !important;
           }
           
-          .step-container {
+          #printable-content .step-container {
             break-inside: avoid !important;
             margin-bottom: 0.75rem !important;
-            border: 1px solid #e2e8f0 !important;
-            border-radius: 6px !important;
+            border: 1px solid black !important;
             padding: 0.75rem !important;
           }
           
-          .step-number {
-            background: #3b82f6;
-            color: white;
-            width: 2rem;
-            height: 2rem;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-right: 1rem;
-            flex-shrink: 0;
+          #printable-content .step-number {
+            background: black !important;
+            color: white !important;
+            width: 1.5rem !important;
+            height: 1.5rem !important;
+            border-radius: 50% !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-weight: bold !important;
+            margin-right: 0.5rem !important;
+            font-size: 0.8rem !important;
           }
           
-          .pro-tip {
-            background: #fef3c7 !important;
-            border: 1px solid #f59e0b !important;
-            border-radius: 4px !important;
-            padding: 0.6rem !important;
-            margin: 0.6rem 0 !important;
+          #printable-content .pro-tip {
+            background: #f9f9f9 !important;
+            border: 1px solid #666 !important;
+            padding: 0.5rem !important;
+            margin: 0.5rem 0 !important;
             font-size: 0.85rem !important;
           }
           
-          .reference-table {
+          #printable-content table {
             width: 100% !important;
             border-collapse: collapse !important;
             margin: 0.75rem 0 !important;
             font-size: 0.8rem !important;
           }
           
-          .reference-table th,
-          .reference-table td {
-            border: 1px solid #e2e8f0 !important;
+          #printable-content th,
+          #printable-content td {
+            border: 1px solid black !important;
             padding: 0.3rem !important;
             text-align: left !important;
           }
           
-          .reference-table th {
-            background: #f8fafc;
-            font-weight: bold;
+          #printable-content th {
+            background: #f0f0f0 !important;
+            font-weight: bold !important;
           }
         }
         
