@@ -109,7 +109,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b border-border transition-colors hover:bg-bg-subtle data-[state=selected]:bg-bg-subtle",
+      "border-b border-border transition-colors hover:bg-bg-soft data-[state=selected]:bg-bg-soft",
       "data-[density='compact']:h-8", // Compact row height
       className
     )}

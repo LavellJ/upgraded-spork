@@ -112,7 +112,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                   key={option.value}
                   className={cn(
                     "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors",
-                    "hover:bg-bg-subtle focus:bg-bg-subtle",
+                    "hover:bg-bg-soft focus:bg-bg-soft",
                     option.disabled && "pointer-events-none opacity-50"
                   )}
                   onClick={() => !option.disabled && handleSelect(option.value)}

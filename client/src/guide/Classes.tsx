@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Settings, Users, Copy, Trash2, Plus, Star, Projector, Check, QrCode } from 'lucide-react';
+import clsx from 'clsx';
 import { useRosterOptional } from '../roster/context';
 import { 
   ClassInfo, 
@@ -256,9 +257,9 @@ export function Classes() {
                   key={classInfo.id}
                   onClick={() => setActiveClassId(classInfo.id)}
                   className={clsx(
-                    'w-full text-left px-4 py-3 hover:bg-[rgb(var(--bg-subtle))] transition-colors border-b border-[rgb(var(--border))]',
-                    'h-[calc(44px*var(--density))]',
-                    classInfo.id === activeClassId && 'bg-[rgb(var(--bg-soft))] border-l-2 border-l-[rgb(var(--brand))]'
+                    'w-full text-left px-4 py-3 transition-colors border-b border-[rgb(var(--border))] h-[calc(44px*var(--density))]',
+                    'hover:bg-[rgb(var(--bg-soft))]',
+                    activeClassId === classInfo.id && 'bg-[rgb(var(--bg-soft))] border-brand'
                   )}
                 >
                   <div className="font-medium text-sm">{classInfo.name}</div>
