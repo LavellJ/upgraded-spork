@@ -552,6 +552,7 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
                   {editingId ? 'Update' : 'Create'}
                 </button>
               </div>
+                </div>
               </CardContent>
             </Card>
           </motion.div>
