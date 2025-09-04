@@ -1,0 +1,66 @@
+{
+  "version": 2,
+  "id": "mountain-heights-v1",
+  "biomeId": "desert",
+  "title": {
+    "en-AU": "Mountain Heights"
+  },
+  "summary": {
+    "en-AU": "Learn measurement and scale by exploring the heights of Australian alpine peaks"
+  },
+  "skills": ["measurement.scale", "measurement.length", "number.place-value"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Towering Peaks"
+      },
+      "content": {
+        "en-AU": "The Australian Alps contain our highest mountains. Mount Kosciuszko stands 2,228 metres tall! Let's explore how we measure these giant peaks and compare their heights using metres, kilometres, and scale."
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Peak Comparison Tool"
+      },
+      "interactionType": "measurement-scale",
+      "config": {
+        "peaks": ["Kosciuszko", "Townsend", "Twynam"],
+        "units": ["metres", "kilometres"],
+        "scale": "1:50000"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Height Measurement Challenge"
+      },
+      "questionSetId": "mountain-heights-measurement"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Scaling Australian Peaks"
+      },
+      "src": "https://example.com/mountain-heights.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/mountain-heights-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMMG061"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACMMG108"
+    }
+  ]
+}

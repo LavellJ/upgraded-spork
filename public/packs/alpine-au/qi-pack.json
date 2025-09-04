@@ -1,0 +1,19 @@
+{
+  "name": "Alpine Ridge AU v1", 
+  "id": "alpine-au",
+  "version": "1.0.0",
+  "locale": "en-AU",
+  "description": "Year 4-6 measurement, data, and multi-step problem solving set in the Australian Alps",
+  "author": "LearnOz Education Team",
+  "frameworks": ["ACARA"],
+  "lessons": ["lessons/*.json"],
+  "questionSets": [],
+  "assets": ["assets/**/*.{png,jpg,mp3,vtt}"],
+  "dependencies": {},
+  "meta": {
+    "ageRange": "8-12",
+    "subjects": ["mathematics", "problem-solving"],
+    "difficulty": "intermediate",
+    "estimatedHours": 18
+  }
+}

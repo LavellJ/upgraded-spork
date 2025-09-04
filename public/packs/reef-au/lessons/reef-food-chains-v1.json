@@ -1,0 +1,65 @@
+{
+  "version": 2,
+  "id": "reef-food-chains-v1",
+  "biomeId": "ocean",
+  "title": {
+    "en-AU": "Reef Food Chains"
+  },
+  "summary": {
+    "en-AU": "Discover food chains in the reef while practising counting and number sequences"
+  },
+  "skills": ["number.sequences", "science.ecosystems"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Who Eats Whom?"
+      },
+      "content": {
+        "en-AU": "In the reef, small fish eat algae, bigger fish eat small fish, and sharks eat bigger fish. This creates a food chain! Let's count how many creatures are at each level and learn about reef ecosystems."
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Build a Food Chain"
+      },
+      "interactionType": "sequence-builder",
+      "config": {
+        "levels": 4,
+        "creatures": ["algae", "small-fish", "big-fish", "shark"]
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Food Chain Counting"
+      },
+      "questionSetId": "food-chain-numbers"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Reef Ecosystem Balance"
+      },
+      "src": "https://example.com/reef-food-chains.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/reef-food-chains-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACSSU030"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACMNA035"
+    }
+  ]
+}

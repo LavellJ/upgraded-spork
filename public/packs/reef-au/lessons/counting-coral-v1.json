@@ -1,0 +1,57 @@
+{
+  "version": 2,
+  "id": "counting-coral-v1",
+  "biomeId": "ocean",
+  "title": {
+    "en-AU": "Counting Coral"
+  },
+  "summary": {
+    "en-AU": "Learn to count from 1 to 20 by exploring the colourful coral reef ecosystem"
+  },
+  "skills": ["number.counting", "number.recognition"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Welcome to the Reef"
+      },
+      "content": {
+        "en-AU": "Dive into the amazing Great Barrier Reef! Here, coral polyps build beautiful underwater cities. Let's count the amazing creatures that call this reef home. Look carefully at each group of sea animals and count how many you can see."
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Count the Sea Creatures"
+      },
+      "questionSetId": "reef-counting-1-20"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Coral Reef Counting Song"
+      },
+      "src": "https://example.com/reef-counting.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/counting-coral-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ],
+      "transcript": {
+        "text": "One bright fish swimming by, two sea stars on the sand, three coral branches reaching high, four crabs with claws so grand!"
+      }
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMNA001"
+    },
+    {
+      "framework": "ACARA", 
+      "code": "ACMNA002"
+    }
+  ]
+}

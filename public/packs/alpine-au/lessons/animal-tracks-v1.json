@@ -1,0 +1,66 @@
+{
+  "version": 2,
+  "id": "animal-tracks-v1",
+  "biomeId": "desert",
+  "title": {
+    "en-AU": "Animal Tracks"
+  },
+  "summary": {
+    "en-AU": "Analyse patterns and data by studying animal tracks and behaviour in alpine environments"
+  },
+  "skills": ["data.analysis", "patterns.recognition", "measurement.precision"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Following Animal Signs"
+      },
+      "content": {
+        "en-AU": "Alpine animals leave tracks in mud and snow that tell us stories! By measuring track size, counting steps, and analysing patterns, we can learn about wombats, wallabies, and other mountain wildlife."
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Track Detective"
+      },
+      "interactionType": "pattern-analysis",
+      "config": {
+        "animals": ["wombat", "wallaby", "echidna", "possum"],
+        "measurements": ["length", "width", "stride"],
+        "dataPoints": 20
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Track Analysis Challenge"
+      },
+      "questionSetId": "animal-track-analysis"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Wildlife Tracking Science"
+      },
+      "src": "https://example.com/animal-tracks.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/animal-tracks-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMSP096"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACMMG061"
+    }
+  ]
+}

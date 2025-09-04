@@ -1,0 +1,53 @@
+{
+  "version": 2,
+  "id": "reef-patterns-v1",
+  "biomeId": "ocean",
+  "title": {
+    "en-AU": "Reef Patterns"
+  },
+  "summary": {
+    "en-AU": "Discover patterns in nature by observing coral formations and sea creature arrangements"
+  },
+  "skills": ["number.patterns", "observation.skills"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Patterns in the Deep"
+      },
+      "content": {
+        "en-AU": "The reef is full of amazing patterns! Coral grows in spirals, fish swim in schools with repeating colours, and sea anemones wave in rhythmic motions. Let's explore these natural patterns and create our own."
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Complete the Pattern"
+      },
+      "questionSetId": "reef-patterns-basic"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Underwater Pattern Discovery"
+      },
+      "src": "https://example.com/reef-patterns.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/reef-patterns-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ],
+      "transcript": {
+        "src": "https://example.com/transcripts/reef-patterns-v1.txt"
+      }
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMNA035"
+    }
+  ]
+}

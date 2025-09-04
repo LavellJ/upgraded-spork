@@ -1,0 +1,66 @@
+{
+  "version": 2,
+  "id": "rock-formation-v1",
+  "biomeId": "desert",
+  "title": {
+    "en-AU": "Rock Formation"
+  },
+  "summary": {
+    "en-AU": "Learn about time and geological measurement by studying how mountains formed over millions of years"
+  },
+  "skills": ["time.geological", "measurement.scale", "number.large-numbers"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Mountains Through Time"
+      },
+      "content": {
+        "en-AU": "The Australian Alps formed over 500 million years ago! Geologists measure rock layers, study fossil evidence, and calculate ages using very large numbers. Let's explore deep time and geological processes."
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Geological Timeline"
+      },
+      "interactionType": "timeline-builder",
+      "config": {
+        "timeScale": "millions-of-years",
+        "events": ["formation", "erosion", "glaciation", "present"],
+        "maxValue": 600000000
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Geological Time Challenge"
+      },
+      "questionSetId": "geological-time-measurement"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Building Mountains"
+      },
+      "src": "https://example.com/rock-formation.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/rock-formation-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACSSU075"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACMNA072"
+    }
+  ]
+}

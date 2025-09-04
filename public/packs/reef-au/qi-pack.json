@@ -1,0 +1,19 @@
+{
+  "name": "Reef Coast AU v1",
+  "id": "reef-au",
+  "version": "1.0.0",
+  "locale": "en-AU",
+  "description": "Year 2-4 number and fractions with marine science tie-ins, exploring the Great Barrier Reef ecosystem",
+  "author": "LearnOz Education Team",
+  "frameworks": ["ACARA"],
+  "lessons": ["lessons/*.json"],
+  "questionSets": [],
+  "assets": ["assets/**/*.{png,jpg,mp3,vtt}"],
+  "dependencies": {},
+  "meta": {
+    "ageRange": "6-10",
+    "subjects": ["mathematics", "science"],
+    "difficulty": "foundation",
+    "estimatedHours": 16
+  }
+}

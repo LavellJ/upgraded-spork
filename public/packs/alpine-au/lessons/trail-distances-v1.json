@@ -1,0 +1,69 @@
+{
+  "version": 2,
+  "id": "trail-distances-v1",
+  "biomeId": "desert",
+  "title": {
+    "en-AU": "Trail Distances"
+  },
+  "summary": {
+    "en-AU": "Solve multi-step measurement problems by planning hiking routes in the Australian Alps"
+  },
+  "skills": ["measurement.distance", "problem-solving.multi-step", "estimation.skills"],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "Planning the Perfect Hike"
+      },
+      "content": {
+        "en-AU": "Hikers need to plan their routes carefully in the mountains. They must calculate total distances, estimate walking times, and plan rest stops. Let's use measurement and problem-solving to plan safe mountain adventures!"
+      }
+    },
+    {
+      "kind": "manip",
+      "title": {
+        "en-AU": "Trail Planner"
+      },
+      "interactionType": "route-calculator",
+      "config": {
+        "trails": ["Thredbo-Kosciuszko", "Charlotte-Pass", "Dead-Horse-Gap"],
+        "units": ["metres", "kilometres"],
+        "factors": ["terrain", "weather", "fitness"]
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "Distance Problems"
+      },
+      "questionSetId": "trail-distance-problems"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "Mountain Navigation"
+      },
+      "src": "https://example.com/trail-distances.mp4",
+      "captions": [
+        {
+          "src": "assets/captions/trail-distances-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true
+        }
+      ],
+      "transcript": {
+        "text": "Successful mountain hiking requires careful measurement and planning. Every step counts when you're calculating distances in challenging alpine terrain."
+      }
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMMG061"
+    },
+    {
+      "framework": "ACARA",
+      "code": "ACMNA123"
+    }
+  ]
+}
