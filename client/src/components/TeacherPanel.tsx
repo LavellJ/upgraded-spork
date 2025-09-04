@@ -34,6 +34,7 @@ import { getAllAssignments, setVariant, getScoutDwellVariant, SCOUT_DWELL_VARIAN
 import { getScoutDwellAnalytics } from '../ab/analytics';
 import { FeatureFlagsPanel } from './FeatureFlagsPanel';
 import { ContentStudio } from '../authoring/Studio';
+import { CoverageReportComponent } from '../authoring/CoverageReport';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -43,7 +44,7 @@ const SUBJECTS = {
 };
 
 // Define tab types and constants
-const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'roster', 'privacy', 'consent', 'audit', 'studio', 'pilot', 'funnel', 'qa', 'reports'] as const;
+const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'content', 'roster', 'privacy', 'consent', 'audit', 'studio', 'pilot', 'funnel', 'qa', 'reports'] as const;
 type Tab = typeof TABS[number];
 
 // Progress encode/decode helpers (URL-safe Base64)
@@ -575,6 +576,23 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
               <button 
                 type="button"
                 role="tab"
+                aria-selected={activeTab === 'content'}
+                aria-controls="tab-content-content"
+                id="tab-content"
+                data-tab="content"
+                onClick={handleTabClick}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                  activeTab === 'content' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white border hover:bg-stone-50'
+                }`}
+                data-testid="tab-content"
+              >
+                📊 Content
+              </button>
+              <button 
+                type="button"
+                role="tab"
                 aria-selected={activeTab === 'roster'}
                 aria-controls="tab-content-roster"
                 id="tab-roster"
@@ -824,6 +842,16 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                     <AssignmentCreator selectedFramework={framework} />
                   </div>
                 </details>
+              </div>
+            ) : activeTab === 'content' ? (
+              <div 
+                id="tab-content-content" 
+                role="region" 
+                aria-live="polite" 
+                aria-labelledby="tab-content"
+                className="max-h-96 overflow-y-auto space-y-4"
+              >
+                <CoverageReportComponent />
               </div>
             ) : activeTab === 'privacy' ? (
               <div className="max-h-96 overflow-y-auto space-y-4">
