@@ -534,6 +534,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin feedback endpoint for cloud submission (DEV mode or admin role required)
+  api.post('/api/admin/feedback', async (req, res) => {
+    try {
+      const isDev = process.env.NODE_ENV === 'development';
+      
+      // Only allow in development mode for now
+      if (!isDev) {
+        return res.status(403).json({ error: 'Feedback endpoint only available in development' });
+      }
+      
+      const feedback = req.body;
+      
+      // Basic validation
+      if (!feedback || !feedback.id || !feedback.kind || !feedback.text) {
+        return res.status(400).json({ error: 'Invalid feedback format' });
+      }
+      
+      // Log feedback to console and audit log for admin review
+      log.info('📝 Feedback received', {
+        feedbackId: feedback.id,
+        kind: feedback.kind,
+        textLength: feedback.text.length,
+        hasEmail: !!feedback.email,
+        userAgent: feedback.meta?.userAgent?.substring(0, 50),
+        classActive: feedback.meta?.classActive,
+        timestamp: feedback.at
+      });
+      
+      // Audit log feedback submission
+      auditLog.auditAccess(feedback.email || 'anonymous', req.ip);
+      
+      res.json({
+        ok: true,
+        received_at: new Date().toISOString(),
+        feedback_id: feedback.id
+      });
+    } catch (err) {
+      console.error('Error in POST /api/admin/feedback:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   app.use(api);
   
   // Mount metrics routes

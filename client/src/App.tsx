@@ -34,6 +34,9 @@ import { JoinClass } from "./components/JoinClass";
 import { ProjectorPresetApplier } from "./guide/ProjectorPresetApplier";
 import { ClassModeCTA } from "./components/classmode/ClassModeCTA";
 import { NewPackBadge } from "./components/NewPackBadge";
+import { FeedbackWidget } from "./feedback/Widget";
+import { ClassJoinBanner } from "./components/ClassJoinBanner";
+import { processClassDeepLink } from "./utils/classDeepLink";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -426,6 +429,9 @@ function AppContent(){
   useEffect(() => {
     if (!mapEntryNudgeChecked && rosterContext?.activeLearner?.id) {
       setMapEntryNudgeChecked(true);
+      
+      // Process class deep link on app initialization
+      processClassDeepLink();
       
       // Delay to allow everything to load
       setTimeout(() => {
@@ -1286,6 +1292,15 @@ function AppContent(){
 
       {/* Projector Preset Applier - Manages global projector settings */}
       <ProjectorPresetApplier />
+
+      {/* Feedback Widget (DEV-gated) */}
+      <FeedbackWidget 
+        devMode={process.env.NODE_ENV === 'development'}
+        cloudEnabled={true}
+      />
+
+      {/* Class Join Banner for deep links */}
+      <ClassJoinBanner />
 
       {/* Toast region for accessibility */}
       <div 
