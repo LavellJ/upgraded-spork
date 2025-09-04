@@ -230,22 +230,130 @@ HASS (Night):
 
 ## Data Export Formats
 
-### CSV Export Columns
+### V2 CSV Export Schema Standards
 
-#### Class Summary Export
+All CSV exports follow standardized column ordering and type definitions for consistency across reporting features.
+
+#### CohortSlice Data Structure
+
+The `CohortSlice` type represents aggregated weekly metrics for a cohort of learners and forms the basis for trends analysis.
+
+**Type Definition:**
+```typescript
+export type CohortSlice = {
+  weekStartISO: string;          // Monday date in ISO format (e.g., "2025-01-13")
+  learners: number;              // Total learners in cohort
+  activeLearners: number;        // Learners with any activity this week (minutes > 0)
+  avgOnTaskMins: number;         // Sum(all learner minutes) / learners
+  medianOnTaskMins: number;      // Median of all learner minute values
+  return7dPct: number;           // (learners with activity in next 7 days / activeLearners) × 100
+  assignments: {
+    donePct: number;             // (completed assignments / total assignments) × 100
+    dueSoon: number;             // Count where dueAt <= now + 7 days
+    overdue: number;             // Count where dueAt < now
+  };
+  completionsPerLearner: number; // Total lesson_finish events / activeLearners
+  streakersPct: number;          // (learners with streak >= 3 / learners) × 100
+};
+```
+
+#### Trends CSV Export (v2 Schema)
+**File**: `cohort-trends-{classes}-{weeks}weeks.csv`
+
+| Column | Type | Source | Format Notes |
+|--------|------|--------|--------------|
+| Week | string | `getWeekDisplayName(weekStartISO)` | Human-readable week label |
+| Week Start (ISO) | string | `weekStartISO` | YYYY-MM-DD format |
+| Total Learners | number | `learners` | Integer count |
+| Active Learners | number | `activeLearners` | Integer count |
+| Avg On-Task Minutes | number | `avgOnTaskMins` | Decimal precision: 1 |
+| Median On-Task Minutes | number | `medianOnTaskMins` | Decimal precision: 1 |
+| Return Within 7 Days (%) | number | `return7dPct` | Decimal precision: 1 |
+| Assignments Done (%) | number | `assignments.donePct` | Decimal precision: 1 |
+| Assignments Due Soon | number | `assignments.dueSoon` | Integer count |
+| Assignments Overdue | number | `assignments.overdue` | Integer count |
+| Completions per Learner | number | `completionsPerLearner` | Decimal precision: 1 |
+| Streakers (%) | number | `streakersPct` | Decimal precision: 1 |
+
+#### Weekly Engagement CSV Export (v2 Schema)
+**File**: `weekly_engagement_{weekStartISO}.csv`
+
+| Column | Type | Source | Format Notes |
+|--------|------|--------|--------------|
+| Learner ID | string | `learnerId` | Internal identifier |
+| Learner Name | string | `learnerName` | Display name |
+| Minutes | number | `minutes` | Total active time |
+| Sessions | number | `sessions` | Distinct learning sessions |
+| Return 7d | string | `return7d ? 'Yes' : 'No'` | Boolean as text |
+| Assignments Done | number | `assignmentsDone` | Completed this week |
+| Due Soon | number | `dueSoon` | Due within 7 days |
+| Overdue | number | `overdue` | Past due date |
+
+**Session Calculation**: Continuous activity periods with gaps < 30 minutes between `lesson_start`/`journal_start` events.
+
+#### Teacher Digest CSV Export (v2 Schema)
+**File**: `{className}_{weekStartISO}.csv`
+
+| Column | Type | Source | Format Notes |
+|--------|------|--------|--------------|
+| Learner ID | string | `learnerId` | Internal identifier |
+| Learner Name | string | `name` | Masked in privacy mode |
+| Active Minutes | number | `minutes` | Weekly on-task time |
+| Learning Sessions | number | `sessions` | Distinct session count |
+| Assignments Completed | number | `assignmentsDone` | This week only |
+| Due Soon | number | `dueSoon` | Next 7 days |
+| Overdue | number | `overdue` | Past due date |
+| Has Learning Streak | string | `hasStreak ? 'Yes' : 'No'` | 3+ consecutive days |
+
+**Privacy Considerations for Teacher Digest:**
+- In production, learner names may be masked (e.g., "Learner A", "Learner B")
+- Full names only visible to authenticated teachers/guides
+- CSV attachments are encrypted in transit via email
+
+#### Parent Summary Email Fields (v2 Schema)
+
+Parent summaries are **opt-in only** and contain individualized learner progress.
+
+**Core Metrics:**
+```typescript
+interface ParentSummaryParams {
+  learnerName: string;           // Child's name (parent-specific)
+  weekStartISO: string;          // Report week Monday
+  minutes: number;               // Active learning time
+  sessions: number;              // Learning sessions count
+  streak: {
+    current: number;             // Current consecutive days
+    best: number;                // Personal best streak
+  };
+  accomplishments: string[];     // Completed lesson titles
+  nextSteps: string[];          // Upcoming assignments
+  optOutLink?: string;          // Preference management URL
+}
+```
+
+**Privacy & Consent Requirements:**
+- **Explicit Opt-in**: Parents must actively request these emails
+- **Individual Data Only**: No class comparison or other learner data
+- **Masking Options**: Lesson titles may be generalized ("Math Lesson 3" vs specific content)
+- **Opt-out Link**: Every email includes preference management
+- **Audit Logging**: All parent email sends logged with timestamps and recipient consent status
+
+#### Legacy Export Formats (Deprecated v1)
+
+**Class Summary Export (v1 - deprecated)**
 ```csv
 week_start,class_name,student_count,total_minutes,total_sessions,assignments_completed,due_soon,overdue
 2025-01-13,Grade 3A,25,450,45,38,12,3
 ```
 
-#### Per-Student Detail Export
+**Per-Student Detail Export (v1 - deprecated)**
 ```csv
 week_start,class_name,student_id,student_name,minutes,sessions,assignments_completed,due_soon,overdue,streak_days
 2025-01-13,Grade 3A,learner_123,Alice Smith,45,3,2,1,0,7
 2025-01-13,Grade 3A,learner_456,Bob Johnson,32,2,1,2,1,3
 ```
 
-#### Lesson Completion Export
+**Lesson Completion Export (v1 - deprecated)**
 ```csv
 completion_date,student_id,student_name,lesson_id,biome,duration_minutes,result,attempts
 2025-01-14,learner_123,Alice Smith,forest.reading.1,forest,8,pass,1
@@ -504,9 +612,23 @@ function calculateLearningStreak(allEvents) {
 - **Access controls**: Teachers only see their own class data
 - **Export restrictions**: Personal information excluded from bulk exports
 
+#### Parent Email Privacy Controls
+- **Opt-in Required**: Parent emails require explicit consent before sending
+- **Individual Data Only**: Parent summaries contain only their child's data, no class comparisons
+- **Name Masking**: Learner names in teacher exports may be anonymized ("Learner A", "Learner B") in privacy mode
+- **Lesson Title Filtering**: Specific lesson content may be generalized for privacy
+- **Consent Management**: Every parent email includes preference management and opt-out capabilities
+- **Audit Trail**: All parent email operations logged with:
+  - Timestamp of email send
+  - Recipient email address
+  - Consent status verification
+  - Email content type and size
+  - Delivery confirmation
+
 #### Data Retention
 - **Active data**: Maintained while student is enrolled
 - **Historical data**: 2-year retention for educational continuity
+- **Parent email logs**: Consent records maintained for 3 years for compliance
 - **Graduation cleanup**: Data archived/deleted according to school policy
 - **Backup procedures**: Regular backups with encrypted storage
 
@@ -514,4 +636,14 @@ function calculateLearningStreak(allEvents) {
 - **Transport encryption**: All data transmission uses HTTPS/TLS
 - **Storage encryption**: Sensitive data encrypted at rest
 - **Access logging**: All data access events logged for audit
+- **Email security**: Parent summaries encrypted in transit, CSV attachments use secure encoding
+- **Authentication**: All export operations require valid teacher/guide authentication
+- **Rate limiting**: Export generation protected against abuse
 - **Vulnerability monitoring**: Regular security assessments and updates
+
+#### Export File Security
+- **Naming Conventions**: Consistent, predictable file naming for automated processing
+- **Download Security**: Generated download links expire after 10 minutes
+- **Content Validation**: All CSV exports validated for proper escaping and encoding
+- **Size Limits**: Large cohorts split into multiple files to prevent memory issues
+- **Metadata Protection**: CSV files contain no sensitive information in headers or metadata

@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`V2 CSV Export Schema > CSV Format Consistency > should maintain header ordering stability (snapshot test) > csv-headers-v2-schema 1`] = `
+{
+  "teacherDigest": "Learner ID,Learner Name,Active Minutes,Learning Sessions,Assignments Completed,Due Soon,Overdue,Has Learning Streak",
+  "trends": "Week,Week Start (ISO),Total Learners,Active Learners,Avg On-Task Minutes,Median On-Task Minutes,Return Within 7 Days (%),Assignments Done (%),Assignments Due Soon,Assignments Overdue,Completions per Learner,Streakers (%)",
+  "weeklyEngagement": "Learner ID,Learner Name,Minutes,Sessions,Return 7d,Assignments Done,Due Soon,Overdue",
+}
+`;
