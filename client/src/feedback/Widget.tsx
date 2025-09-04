@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageCircle, X, Send, Lightbulb, Bug, HelpCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -11,6 +11,7 @@ import {
 import { useRosterOptional } from '../roster/context';
 import { getActiveClass } from '../roster/classes';
 import { IssueReporter } from './IssueReporter';
+import { isFeedbackWidgetEnabled, isIssueReporterEnabled, useFeatureFlagListener } from '../utils/featureFlags';
 
 interface FeedbackWidgetProps {
   /** Only show in development mode */
@@ -27,12 +28,25 @@ export function FeedbackWidget({ devMode = false, cloudEnabled = false }: Feedba
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [widgetEnabled, setWidgetEnabled] = useState(isFeedbackWidgetEnabled);
+  const [issueReporterAccessible, setIssueReporterAccessible] = useState(isIssueReporterEnabled);
 
   const rosterContext = useRosterOptional();
   const activeLearner = rosterContext?.activeLearner;
 
-  // Only show widget in dev mode
-  if (!devMode) {
+  // Listen for feature flag changes
+  useEffect(() => {
+    const unsubscribeWidget = useFeatureFlagListener('feedback-widget', setWidgetEnabled);
+    const unsubscribeIssues = useFeatureFlagListener('issue-reporter', setIssueReporterAccessible);
+    
+    return () => {
+      unsubscribeWidget();
+      unsubscribeIssues();
+    };
+  }, []);
+
+  // Only show widget if dev mode AND feature flag enabled
+  if (!devMode || !widgetEnabled) {
     return null;
   }
 
@@ -216,22 +230,24 @@ export function FeedbackWidget({ devMode = false, cloudEnabled = false }: Feedba
               </Button>
               
               {/* Issue Reporter Link */}
-              <div className="pt-2 border-t border-gray-200">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setIsOpen(false);
-                    setShowIssueReporter(true);
-                  }}
-                  className="w-full flex items-center gap-1 text-xs text-muted-foreground"
-                  data-testid="button-open-issue-reporter"
-                >
-                  <Bug className="w-3 h-3" />
-                  Report Detailed Issue
-                </Button>
-              </div>
+              {issueReporterAccessible && (
+                <div className="pt-2 border-t border-gray-200">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setIsOpen(false);
+                      setShowIssueReporter(true);
+                    }}
+                    className="w-full flex items-center gap-1 text-xs text-muted-foreground"
+                    data-testid="button-open-issue-reporter"
+                  >
+                    <Bug className="w-3 h-3" />
+                    Report Detailed Issue
+                  </Button>
+                </div>
+              )}
 
               {/* Privacy Note */}
               <p className="text-xs text-gray-500 text-center">

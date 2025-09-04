@@ -1,7 +1,8 @@
 // client/src/feedback/NpsProvider.tsx
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { NpsSurvey } from './NpsSurvey';
 import { shouldAskNps } from './nps';
+import { isNpsEnabled, useFeatureFlagListener } from '../utils/featureFlags';
 
 interface NpsContextType {
   triggerNpsCheck: (learnerId?: string) => void;
@@ -24,10 +25,17 @@ interface NpsProviderProps {
 export function NpsProvider({ children }: NpsProviderProps) {
   const [showSurvey, setShowSurvey] = useState(false);
   const [currentLearnerId, setCurrentLearnerId] = useState<string | undefined>();
+  const [npsFeatureEnabled, setNpsFeatureEnabled] = useState(isNpsEnabled);
+
+  // Listen for NPS feature flag changes
+  useEffect(() => {
+    const unsubscribe = useFeatureFlagListener('nps', setNpsFeatureEnabled);
+    return unsubscribe;
+  }, []);
 
   const triggerNpsCheck = (learnerId?: string) => {
-    // Only check in development mode for now
-    if (process.env.NODE_ENV !== 'development') {
+    // Check both dev mode AND feature flag
+    if (process.env.NODE_ENV !== 'development' || !npsFeatureEnabled) {
       return;
     }
 
