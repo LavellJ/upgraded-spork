@@ -49,11 +49,23 @@ db.exec(`
     meta TEXT
   );
 
+  -- Class collaborators table for per-class co-teachers
+  CREATE TABLE IF NOT EXISTS class_collaborators (
+    classId TEXT NOT NULL,
+    email TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'co_teacher', -- 'owner' | 'co_teacher' | 'viewer'
+    addedAt INTEGER NOT NULL,
+    PRIMARY KEY (classId, email),
+    FOREIGN KEY (email) REFERENCES users(email)
+  );
+
   -- Indexes for better query performance
   CREATE INDEX IF NOT EXISTS idx_user_docs_email ON user_docs(email);
   CREATE INDEX IF NOT EXISTS idx_user_docs_learner ON user_docs(email, learnerId);
   CREATE INDEX IF NOT EXISTS idx_audit_log_email ON audit_log(email);
   CREATE INDEX IF NOT EXISTS idx_audit_log_at ON audit_log(at);
+  CREATE INDEX IF NOT EXISTS idx_class_collaborators_email ON class_collaborators(email);
+  CREATE INDEX IF NOT EXISTS idx_class_collaborators_class ON class_collaborators(classId);
 `);
 
 // Prepared statements for common operations
@@ -98,6 +110,28 @@ export const statements = {
   
   getAuditLog: db.prepare(`
     SELECT * FROM audit_log WHERE email = ? ORDER BY at DESC LIMIT ?
+  `),
+
+  // Class collaborators
+  insertCollaborator: db.prepare(`
+    INSERT INTO class_collaborators (classId, email, role, addedAt)
+    VALUES (?, ?, ?, ?)
+  `),
+  
+  getClassCollaborators: db.prepare(`
+    SELECT * FROM class_collaborators WHERE classId = ?
+  `),
+  
+  getCollaboratorByEmailAndClass: db.prepare(`
+    SELECT * FROM class_collaborators WHERE classId = ? AND email = ?
+  `),
+  
+  deleteCollaborator: db.prepare(`
+    DELETE FROM class_collaborators WHERE classId = ? AND email = ?
+  `),
+  
+  getClassesByCollaborator: db.prepare(`
+    SELECT classId, role FROM class_collaborators WHERE email = ?
   `)
 };
 
@@ -117,6 +151,13 @@ export interface UserRow {
   role: string;
   createdAt: number;
   updatedAt: number;
+}
+
+export interface CollaboratorRow {
+  classId: string;
+  email: string;
+  role: 'owner' | 'co_teacher' | 'viewer';
+  addedAt: number;
 }
 
 // Close database on process exit

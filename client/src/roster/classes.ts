@@ -16,6 +16,7 @@ export type ClassInfo = {
     largeCursor?: boolean;
   };
   code?: string; // short alphanumeric, e.g. 6 chars
+  owners?: string[]; // email addresses of class owners
 };
 
 export type ClassesV1 = {
