@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { Badge } from './ui/badge';
-import { AlertTriangle, Shield, Bell, Monitor } from 'lucide-react';
+import { AlertTriangle, Shield, Bell, Monitor, MessageSquare, Star, Bug } from 'lucide-react';
 import { setGuardrailsEnabled } from '../hooks/useScoutQueue';
 
 /**
@@ -32,6 +32,19 @@ export function FeatureFlagsPanel() {
   // Projector mode default state
   const [projectorModeDefault, setProjectorModeDefault] = useState(() => {
     return localStorage.getItem('qi.features.projectorModeDefault') === 'true';
+  });
+
+  // Feedback system flags
+  const [feedbackWidgetEnabled, setFeedbackWidgetEnabled] = useState(() => {
+    return localStorage.getItem('qi.features.enableFeedbackWidget') !== 'false';
+  });
+
+  const [npsEnabled, setNpsEnabled] = useState(() => {
+    return localStorage.getItem('qi.features.enableNps') !== 'false';
+  });
+
+  const [issueReporterEnabled, setIssueReporterEnabled] = useState(() => {
+    return localStorage.getItem('qi.features.enableIssueReporter') !== 'false';
   });
 
   if (!isDev) return null;
@@ -74,6 +87,33 @@ export function FeatureFlagsPanel() {
     if (enabled && !isProjectorMode) {
       toggleProjectorMode();
     }
+  };
+
+  const handleFeedbackWidgetToggle = (enabled: boolean) => {
+    setFeedbackWidgetEnabled(enabled);
+    localStorage.setItem('qi.features.enableFeedbackWidget', enabled ? 'true' : 'false');
+    // Dispatch custom event to notify feedback components
+    window.dispatchEvent(new CustomEvent('feedback-widget-toggle', { 
+      detail: { enabled } 
+    }));
+  };
+
+  const handleNpsToggle = (enabled: boolean) => {
+    setNpsEnabled(enabled);
+    localStorage.setItem('qi.features.enableNps', enabled ? 'true' : 'false');
+    // Dispatch custom event to notify NPS system
+    window.dispatchEvent(new CustomEvent('nps-toggle', { 
+      detail: { enabled } 
+    }));
+  };
+
+  const handleIssueReporterToggle = (enabled: boolean) => {
+    setIssueReporterEnabled(enabled);
+    localStorage.setItem('qi.features.enableIssueReporter', enabled ? 'true' : 'false');
+    // Dispatch custom event to notify issue reporter
+    window.dispatchEvent(new CustomEvent('issue-reporter-toggle', { 
+      detail: { enabled } 
+    }));
   };
 
   return (
@@ -176,6 +216,89 @@ export function FeatureFlagsPanel() {
           </div>
         </div>
 
+        {/* Feedback System Flags */}
+        <div className="border-t pt-4 space-y-4">
+          <div className="flex items-center gap-2 mb-3">
+            <MessageSquare className="w-4 h-4 text-purple-600" />
+            <span className="text-sm font-medium text-purple-700">Feedback Collection</span>
+          </div>
+
+          {/* Feedback Widget */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-white border">
+            <div className="flex items-start gap-3">
+              <MessageSquare className="w-5 h-5 text-purple-600 mt-0.5" />
+              <div className="flex-1">
+                <Label className="text-sm font-medium">Enable Feedback Widget</Label>
+                <p className="text-xs text-gray-600 mt-1">
+                  Allow students to submit ideas, bug reports, and general feedback.
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant={feedbackWidgetEnabled ? "default" : "secondary"} className="text-xs">
+                    {feedbackWidgetEnabled ? 'Active' : 'Disabled'}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+            <Switch
+              checked={feedbackWidgetEnabled}
+              onCheckedChange={handleFeedbackWidgetToggle}
+              data-testid="feedback-widget-toggle"
+            />
+          </div>
+
+          {/* NPS Surveys */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-white border">
+            <div className="flex items-start gap-3">
+              <Star className="w-5 h-5 text-yellow-600 mt-0.5" />
+              <div className="flex-1">
+                <Label className="text-sm font-medium">Enable NPS</Label>
+                <p className="text-xs text-gray-600 mt-1">
+                  Show satisfaction surveys after students reach engagement thresholds (throttled).
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant={npsEnabled ? "default" : "secondary"} className="text-xs">
+                    {npsEnabled ? 'Active' : 'Disabled'}
+                  </Badge>
+                  {npsEnabled && (
+                    <span className="text-xs text-yellow-600">14-day throttle</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <Switch
+              checked={npsEnabled}
+              onCheckedChange={handleNpsToggle}
+              data-testid="nps-toggle"
+            />
+          </div>
+
+          {/* Issue Reporter */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-white border">
+            <div className="flex items-start gap-3">
+              <Bug className="w-5 h-5 text-red-600 mt-0.5" />
+              <div className="flex-1">
+                <Label className="text-sm font-medium">Enable Issue Reporter</Label>
+                <p className="text-xs text-gray-600 mt-1">
+                  Allow detailed technical bug reports with environment snapshots (PII-masked).
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant={issueReporterEnabled ? "default" : "secondary"} className="text-xs">
+                    {issueReporterEnabled ? 'Active' : 'Disabled'}
+                  </Badge>
+                  {issueReporterEnabled && (
+                    <span className="text-xs text-red-600">PII protected</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <Switch
+              checked={issueReporterEnabled}
+              onCheckedChange={handleIssueReporterToggle}
+              data-testid="issue-reporter-toggle"
+            />
+          </div>
+        </div>
+
         {/* Status Summary */}
         <div className="p-3 rounded-lg bg-gray-50 border-t">
           <div className="text-xs text-gray-600 space-y-1">
@@ -184,6 +307,9 @@ export function FeatureFlagsPanel() {
               <span>• Scout: {scoutGuardrailsEnabled ? 'Guardrails ON' : 'QA Mode (no limits)'}</span>
               <span>• Nudges: {assignmentNudgesEnabled ? 'Enabled' : 'Disabled'}</span>
               <span>• Display: {isProjectorMode ? 'Projector Mode' : 'Normal Mode'}</span>
+              <span>• Feedback: {feedbackWidgetEnabled ? 'Enabled' : 'Disabled'}</span>
+              <span>• NPS: {npsEnabled ? 'Enabled' : 'Disabled'}</span>
+              <span>• Issues: {issueReporterEnabled ? 'Enabled' : 'Disabled'}</span>
             </div>
           </div>
         </div>

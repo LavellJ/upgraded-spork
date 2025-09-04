@@ -10,6 +10,7 @@ LearnOz collects minimal learning data to personalize education and track progre
 - **Practice Time**: How long you spend learning (to understand focus patterns)
 - **Journal Entries**: Your reflections and practice work
 - **App Usage**: When you use different features (no personal content)
+- **Optional Feedback**: Bug reports, suggestions, and satisfaction surveys (only when enabled)
 
 ## What We DON'T Collect
 
@@ -44,6 +45,26 @@ LearnOz is designed for small classroom or home pilot programs where:
 - Parents can track their child's learning
 - All data stays within your educational community
 - No data is shared with outside companies
+
+## Feedback and Improvement
+
+LearnOz may collect optional feedback to improve the learning experience:
+
+**What Feedback Includes:**
+- Anonymous satisfaction surveys (how much you enjoyed learning)
+- Bug reports about technical problems
+- Suggestions for new features or improvements
+
+**Privacy Protections:**
+- All personal information automatically removed
+- Participation is completely optional
+- Can be turned off anytime by teachers or parents
+- Never shared with outside companies
+
+**How to Opt Out:**
+- Teachers can disable feedback collection for entire classes
+- Parents can request opt-out for their children
+- See our [Feedback Documentation](FEEDBACK.md) for complete details
 
 ## Adult Oversight
 

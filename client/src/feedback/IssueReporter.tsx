@@ -12,6 +12,7 @@ import { X, Copy, Download, Send, AlertTriangle, CheckCircle } from 'lucide-reac
 import { buildEnvSnapshot, formatSnapshot, downloadSnapshot, copySnapshot, type EnvSnapshot } from './snapshot';
 import { addFeedback } from './model';
 import { useRosterOptional } from '../roster/context';
+import { isIssueReporterEnabled } from '../utils/featureFlags';
 
 export interface IssueReport {
   summary: string;
@@ -30,6 +31,9 @@ interface IssueReporterProps {
 }
 
 export function IssueReporter({ isOpen, onClose, prefilledSnapshot = true }: IssueReporterProps) {
+  // Check feature flag - only show in dev mode AND when enabled
+  const featureEnabled = isIssueReporterEnabled();
+  
   const rosterContext = useRosterOptional();
   const activeLearner = rosterContext?.activeLearner;
   const [summary, setSummary] = useState('');
@@ -156,7 +160,8 @@ export function IssueReporter({ isOpen, onClose, prefilledSnapshot = true }: Iss
 
   const isFormValid = summary.trim().length > 0 && actualBehavior.trim().length > 0;
 
-  if (!isOpen) return null;
+  // Return null if not open OR feature disabled
+  if (!isOpen || !featureEnabled) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
