@@ -34,12 +34,20 @@ export function QuickStartPrint({ onClose }: QuickStartPrintProps) {
             size: letter; 
           }
           
+          /* Hide everything by default when printing */
           * { 
+            visibility: hidden !important;
             -webkit-print-color-adjust: exact !important;
             color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
           
+          /* Show only our print content */
+          .print-page, .print-page * {
+            visibility: visible !important;
+          }
+          
+          /* Reset body styles for printing */
           body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
             line-height: 1.5 !important;
@@ -49,15 +57,18 @@ export function QuickStartPrint({ onClose }: QuickStartPrintProps) {
             background: white !important;
           }
           
+          /* Hide screen-only elements */
           .no-print { 
+            visibility: hidden !important;
             display: none !important; 
           }
           
-          .print-only {
-            display: block !important;
-          }
-          
+          /* Ensure print content is positioned correctly */
           .print-page {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
             max-width: none !important;
             margin: 0 !important;
             padding: 0 !important;
@@ -169,7 +180,7 @@ export function QuickStartPrint({ onClose }: QuickStartPrintProps) {
       </div>
 
       {/* Print Content */}
-      <div className="print-preview print-page">
+      <div className="print-preview print-page" id="printable-content">
         {/* Header */}
         <div className="print-header">
           <img src="/brand/logo.png" alt="LearnOz Logo" className="print-logo" />
