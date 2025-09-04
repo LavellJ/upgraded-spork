@@ -130,7 +130,7 @@ const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePickerProps
                       <button
                         key={date.toISOString()}
                         className={cn(
-                          "p-2 text-center rounded hover:bg-bg-subtle transition-colors",
+                          "p-2 text-center rounded hover:bg-bg-soft transition-colors",
                           isSelected && "bg-brand text-primary-foreground",
                           isInRange && !isSelected && "bg-brand/10",
                           "focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"

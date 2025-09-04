@@ -112,11 +112,11 @@ export function SubTabs({ items, activeId, onTabChange, className }: SubTabsProp
               className={cn(
                 "group relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap",
                 "border-b-2 border-transparent",
-                "hover:text-fg-default hover:bg-bg-subtle",
+                "hover:text-fg-default hover:bg-bg-soft",
                 "focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
                 item.id === activeId
-                  ? "text-brand border-brand bg-bg-subtle"
+                  ? "text-brand border-brand bg-bg-soft"
                   : "text-fg-muted"
               )}
               onClick={() => !item.disabled && onTabChange(item.id)}
