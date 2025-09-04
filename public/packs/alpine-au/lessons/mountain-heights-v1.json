@@ -61,6 +61,10 @@
     {
       "framework": "ACARA",
       "code": "ACMMG108"
+    },
+    {
+      "framework": "CCSS",
+      "code": "3.MD.A.2"
     }
   ]
 }

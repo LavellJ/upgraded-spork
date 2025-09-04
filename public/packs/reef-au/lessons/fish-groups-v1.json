@@ -60,6 +60,10 @@
     {
       "framework": "ACARA",
       "code": "ACMNA016"
+    },
+    {
+      "framework": "CCSS",
+      "code": "1.OA.A.1"
     }
   ]
 }

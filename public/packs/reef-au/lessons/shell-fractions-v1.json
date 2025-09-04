@@ -56,6 +56,10 @@
     {
       "framework": "ACARA",
       "code": "ACMNA058"
+    },
+    {
+      "framework": "CCSS",
+      "code": "2.G.A.3"
     }
   ]
 }

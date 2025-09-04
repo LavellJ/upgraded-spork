@@ -31,6 +31,7 @@ import {
   type CoverageReport 
 } from './coverage';
 import { getFrameworks } from './registry';
+import { getEnabledPacks } from './packs';
 
 const BIOMES = {
   forest: { label: 'Literacy', icon: '🌲', color: 'bg-green-100 text-green-800' },
@@ -45,9 +46,14 @@ interface CoverageReportProps {
 
 export function CoverageReportComponent({ className }: CoverageReportProps) {
   const [selectedFramework, setSelectedFramework] = useState('ACARA');
+  const [selectedPacks, setSelectedPacks] = useState<string[]>([]);
   
-  // Generate coverage data
-  const coverage = useMemo(() => buildCoverage(), []);
+  // Get available packs
+  const enabledPacks = useMemo(() => getEnabledPacks(), []);
+  const packOptions = enabledPacks.map(pack => ({ id: pack.id, name: pack.name }));
+  
+  // Generate coverage data with pack filtering
+  const coverage = useMemo(() => buildCoverage(undefined, selectedPacks.length > 0 ? selectedPacks : undefined), [selectedPacks]);
   const summary = useMemo(() => getCoverageSummary(), []);
   const frameworks = useMemo(() => getFrameworks(), []);
   const frameworkOptions = Object.keys(frameworks);
@@ -223,6 +229,20 @@ export function CoverageReportComponent({ className }: CoverageReportProps) {
               Standards Coverage
             </CardTitle>
             <div className="flex items-center gap-2">
+              <Select 
+                value={selectedPacks.length === 0 ? 'all' : selectedPacks[0]} 
+                onValueChange={(value) => setSelectedPacks(value === 'all' ? [] : [value])}
+              >
+                <SelectTrigger className="w-40 text-xs">
+                  <SelectValue placeholder="All Packs" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Packs</SelectItem>
+                  {packOptions.map(pack => (
+                    <SelectItem key={pack.id} value={pack.id}>{pack.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Select value={selectedFramework} onValueChange={setSelectedFramework}>
                 <SelectTrigger className="w-32 text-xs">
                   <SelectValue />

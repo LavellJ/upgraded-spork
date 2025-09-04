@@ -58,7 +58,11 @@
   "standards": [
     {
       "framework": "ACARA",
-      "code": "TODO-ADD-STANDARD-CODE"
+      "code": "ACMNA013"
+    },
+    {
+      "framework": "CCSS",
+      "code": "K.CC.A.1"
     }
   ]
 }

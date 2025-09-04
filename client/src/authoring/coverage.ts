@@ -29,10 +29,19 @@ export interface CoverageReport {
 
 /**
  * Build comprehensive coverage report from the active registry
+ * Optionally filter by pack IDs for targeted analysis
  */
-export function buildCoverage(registry?: RegistryV2): CoverageReport {
+export function buildCoverage(registry?: RegistryV2, packFilter?: string[]): CoverageReport {
   const activeRegistry = registry || getRegistry();
-  const lessons = activeRegistry.lessons || [];
+  let lessons = activeRegistry.lessons || [];
+  
+  // Filter lessons by pack if specified
+  if (packFilter && packFilter.length > 0) {
+    lessons = lessons.filter(lesson => {
+      // Check if lesson ID contains any of the pack prefixes
+      return packFilter.some(packId => lesson.id.startsWith(`${packId}:`));
+    });
+  }
   const frameworks = activeRegistry.frameworks || {};
 
   // Initialize coverage data structures
