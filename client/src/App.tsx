@@ -33,6 +33,7 @@ import { trackFunnelStep } from "./progress/events";
 import { JoinClass } from "./components/JoinClass";
 import { ProjectorPresetApplier } from "./guide/ProjectorPresetApplier";
 import { ClassModeCTA } from "./components/classmode/ClassModeCTA";
+import { NewPackBadge } from "./components/NewPackBadge";
 
 // Quest Island — Loop 1 (Calm + Prototype-only Mode + Progress Import/Export + Resume)
 // - Prototype-only Mode (default ON):
@@ -358,8 +359,11 @@ function LessonNode({biome,lesson,completed,onSelect,pos,locked,isNext,onLocked}
         )}
       </button>
       <div className="absolute mt-2 left-1/2 -translate-x-1/2 w-max">
-        <div className={cx("text-xs font-semibold px-2 py-1 rounded-lg shadow-sm backdrop-blur border", isDone ? "bg-emerald-100/90 text-emerald-800 border-emerald-200" : locked ? "bg-stone-200/80 text-stone-600 border-stone-300" : "bg-white/95 border-amber-900/20")} style={{color: locked ? '#999' : accent}}>
-          {lesson.title}
+        <div className="relative">
+          <div className={cx("text-xs font-semibold px-2 py-1 rounded-lg shadow-sm backdrop-blur border", isDone ? "bg-emerald-100/90 text-emerald-800 border-emerald-200" : locked ? "bg-stone-200/80 text-stone-600 border-stone-300" : "bg-white/95 border-amber-900/20")} style={{color: locked ? '#999' : accent}}>
+            {lesson.title}
+          </div>
+          <NewPackBadge lessonId={lesson.id} variant="corner" />
         </div>
       </div>
     </div>

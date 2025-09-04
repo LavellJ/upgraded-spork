@@ -103,6 +103,23 @@ export function ContentPackSettings({ className = '' }: ContentPackSettingsProps
       setLoadedPacks(listPacks());
       setConflicts(findPackConflicts());
       
+      // Track newly enabled packs for "New" tag feature
+      if (enabled) {
+        const newlyEnabled = JSON.parse(localStorage.getItem('qi.packs.newlyEnabled') || '{}');
+        newlyEnabled[packId] = Date.now();
+        localStorage.setItem('qi.packs.newlyEnabled', JSON.stringify(newlyEnabled));
+      } else {
+        // Remove from newly enabled when disabled
+        const newlyEnabled = JSON.parse(localStorage.getItem('qi.packs.newlyEnabled') || '{}');
+        delete newlyEnabled[packId];
+        localStorage.setItem('qi.packs.newlyEnabled', JSON.stringify(newlyEnabled));
+      }
+
+      // Store pack preferences
+      const enabledPacks = getEnabledPacks();
+      const enabledList = enabledPacks.map(pack => pack.id);
+      localStorage.setItem('qi.packs.enabled', JSON.stringify(enabledList));
+      
       const pack = loadedPacks.find(p => p.id === packId);
       const action = enabled ? 'enabled' : 'disabled';
       showStatus('success', `${pack?.name || packId} ${action}`);
@@ -246,6 +263,7 @@ export function ContentPackSettings({ className = '' }: ContentPackSettingsProps
                       </div>
                       <p className="text-xs text-gray-500 mt-1">
                         {pack.lessons.length} lesson(s) • 
+                        {pack.lessons.reduce((total, lesson) => total + (lesson.activities?.length || 0), 0)} activities •
                         Loaded {new Date(pack.loadedAt).toLocaleDateString()}
                       </p>
                     </div>

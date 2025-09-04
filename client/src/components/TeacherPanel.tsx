@@ -36,6 +36,7 @@ import { getScoutDwellAnalytics } from '../ab/analytics';
 import { FeatureFlagsPanel } from './FeatureFlagsPanel';
 import { ContentStudio } from '../authoring/Studio';
 import { CoverageReportComponent } from '../authoring/CoverageReport';
+import { ContentPackSettings } from './ContentPackSettings';
 import { Classes } from '../guide/Classes';
 import { Dashboard } from '../guide/Dashboard';
 
@@ -893,6 +894,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 aria-labelledby="tab-content"
                 className="max-h-96 overflow-y-auto space-y-4"
               >
+                <ContentPackSettings />
                 <CoverageReportComponent />
               </div>
             ) : activeTab === 'privacy' ? (
