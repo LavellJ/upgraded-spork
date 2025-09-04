@@ -268,3 +268,84 @@ Cache-Control: public, max-age=3600
 - Maintain backward compatibility within major versions
 - Document breaking changes in pack notes
 - Archive deprecated content gracefully
+
+## Standards Mapping
+
+Content packs support multiple educational framework standards through the `standards` field in lesson files. This enables alignment with different curriculum frameworks while maintaining compatibility.
+
+### Standards Field Format
+
+Each lesson can specify multiple standards from different frameworks:
+
+```json
+{
+  "version": 2,
+  "id": "coral-counting-v1",
+  "biomeId": "ocean",
+  "title": { "en-AU": "Counting Coral" },
+  "skills": ["number.counting", "number.recognition"],
+  "activities": [...],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "ACMNA013"
+    },
+    {
+      "framework": "CCSS",
+      "code": "K.CC.A.1"
+    }
+  ]
+}
+```
+
+### Supported Frameworks
+
+| Framework | Description | Code Format | Example |
+|-----------|-------------|-------------|---------|
+| `ACARA` | Australian Curriculum, Assessment and Reporting Authority | ACMXX#### | `ACMNA013`, `ACMMG061` |
+| `CCSS` | Common Core State Standards (US) | G.S.C.# | `K.CC.A.1`, `1.OA.A.1` |
+| `Generic` | Framework-agnostic descriptive standards | Free text | `Foundational counting` |
+
+### ACARA Standards Reference
+
+For Australian content packs, use the current ACARA mathematics codes:
+
+**Foundation Year:**
+- `ACMNA001` - Naming numbers in sequences to and from 20
+- `ACMNA002` - Connect number names, numerals and quantities
+- `ACMMG006` - Use direct/indirect comparisons for length, weight, capacity
+
+**Year 1:**
+- `ACMNA012` - Develop confidence with number sequences to and from 100  
+- `ACMNA013` - Recognise, model, represent and order numbers to at least 20
+- `ACMNA015` - Represent and solve simple addition and subtraction problems
+
+**Year 2:**
+- `ACMNA026` - Investigate number sequences, initially by 2s, 3s, 5s, 10s
+- `ACMNA027` - Recognise, model, represent and order numbers to at least 1000
+- `ACMMG034` - Compare and order shapes and objects using length, area, volume
+
+### Framework Validation
+
+The pack validation system checks that:
+- Framework names match supported values
+- Standard codes follow expected patterns for each framework
+- Referenced frameworks are declared in the pack manifest's `frameworks` field
+
+### Best Practices for Standards Mapping
+
+1. **Primary Framework First** - List the primary curriculum framework first in the standards array
+2. **Dual Standards Support** - Include both local (ACARA) and international (CCSS) standards where applicable
+3. **Accurate Mapping** - Ensure standard codes accurately reflect the lesson content and learning objectives
+4. **Granular Standards** - Use specific standard codes rather than broad categories
+5. **Framework Declaration** - Always declare supported frameworks in the pack manifest
+
+### Coverage Reporting
+
+The coverage system tracks standards alignment across all content:
+- Generate standards coverage reports by framework
+- Export CSV data for curriculum planning
+- Identify gaps in standards coverage
+- Track learning progression across grade levels
+
+Use the Content Studio's Coverage Report to analyze standards alignment and export detailed reports for curriculum coordinators.
