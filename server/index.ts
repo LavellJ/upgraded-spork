@@ -60,6 +60,24 @@ app.use((req, res, next) => {
   app.use('/attached_assets', express.static(path.resolve(import.meta.dirname, '..', 'attached_assets')));
 
   const server = await registerRoutes(app);
+  
+  // Initialize cron jobs
+  const { initializeCronJobs, startCronJobs, destroyCronJobs } = await import('./cron');
+  initializeCronJobs();
+  startCronJobs();
+  
+  // Graceful shutdown
+  process.on('SIGINT', () => {
+    console.log('📡 Received SIGINT, shutting down gracefully...');
+    destroyCronJobs();
+    process.exit(0);
+  });
+  
+  process.on('SIGTERM', () => {
+    console.log('📡 Received SIGTERM, shutting down gracefully...');
+    destroyCronJobs();
+    process.exit(0);
+  });
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
