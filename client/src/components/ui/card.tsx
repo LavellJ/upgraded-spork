@@ -1,6 +1,7 @@
 import * as React from "react"
-
+import { PropsWithChildren, ReactNode } from 'react'
 import { cn } from "../../lib/utils"
+import clsx from 'clsx'
 
 const Card = React.forwardRef<
   HTMLDivElement,
@@ -9,7 +10,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "card", // Use utility class with design tokens
+      'card border-[rgb(var(--border))] bg-[rgb(var(--bg-card))]',
       className
     )}
     {...props}
@@ -24,8 +25,7 @@ const CardHeader = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "flex flex-col space-y-1.5 p-6",
-      "data-[density='compact']:p-4 data-[density='compact']:space-y-1",
+      'px-4 md:px-6 pt-4 md:pt-5 pb-2 border-b border-[rgb(var(--border))]',
       className
     )}
     {...props}
@@ -37,13 +37,9 @@ const CardTitle = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div
+  <h3
     ref={ref}
-    className={cn(
-      "page-title text-fg-default", // Use design tokens
-      "data-[density='compact']:text-lg",
-      className
-    )}
+    className={cn('text-base font-semibold', className)}
     {...props}
   />
 ))
@@ -55,7 +51,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("subtle", className)} // Use design token utility
+    className={cn("subtle", className)}
     {...props}
   />
 ))
@@ -68,8 +64,8 @@ const CardContent = React.forwardRef<
   <div 
     ref={ref} 
     className={cn(
-      "p-6 pt-0",
-      "data-[density='compact']:p-4 data-[density='compact']:pt-0",
+      'p-4 md:p-6',
+      'data-[density="compact"]:p-3 data-[density="compact"]:md:p-4',
       className
     )} 
     {...props} 
@@ -84,8 +80,8 @@ const CardFooter = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "flex items-center p-6 pt-0",
-      "data-[density='compact']:p-4 data-[density='compact']:pt-0",
+      "flex items-center p-4 md:p-6 pt-0",
+      'data-[density="compact"]:p-3 data-[density="compact"]:md:p-4 data-[density="compact"]:pt-0',
       className
     )}
     {...props}

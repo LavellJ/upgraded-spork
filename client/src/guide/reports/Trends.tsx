@@ -14,7 +14,7 @@ import { Sparkline, MultiSparkline } from './Sparkline';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table';
+import { Table, TBody, TD, TH, THead, TR } from '../../components/ui/table';
 import { Checkbox } from '../../components/ui/checkbox';
 import { Badge } from '../../components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../components/ui/tooltip';
@@ -600,23 +600,23 @@ export function Trends({ onClose }: TrendsProps) {
           <CardContent>
             <div className="overflow-x-auto">
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead 
+                <THead>
+                  <TR>
+                    <TH 
                       className="cursor-pointer hover:bg-gray-50" 
                       onClick={() => handleSort('week')}
                       data-testid="sort-week"
                     >
                       Week{getSortIndicator('week')}
-                    </TableHead>
-                    <TableHead 
+                    </TH>
+                    <TH 
                       className="cursor-pointer hover:bg-gray-50" 
                       onClick={() => handleSort('activeLearners')}
                       data-testid="sort-active-learners"
                     >
                       Active Learners{getSortIndicator('activeLearners')}
-                    </TableHead>
-                    <TableHead 
+                    </TH>
+                    <TH 
                       className="cursor-pointer hover:bg-gray-50" 
                       onClick={() => handleSort('avgOnTaskMins')}
                       data-testid="sort-avg-on-task"
@@ -634,45 +634,45 @@ export function Trends({ onClose }: TrendsProps) {
                           </TooltipContent>
                         </Tooltip>
                       </div>
-                    </TableHead>
-                    <TableHead 
+                    </TH>
+                    <TH 
                       className="cursor-pointer hover:bg-gray-50" 
                       onClick={() => handleSort('return7dPct')}
                     >
                       Return 7d (%){getSortIndicator('return7dPct')}
-                    </TableHead>
-                    <TableHead 
+                    </TH>
+                    <TH 
                       className="cursor-pointer hover:bg-gray-50" 
                       onClick={() => handleSort('assignmentsDonePct')}
                     >
                       Assignments (%){getSortIndicator('assignmentsDonePct')}
-                    </TableHead>
-                    <TableHead>Due Soon / Overdue</TableHead>
-                    <TableHead 
+                    </TH>
+                    <TH>Due Soon / Overdue</TH>
+                    <TH 
                       className="cursor-pointer hover:bg-gray-50" 
                       onClick={() => handleSort('completionsPerLearner')}
                     >
                       Completions/Learner{getSortIndicator('completionsPerLearner')}
-                    </TableHead>
-                    <TableHead 
+                    </TH>
+                    <TH 
                       className="cursor-pointer hover:bg-gray-50" 
                       onClick={() => handleSort('streakersPct')}
                     >
                       Streakers (%){getSortIndicator('streakersPct')}
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                    </TH>
+                  </TR>
+                </THead>
+                <TBody>
                   {sortedSeries.map((slice, index) => (
-                    <TableRow key={slice.weekStartISO} data-testid={`table-row-${index}`}>
-                      <TableCell className="font-medium">
+                    <TR key={slice.weekStartISO} data-testid={`table-row-${index}`}>
+                      <TD className="font-medium">
                         {getWeekDisplayName(slice.weekStartISO)}
-                      </TableCell>
-                      <TableCell>{slice.activeLearners} / {slice.learners}</TableCell>
-                      <TableCell>{slice.avgOnTaskMins.toFixed(1)}</TableCell>
-                      <TableCell>{slice.return7dPct.toFixed(1)}%</TableCell>
-                      <TableCell>{slice.assignments.donePct.toFixed(1)}%</TableCell>
-                      <TableCell>
+                      </TD>
+                      <TD>{slice.activeLearners} / {slice.learners}</TD>
+                      <TD>{slice.avgOnTaskMins.toFixed(1)}</TD>
+                      <TD>{slice.return7dPct.toFixed(1)}%</TD>
+                      <TD>{slice.assignments.donePct.toFixed(1)}%</TD>
+                      <TD>
                         <div className="flex gap-1">
                           {slice.assignments.dueSoon > 0 && (
                             <Badge variant="secondary" className="text-xs">
@@ -685,12 +685,12 @@ export function Trends({ onClose }: TrendsProps) {
                             </Badge>
                           )}
                         </div>
-                      </TableCell>
-                      <TableCell>{slice.completionsPerLearner.toFixed(1)}</TableCell>
-                      <TableCell>{slice.streakersPct.toFixed(1)}%</TableCell>
-                    </TableRow>
+                      </TD>
+                      <TD>{slice.completionsPerLearner.toFixed(1)}</TD>
+                      <TD>{slice.streakersPct.toFixed(1)}%</TD>
+                    </TR>
                   ))}
-                </TableBody>
+                </TBody>
               </Table>
             </div>
           </CardContent>

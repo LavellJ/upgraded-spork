@@ -1,9 +1,45 @@
 import * as React from "react"
+import { PropsWithChildren, ReactNode } from 'react'
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
-
 import { cn } from "../../lib/utils"
+import clsx from 'clsx'
 
-const Table = React.forwardRef<
+export function Table({ children, className }:{ children: ReactNode; className?: string }) {
+  return (
+    <div className={clsx('overflow-auto rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--bg-card))]', className)}>
+      <table className="w-full text-sm">
+        {children}
+      </table>
+    </div>
+  )
+}
+
+export function THead({ children }:{ children: ReactNode }) {
+  return (
+    <thead className="sticky top-0 bg-[rgb(var(--bg-soft))] text-[rgb(var(--fg-muted))]">
+      {children}
+    </thead>
+  )
+}
+
+export function TBody({ children }:{ children: ReactNode }) {
+  return <tbody>{children}</tbody>
+}
+
+export function TR({ children, className }:{ children: ReactNode; className?: string }) {
+  return <tr className={clsx('border-b border-[rgb(var(--border))]', className)}>{children}</tr>
+}
+
+export function TH({ children, className }:{ children: ReactNode; className?: string }) {
+  return <th scope="col" className={clsx('text-left font-medium px-3 py-[calc(12px*var(--density))]', className)}>{children}</th>
+}
+
+export function TD({ children, className }:{ children: ReactNode; className?: string }) {
+  return <td className={clsx('px-3 py-[calc(12px*var(--density))] align-middle', className)}>{children}</td>
+}
+
+// Legacy components for compatibility
+const TableLegacy = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
@@ -19,7 +55,7 @@ const Table = React.forwardRef<
     />
   </div>
 ))
-Table.displayName = "Table"
+TableLegacy.displayName = "TableLegacy"
 
 const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
@@ -156,7 +192,7 @@ const TableCaption = React.forwardRef<
 TableCaption.displayName = "TableCaption"
 
 export {
-  Table,
+  TableLegacy as TableOld,
   TableHeader,
   TableBody,
   TableFooter,

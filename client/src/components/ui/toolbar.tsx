@@ -1,8 +1,26 @@
 import * as React from "react"
+import { PropsWithChildren, ReactNode } from 'react'
 import { Search } from "lucide-react"
 import { cn } from "../../lib/utils"
-import { Input } from "./input"
+import clsx from 'clsx'
 
+export function Toolbar({ left, right, className }:{
+  left?: ReactNode; right?: ReactNode; className?: string
+}) {
+  return (
+    <div className={clsx(
+      'flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between',
+      'py-3 px-4 md:px-6 border-b border-[rgb(var(--border))]',
+      'data-[density="compact"]:py-2 data-[density="compact"]:px-3',
+      className
+    )}>
+      <div className="flex flex-wrap items-center gap-2">{left}</div>
+      <div className="flex items-center gap-2">{right}</div>
+    </div>
+  )
+}
+
+// Legacy compatibility - keep existing components for now
 interface ToolbarProps extends React.HTMLAttributes<HTMLDivElement> {
   searchValue?: string;
   searchPlaceholder?: string;
@@ -11,7 +29,7 @@ interface ToolbarProps extends React.HTMLAttributes<HTMLDivElement> {
   rightContent?: React.ReactNode;
 }
 
-const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(
+const ToolbarLegacy = React.forwardRef<HTMLDivElement, ToolbarProps>(
   ({ 
     className, 
     searchValue, 
@@ -32,48 +50,21 @@ const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(
         )}
         {...props}
       >
-        {/* Left side - Search and filters */}
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          {/* Search input */}
-          {onSearchChange && (
-            <div className="relative min-w-0 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-fg-muted" />
-              <Input
-                type="text"
-                placeholder={searchPlaceholder}
-                value={searchValue || ""}
-                onChange={(e) => onSearchChange(e.target.value)}
-                className="pl-10 h-9 data-[density='compact']:h-8"
-                data-testid="toolbar-search"
-              />
-            </div>
-          )}
-          
-          {/* Additional left content (filters, etc.) */}
-          {leftContent && (
-            <div className="flex items-center gap-2">
-              {leftContent}
-            </div>
-          )}
-          
-          {/* Custom children for left side */}
+          {leftContent}
           {children && !rightContent && children}
         </div>
-
-        {/* Right side - Actions */}
         {rightContent && (
           <div className="flex items-center gap-2 shrink-0">
             {rightContent}
           </div>
         )}
-        
-        {/* Custom children for right side when rightContent exists */}
         {children && rightContent && children}
       </div>
     )
   }
 )
-Toolbar.displayName = "Toolbar"
+ToolbarLegacy.displayName = "ToolbarLegacy"
 
 // Sub-components for common toolbar patterns
 interface ToolbarSectionProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -112,7 +103,7 @@ const ToolbarSeparator = React.forwardRef<HTMLDivElement, ToolbarSectionProps>(
 ToolbarSeparator.displayName = "ToolbarSeparator"
 
 export { 
-  Toolbar, 
+  ToolbarLegacy, 
   ToolbarLeft, 
   ToolbarRight, 
   ToolbarSeparator,
