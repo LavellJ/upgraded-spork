@@ -2,6 +2,9 @@
 
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Toolbar } from '../components/ui/toolbar';
+import { Field, Select } from '../components/ui/field';
+import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { MessageSquare, Target, MousePointer, X, Info, Clock, Activity, TrendingUp, Calendar, Zap, Heart } from 'lucide-react';
 import { getEventsRange, scoutSummary, scoutAnalytics, type ScoutSummary, type ScoutAnalytics } from '../progress';

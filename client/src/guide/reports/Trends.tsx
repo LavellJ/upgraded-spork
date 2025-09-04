@@ -599,16 +599,42 @@ export function Trends({ onClose }: TrendsProps) {
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
-              <Table>
-                <THead>
-                  <TR>
-                    <TH 
-                      className="cursor-pointer hover:bg-gray-50" 
-                      onClick={() => handleSort('week')}
-                      data-testid="sort-week"
-                    >
-                      Week{getSortIndicator('week')}
-                    </TH>
+            <Card>
+              <Toolbar 
+                left={
+                  <div className="flex items-center gap-3">
+                    <Select onValueChange={(value) => setWeekRange(parseInt(value))}>
+                      <SelectTrigger className="w-32">
+                        <SelectValue placeholder={`${weekRange} weeks`} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="8">8 weeks</SelectItem>
+                        <SelectItem value="12">12 weeks</SelectItem>
+                        <SelectItem value="16">16 weeks</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                } 
+                right={
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm">
+                      Download CSV
+                    </Button>
+                    <Button variant="ghost" size="sm" aria-label="Help">?</Button>
+                  </div>
+                }
+              />
+              <CardContent>
+                <Table>
+                  <THead>
+                    <TR>
+                      <TH 
+                        className="cursor-pointer hover:bg-gray-50" 
+                        onClick={() => handleSort('week')}
+                        data-testid="sort-week"
+                      >
+                        Week{getSortIndicator('week')}
+                      </TH>
                     <TH 
                       className="cursor-pointer hover:bg-gray-50" 
                       onClick={() => handleSort('activeLearners')}
@@ -690,11 +716,10 @@ export function Trends({ onClose }: TrendsProps) {
                       <TD>{slice.streakersPct.toFixed(1)}%</TD>
                     </TR>
                   ))}
-                </TBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
+                  </TBody>
+                </Table>
+              </CardContent>
+            </Card>
       ) : (
         <Card>
           <CardContent className="pt-6">

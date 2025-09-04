@@ -15,6 +15,12 @@ import {
   X
 } from 'lucide-react';
 import { nanoid } from 'nanoid';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Toolbar } from '../components/ui/toolbar';
+import { Table, THead, TBody, TR, TH, TD } from '../components/ui/table';
+import { Chip } from '../components/ui/chip';
+import { Field, Input, Select } from '../components/ui/field';
+import { Button } from '../components/ui/button';
 import { 
   loadPathsV2, 
   savePathsV2, 
@@ -231,99 +237,130 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
   }
 
   return (
-    <div className={`space-y-4 ${className}`}>
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h3 className="font-semibold text-gray-800">Assignments Manager</h3>
-          <span className="text-xs text-gray-500">
-            ({filteredAssignments.length} {showArchived ? 'total' : 'active'})
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowArchived(!showArchived)}
-            className="px-2 py-1 text-xs border rounded hover:bg-gray-50"
-          >
-            {showArchived ? 'Hide Archived' : 'Show Archived'}
-          </button>
-          <button
-            onClick={() => setShowForm(true)}
-            className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-          >
-            <Plus className="w-4 h-4" />
-            Create
-          </button>
-        </div>
-      </div>
-
-      {/* Assignment List */}
-      <div className="space-y-2">
-        {filteredAssignments.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 text-sm">
-            {showArchived ? 'No assignments found.' : 'No active assignments. Create one to get started.'}
+    <Card className={className}>
+      <Toolbar
+        left={
+          <div className="flex items-center gap-3">
+            <Field label="">
+              <Select defaultValue="all">
+                <option value="all">All ({assignments.length})</option>
+                <option value="active">Active ({filteredAssignments.filter(a => !a.archived).length})</option>
+              </Select>
+            </Field>
           </div>
-        ) : (
-          filteredAssignments.map((assignment) => (
-            <div 
-              key={assignment.id}
-              className={`p-3 border rounded-lg ${assignment.archived ? 'bg-gray-50 opacity-75' : 'bg-white'}`}
+        }
+        right={
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowForm(true)}
             >
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-gray-800 truncate">{assignment.name}</h4>
-                    <span className={`px-2 py-0.5 rounded-full text-xs border ${getPriorityColor(assignment.priority)}`}>
-                      {assignment.priority || 'normal'}
-                    </span>
-                    {assignment.archived && (
-                      <span className="px-2 py-0.5 rounded-full text-xs bg-gray-200 text-gray-600">
-                        Archived
-                      </span>
-                    )}
-                  </div>
-                  
-                  <div className="text-xs text-gray-500 space-y-1">
-                    <div>{assignment.lessons.length} lessons</div>
-                    {assignment.dueAt && (
+              <Plus className="w-4 h-4 mr-1" />
+              Assign
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowArchived(!showArchived)}
+            >
+              {showArchived ? (
+                <>
+                  <ArchiveRestore className="w-4 h-4 mr-1" />
+                  Hide Archived
+                </>
+              ) : (
+                <>
+                  <Archive className="w-4 h-4 mr-1" />
+                  Show Archived
+                </>
+              )}
+            </Button>
+          </div>
+        }
+      />
+      <CardContent>
+
+        <Table>
+          <THead>
+            <TR>
+              <TH>Assignment</TH>
+              <TH>Status</TH>
+              <TH>Priority</TH>
+              <TH>Lessons</TH>
+              <TH>Due Date</TH>
+              <TH>Actions</TH>
+            </TR>
+          </THead>
+          <TBody>
+            {filteredAssignments.length === 0 ? (
+              <TR>
+                <TD colSpan={6} className="text-center py-8 text-gray-500">
+                  {showArchived ? 'No assignments found.' : 'No active assignments. Create one to get started.'}
+                </TD>
+              </TR>
+            ) : (
+              filteredAssignments.map((assignment) => {
+                const status = assignment.archived ? 'archived' : 
+                             (assignment.dueAt && assignment.dueAt < Date.now()) ? 'overdue' : 'assigned';
+                             
+                return (
+                  <TR key={assignment.id}>
+                    <TD className="font-medium">{assignment.name}</TD>
+                    <TD>
+                      <Chip variant={status}>
+                        {status === 'archived' ? 'Archived' : 
+                         status === 'overdue' ? 'Overdue' : 
+                         'Assigned'}
+                      </Chip>
+                    </TD>
+                    <TD>
+                      <Chip variant={assignment.priority === 'high' ? 'overdue' : 
+                                   assignment.priority === 'low' ? 'info' : 'assigned'}>
+                        {assignment.priority || 'normal'}
+                      </Chip>
+                    </TD>
+                    <TD>{assignment.lessons.length} lessons</TD>
+                    <TD>
+                      {assignment.dueAt ? new Date(assignment.dueAt).toLocaleDateString() : '-'}
+                    </TD>
+                    <TD>
                       <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        Due: {new Date(assignment.dueAt).toLocaleDateString()}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleEdit(assignment)}
+                          title="Edit"
+                        >
+                          <Edit2 className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleArchive(assignment.id, !assignment.archived)}
+                          title={assignment.archived ? 'Unarchive' : 'Archive'}
+                        >
+                          {assignment.archived ? <ArchiveRestore className="w-3 h-3" /> : <Archive className="w-3 h-3" />}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDelete(assignment.id)}
+                          className="text-red-600"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
                       </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-1 ml-2">
-                  <button
-                    onClick={() => handleEdit(assignment)}
-                    className="p-1.5 text-gray-600 hover:bg-gray-100 rounded"
-                    title="Edit"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  
-                  <button
-                    onClick={() => handleArchive(assignment.id, !assignment.archived)}
-                    className="p-1.5 text-gray-600 hover:bg-gray-100 rounded"
-                    title={assignment.archived ? 'Unarchive' : 'Archive'}
-                  >
-                    {assignment.archived ? <ArchiveRestore className="w-4 h-4" /> : <Archive className="w-4 h-4" />}
-                  </button>
-                  
-                  <button
-                    onClick={() => handleDelete(assignment.id)}
-                    className="p-1.5 text-red-600 hover:bg-red-50 rounded"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+                    </TD>
+                  </TR>
+                );
+              })
+            )}
+          </TBody>
+        </Table>
+
+      </CardContent>
 
       {/* Create/Edit Form */}
       <AnimatePresence>
@@ -332,19 +369,24 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="border rounded-lg p-4 bg-white shadow-sm"
+            className="mt-4"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="font-medium">
-                {editingId ? 'Edit Assignment' : 'Create Assignment'}
-              </h4>
-              <button
-                onClick={resetForm}
-                className="p-1 text-gray-500 hover:bg-gray-100 rounded"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>
+                    {editingId ? 'Edit Assignment' : 'Create Assignment'}
+                  </CardTitle>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={resetForm}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
 
             <div className="space-y-4">
               {/* Basic Info */}
@@ -510,10 +552,11 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
                   {editingId ? 'Update' : 'Create'}
                 </button>
               </div>
-            </div>
+              </CardContent>
+            </Card>
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </Card>
   );
 }
