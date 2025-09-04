@@ -7,7 +7,7 @@ import { Toolbar } from './ui/toolbar';
 import { useCollaborators, type ClassRole, type Collaborator } from '../hooks/useCollaborators';
 import { useToast } from '../hooks/use-toast';
 import { InlineError } from './ui/inline-error';
-import { UserPlus, UserMinus, Mail, Shield, Eye, Crown } from 'lucide-react';
+import { UserPlus, UserMinus, Mail, Shield, Eye, Crown, Send } from 'lucide-react';
 
 interface CollaboratorsCardProps {
   classId: string;
@@ -24,6 +24,11 @@ export function CollaboratorsCard({ classId, currentUserEmail, isOwner = false }
   const [newRole, setNewRole] = useState<ClassRole>('co_teacher');
   const [addingCollaborator, setAddingCollaborator] = useState(false);
   const [removingEmail, setRemovingEmail] = useState<string | null>(null);
+  
+  // Invite functionality
+  const [showInviteForm, setShowInviteForm] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [sendingInvite, setSendingInvite] = useState(false);
 
   const handleAddCollaborator = async () => {
     if (!newEmail.trim()) return;
@@ -71,6 +76,72 @@ export function CollaboratorsCard({ classId, currentUserEmail, isOwner = false }
       // Error is already handled by the hook
     } finally {
       setRemovingEmail(null);
+    }
+  };
+
+  const handleSendInvite = async () => {
+    if (!inviteEmail.trim()) return;
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(inviteEmail.trim())) {
+      toast({
+        kind: 'error',
+        text: 'Please enter a valid email address'
+      });
+      return;
+    }
+
+    // Check if user is already a collaborator
+    const existingCollaborator = collaborators.find(
+      c => c.email.toLowerCase() === inviteEmail.trim().toLowerCase()
+    );
+    if (existingCollaborator) {
+      toast({
+        kind: 'error',
+        text: 'This user is already a collaborator on this class'
+      });
+      return;
+    }
+
+    setSendingInvite(true);
+    try {
+      const response = await fetch('/api/invite/co-teacher', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        },
+        body: JSON.stringify({
+          classId,
+          email: inviteEmail.trim()
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setInviteEmail('');
+        setShowInviteForm(false);
+        toast({
+          kind: 'success',
+          text: `Invitation sent to ${data.invitedEmail}! They will receive an email with a link to join the class.`
+        });
+      } else {
+        const errorMessage = data.error || 'Failed to send invitation';
+        toast({
+          kind: 'error',
+          text: errorMessage
+        });
+      }
+    } catch (err) {
+      console.error('Error sending invite:', err);
+      toast({
+        kind: 'error',
+        text: 'Failed to send invitation. Please try again.'
+      });
+    } finally {
+      setSendingInvite(false);
     }
   };
 
@@ -178,22 +249,86 @@ export function CollaboratorsCard({ classId, currentUserEmail, isOwner = false }
           )}
         </div>
 
-        {/* Add Collaborator Form */}
+        {/* Invite & Add Collaborator Forms */}
         {isOwner && (
           <div className="border-t border-[rgb(var(--border))] pt-4">
-            {!showAddForm ? (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setShowAddForm(true)}
-                className="w-full"
-                data-testid="button-add-collaborator"
-              >
-                <UserPlus className="w-4 h-4 mr-2" />
-                Add Collaborator
-              </Button>
+            {!showAddForm && !showInviteForm ? (
+              <div className="space-y-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowInviteForm(true)}
+                  className="w-full"
+                  data-testid="button-invite-co-teacher"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Invite Co-teacher
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowAddForm(true)}
+                  className="w-full"
+                  data-testid="button-add-collaborator"
+                >
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Add Collaborator Directly
+                </Button>
+              </div>
+            ) : showInviteForm ? (
+              <div className="space-y-3">
+                <div className="text-sm text-[rgb(var(--fg-muted))]">
+                  Send an email invitation to join this class as a co-teacher
+                </div>
+                <Field label="Email Address">
+                  <Input
+                    type="email"
+                    placeholder="colleague@school.edu"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSendInvite();
+                      if (e.key === 'Escape') {
+                        setShowInviteForm(false);
+                        setInviteEmail('');
+                      }
+                    }}
+                    data-testid="input-invite-email"
+                  />
+                </Field>
+
+                <Toolbar
+                  left={
+                    <Button 
+                      size="sm" 
+                      onClick={handleSendInvite} 
+                      disabled={!inviteEmail.trim() || sendingInvite}
+                      data-testid="button-send-invite"
+                    >
+                      <Send className="w-3 h-3 mr-2" />
+                      {sendingInvite ? 'Sending...' : 'Send Invitation'}
+                    </Button>
+                  }
+                  right={
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setShowInviteForm(false);
+                        setInviteEmail('');
+                      }}
+                      data-testid="button-cancel-invite"
+                    >
+                      Cancel
+                    </Button>
+                  }
+                />
+              </div>
             ) : (
               <div className="space-y-3">
+                <div className="text-sm text-[rgb(var(--fg-muted))]">
+                  Add a collaborator directly (they must already have access to LearnOz)
+                </div>
                 <Field label="Email Address">
                   <Input
                     type="email"
