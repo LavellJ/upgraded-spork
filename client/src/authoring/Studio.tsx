@@ -15,7 +15,7 @@ import {
   ChevronRight, ChevronDown, ArrowLeft, ArrowRight,
   Download, Upload, RefreshCw, Code2, FileJson,
   Settings, Info, BookOpen, Layers, Tag,
-  Clock, MapPin, Star, Users, Palette
+  Clock, MapPin, Star, Users, Palette, Folder
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -547,6 +547,37 @@ export function ContentStudio({ selectedLessonId, onLessonChange, onClose }: Con
                               </div>
                             </div>
                           </div>
+                          
+                          {/* Development-only Quick Actions */}
+                          {process.env.NODE_ENV === 'development' && (
+                            <div>
+                              <h3 className="font-medium mb-2">Quick Actions</h3>
+                              <div className="flex flex-col gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    // Extract pack ID from lesson ID (e.g., 'forest.phonics.1' -> 'forest')
+                                    const packId = selectedLesson.id.split('.')[0];
+                                    const packFolder = `/packs/${packId}`;
+                                    
+                                    // In development, this would open the pack folder
+                                    // For now, just copy path to clipboard and show alert
+                                    navigator.clipboard.writeText(packFolder).then(() => {
+                                      alert(`Pack folder path copied: ${packFolder}\n\nIn a full development environment, this would open the folder directly.`);
+                                    }).catch(() => {
+                                      alert(`Pack folder: ${packFolder}`);
+                                    });
+                                  }}
+                                  className="flex items-center gap-2 text-left justify-start"
+                                  data-testid="open-pack-folder"
+                                >
+                                  <Folder className="h-4 w-4" />
+                                  Open Pack Folder
+                                </Button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </TabsContent>
                       
@@ -556,7 +587,7 @@ export function ContentStudio({ selectedLessonId, onLessonChange, onClose }: Con
                             <div key={index} className="border border-gray-200 rounded-lg p-3">
                               <div className="flex items-center gap-2 mb-2">
                                 <Badge variant="outline">{activity.kind}</Badge>
-                                <span className="font-medium text-sm">{activity.title}</span>
+                                <span className="font-medium text-sm">{tI18n(activity.title, locale)}</span>
                               </div>
                               {activity.kind === 'video' && (
                                 <div className="text-xs text-gray-500">
