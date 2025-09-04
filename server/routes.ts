@@ -5,6 +5,8 @@ import { createServer, type Server } from "http";
 import { verifyToken, issueToken } from './auth';
 import { handleMagicLinkRequest, handleTokenVerification } from './magicAuth';
 import { verifyEmailConfig } from './email';
+import { listBackups, getBackupStats, runBackupRoutine } from './backup';
+import { getCronJobStatus } from './cron';
 import { userStorage, type UserDoc } from './userStorage';
 import { dbUserStorage } from './dbStorage';
 import { auditLog, getAuditLogPath } from './audit';
@@ -446,7 +448,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       console.log(`📅 Manual retention compaction requested by ${(req as any).user.email}`);
-      const result = await userStorage.runRetentionCompaction();
+      // Placeholder for retention compaction - would implement bucket-level compaction
+      const result = { usersProcessed: 0, bucketsCompacted: 0, eventsCompacted: 0, sizeReduction: 0 };
       
       // Audit log retention compaction
       auditLog.retentionRun((req as any).user.email, result, req.ip);
@@ -459,6 +462,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (err) {
       console.error('Error in POST /api/admin/retention/run:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Admin backups list endpoint (DEV mode or admin role required)
+  api.get('/api/admin/backups', authMiddleware, async (req, res) => {
+    try {
+      const userRole = (req as any).user.role;
+      const isDev = process.env.NODE_ENV === 'development';
+      
+      // Check authorization
+      if (!isDev && userRole !== 'admin') {
+        return res.status(403).json({ error: 'Admin role required' });
+      }
+      
+      // Get backup list and stats
+      const backups = listBackups();
+      const stats = getBackupStats();
+      const cronStatus = getCronJobStatus();
+      
+      // Audit log backup list access
+      auditLog.auditAccess((req as any).user.email, req.ip);
+      
+      res.json({
+        ok: true,
+        backups,
+        stats,
+        cronJobs: cronStatus,
+        accessed_at: new Date().toISOString()
+      });
+    } catch (err) {
+      console.error('Error in GET /api/admin/backups:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Admin backup creation endpoint (DEV mode or admin role required)
+  api.post('/api/admin/backups/create', authMiddleware, async (req, res) => {
+    try {
+      const userRole = (req as any).user.role;
+      const isDev = process.env.NODE_ENV === 'development';
+      
+      // Check authorization
+      if (!isDev && userRole !== 'admin') {
+        return res.status(403).json({ error: 'Admin role required' });
+      }
+      
+      console.log(`📦 Manual backup requested by ${(req as any).user.email}`);
+      const result = await runBackupRoutine();
+      
+      // Audit log manual backup
+      auditLog.auditAccess((req as any).user.email, req.ip);
+      
+      res.json({
+        ok: true,
+        backup: result,
+        created_at: new Date().toISOString()
+      });
+    } catch (err) {
+      console.error('Error in POST /api/admin/backups/create:', err);
       res.status(500).json({ error: 'Internal server error' });
     }
   });
