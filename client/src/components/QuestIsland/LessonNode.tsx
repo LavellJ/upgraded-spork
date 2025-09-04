@@ -249,7 +249,10 @@ function getEnhancedAriaLabel(title: string, assignmentInfo: any): string {
       break;
   }
   
-  const dueText = assignmentInfo.dueAt ? ` Due ${formatDue(assignmentInfo.dueAt)}` : '';
+  // Always include due date info with fallback
+  const dueText = assignmentInfo.dueAt 
+    ? ` Due ${formatDue(assignmentInfo.dueAt)}` 
+    : ' No due date set';
   
   return `${baseLabel}. ${statusText}.${dueText}`;
 }

@@ -184,6 +184,33 @@ class CloudTransport implements SyncTransport {
   
   private async sendWithRetry(batch: SyncItem[], context: SyncContext, attempt: number): Promise<EnhancedSyncResult> {
     try {
+      // Check network connectivity first
+      if (typeof navigator !== 'undefined' && 'connection' in navigator) {
+        const connection = (navigator as any).connection;
+        if (connection && connection.type === 'none') {
+          console.debug('🔄 Network type is "none", skipping immediate sync attempt');
+          const error = classifyError(0, 'No network connection');
+          logSyncError(error, { context, attempt });
+          return {
+            ok: false,
+            error: 'No network connection',
+            errorDetails: error
+          };
+        }
+      }
+      
+      // Check navigator.onLine for basic connectivity
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        console.debug('🔄 navigator.onLine is false, scheduling backoff retry');
+        const error = classifyError(0, 'Offline - will retry when online');
+        logSyncError(error, { context, attempt });
+        return {
+          ok: false, 
+          error: 'Device is offline',
+          errorDetails: error
+        };
+      }
+
       const auth = loadAuth();
       
       const response = await fetch(`${this.CLOUD_ENDPOINT}/sync/batch`, {
