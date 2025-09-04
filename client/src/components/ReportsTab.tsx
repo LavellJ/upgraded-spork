@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
-import { Calendar, Download, FileText, Users, TrendingUp, Mail, Settings, Send, Clock } from 'lucide-react';
+import { Calendar, Download, FileText, Users, TrendingUp, Mail, Settings, Send, Clock, Loader2 } from 'lucide-react';
 import { buildWeeklyEngagement, downloadWeeklyEngagementCSV } from '../analytics/weeklyEngagement';
-import { Trends } from '../guide/reports/Trends';
-import { ParentEmail } from '../reports/parentEmail';
 import { useToast } from '../hooks/use-toast';
+
+// Lazy load report components to keep initial bundle small (<50KB target)
+const Trends = React.lazy(() => import('../guide/reports/Trends').then(module => ({ default: module.Trends })));
+const ParentEmail = React.lazy(() => import('../reports/parentEmail').then(module => ({ default: module.ParentEmail })));
 
 type ReportView = 'overview' | 'trends' | 'weekly' | 'parent-email' | 'digest-settings';
 
@@ -60,14 +62,36 @@ export function ReportsTab() {
     return `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
   };
 
+  // Loading component for lazy-loaded modules
+  const ReportLoader = ({ children }: { children: React.ReactNode }) => (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[400px]" data-testid="report-loading">
+        <div className="text-center space-y-3">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-blue-600" />
+          <p className="text-sm text-gray-600">Loading report...</p>
+        </div>
+      </div>
+    }>
+      {children}
+    </Suspense>
+  );
+
   // Render the trends view if selected
   if (currentView === 'trends') {
-    return <Trends onClose={() => setCurrentView('overview')} />;
+    return (
+      <ReportLoader>
+        <Trends onClose={() => setCurrentView('overview')} />
+      </ReportLoader>
+    );
   }
 
   // Render the parent email view if selected
   if (currentView === 'parent-email') {
-    return <ParentEmail onClose={() => setCurrentView('overview')} />;
+    return (
+      <ReportLoader>
+        <ParentEmail onClose={() => setCurrentView('overview')} />
+      </ReportLoader>
+    );
   }
 
   // Render the digest settings view if selected

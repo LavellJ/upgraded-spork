@@ -330,3 +330,190 @@ Use this template to document test results:
 - Follow-up actions required:
 
 **Tester Signature**: _________________
+
+---
+
+## Reports & Analytics Accessibility Testing (WCAG 2.1 AA Compliance)
+
+### E2E Testing Requirements for Reports
+
+#### Reports Flow Testing
+- [ ] **Trends View Navigation**
+  - [ ] Click "Cohort Trends" button loads Trends dashboard with lazy-loading spinner
+  - [ ] Week range selector changes data display appropriately 
+  - [ ] CSV download generates non-empty file with correct filename pattern
+  - [ ] Download file contains expected headers (week_display, learners, etc.)
+  - [ ] Charts render with appropriate loading states and data tables
+
+- [ ] **Parent Email Flow**
+  - [ ] Navigation to Parent Email view works
+  - [ ] Learner selection (multi-select) functions correctly
+  - [ ] Preview generation shows email content
+  - [ ] Print functionality renders print-optimized layout (black text on white background)
+  - [ ] Print route displays proper formatting for 8.5" x 11" pages
+  - [ ] Email preview contains "Accomplishments" and "Next Steps" sections
+
+- [ ] **Teacher Digest Settings (DEV only)**
+  - [ ] Digest toggle switch enables/disables successfully 
+  - [ ] Manual digest trigger shows success toast in development mode
+  - [ ] Loading states display during API requests
+
+### Accessibility Testing (Target: ≥95 Lighthouse Score)
+
+#### Visual Charts & Data Tables
+- [ ] **Sparkline Charts**
+  - [ ] Each chart has `role="img"` attribute
+  - [ ] `aria-labelledby` points to descriptive title
+  - [ ] `aria-describedby` points to hidden data table
+  - [ ] Hidden data table uses `sr-only` class (visually hidden, screen reader accessible)
+  - [ ] Data table has proper `<caption>` element describing the chart
+  - [ ] Table structure: `<thead>`, `<tbody>`, proper `<th>` headers
+  - [ ] Table contains same data points as visual chart
+  - [ ] Screen readers can navigate table with standard table navigation commands
+
+- [ ] **Multi-Series Charts** 
+  - [ ] Legend information accessible via data table
+  - [ ] Multiple series clearly distinguished in table columns
+  - [ ] Color-coding supplemented by text labels, not color alone
+  - [ ] Series labels meaningful without visual context
+
+#### Keyboard Navigation
+- [ ] **Focus Management**
+  - [ ] All interactive elements keyboard accessible (Tab navigation)
+  - [ ] Focus indicators visible and high-contrast (≥3:1 ratio)
+  - [ ] Tab order logical throughout reports interface
+  - [ ] Charts focusable with Tab key
+  - [ ] Skip links available for complex report layouts
+
+- [ ] **Navigation Patterns**
+  - [ ] Enter/Space activate buttons and controls
+  - [ ] Escape key closes modals/overlays if present
+  - [ ] Back button functionality preserved in browser history
+
+#### Screen Reader Support
+- [ ] **Content Structure** 
+  - [ ] Heading hierarchy logical (h1, h2, h3...) - no skipped levels
+  - [ ] Landmarks (`main`, `nav`, `section`) properly used
+  - [ ] Form labels properly associated with inputs (`<label for="">` or `aria-labelledby`)
+  - [ ] Data tables use proper `<caption>`, `<th scope="">` attributes
+
+- [ ] **Dynamic Content**
+  - [ ] Loading states announced to screen readers ("Loading report...")
+  - [ ] Success/error messages have appropriate ARIA roles (`alert`, `status`) 
+  - [ ] Chart data changes announced when filters applied
+  - [ ] CSV download completion announced
+
+#### Color & Contrast Compliance
+- [ ] **Visual Design**
+  - [ ] Text contrast ratio ≥4.5:1 for normal text (WCAG AA)
+  - [ ] Large text (18pt+) contrast ratio ≥3:1 
+  - [ ] Interactive elements contrast ≥3:1 against background
+  - [ ] Focus indicators high contrast and clearly visible
+
+- [ ] **Chart Accessibility**
+  - [ ] Chart colors distinguishable for colorblind users
+  - [ ] Information not conveyed by color alone (use text, patterns, shapes)
+  - [ ] High contrast mode supported (`prefers-contrast: high`)
+  - [ ] Print styles maintain readability in black/white
+
+### Performance Requirements
+
+- [ ] **Bundle Size Compliance**
+  - [ ] Initial app bundle <200KB compressed
+  - [ ] Reports module lazy-loads and adds <50KB to initial bundle  
+  - [ ] Loading spinner shows during lazy-load (no blank screen)
+  - [ ] No JavaScript errors during module loading
+
+- [ ] **Loading Performance**
+  - [ ] Trends view loads completely within 5 seconds on 3G network
+  - [ ] Charts render without Cumulative Layout Shift (CLS <0.1)
+  - [ ] Large datasets (100+ learners) perform adequately 
+  - [ ] Network idle state reached after data loading
+
+### Browser & Assistive Technology Testing
+
+#### Desktop Screen Readers
+- [ ] **NVDA** (Windows): Charts and data tables readable, navigation logical
+- [ ] **JAWS** (Windows): Table navigation works, content announced correctly  
+- [ ] **VoiceOver** (macOS): Touch and keyboard modes functional
+- [ ] **Dragon NaturallySpeaking**: Voice commands work with interactive elements
+
+#### Mobile Accessibility  
+- [ ] **VoiceOver** (iOS): Swipe navigation through chart data points
+- [ ] **TalkBack** (Android): Explore by touch works with charts
+- [ ] **Touch targets**: Buttons ≥44px touch target size
+- [ ] **Responsive design**: Reports usable on small screens with zoom up to 200%
+
+#### Browser Compatibility
+- [ ] **Chrome 90+**: Full accessibility features supported
+- [ ] **Firefox 88+**: Screen reader compatibility verified
+- [ ] **Safari 14+**: VoiceOver integration working
+- [ ] **Edge 90+**: Windows Narrator compatibility
+
+### Lighthouse Scoring Requirements
+
+#### Target Scores (All Report Routes)
+- [ ] **Performance**: ≥85
+- [ ] **Accessibility**: ≥95 (required)
+- [ ] **Best Practices**: ≥90  
+- [ ] **SEO**: ≥85
+
+#### Specific Route Testing
+- [ ] `/reports` (overview): Accessibility score ≥95
+- [ ] `/reports?view=trends`: Accessibility score ≥95
+- [ ] `/reports?view=parent-email`: Accessibility score ≥95
+- [ ] `/reports?view=weekly`: Accessibility score ≥95
+
+### Error Handling & Edge Cases
+
+- [ ] **Empty Data States**
+  - [ ] "No trend data available" message has proper heading level
+  - [ ] Empty state graphics have alt text or are decorative (`alt=""`)
+  - [ ] "No learners found" messages announced to screen readers
+
+- [ ] **Loading & Error States**
+  - [ ] Loading spinners have accessible labels ("Loading report data")
+  - [ ] Error messages use `role="alert"` for immediate announcement
+  - [ ] Retry buttons clearly labeled and keyboard accessible
+
+### Manual Accessibility Tests
+
+#### Test with Assistive Technology
+1. **Screen Reader Test**: Navigate entire reports section eyes-closed
+2. **Keyboard-Only Test**: Complete all report tasks using only keyboard
+3. **Voice Control Test**: Use voice commands to generate and download reports  
+4. **Zoom Test**: Verify functionality at 200% browser zoom
+5. **Color Blindness Test**: Verify charts readable with color vision simulators
+
+#### Test Scenarios
+- [ ] **Complete Trends Flow**: Navigate to trends → change filters → read chart data → download CSV
+- [ ] **Parent Email Generation**: Select learners → preview → print report
+- [ ] **Data Table Navigation**: Use screen reader table navigation commands on chart data
+- [ ] **Mobile Accessibility**: Complete key flows on tablet with TalkBack/VoiceOver
+
+### Documentation & Training
+
+#### Accessibility Documentation  
+- [ ] **User Guides**: Include accessibility features and keyboard shortcuts
+- [ ] **Alt Text Standards**: Document approach for chart descriptions
+- [ ] **Color Palette**: Document accessible color combinations used
+
+#### Team Training
+- [ ] **Development Team**: Trained on ARIA attributes and semantic HTML
+- [ ] **QA Team**: Familiar with screen reader testing procedures  
+- [ ] **Content Team**: Understands accessible content writing practices
+
+---
+
+### Reports Accessibility Testing Sign-off
+
+- [ ] **Automated Testing**: axe-core, Lighthouse audits pass
+- [ ] **Screen Reader Testing**: NVDA, JAWS, VoiceOver verified
+- [ ] **Keyboard Testing**: All functionality keyboard accessible
+- [ ] **Color/Contrast**: WCAG 2.1 AA compliance verified
+- [ ] **Performance**: Bundle size and loading performance within targets
+
+**A11y Testing Date**: _________________
+**Accessibility Specialist**: _________________  
+**Lighthouse Score**: _____ (≥95 required)
+**Screen Readers Tested**: _________________
