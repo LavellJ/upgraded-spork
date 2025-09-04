@@ -7,7 +7,7 @@ import { getActiveAssignments } from '../guide/assign';
 import { loadRoster } from '../roster/model';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Printer, Download } from 'lucide-react';
+import { Printer, Download, Link } from 'lucide-react';
 
 interface ParentSummaryProps {
   learnerId: string;
@@ -167,6 +167,27 @@ export function ParentSummary({ learnerId, weekStartISO }: ParentSummaryProps) {
     window.print();
   };
 
+  const handleCopyLink = async () => {
+    try {
+      const url = `${window.location.origin}${window.location.pathname}?learner=${learnerId}&week=${weekStartISO}`;
+      await navigator.clipboard.writeText(url);
+      // Simple feedback - could be enhanced with toast notification
+      const button = document.querySelector('[data-testid="copy-link-button"]') as HTMLButtonElement;
+      if (button) {
+        const originalText = button.innerHTML;
+        button.innerHTML = '✓ Copied!';
+        setTimeout(() => {
+          button.innerHTML = originalText;
+        }, 2000);
+      }
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+      // Fallback: show URL in alert
+      const url = `${window.location.origin}${window.location.pathname}?learner=${learnerId}&week=${weekStartISO}`;
+      alert(`Copy this link: ${url}`);
+    }
+  };
+
   return (
     <div className="parent-summary-container min-h-screen bg-white text-black">
       {/* Print styles header */}
@@ -261,6 +282,16 @@ export function ParentSummary({ learnerId, weekStartISO }: ParentSummaryProps) {
         >
           <Download className="h-4 w-4" />
           Download PDF
+        </Button>
+        <Button 
+          onClick={handleCopyLink}
+          variant="ghost" 
+          className="flex items-center gap-2"
+          aria-label="Copy link to parent summary report"
+          data-testid="copy-link-button"
+        >
+          <Link className="h-4 w-4" />
+          Copy Link
         </Button>
       </div>
 
