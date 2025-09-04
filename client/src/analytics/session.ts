@@ -1,12 +1,24 @@
-let cached: string | undefined
+let cached: string | undefined;
 
+// Simple RFC4122-ish fallback
 function fallbackUUID() {
-  // RFC4122-ish, for older engines without crypto.randomUUID
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    const r = (Math.random() * 16) | 0
-    const v = c === 'x' ? r : (r & 0x3) | 0x8
-    return v.toString(16)
-  })
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+function safeRandomUUID(): string {
+  try {
+    const c = (globalThis as any).crypto;
+    if (c && typeof c.randomUUID === 'function') {
+      return c.randomUUID(); // modern browsers
+    }
+  } catch {
+    // ignore and fall back
+  }
+  return fallbackUUID();
 }
 
 /**
@@ -14,22 +26,21 @@ function fallbackUUID() {
  * Uses a global to survive HMR during dev.
  */
 export function getSessionId(): string {
-  // reuse if HMR re-imports the module
-  if ((globalThis as any).__qiSessionId) return (globalThis as any).__qiSessionId as string
+  // Reuse if HMR re-imported this module
+  const g = globalThis as any;
+  if (typeof g.__qiSessionId === 'string') return (cached = g.__qiSessionId);
 
   if (!cached) {
-    // Prefer modern API; fallback if unavailable
-    const id = typeof crypto?.randomUUID === 'function' ? crypto.randomUUID() : fallbackUUID()
-    cached = id
-    // Store in global for HMR persistence
-    (globalThis as any).__qiSessionId = id
+    const sid = safeRandomUUID(); // <— avoid the name "id"
+    cached = sid;
+    g.__qiSessionId = sid; // persist for HMR
   }
-  return cached
+  return cached;
 }
 
 /** For tests/dev only */
 export function __resetSessionIdForTests() {
-  cached = undefined
-  // Clear DEV global
-  delete (globalThis as any).__qiSessionId
+  const g = globalThis as any;
+  delete g.__qiSessionId;
+  cached = undefined;
 }
