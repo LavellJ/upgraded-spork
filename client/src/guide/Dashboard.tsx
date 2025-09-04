@@ -1,11 +1,13 @@
 import React, { useState, useMemo } from 'react';
-import { Calendar, TrendingUp, Users, BookOpen, Download, ChevronLeft, ChevronRight, Clock, Award, AlertTriangle } from 'lucide-react';
+import { Calendar, TrendingUp, Users, BookOpen, Download, ChevronLeft, ChevronRight, Clock, Award, AlertTriangle, FileText } from 'lucide-react';
 import { useRosterOptional } from '../roster/context';
 import { getActiveClass } from '../roster/classes';
 import { buildClassWeek, getCurrentWeekStart, getWeekDisplayName, type ClassWeekData } from '../progress/classMetrics';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
+import { ParentSummary } from '../reports/parentSummary';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 
 interface DashboardProps {
   onExportCSV?: (weekStart: string, classData: ClassWeekData) => void;
@@ -16,6 +18,7 @@ export function Dashboard({ onExportCSV }: DashboardProps) {
   const activeLearner = rosterContext?.activeLearner;
   
   const [selectedWeek, setSelectedWeek] = useState<string>(() => getCurrentWeekStart());
+  const [parentSummaryData, setParentSummaryData] = useState<{ learnerId: string; learnerName: string } | null>(null);
 
   // Get active class information
   const activeClass = useMemo(() => {
@@ -274,6 +277,7 @@ export function Dashboard({ onExportCSV }: DashboardProps) {
                   <TableHead>Assignments Done</TableHead>
                   <TableHead>Due Soon</TableHead>
                   <TableHead>Overdue</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -301,6 +305,18 @@ export function Dashboard({ onExportCSV }: DashboardProps) {
                         {learner.overdue}
                       </span>
                     </TableCell>
+                    <TableCell data-testid={`actions-${learner.learnerId}`}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setParentSummaryData({ learnerId: learner.learnerId, learnerName: learner.name })}
+                        className="flex items-center gap-1"
+                        data-testid={`button-parent-summary-${learner.learnerId}`}
+                      >
+                        <FileText className="h-3 w-3" />
+                        Parent Summary
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -308,6 +324,21 @@ export function Dashboard({ onExportCSV }: DashboardProps) {
           )}
         </CardContent>
       </Card>
+      
+      {/* Parent Summary Dialog */}
+      <Dialog open={!!parentSummaryData} onOpenChange={() => setParentSummaryData(null)}>
+        <DialogContent className="max-w-full w-full h-full max-h-none m-0 p-0 rounded-none">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Parent Summary Report</DialogTitle>
+          </DialogHeader>
+          {parentSummaryData && (
+            <ParentSummary 
+              learnerId={parentSummaryData.learnerId} 
+              weekStartISO={selectedWeek} 
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
