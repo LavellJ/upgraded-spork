@@ -81,7 +81,7 @@ export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: Qu
             Teacher Quick Start
           </h1>
           <Button
-            onClick={() => setShowPrintPreview(true)}
+            onClick={() => window.open('/teacher-quick-start-guide.html', '_blank')}
             variant="outline"
             size="sm"
             className="gap-2"
