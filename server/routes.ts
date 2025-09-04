@@ -3,6 +3,8 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { Router } from "express";
 import { createServer, type Server } from "http";
 import { verifyToken, issueToken } from './auth';
+import { handleMagicLinkRequest, handleTokenVerification } from './magicAuth';
+import { verifyEmailConfig } from './email';
 import { userStorage, type UserDoc } from './userStorage';
 import { dbUserStorage } from './dbStorage';
 import { auditLog, getAuditLogPath } from './audit';
@@ -179,6 +181,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json({ ok: false, reason: 'server_error' });
     }
   });
+
+  // Magic link authentication endpoints
+  api.post('/api/auth/magic-link', handleMagicLinkRequest);
+  api.post('/api/auth/verify-token', handleTokenVerification);
 
   // Development token issuing (DEV only)
   if (process.env.NODE_ENV === 'development') {
@@ -465,6 +471,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   if (process.env.NODE_ENV === 'development') {
     console.log('🔧  Admin dump endpoint: GET /api/admin/dump');
   }
+
+  // Initialize email service
+  verifyEmailConfig().then(success => {
+    if (success) {
+      console.log('✅ Email service ready');
+    } else {
+      console.log('⚠️  Email service not configured - magic links will use preview mode');
+    }
+  });
 
   // Create and return the HTTP server that index.ts expects
   const server = createServer(app);
