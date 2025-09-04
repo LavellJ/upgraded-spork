@@ -5,8 +5,10 @@ const ASSETS_CACHE = 'quest-island-assets-v1';
 const EXTERNAL_CACHE = 'quest-island-external-v1';
 const PACKS_CACHE = 'quest-island-packs-v1';
 
-const MAX_ASSET_ENTRIES = 50;
+const MAX_ASSET_ENTRIES = 100; // Increased for larger content packs
+const MAX_PACK_ENTRIES = 200; // Dedicated limit for pack assets
 const MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days
+const PACK_MAX_AGE_SECONDS = 14 * 24 * 60 * 60; // 14 days for pack content
 const NETWORK_TIMEOUT = 3000; // 3 seconds
 
 // Core app resources to cache on install
@@ -229,15 +231,20 @@ function isDevToolsRequest(url) {
 }
 
 // Asset cache cleanup
-async function cleanupAssetCache(cache) {
+async function cleanupAssetCache(cache, maxEntries = MAX_ASSET_ENTRIES) {
   const keys = await cache.keys();
-  if (keys.length > MAX_ASSET_ENTRIES) {
+  if (keys.length > maxEntries) {
     // Remove oldest entries
-    const entriesToDelete = keys.length - MAX_ASSET_ENTRIES;
+    const entriesToDelete = keys.length - maxEntries;
     for (let i = 0; i < entriesToDelete; i++) {
       await cache.delete(keys[i]);
     }
   }
+}
+
+// Pack cache cleanup with larger limits
+async function cleanupPackCache(cache) {
+  await cleanupAssetCache(cache, MAX_PACK_ENTRIES);
 }
 
 // Message channel for client notifications

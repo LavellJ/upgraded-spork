@@ -2,7 +2,9 @@
 /**
  * Content Linter CLI - Validates lesson registry and content files
  * 
- * Usage: npm run content:lint
+ * Usage: 
+ *   npm run content:lint                 # Basic schema and reference validation
+ *   npm run content:lint --preflight     # Include asset URL and size validation
  * 
  * Validates:
  * - JSON schema against RegistryV2
@@ -11,11 +13,13 @@
  * - Standards framework keys exist
  * - Locale requirements (at least one title locale)
  * - ID format compliance
+ * - [--preflight] Asset URL accessibility and size limits
  */
 
 import { readFileSync, existsSync } from 'fs';
 import { join, resolve } from 'path';
 import { validateRegistryV2, RegistryV2, LessonV2 } from '../client/src/authoring/schema.js';
+import { verifyLessonsAssets, generateSummaryReport } from '../client/src/authoring/preflight.js';
 
 // CLI Colors for output
 const colors = {
@@ -38,8 +42,11 @@ interface LintIssue {
 class ContentLinter {
   private issues: LintIssue[] = [];
   private registries: Array<{ data: RegistryV2; source: string }> = [];
+  private runPreflight: boolean = false;
 
-  constructor() {}
+  constructor(options: { preflight?: boolean } = {}) {
+    this.runPreflight = options.preflight || false;
+  }
 
   /**
    * Add a lint issue
@@ -320,10 +327,71 @@ class ContentLinter {
   }
 
   /**
+   * Run asset preflight checks
+   */
+  private async runPreflightChecks() {
+    console.log(`${colors.blue}🔍 Running asset preflight checks...${colors.reset}\n`);
+    
+    const allLessons: LessonV2[] = [];
+    const baseUrl = 'http://localhost:5000'; // Default local server URL
+    
+    // Collect all lessons from registries
+    for (const { data } of this.registries) {
+      allLessons.push(...data.lessons);
+    }
+    
+    if (allLessons.length === 0) {
+      console.log(`${colors.yellow}⚠️  No lessons found for preflight checks${colors.reset}`);
+      return;
+    }
+    
+    // Run preflight on all lessons
+    try {
+      const results = await verifyLessonsAssets(
+        allLessons,
+        baseUrl,
+        (current, total, lessonId) => {
+          process.stdout.write(`\r📦 Checking assets: ${current}/${total} (${lessonId})`);
+        }
+      );
+      
+      console.log('\n'); // New line after progress
+      
+      // Convert preflight issues to lint issues
+      for (const [lessonId, result] of Object.entries(results)) {
+        for (const issue of result.issues) {
+          this.addIssue({
+            type: issue.type,
+            category: 'Asset Preflight',
+            file: lessonId,
+            message: `${issue.path}: ${issue.message}`,
+            location: `asset: ${issue.path}`
+          });
+        }
+      }
+      
+      // Print preflight summary
+      const summary = generateSummaryReport(results);
+      console.log(summary);
+      console.log();
+      
+    } catch (error) {
+      console.log(`${colors.red}❌ Preflight checks failed: ${error instanceof Error ? error.message : 'Unknown error'}${colors.reset}\n`);
+      this.addIssue({
+        type: 'error',
+        category: 'Asset Preflight',
+        file: 'preflight',
+        message: `Preflight system error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  }
+
+  /**
    * Run all lint checks
    */
   public async lint(): Promise<number> {
-    console.log(`${colors.blue}🔍 Running content validation...${colors.reset}\n`);
+    const mode = this.runPreflight ? 'validation + preflight' : 'validation';
+    console.log(`${colors.blue}🔍 Running content ${mode}...${colors.reset}\n`);
 
     // Load registries
     this.loadRegistries();
@@ -335,11 +403,16 @@ class ContentLinter {
 
     console.log(`📄 Found ${this.registries.length} registry file(s): ${this.registries.map(r => r.source).join(', ')}\n`);
 
-    // Run checks
+    // Run schema and reference checks
     this.checkUniqueIds();
     this.checkSkillReferences();
     this.checkStandardsFrameworks();
     this.checkLocaleRequirements();
+
+    // Run preflight checks if requested
+    if (this.runPreflight) {
+      await this.runPreflightChecks();
+    }
 
     // Print results
     this.printResults();
@@ -352,7 +425,40 @@ class ContentLinter {
 
 // Main execution
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const linter = new ContentLinter();
+  // Parse command line arguments
+  const args = process.argv.slice(2);
+  const runPreflight = args.includes('--preflight');
+  
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log(`
+${colors.bold}Content Linter CLI${colors.reset}
+
+${colors.blue}Usage:${colors.reset}
+  npm run content:lint                 Basic schema and reference validation
+  npm run content:lint --preflight     Include asset URL and size validation
+
+${colors.blue}Options:${colors.reset}
+  --preflight    Check asset URLs, file sizes, and accessibility
+  --help, -h     Show this help message
+
+${colors.blue}Validation Features:${colors.reset}
+  ✓ JSON schema compliance (RegistryV2)
+  ✓ Unique lesson IDs across all packs
+  ✓ Skill ID reference integrity  
+  ✓ Standards framework existence
+  ✓ Locale requirement compliance
+  ✓ ID format validation
+
+${colors.blue}Preflight Features (--preflight):${colors.reset}
+  ✓ Asset URL accessibility (HTTP 200 check)
+  ✓ File size validation (>1.5MB images, >6MB videos)
+  ✓ Missing caption file detection
+  ✓ Broken asset URL reporting
+    `);
+    process.exit(0);
+  }
+  
+  const linter = new ContentLinter({ preflight: runPreflight });
   
   linter.lint()
     .then(exitCode => process.exit(exitCode))
