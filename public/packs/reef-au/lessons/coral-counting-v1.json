@@ -1,0 +1,64 @@
+{
+  "version": 2,
+  "id": "coral-counting-v1",
+  "biomeId": "ocean",
+  "title": {
+    "en-AU": "Counting Coral"
+  },
+  "summary": {
+    "en-AU": "TODO: Add engaging summary for Counting Coral"
+  },
+  "skills": [
+    "number.counting",
+    "number.recognition"
+  ],
+  "activities": [
+    {
+      "kind": "read",
+      "title": {
+        "en-AU": "TODO: Add engaging introduction title"
+      },
+      "content": {
+        "en-AU": "TODO: Add rich educational content that introduces the concepts. Make it engaging and age-appropriate."
+      },
+      "alt": "Introductory reading content",
+      "ariaLabel": "Introduction to Counting Coral"
+    },
+    {
+      "kind": "quiz",
+      "title": {
+        "en-AU": "TODO: Add practice quiz title"
+      },
+      "questionSetId": "TODO-coral-counting-questions",
+      "alt": "Interactive quiz activity",
+      "ariaLabel": "Practice questions for Counting Coral"
+    },
+    {
+      "kind": "video",
+      "title": {
+        "en-AU": "TODO: Add video lesson title"
+      },
+      "src": "https://example.com/TODO-coral-counting.mp4",
+      "type": "video/mp4",
+      "captions": [
+        {
+          "src": "assets/captions/coral-counting-v1-en-AU.vtt",
+          "srclang": "en-AU",
+          "default": true,
+          "label": "English (Australia)"
+        }
+      ],
+      "transcript": {
+        "text": "TODO: Add video transcript text for accessibility"
+      },
+      "alt": "Educational video content",
+      "ariaLabel": "Video lesson about Counting Coral"
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "TODO-ADD-STANDARD-CODE"
+    }
+  ]
+}
