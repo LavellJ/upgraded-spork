@@ -88,14 +88,25 @@
   --projector-font-scale: 1.0;
   --projector-hide-names: 0;
   
-  /* Semantic Color Tokens - Default Theme */
+  /* Design Token Colors - Light Theme */
+  --bg-page: hsl(43.6364 60% 96%);
+  --bg-card: hsl(0 0% 100%);
+  --fg-default: hsl(30 15% 15%);
+  --fg-muted: hsl(30 10% 45%);
+  --brand: hsl(37.3469 60% 65%);
+  --brand-600: hsl(37.3469 65% 55%);
+  --brand-700: hsl(37.3469 70% 45%);
+  --border: hsl(30 20% 85%);
+  --positive: hsl(142 71% 45%);
+  --warning: hsl(42 97% 51%);
+  --danger: hsl(0 84% 60%);
+  
+  /* Legacy Semantic Color Tokens (preserved for compatibility) */
   --bg-base: hsl(43.6364 60% 95%);
   --bg-subtle: hsl(43.6364 40% 92%);
-  --bg-card: hsl(0 0% 100%);
   --bg-overlay: hsl(0 0% 0% / 0.4);
   --bg-surface: hsl(43.6364 30% 98%);
   --fg-base: hsl(30 15% 15%);
-  --fg-muted: hsl(30 10% 45%);
   --fg-subtle: hsl(30 8% 65%);
   --fg-accent: hsl(203.8863 88.2845% 45%);
   --brand-primary: hsl(37.3469 60% 65%);
@@ -511,4 +522,107 @@ html[data-projector-large-cursor="true"] * {
   animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
+}
+
+/* Dark Theme Overrides */
+[data-theme='dark'] {
+  --background: hsl(0 0% 0%);
+  --foreground: hsl(200 6.6667% 91.1765%);
+  --card: hsl(228 9.8039% 10%);
+  --card-foreground: hsl(0 0% 85.0980%);
+  --popover: hsl(0 0% 0%);
+  --popover-foreground: hsl(200 6.6667% 91.1765%);
+  --primary: hsl(203.7736 87.6033% 52.5490%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(195.0000 15.3846% 94.9020%);
+  --secondary-foreground: hsl(210 25% 7.8431%);
+  --muted: hsl(0 0% 9.4118%);
+  --muted-foreground: hsl(210 3.3898% 46.2745%);
+  --accent: hsl(205.7143 70% 7.8431%);
+  --accent-foreground: hsl(203.7736 87.6033% 52.5490%);
+  --destructive: hsl(356.3033 90.5579% 54.3137%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --input: hsl(207.6923 27.6596% 18.4314%);
+  --ring: hsl(202.8169 89.1213% 53.1373%);
+  
+  /* Design Token Colors - Dark Theme */
+  --bg-page: hsl(0 0% 4%);
+  --bg-card: hsl(228 9.8% 10%);
+  --fg-default: hsl(200 7% 91%);
+  --fg-muted: hsl(210 4% 46%);
+  --brand: hsl(37.3469 60% 70%);
+  --brand-600: hsl(37.3469 65% 60%);
+  --brand-700: hsl(37.3469 70% 50%);
+  --border: hsl(210 5% 15%);
+  --positive: hsl(142 71% 45%);
+  --warning: hsl(42 97% 51%);
+  --danger: hsl(0 84% 60%);
+}
+
+/* Light Theme (data-theme='light' for explicit light mode) */
+[data-theme='light'] {
+  --bg-page: hsl(43.6364 60% 96%);
+  --bg-card: hsl(0 0% 100%);
+  --fg-default: hsl(30 15% 15%);
+  --fg-muted: hsl(30 10% 45%);
+  --brand: hsl(37.3469 60% 65%);
+  --brand-600: hsl(37.3469 65% 55%);
+  --brand-700: hsl(37.3469 70% 45%);
+  --border: hsl(30 20% 85%);
+  --positive: hsl(142 71% 45%);
+  --warning: hsl(42 97% 51%);
+  --danger: hsl(0 84% 60%);
+}
+
+/* High Contrast Theme Variants */
+[data-contrast='high'] {
+  --fg-default: hsl(0 0% 0%);
+  --bg-card: hsl(0 0% 100%);
+  --border: hsl(0 0% 20%);
+}
+
+[data-theme='dark'][data-contrast='high'] {
+  --fg-default: hsl(0 0% 100%);
+  --bg-card: hsl(0 0% 0%);
+  --border: hsl(0 0% 80%);
+}
+
+/* Density Variations */
+[data-density='compact'] {
+  --spacing-unit: 0.75rem;
+}
+
+[data-density='comfortable'] {
+  --spacing-unit: 1rem;
+}
+
+[data-density='compact'] .p-4 {
+  padding: calc(var(--spacing-unit) * 0.75);
+}
+
+[data-density='compact'] .gap-4 {
+  gap: calc(var(--spacing-unit) * 0.75);
+}
+
+[data-density='compact'] .text-lg {
+  font-size: 1rem;
+}
+
+[data-density='compact'] .h-8 {
+  height: 1.75rem;
+}
+
+/* Utility Classes */
+@layer components {
+  .card {
+    @apply rounded-2xl shadow-card bg-bg-card border border-border;
+  }
+  
+  .page-title {
+    @apply text-xl font-semibold tracking-tight;
+  }
+  
+  .subtle {
+    @apply text-sm text-fg-muted;
+  }
 }
