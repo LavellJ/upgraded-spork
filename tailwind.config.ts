@@ -1,21 +1,52 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss'
 
 export default {
-  darkMode: ["class"],
-  content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
+  darkMode: ['class', '[data-theme="dark"]'],
+  content: [
+    './index.html',
+    './client/src/**/*.{ts,tsx,js,jsx}',
+  ],
   theme: {
     extend: {
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-        xl: "1rem",
-        "2xl": "1.25rem",
+        xl: '1rem',
+        '2xl': '1.25rem',
       },
       boxShadow: {
-        card: "0 6px 18px rgba(0,0,0,.06)",
+        card: '0 6px 18px rgba(0,0,0,.06)',
+        'card-dark': '0 6px 18px rgba(0,0,0,.35)',
       },
       colors: {
+        // mapped to CSS variables; do not hardcode in components
+        bg: {
+          page: 'rgb(var(--bg-page))',
+          card: 'rgb(var(--bg-card))',
+          soft: 'rgb(var(--bg-soft))',
+          // Legacy compatibility
+          subtle: 'rgb(var(--bg-soft))',
+        },
+        fg: {
+          DEFAULT: 'rgb(var(--fg-default))',
+          muted: 'rgb(var(--fg-muted))',
+          subtle: 'rgb(var(--fg-subtle))',
+          inverse: 'rgb(var(--fg-inverse))',
+          // Legacy compatibility
+          default: 'rgb(var(--fg-default))',
+        },
+        brand: {
+          DEFAULT: 'rgb(var(--brand))',
+          600: 'rgb(var(--brand-600))',
+          700: 'rgb(var(--brand-700))',
+        },
+        border: 'rgb(var(--border))',
+        positive: 'rgb(var(--positive))',
+        warning: 'rgb(var(--warning))',
+        danger: 'rgb(var(--danger))',
+        
+        // Legacy shadcn/ui colors for compatibility
         background: "var(--background)",
         foreground: "var(--foreground)",
         card: {
@@ -55,59 +86,6 @@ export default {
           "4": "var(--chart-4)",
           "5": "var(--chart-5)",
         },
-        sidebar: {
-          DEFAULT: "var(--sidebar-background)",
-          foreground: "var(--sidebar-foreground)",
-          primary: "var(--sidebar-primary)",
-          "primary-foreground": "var(--sidebar-primary-foreground)",
-          accent: "var(--sidebar-accent)",
-          "accent-foreground": "var(--sidebar-accent-foreground)",
-          border: "var(--sidebar-border)",
-          ring: "var(--sidebar-ring)",
-        },
-        // Alto's Odyssey inspired colors
-        'sunset-orange': 'var(--sunset-orange)',
-        'warm-orange': 'var(--warm-orange)',
-        'deep-purple': 'var(--deep-purple)',
-        'soft-purple': 'var(--soft-purple)',
-        'sky-blue': 'var(--sky-blue)',
-        'ocean-blue': 'var(--ocean-blue)',
-        'sand-light': 'var(--sand-light)',
-        'sand-dark': 'var(--sand-dark)',
-        'success-green': 'var(--success-green)',
-        'accent-teal': 'var(--accent-teal)',
-        'charcoal': 'var(--charcoal)',
-        'soft-white': 'var(--soft-white)',
-        'evening-dark': 'var(--evening-dark)',
-        // Design Token Colors
-        bg: {
-          page: 'var(--bg-page)',
-          card: 'var(--bg-card)',
-        },
-        fg: {
-          default: 'var(--fg-default)',
-          muted: 'var(--fg-muted)',
-        },
-        brand: {
-          DEFAULT: 'var(--brand)',
-          600: 'var(--brand-600)',
-          700: 'var(--brand-700)',
-        },
-        border: 'var(--border)',
-        positive: 'var(--positive)',
-        warning: 'var(--warning)',
-        danger: 'var(--danger)',
-        // Legacy semantic color tokens (preserved for compatibility)
-        'bg-base': 'var(--bg-base)',
-        'bg-subtle': 'var(--bg-subtle)',
-        'bg-overlay': 'var(--bg-overlay)',
-        'bg-surface': 'var(--bg-surface)',
-        'fg-base': 'var(--fg-base)',
-        'fg-subtle': 'var(--fg-subtle)',
-        'fg-accent': 'var(--fg-accent)',
-        'brand-primary': 'var(--brand-primary)',
-        'brand-secondary': 'var(--brand-secondary)',
-        'brand-accent': 'var(--brand-accent)',
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
@@ -126,20 +104,12 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
         "float": {
           "0%, 100%": { transform: "translateY(0px) rotate(0deg)" },
@@ -162,5 +132,17 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
-} satisfies Config;
+  plugins: [
+    require("tailwindcss-animate"), 
+    require("@tailwindcss/typography"),
+    function ({ addUtilities }) {
+      addUtilities({
+        '.focus-ring': {
+          outline: '2px solid transparent',
+          outlineOffset: '2px',
+          boxShadow: '0 0 0 3px rgba(34, 197, 94, .45)',
+        },
+      })
+    },
+  ],
+} satisfies Config

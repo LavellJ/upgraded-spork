@@ -41,6 +41,9 @@ import { Classes } from '../guide/Classes';
 import { Dashboard } from '../guide/Dashboard';
 import { FeedbackPanel } from '../feedback/FeedbackPanel';
 
+// Lazy import Appearance settings
+const Appearance = lazy(() => import('../settings/Appearance'));
+
 // Import TriageBoard for development mode
 import { TriageBoard } from '../guide/dev/TriageBoard';
 
@@ -52,7 +55,7 @@ const SUBJECTS = {
 };
 
 // Define tab types and constants
-const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'content', 'roster', 'classes', 'dashboard', 'privacy', 'consent', 'audit', 'studio', 'pilot', 'funnel', 'qa', 'reports', 'dev'] as const;
+const TABS = ['overview', 'quickstart', 'timeline', 'assignments', 'content', 'roster', 'classes', 'dashboard', 'privacy', 'appearance', 'consent', 'audit', 'studio', 'pilot', 'funnel', 'qa', 'reports', 'dev'] as const;
 type Tab = typeof TABS[number];
 
 // Progress encode/decode helpers (URL-safe Base64)
@@ -567,6 +570,23 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
               <button 
                 type="button"
                 role="tab"
+                aria-selected={activeTab === 'appearance'}
+                aria-controls="tab-content-appearance"
+                id="tab-appearance"
+                data-tab="appearance"
+                onClick={handleTabClick}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition ease-out ${
+                  activeTab === 'appearance' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white border hover:bg-stone-50'
+                }`}
+                data-testid="tab-appearance"
+              >
+                🎨 Appearance
+              </button>
+              <button 
+                type="button"
+                role="tab"
                 aria-selected={activeTab === 'consent'}
                 aria-controls="tab-content-consent"
                 id="tab-consent"
@@ -926,6 +946,18 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 <CloudSyncSettings />
                 <PrefetchSettings />
                 <InsightsCard timeRange={30} />
+              </div>
+            ) : activeTab === 'appearance' ? (
+              <div 
+                id="tab-content-appearance" 
+                role="region" 
+                aria-live="polite" 
+                aria-labelledby="tab-appearance"
+                className="max-h-96 overflow-y-auto space-y-4"
+              >
+                <Suspense fallback={<div className="p-4 subtle">Loading…</div>}>
+                  <Appearance />
+                </Suspense>
               </div>
             ) : activeTab === 'consent' ? (
               <div 
