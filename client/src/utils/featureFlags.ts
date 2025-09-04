@@ -41,24 +41,40 @@ export function isIssueReporterEnabled(): boolean {
  * Check if share prompts are enabled
  */
 export function isSharePromptEnabled(): boolean {
-  // Default to enabled in development, disabled in production
-  if (process.env.NODE_ENV !== 'development') {
-    return false;
-  }
-  
-  return localStorage.getItem('qi.features.enableSharePrompt') !== 'false';
+  // Default to disabled for pilot
+  return localStorage.getItem('qi.features.enableSharePrompt') === 'true';
 }
 
 /**
  * Check if rate prompts are enabled
  */
 export function isRatePromptEnabled(): boolean {
-  // Default to enabled in development, disabled in production
+  // Default to disabled for pilot
+  return localStorage.getItem('qi.features.enableRatePrompt') === 'true';
+}
+
+/**
+ * Check if co-teacher invites are enabled
+ */
+export function isCoTeacherInvitesEnabled(): boolean {
+  // Default to enabled in development, disabled in production unless explicitly enabled
   if (process.env.NODE_ENV !== 'development') {
-    return false;
+    return localStorage.getItem('qi.features.enableCoTeacherInvites') === 'true';
   }
   
-  return localStorage.getItem('qi.features.enableRatePrompt') !== 'false';
+  return localStorage.getItem('qi.features.enableCoTeacherInvites') !== 'false';
+}
+
+/**
+ * Check if referral links are enabled
+ */
+export function isReferralsEnabled(): boolean {
+  // Default to enabled in development, disabled in production unless explicitly enabled
+  if (process.env.NODE_ENV !== 'development') {
+    return localStorage.getItem('qi.features.enableReferrals') === 'true';
+  }
+  
+  return localStorage.getItem('qi.features.enableReferrals') !== 'false';
 }
 
 /**
