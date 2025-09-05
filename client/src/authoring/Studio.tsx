@@ -15,7 +15,7 @@ import {
   ChevronRight, ChevronDown, ArrowLeft, ArrowRight,
   Download, Upload, RefreshCw, Code2, FileJson,
   Settings, Info, BookOpen, Layers, Tag,
-  Clock, MapPin, Star, Users, Palette, Folder
+  Clock, MapPin, Star, Users, Palette, Folder, Plus
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -40,6 +40,8 @@ import {
   type TuningNote 
 } from '../authoring/tuning';
 import { TuningPanel } from './TuningPanel';
+import { makeLessonFromBlueprint, type LessonBlueprintInput } from './LessonBlueprint';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 
 interface ContentStudioProps {
   selectedLessonId?: string;
@@ -83,6 +85,12 @@ export function ContentStudio({ selectedLessonId, onLessonChange, onClose }: Con
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [assetInfo, setAssetInfo] = useState<Record<string, AssetInfo>>({});
+  const [showTemplateDialog, setShowTemplateDialog] = useState(false);
+  const [templateForm, setTemplateForm] = useState<Partial<LessonBlueprintInput>>({
+    biome: 'reef',
+    whyThis: '',
+    nextStep: ''
+  });
   
   // Refs for keyboard navigation
   const listRef = useRef<HTMLDivElement>(null);
@@ -248,6 +256,54 @@ export function ContentStudio({ selectedLessonId, onLessonChange, onClose }: Con
     console.log('Opening transcript for', selectedLesson?.id);
   };
 
+  const handleCreateTemplate = () => {
+    try {
+      if (!templateForm.id || !templateForm.title || !templateForm.stdTag) {
+        alert('Please fill in all required fields');
+        return;
+      }
+
+      const blueprint: LessonBlueprintInput = {
+        id: templateForm.id!,
+        title: templateForm.title!,
+        stdTag: templateForm.stdTag!,
+        biome: templateForm.biome || 'reef',
+        teach: templateForm.teach || 'Watch this video to learn the concept',
+        steps: templateForm.steps || [
+          { instruction: 'Step 1', question: 'Practice question 1', answer: 'Answer 1', hints: ['Hint 1'] },
+          { instruction: 'Step 2', question: 'Practice question 2', answer: 'Answer 2', hints: ['Hint 2'] },
+          { instruction: 'Step 3', question: 'Practice question 3', answer: 'Answer 3', hints: ['Hint 3'] }
+        ],
+        bank: templateForm.bank || [
+          { question: 'Question 1', options: ['Option A', 'Option B', 'Option C'], answer: 'Option A' },
+          { question: 'Question 2', options: ['Option A', 'Option B', 'Option C'], answer: 'Option B' }
+        ],
+        exit: templateForm.exit || { question: 'Exit question', options: ['Yes', 'No'], answer: 'Yes' },
+        whyThis: templateForm.whyThis || 'This skill is important because...',
+        nextStep: templateForm.nextStep || 'Next, you can practice more of this skill'
+      };
+
+      const lesson = makeLessonFromBlueprint(blueprint);
+      
+      // In a real implementation, this would save to the backend
+      alert(`Template lesson created successfully!\n\nID: ${lesson.id}\nTitle: ${lesson.title['en-AU']}\nBiome: ${lesson.biomeId}\n\nIn development, this would be saved to the appropriate pack folder.`);
+      
+      setShowTemplateDialog(false);
+      setTemplateForm({
+        biome: 'reef',
+        whyThis: '',
+        nextStep: ''
+      });
+      
+      // Auto-select the new lesson if it was successfully added
+      if (lesson) {
+        handleLessonSelect(lesson.id);
+      }
+    } catch (error) {
+      alert(`Error creating template: ${error.message}`);
+    }
+  };
+
   const skills = getSkills();
   const selectedLessonItem = lessonList.find(l => l.id === selectedLesson?.id);
 
@@ -342,6 +398,137 @@ export function ContentStudio({ selectedLessonId, onLessonChange, onClose }: Con
                   ))}
                 </SelectContent>
               </Select>
+              
+              {/* Create from Template Button */}
+              <Dialog open={showTemplateDialog} onOpenChange={setShowTemplateDialog}>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full"
+                    data-testid="button-create-template"
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    Create from Template
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Create Lesson from Template</DialogTitle>
+                    <DialogDescription>
+                      Create a new lesson using the blueprint template system. Fill in the basic information and the system will generate a complete lesson structure.
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <div className="space-y-4 py-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Lesson ID *</label>
+                        <Input
+                          placeholder="e.g., math_frac_add_3"
+                          value={templateForm.id || ''}
+                          onChange={(e) => setTemplateForm(prev => ({ ...prev, id: e.target.value }))}
+                          data-testid="input-template-id"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Title *</label>
+                        <Input
+                          placeholder="e.g., Adding Fractions"
+                          value={templateForm.title || ''}
+                          onChange={(e) => setTemplateForm(prev => ({ ...prev, title: e.target.value }))}
+                          data-testid="input-template-title"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Standard Tag *</label>
+                        <Input
+                          placeholder="e.g., M.FRAC.ADD.3"
+                          value={templateForm.stdTag || ''}
+                          onChange={(e) => setTemplateForm(prev => ({ ...prev, stdTag: e.target.value }))}
+                          data-testid="input-template-std-tag"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Biome</label>
+                        <Select 
+                          value={templateForm.biome || 'reef'} 
+                          onValueChange={(value) => setTemplateForm(prev => ({ ...prev, biome: value as 'reef' | 'alpine' | 'forest' | 'desert' }))}
+                        >
+                          <SelectTrigger data-testid="select-template-biome">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="reef">🪸 Reef (Science)</SelectItem>
+                            <SelectItem value="alpine">⛰️ Alpine (Math)</SelectItem>
+                            <SelectItem value="forest">🌲 Forest (English)</SelectItem>
+                            <SelectItem value="desert">🏜️ Desert (All subjects)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Teaching Video Description</label>
+                      <Input
+                        placeholder="Brief description of the teaching video content"
+                        value={templateForm.teach || ''}
+                        onChange={(e) => setTemplateForm(prev => ({ ...prev, teach: e.target.value }))}
+                        data-testid="input-template-teach"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Why This Matters</label>
+                      <Input
+                        placeholder="Explain the importance of this skill"
+                        value={templateForm.whyThis || ''}
+                        onChange={(e) => setTemplateForm(prev => ({ ...prev, whyThis: e.target.value }))}
+                        data-testid="input-template-why-this"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Next Steps</label>
+                      <Input
+                        placeholder="What students can do next"
+                        value={templateForm.nextStep || ''}
+                        onChange={(e) => setTemplateForm(prev => ({ ...prev, nextStep: e.target.value }))}
+                        data-testid="input-template-next-step"
+                      />
+                    </div>
+                    
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <div className="flex items-center gap-2">
+                        <Info className="w-4 h-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-800">Template Information</span>
+                      </div>
+                      <p className="text-xs text-blue-700 mt-1">
+                        The template system will automatically generate guided practice steps, independent practice questions, and exit tickets based on your inputs. You can customize these later in the lesson editor.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowTemplateDialog(false)}
+                      data-testid="button-template-cancel"
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={handleCreateTemplate}
+                      data-testid="button-template-create"
+                    >
+                      Create Lesson
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
 

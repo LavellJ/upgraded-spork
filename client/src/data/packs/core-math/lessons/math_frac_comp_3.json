@@ -1,0 +1,339 @@
+{
+  "version": 2,
+  "id": "math_frac_comp_3",
+  "biomeId": "alpine",
+  "title": {
+    "en-AU": "Compare Fractions"
+  },
+  "summary": {
+    "en-AU": "Learn Compare Fractions with interactive practice and assessment."
+  },
+  "skills": ["M.FRAC.COMP.3"],
+  "activities": [
+    {
+      "kind": "teach_block",
+      "id": "teach_xP8mNq3r",
+      "title": {
+        "en-AU": "Learn: Compare Fractions"
+      },
+      "video": {
+        "src": "https://example.com/videos/alpine/math_frac_comp_3.mp4",
+        "duration": 90,
+        "captions": [
+          {
+            "src": "https://example.com/videos/alpine/math_frac_comp_3.vtt",
+            "srclang": "en-AU",
+            "label": "English (Australia)",
+            "default": true
+          }
+        ]
+      },
+      "transcript": {
+        "text": {
+          "en-AU": "Today we'll learn how to compare fractions! When fractions have the same denominator, we only need to compare the numerators. But when they have different denominators, we need to find a common way to compare them using visual models and equivalent fractions."
+        }
+      },
+      "alt": "Instructional video for Compare Fractions",
+      "ariaLabel": "Interactive video player: Compare Fractions"
+    },
+    {
+      "kind": "guided_practice",
+      "id": "guided_bH5nKx7z",
+      "title": {
+        "en-AU": "Practice: Compare Fractions"
+      },
+      "steps": [
+        {
+          "id": "step_1_mT9rQw8x",
+          "instruction": {
+            "en-AU": "Step 1"
+          },
+          "question": {
+            "en-AU": "Which is larger: 2/4 or 1/4?"
+          },
+          "correctAnswer": "2/4",
+          "hints": [
+            {
+              "en-AU": "When the bottom numbers are the same, compare the top numbers."
+            },
+            {
+              "en-AU": "2 is greater than 1, so 2/4 is larger than 1/4."
+            }
+          ]
+        },
+        {
+          "id": "step_2_pL6kRy9n",
+          "instruction": {
+            "en-AU": "Step 2"
+          },
+          "question": {
+            "en-AU": "Compare 1/2 and 1/3. Which is larger?"
+          },
+          "correctAnswer": "1/2",
+          "hints": [
+            {
+              "en-AU": "When the top numbers are the same, the fraction with the smaller bottom number is larger."
+            },
+            {
+              "en-AU": "Think of pizza slices: 1 out of 2 pieces is bigger than 1 out of 3 pieces."
+            }
+          ]
+        },
+        {
+          "id": "step_3_vK4mLx2q",
+          "instruction": {
+            "en-AU": "Step 3"
+          },
+          "question": {
+            "en-AU": "Using the symbols <, >, or =, compare: 3/6 ___ 1/2"
+          },
+          "correctAnswer": "=",
+          "hints": [
+            {
+              "en-AU": "First, check if these fractions are equivalent."
+            },
+            {
+              "en-AU": "3/6 simplifies to 1/2, so they are equal."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "independent_practice",
+      "id": "independent_jN8rTx5m",
+      "title": {
+        "en-AU": "Apply: Compare Fractions"
+      },
+      "questionBank": [
+        {
+          "id": "bank_1_qW7rTy3k",
+          "question": {
+            "en-AU": "Which fraction is larger: 3/8 or 5/8?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "5/8"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "3/8"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "They are equal"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_2_eR8mNp6x",
+          "question": {
+            "en-AU": "Which fraction is smaller: 1/3 or 1/5?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "1/5"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "1/3"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "They are equal"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_3_iU5jVw2q",
+          "question": {
+            "en-AU": "Compare: 2/3 ___ 4/6"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "="
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "<"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": ">"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_4_oP9lBx5n",
+          "question": {
+            "en-AU": "Which is the largest fraction: 2/5, 3/5, or 1/5?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "3/5"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "2/5"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "1/5"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_5_mK7qCy8r",
+          "question": {
+            "en-AU": "Order from smallest to largest: 1/4, 1/2, 1/8"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "1/8, 1/4, 1/2"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "1/2, 1/4, 1/8"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "1/4, 1/8, 1/2"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        }
+      ],
+      "randomize": true,
+      "questionsToShow": 5,
+      "passingScore": 0.7
+    },
+    {
+      "kind": "exit_ticket",
+      "id": "exit_tA3mQx6p",
+      "title": {
+        "en-AU": "Check: Compare Fractions"
+      },
+      "questions": [
+        {
+          "id": "exit_1_bH8nRz4k",
+          "type": "multiple_choice",
+          "question": {
+            "en-AU": "Sarah ate 3/8 of a pizza and Tom ate 5/8 of the same pizza. Who ate more?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "Tom"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "Sarah"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "They ate the same amount"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Excellent understanding!"
+          }
+        }
+      ],
+      "masteryThreshold": 0.8,
+      "compassLogic": {
+        "onMastery": {
+          "nextStep": "journal_skill_practice",
+          "skillId": "M.FRAC.COMP.3",
+          "rationale": {
+            "en-AU": "Understanding fraction comparison is essential for building strong math skills and will help you in more advanced topics."
+          }
+        },
+        "onNeedsPractice": {
+          "nextStep": "journal_review",
+          "skillId": "M.FRAC.COMP.3",
+          "rationale": {
+            "en-AU": "Let's practice this concept more to build confidence."
+          }
+        }
+      }
+    }
+  ],
+  "standards": [
+    {
+      "framework": "australian-curriculum",
+      "code": "M.FRAC.COMP.3"
+    }
+  ],
+  "meta": {
+    "estimatedDuration": 15,
+    "difficultyLevel": "grade-3",
+    "prerequisiteSkills": [],
+    "learningObjectives": ["Understanding fraction comparison is essential for building strong math skills and will help you in more advanced topics."],
+    "scoutCues": {
+      "celebration": "Fantastic work on mastering this concept!",
+      "encouragement": "You're doing great! Keep practicing.",
+      "nextSteps": "Understanding fraction comparison is essential for building strong math skills and will help you in more advanced topics."
+    }
+  }
+}

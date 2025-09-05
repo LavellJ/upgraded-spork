@@ -1,0 +1,350 @@
+{
+  "version": 2,
+  "id": "eng_read_detail_3",
+  "biomeId": "desert",
+  "title": {
+    "en-AU": "Finding Key Details"
+  },
+  "summary": {
+    "en-AU": "Learn Finding Key Details with interactive practice and assessment."
+  },
+  "skills": ["E.READ.DETAIL.3"],
+  "activities": [
+    {
+      "kind": "teach_block",
+      "id": "teach_aB3dEf7g",
+      "title": {
+        "en-AU": "Learn: Finding Key Details"
+      },
+      "video": {
+        "src": "https://example.com/videos/desert/eng_read_detail_3.mp4",
+        "duration": 90,
+        "captions": [
+          {
+            "src": "https://example.com/videos/desert/eng_read_detail_3.vtt",
+            "srclang": "en-AU",
+            "label": "English (Australia)",
+            "default": true
+          }
+        ]
+      },
+      "transcript": {
+        "text": {
+          "en-AU": "Today we'll learn how to find key details in a text! Key details are important facts that support the main idea. They help us understand and remember what we read. We'll practice spotting these important details and using them to answer questions."
+        }
+      },
+      "alt": "Instructional video for Finding Key Details",
+      "ariaLabel": "Interactive video player: Finding Key Details"
+    },
+    {
+      "kind": "guided_practice",
+      "id": "guided_cD5fGh9i",
+      "title": {
+        "en-AU": "Practice: Finding Key Details"
+      },
+      "steps": [
+        {
+          "id": "step_1_eE7gIj0k",
+          "instruction": {
+            "en-AU": "Step 1"
+          },
+          "question": {
+            "en-AU": "What are key details in a text?"
+          },
+          "correctAnswer": "Important facts that support the main idea",
+          "hints": [
+            {
+              "en-AU": "Key details help explain and support the main message."
+            },
+            {
+              "en-AU": "They are specific facts, not opinions or small unimportant details."
+            }
+          ],
+          "branchingPaths": {
+            "key_detail_confusion": {
+              "condition": "incorrect",
+              "remediation": {
+                "en-AU": "Let's try again. Key details help explain and support the main message."
+              },
+              "nextHint": {
+                "en-AU": "They are specific facts, not opinions or small unimportant details."
+              }
+            }
+          }
+        },
+        {
+          "id": "step_2_gF9hKl2m",
+          "instruction": {
+            "en-AU": "Step 2"
+          },
+          "question": {
+            "en-AU": "Read: 'Bees are important insects. They help plants grow by moving pollen. Bees make honey in their hives.' What is a key detail?"
+          },
+          "correctAnswer": "They help plants grow by moving pollen",
+          "hints": [
+            {
+              "en-AU": "Look for specific facts that tell us more about bees."
+            },
+            {
+              "en-AU": "This detail explains why bees are important."
+            }
+          ]
+        },
+        {
+          "id": "step_3_iH1jMn4o",
+          "instruction": {
+            "en-AU": "Step 3"
+          },
+          "question": {
+            "en-AU": "Which question helps you find key details?"
+          },
+          "correctAnswer": "What specific facts support the main idea?",
+          "hints": [
+            {
+              "en-AU": "Look for questions that ask about specific information."
+            },
+            {
+              "en-AU": "Key details answer who, what, when, where, why, and how questions."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "independent_practice",
+      "id": "independent_kJ3lOp6q",
+      "title": {
+        "en-AU": "Apply: Finding Key Details"
+      },
+      "questionBank": [
+        {
+          "id": "bank_1_mK5nQr8s",
+          "question": {
+            "en-AU": "Read: 'Penguins live in cold places. They have thick feathers to stay warm. Penguins eat fish and swim very well.' Which is a key detail?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "They have thick feathers to stay warm"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "Penguins are cute"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "I like penguins"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_2_nL7oSt0u",
+          "question": {
+            "en-AU": "Read: 'The library is a quiet place to read. It has thousands of books. People can borrow books for free.' What key detail tells about the cost?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "People can borrow books for free"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "The library is quiet"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "It has thousands of books"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_3_oM9pUv2w",
+          "question": {
+            "en-AU": "Read: 'Sunflowers are tall, yellow flowers. They can grow up to 3 metres high. Sunflowers always face the sun.' Which detail tells about their height?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "They can grow up to 3 metres high"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "They are yellow flowers"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "They always face the sun"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_4_pN1qWx4y",
+          "question": {
+            "en-AU": "Read: 'Kangaroos are special animals from Australia. They hop instead of running. Baby kangaroos are called joeys.' What detail is about baby kangaroos?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "Baby kangaroos are called joeys"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "They are from Australia"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "They hop instead of running"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_5_qO3rYz6a",
+          "question": {
+            "en-AU": "Read: 'Butterflies go through amazing changes. They start as caterpillars, then become pupae in cocoons, and finally emerge as butterflies.' Which detail explains the middle stage?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "They become pupae in cocoons"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "They start as caterpillars"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "They emerge as butterflies"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        }
+      ],
+      "randomize": true,
+      "questionsToShow": 5,
+      "passingScore": 0.7
+    },
+    {
+      "kind": "exit_ticket",
+      "id": "exit_rP5sAb8c",
+      "title": {
+        "en-AU": "Check: Finding Key Details"
+      },
+      "questions": [
+        {
+          "id": "exit_1_sQ7tCd0e",
+          "type": "multiple_choice",
+          "question": {
+            "en-AU": "Read: 'Koalas sleep 18-22 hours each day. They eat eucalyptus leaves. Koalas live in eucalyptus trees in Australia.' Which key detail tells us about their diet?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "They eat eucalyptus leaves"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "They sleep 18-22 hours each day"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "They live in Australia"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Excellent understanding!"
+          }
+        }
+      ],
+      "masteryThreshold": 0.8,
+      "compassLogic": {
+        "onMastery": {
+          "nextStep": "journal_skill_practice",
+          "skillId": "E.READ.DETAIL.3",
+          "rationale": {
+            "en-AU": "Strong reading skills are essential for success across all subjects."
+          }
+        },
+        "onNeedsPractice": {
+          "nextStep": "journal_review",
+          "skillId": "E.READ.DETAIL.3",
+          "rationale": {
+            "en-AU": "Let's practice this concept more to build confidence."
+          }
+        }
+      }
+    }
+  ],
+  "standards": [
+    {
+      "framework": "australian-curriculum",
+      "code": "E.READ.DETAIL.3"
+    }
+  ],
+  "meta": {
+    "estimatedDuration": 15,
+    "difficultyLevel": "grade-3",
+    "prerequisiteSkills": [],
+    "learningObjectives": ["Strong reading skills are essential for success across all subjects."],
+    "scoutCues": {
+      "celebration": "Fantastic work on mastering this concept!",
+      "encouragement": "You're doing great! Keep practicing.",
+      "nextSteps": "Strong reading skills are essential for success across all subjects."
+    }
+  }
+}

@@ -1,0 +1,339 @@
+{
+  "version": 2,
+  "id": "math_num_mul_3",
+  "biomeId": "forest",
+  "title": {
+    "en-AU": "Multiplication as Equal Groups"
+  },
+  "summary": {
+    "en-AU": "Learn Multiplication as Equal Groups with interactive practice and assessment."
+  },
+  "skills": ["M.NUM.MUL.3"],
+  "activities": [
+    {
+      "kind": "teach_block",
+      "id": "teach_yQ9nPr4s",
+      "title": {
+        "en-AU": "Learn: Multiplication as Equal Groups"
+      },
+      "video": {
+        "src": "https://example.com/videos/forest/math_num_mul_3.mp4",
+        "duration": 90,
+        "captions": [
+          {
+            "src": "https://example.com/videos/forest/math_num_mul_3.vtt",
+            "srclang": "en-AU",
+            "label": "English (Australia)",
+            "default": true
+          }
+        ]
+      },
+      "transcript": {
+        "text": {
+          "en-AU": "Welcome to learning about multiplication! Multiplication is a way of adding equal groups together quickly. When we see 3 × 4, it means we have 3 groups with 4 items in each group. Let's explore how to visualize and solve multiplication problems using equal groups."
+        }
+      },
+      "alt": "Instructional video for Multiplication as Equal Groups",
+      "ariaLabel": "Interactive video player: Multiplication as Equal Groups"
+    },
+    {
+      "kind": "guided_practice",
+      "id": "guided_cI6oLy8a",
+      "title": {
+        "en-AU": "Practice: Multiplication as Equal Groups"
+      },
+      "steps": [
+        {
+          "id": "step_1_nU0sRx9b",
+          "instruction": {
+            "en-AU": "Step 1"
+          },
+          "question": {
+            "en-AU": "Look at 4 groups with 3 apples in each group. What multiplication sentence represents this?"
+          },
+          "correctAnswer": "4 × 3",
+          "hints": [
+            {
+              "en-AU": "Count the number of groups first, then the number in each group."
+            },
+            {
+              "en-AU": "4 groups × 3 apples in each group = 4 × 3."
+            }
+          ]
+        },
+        {
+          "id": "step_2_pV1tSy0c",
+          "instruction": {
+            "en-AU": "Step 2"
+          },
+          "question": {
+            "en-AU": "What does 5 × 2 mean in words?"
+          },
+          "correctAnswer": "5 groups of 2",
+          "hints": [
+            {
+              "en-AU": "The first number tells us how many groups we have."
+            },
+            {
+              "en-AU": "The second number tells us how many are in each group."
+            }
+          ]
+        },
+        {
+          "id": "step_3_qW2uTz1d",
+          "instruction": {
+            "en-AU": "Step 3"
+          },
+          "question": {
+            "en-AU": "Calculate 3 × 6 by adding equal groups."
+          },
+          "correctAnswer": "18",
+          "hints": [
+            {
+              "en-AU": "Add 6 + 6 + 6 (three groups of 6)."
+            },
+            {
+              "en-AU": "6 + 6 + 6 = 18, so 3 × 6 = 18."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "independent_practice",
+      "id": "independent_rX3vUz6o",
+      "title": {
+        "en-AU": "Apply: Multiplication as Equal Groups"
+      },
+      "questionBank": [
+        {
+          "id": "bank_1_sY4wVa7p",
+          "question": {
+            "en-AU": "What is 4 × 5?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "20"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "9"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "45"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_2_tZ5xWb8q",
+          "question": {
+            "en-AU": "Which shows 6 groups of 2?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "6 × 2"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "2 × 6"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "6 + 2"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_3_uA6yXc9r",
+          "question": {
+            "en-AU": "Calculate: 2 × 8"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "16"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "10"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "28"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_4_vB7zYd0s",
+          "question": {
+            "en-AU": "There are 7 rows of flowers with 3 flowers in each row. How many flowers total?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "21"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "10"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "73"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_5_wC8aZe1t",
+          "question": {
+            "en-AU": "What is 9 × 1?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "9"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "0"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "10"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        }
+      ],
+      "randomize": true,
+      "questionsToShow": 5,
+      "passingScore": 0.7
+    },
+    {
+      "kind": "exit_ticket",
+      "id": "exit_xD9bAf2u",
+      "title": {
+        "en-AU": "Check: Multiplication as Equal Groups"
+      },
+      "questions": [
+        {
+          "id": "exit_1_yE0cBg3v",
+          "type": "multiple_choice",
+          "question": {
+            "en-AU": "A teacher arranges chairs in 5 rows with 4 chairs in each row. How many chairs are there in total?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "20"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "9"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "54"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Excellent understanding!"
+          }
+        }
+      ],
+      "masteryThreshold": 0.8,
+      "compassLogic": {
+        "onMastery": {
+          "nextStep": "journal_skill_practice",
+          "skillId": "M.NUM.MUL.3",
+          "rationale": {
+            "en-AU": "Understanding multiplication as equal groups is essential for building strong math skills and will help you in more advanced topics."
+          }
+        },
+        "onNeedsPractice": {
+          "nextStep": "journal_review",
+          "skillId": "M.NUM.MUL.3",
+          "rationale": {
+            "en-AU": "Let's practice this concept more to build confidence."
+          }
+        }
+      }
+    }
+  ],
+  "standards": [
+    {
+      "framework": "australian-curriculum",
+      "code": "M.NUM.MUL.3"
+    }
+  ],
+  "meta": {
+    "estimatedDuration": 15,
+    "difficultyLevel": "grade-3",
+    "prerequisiteSkills": [],
+    "learningObjectives": ["Understanding multiplication as equal groups is essential for building strong math skills and will help you in more advanced topics."],
+    "scoutCues": {
+      "celebration": "Fantastic work on mastering this concept!",
+      "encouragement": "You're doing great! Keep practicing.",
+      "nextSteps": "Understanding multiplication as equal groups is essential for building strong math skills and will help you in more advanced topics."
+    }
+  }
+}

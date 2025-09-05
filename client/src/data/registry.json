@@ -74,6 +74,186 @@
         "estimatedDuration": 15,
         "difficultyLevel": "year3-4"
       }
+    },
+    {
+      "version": 2,
+      "id": "math_frac_equiv_3",
+      "biomeId": "reef",
+      "title": {
+        "en-AU": "Fraction Equivalence"
+      },
+      "summary": {
+        "en-AU": "Learn Fraction Equivalence with interactive practice and assessment."
+      },
+      "skills": ["M.FRAC.EQ.3"],
+      "activities": [
+        {
+          "kind": "hero_lesson",
+          "packId": "core-math",
+          "lessonId": "math_frac_equiv_3"
+        }
+      ],
+      "standards": [
+        {
+          "framework": "australian-curriculum",
+          "code": "M.FRAC.EQ.3"
+        }
+      ],
+      "meta": {
+        "isHeroLesson": true,
+        "estimatedDuration": 15,
+        "difficultyLevel": "grade-3"
+      }
+    },
+    {
+      "version": 2,
+      "id": "math_frac_comp_3",
+      "biomeId": "alpine",
+      "title": {
+        "en-AU": "Compare Fractions"
+      },
+      "summary": {
+        "en-AU": "Learn Compare Fractions with interactive practice and assessment."
+      },
+      "skills": ["M.FRAC.COMP.3"],
+      "activities": [
+        {
+          "kind": "hero_lesson",
+          "packId": "core-math",
+          "lessonId": "math_frac_comp_3"
+        }
+      ],
+      "standards": [
+        {
+          "framework": "australian-curriculum",
+          "code": "M.FRAC.COMP.3"
+        }
+      ],
+      "meta": {
+        "isHeroLesson": true,
+        "estimatedDuration": 15,
+        "difficultyLevel": "grade-3"
+      }
+    },
+    {
+      "version": 2,
+      "id": "math_num_mul_3",
+      "biomeId": "forest",
+      "title": {
+        "en-AU": "Multiplication as Equal Groups"
+      },
+      "summary": {
+        "en-AU": "Learn Multiplication as Equal Groups with interactive practice and assessment."
+      },
+      "skills": ["M.NUM.MUL.3"],
+      "activities": [
+        {
+          "kind": "hero_lesson",
+          "packId": "core-math",
+          "lessonId": "math_num_mul_3"
+        }
+      ],
+      "standards": [
+        {
+          "framework": "australian-curriculum",
+          "code": "M.NUM.MUL.3"
+        }
+      ],
+      "meta": {
+        "isHeroLesson": true,
+        "estimatedDuration": 15,
+        "difficultyLevel": "grade-3"
+      }
+    },
+    {
+      "version": 2,
+      "id": "eng_read_main_3",
+      "biomeId": "desert",
+      "title": {
+        "en-AU": "Finding Main Ideas"
+      },
+      "summary": {
+        "en-AU": "Learn Finding Main Ideas with interactive practice and assessment."
+      },
+      "skills": ["E.READ.MAIN.3"],
+      "activities": [
+        {
+          "kind": "hero_lesson",
+          "packId": "core-english",
+          "lessonId": "eng_read_main_3"
+        }
+      ],
+      "standards": [
+        {
+          "framework": "australian-curriculum",
+          "code": "E.READ.MAIN.3"
+        }
+      ],
+      "meta": {
+        "isHeroLesson": true,
+        "estimatedDuration": 15,
+        "difficultyLevel": "grade-3"
+      }
+    },
+    {
+      "version": 2,
+      "id": "eng_read_detail_3",
+      "biomeId": "desert",
+      "title": {
+        "en-AU": "Finding Key Details"
+      },
+      "summary": {
+        "en-AU": "Learn Finding Key Details with interactive practice and assessment."
+      },
+      "skills": ["E.READ.DETAIL.3"],
+      "activities": [
+        {
+          "kind": "hero_lesson",
+          "packId": "core-english",
+          "lessonId": "eng_read_detail_3"
+        }
+      ],
+      "standards": [
+        {
+          "framework": "australian-curriculum",
+          "code": "E.READ.DETAIL.3"
+        }
+      ],
+      "meta": {
+        "isHeroLesson": true,
+        "estimatedDuration": 15,
+        "difficultyLevel": "grade-3"
+      }
+    },
+    {
+      "version": 2,
+      "id": "sci_habitat_3",
+      "biomeId": "reef",
+      "title": {
+        "en-AU": "Animal Habitats"
+      },
+      "summary": {
+        "en-AU": "Learn Animal Habitats with interactive practice and assessment."
+      },
+      "skills": ["SCI.HABIT.3"],
+      "activities": [
+        {
+          "kind": "hero_lesson",
+          "packId": "core-science",
+          "lessonId": "sci_habitat_3"
+        }
+      ],
+      "standards": [
+        {
+          "framework": "australian-curriculum",
+          "code": "SCI.HABIT.3"
+        }
+      ],
+      "meta": {
+        "isHeroLesson": true,
+        "estimatedDuration": 15,
+        "difficultyLevel": "grade-3"
+      }
     }
   ],
   "skills": [
@@ -100,10 +280,47 @@
       "label": {
         "en-AU": "Number Line"
       }
+    },
+    {
+      "id": "M.FRAC.EQ.3",
+      "label": {
+        "en-AU": "Fraction Equivalence"
+      }
+    },
+    {
+      "id": "M.FRAC.COMP.3",
+      "label": {
+        "en-AU": "Compare Fractions"
+      }
+    },
+    {
+      "id": "M.NUM.MUL.3",
+      "label": {
+        "en-AU": "Multiplication as Equal Groups"
+      }
+    },
+    {
+      "id": "E.READ.MAIN.3",
+      "label": {
+        "en-AU": "Finding Main Ideas"
+      }
+    },
+    {
+      "id": "E.READ.DETAIL.3",
+      "label": {
+        "en-AU": "Finding Key Details"
+      }
+    },
+    {
+      "id": "SCI.HABIT.3",
+      "label": {
+        "en-AU": "Animal Habitats"
+      }
     }
   ],
   "frameworks": {
     "ACARA": ["AC9EFLY01", "AC9EFLY02", "AC9M1N01", "AC9M1N02", "M.FRAC.NL.3"],
+    "australian-curriculum": ["M.FRAC.EQ.3", "M.FRAC.COMP.3", "M.NUM.MUL.3", "E.READ.MAIN.3", "E.READ.DETAIL.3", "SCI.HABIT.3"],
     "NZC": ["NZC-L1-Reading", "NZC-L1-Number"]
   }
 }
