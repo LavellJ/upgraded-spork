@@ -94,6 +94,15 @@ db.exec(`
     FOREIGN KEY (email) REFERENCES users(email)
   );
 
+  -- Retention policies for per-tenant data retention settings
+  CREATE TABLE IF NOT EXISTS retention_policies (
+    email TEXT PRIMARY KEY,           -- user email
+    eventsDays INTEGER NOT NULL DEFAULT 90,    -- keep detailed events for N days
+    auditDays INTEGER NOT NULL DEFAULT 365,    -- keep audit logs for N days
+    updatedAt INTEGER NOT NULL,       -- when policy was last updated
+    FOREIGN KEY (email) REFERENCES users(email)
+  );
+
   -- Indexes for better query performance
   CREATE INDEX IF NOT EXISTS idx_user_docs_email ON user_docs(email);
   CREATE INDEX IF NOT EXISTS idx_user_docs_learner ON user_docs(email, learnerId);
@@ -109,6 +118,7 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_erasure_requests_email ON erasure_requests(email);
   CREATE INDEX IF NOT EXISTS idx_erasure_requests_status ON erasure_requests(status);
   CREATE INDEX IF NOT EXISTS idx_erasure_requests_due ON erasure_requests(dueAt);
+  CREATE INDEX IF NOT EXISTS idx_retention_policies_email ON retention_policies(email);
 `);
 
 // Prepared statements for common operations
@@ -262,6 +272,20 @@ export const statements = {
   maskAuditLogLearner: db.prepare(`
     UPDATE audit_log SET meta = json_replace(COALESCE(meta, '{}'), '$.learnerId', ?)
     WHERE email = ? AND json_extract(meta, '$.learnerId') = ?
+  `),
+
+  // Retention policies
+  upsertRetentionPolicy: db.prepare(`
+    INSERT OR REPLACE INTO retention_policies (email, eventsDays, auditDays, updatedAt)
+    VALUES (?, ?, ?, ?)
+  `),
+
+  getRetentionPolicy: db.prepare(`
+    SELECT * FROM retention_policies WHERE email = ?
+  `),
+
+  deleteRetentionPolicy: db.prepare(`
+    DELETE FROM retention_policies WHERE email = ?
   `)
 };
 
@@ -317,6 +341,13 @@ export interface ErasureRequestRow {
   status: 'pending' | 'scheduled' | 'done' | 'canceled';
   requestedAt: number;
   dueAt: number;
+}
+
+export interface RetentionPolicyRow {
+  email: string;
+  eventsDays: number;
+  auditDays: number;
+  updatedAt: number;
 }
 
 // Close database on process exit
