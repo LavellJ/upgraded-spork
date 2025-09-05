@@ -50,7 +50,7 @@ export function RouteBreadcrumbs({
       aria-hidden="true"
     >
       <svg 
-        className="w-full h-full" 
+        className="route-breadcrumbs w-full h-full" 
         viewBox="0 0 100 100" 
         preserveAspectRatio="none"
       >
