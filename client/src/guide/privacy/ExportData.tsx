@@ -49,9 +49,7 @@ export function ExportData() {
   const loadExportRequests = async () => {
     try {
       const response = await fetch('/api/dsar', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('auth_token')}`
-        }
+        credentials: 'include'
       });
       
       if (!response.ok) {
@@ -91,9 +89,9 @@ export function ExportData() {
       const response = await fetch('/api/dsar/request', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('auth_token')}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
           learnerIds: selectedLearners.length > 0 ? selectedLearners : undefined
         })
@@ -167,9 +165,7 @@ export function ExportData() {
     try {
       const response = await fetch(`/api/dsar/${requestId}/purge`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('auth_token')}`
-        }
+        credentials: 'include'
       });
 
       if (!response.ok) {

@@ -54,9 +54,7 @@ export function DeleteData() {
   const loadErasureRequests = async () => {
     try {
       const response = await fetch('/api/erasure', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('auth_token')}`
-        }
+        credentials: 'include'
       });
       
       if (!response.ok) {
@@ -111,9 +109,9 @@ export function DeleteData() {
       const response = await fetch('/api/erasure/request', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('auth_token')}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
           scope: 'learner',
           learnerId: selectedLearner
@@ -160,9 +158,9 @@ export function DeleteData() {
       const response = await fetch('/api/erasure/request', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('auth_token')}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
           scope: 'account'
         })
@@ -200,9 +198,7 @@ export function DeleteData() {
     try {
       const response = await fetch(`/api/erasure/${requestId}/cancel`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('auth_token')}`
-        }
+        credentials: 'include'
       });
 
       if (!response.ok) {
