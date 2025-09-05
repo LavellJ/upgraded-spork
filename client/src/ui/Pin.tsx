@@ -43,8 +43,24 @@ export function Pin({
   const isCalm = profile?.calmMode || false;
   const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const disableAnimations = isCalm || prefersReducedMotion;
+
+  // Detect projector mode and high-contrast mode
+  const isProjectorMode = typeof document !== 'undefined' && document.documentElement.hasAttribute('data-projector-font-scale');
+  const isHighContrast = typeof document !== 'undefined' && document.documentElement.getAttribute('data-contrast') === 'high';
   
-  const tone = TONES[state]
+  // Adjust size for projector mode (bump up one step)
+  const effectiveSize = isProjectorMode ? (size === 16 ? 24 : size === 24 ? 48 : 48) : size;
+  
+  // Adjust stroke width for projector mode 
+  const strokeWidth = isProjectorMode ? "2.3" : "1.8";
+  
+  const tone = TONES[state];
+  
+  // High contrast adjustments for done state
+  const adjustedTone = isHighContrast && state === 'done' 
+    ? { ...tone, fill: 'rgb(var(--positive))', stroke: 'rgb(var(--fg-default))' }
+    : tone;
+  
   const classes = clsx(
     'transition-transform relative',
     !disableAnimations && 'hover:-translate-y-px',
@@ -67,7 +83,7 @@ export function Pin({
   };
 
   // Ensure minimum hit target of 44x44
-  const hitAreaSize = Math.max(44, size);
+  const hitAreaSize = Math.max(44, effectiveSize);
   const offsetStyle = collisionOffset ? { 
     transform: `translate(${collisionOffset.x}px, ${collisionOffset.y}px)` 
   } : {};
@@ -90,6 +106,7 @@ export function Pin({
       
       <button
         type="button"
+        role="button"
         className={classes}
         style={{ 
           width: hitAreaSize, 
@@ -100,48 +117,61 @@ export function Pin({
           justifyContent: 'center'
         }}
         aria-label={ariaLabel}
+        aria-pressed={selected}
+        aria-current={selected ? "true" : undefined}
         data-testid={`pin-${state}`}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
       >
-      <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden focusable="false">
+      <svg viewBox="0 0 24 24" width={effectiveSize} height={effectiveSize} aria-hidden focusable="false">
+        {/* Selection ring - inner glow effect with subtle stroke */}
+        {selected && (
+          <path 
+            d="M12 2c-4 0-7 3.1-7 7 0 5.1 7 13 7 13s7-7.9 7-13c0-3.9-3-7-7-7Z" 
+            fill="none" 
+            stroke="rgb(var(--brand))" 
+            strokeWidth="0.8"
+            opacity="0.6"
+          />
+        )}
+        
         {/* Base teardrop pin shape */}
         <path 
           d="M12 2c-4 0-7 3.1-7 7 0 5.1 7 13 7 13s7-7.9 7-13c0-3.9-3-7-7-7Z" 
-          fill={tone.fill} 
-          stroke={tone.stroke} 
-          strokeWidth="1.8" 
+          fill={adjustedTone.fill} 
+          stroke={adjustedTone.stroke} 
+          strokeWidth={strokeWidth} 
         />
         
         {/* Overlay icons */}
-        {tone.icon === 'check' && (
+        {adjustedTone.icon === 'check' && (
           <path 
             d={ICONS.check} 
             fill="none" 
-            stroke={tone.iconColor} 
+            stroke={adjustedTone.iconColor} 
             strokeWidth="2" 
             strokeLinecap="round" 
             strokeLinejoin="round"
           />
         )}
         
-        {tone.icon === 'lock' && (
-          <g stroke={tone.iconColor} fill="none" strokeWidth="2" strokeLinecap="round">
+        {adjustedTone.icon === 'lock' && (
+          <g stroke={adjustedTone.iconColor} fill="none" strokeWidth="2" strokeLinecap="round">
             <path d="M7.5 10V8a4.5 4.5 0 0 1 9 0v2" />
             <rect x="6" y="10" width="12" height="9" rx="2.5" />
-            <circle cx="12" cy="14.5" r="1.6" fill={tone.iconColor} />
+            <circle cx="12" cy="14.5" r="1.6" fill={adjustedTone.iconColor} />
           </g>
         )}
         
-        {tone.icon === 'exclaim' && (
-          <g stroke={tone.iconColor} strokeWidth="2" strokeLinecap="round">
+        {adjustedTone.icon === 'exclaim' && (
+          <g stroke={adjustedTone.iconColor} strokeWidth="2" strokeLinecap="round">
             <path d="M12 6v8" />
-            <circle cx="12" cy="18" r="1.6" fill={tone.iconColor} />
+            <circle cx="12" cy="18" r="1.6" fill={adjustedTone.iconColor} />
           </g>
         )}
         
-        {tone.icon === 'dot' && (
-          <circle cx="12" cy="12" r="4" fill={tone.iconColor} />
+        {adjustedTone.icon === 'dot' && (
+          <circle cx="12" cy="12" r="4" fill={adjustedTone.iconColor} />
         )}
         </svg>
         

@@ -23,7 +23,11 @@ export function BiomePlates({
   
   // Check URL flag to disable parallax for snapshots
   const parallaxDisabled = useUrlFlag('parallax') === '0'
-  const effectiveReduceMotion = reduceMotion || parallaxDisabled
+  
+  // Check for projector mode to disable parallax
+  const isProjectorMode = typeof document !== 'undefined' && document.documentElement.hasAttribute('data-projector-font-scale')
+  
+  const effectiveReduceMotion = reduceMotion || parallaxDisabled || isProjectorMode
 
   const urls = useMemo(() => {
     const map: Record<'reef'|'alpine'|'forest'|'desert', {far:string; mid:string; near:string}> = {
