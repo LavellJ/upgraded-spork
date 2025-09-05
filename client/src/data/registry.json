@@ -44,6 +44,36 @@
           }
         }
       ]
+    },
+    {
+      "version": 2,
+      "id": "core-math-hero:hero_fractions_numberline",
+      "biomeId": "desert",
+      "title": {
+        "en-AU": "Unit Fractions on a Number Line"
+      },
+      "summary": {
+        "en-AU": "Explore how unit fractions like 1/2, 1/3, and 1/4 fit on a number line between 0 and 1"
+      },
+      "skills": ["math_fractions_basic", "math_numberline"],
+      "activities": [
+        {
+          "kind": "hero_lesson",
+          "packId": "core-math-hero",
+          "lessonId": "hero_fractions_numberline"
+        }
+      ],
+      "standards": [
+        {
+          "framework": "ACARA",
+          "code": "M.FRAC.NL.3"
+        }
+      ],
+      "meta": {
+        "isHeroLesson": true,
+        "estimatedDuration": 15,
+        "difficultyLevel": "year3-4"
+      }
     }
   ],
   "skills": [
@@ -58,10 +88,22 @@
       "label": {
         "en-AU": "Basic Math"
       }
+    },
+    {
+      "id": "math_fractions_basic",
+      "label": {
+        "en-AU": "Basic Fractions"
+      }
+    },
+    {
+      "id": "math_numberline",
+      "label": {
+        "en-AU": "Number Line"
+      }
     }
   ],
   "frameworks": {
-    "ACARA": ["AC9EFLY01", "AC9EFLY02", "AC9M1N01", "AC9M1N02"],
+    "ACARA": ["AC9EFLY01", "AC9EFLY02", "AC9M1N01", "AC9M1N02", "M.FRAC.NL.3"],
     "NZC": ["NZC-L1-Reading", "NZC-L1-Number"]
   }
 }
