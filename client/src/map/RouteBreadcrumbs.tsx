@@ -46,7 +46,7 @@ export function RouteBreadcrumbs({
 
   return (
     <div 
-      className="absolute inset-0 pointer-events-none z-10"
+      className="absolute inset-0 pointer-events-none z-20"
       aria-hidden="true"
     >
       <svg 

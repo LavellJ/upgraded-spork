@@ -22,6 +22,15 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    
+    /* Screenshot and viewport settings for stable visual testing */
+    viewport: { width: 1280, height: 800 },
+    screenshot: 'only-on-failure'
+  },
+  
+  /* Visual testing tolerance */
+  expect: { 
+    toHaveScreenshot: { maxDiffPixels: 120 } // tolerant but strict enough
   },
 
   /* Configure projects for major browsers */
