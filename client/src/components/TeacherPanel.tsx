@@ -41,6 +41,7 @@ import { PrivacyHub } from '../guide/privacy/PrivacyHub';
 import { Classes } from '../guide/Classes';
 import { Dashboard } from '../guide/Dashboard';
 import { FeedbackPanel } from '../feedback/FeedbackPanel';
+import ArtDiagnostics from '../guide/dev/ArtDiagnostics';
 
 // Lazy import Appearance settings
 const Appearance = lazy(() => import('../settings/Appearance'));
@@ -1160,6 +1161,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 className="max-h-96 overflow-y-auto space-y-4"
               >
                 <div className="space-y-6">
+                  <ArtDiagnostics />
                   <div className="bg-white rounded-lg border p-4">
                     <h3 className="text-sm font-medium text-gray-700 mb-3">📍 Pin Gallery</h3>
                     <p className="text-xs text-gray-500 mb-4">Visual test gallery for all pin states and sizes</p>

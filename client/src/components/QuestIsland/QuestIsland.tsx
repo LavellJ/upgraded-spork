@@ -12,7 +12,7 @@ import { ShimmerImage } from "../ShimmerImage";
 import { schedulePrefetch } from "../../pwa/prefetch";
 import ArtPinsPreview from "../../map/ArtPinsPreview";
 import { BiomePlates } from "../../map/BiomePlates";
-import { Flags } from "../../config/flags";
+import { useFlags } from "../../config/flags";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 import { getCurrentBiomeFromUrl } from "../../utils/urlBiome";
 
@@ -300,7 +300,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   const [showJourneyJournal, setShowJourneyJournal] = useState(false);
 
   // Biome plates configuration
-  const { finalArt } = Flags.get();
+  const { finalArt } = useFlags();
   const activeBiome = getCurrentBiomeFromUrl();
   const reduceMotion = usePrefersReducedMotion();
 

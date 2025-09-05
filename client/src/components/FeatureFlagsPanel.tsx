@@ -5,7 +5,7 @@ import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { AlertTriangle, Shield, Bell, Monitor, MessageSquare, Star, Bug, Share2, Palette } from 'lucide-react';
 import { setGuardrailsEnabled } from '../hooks/useScoutQueue';
-import { Flags } from '../config/flags';
+import { Flags, useFlags } from '../config/flags';
 
 /**
  * FeatureFlagsPanel - Development feature toggles for safe pilot switches
@@ -77,10 +77,9 @@ export function FeatureFlagsPanel() {
     return localStorage.getItem('qi.features.enableReferrals') !== 'false';
   });
 
-  // Final Art flag
-  const [finalArtEnabled, setFinalArtEnabled] = useState(() => {
-    return Flags.get().finalArt;
-  });
+  // Final Art flag - use reactive hook instead of local state
+  const flags = useFlags();
+  const finalArtEnabled = flags.finalArt;
 
   if (!isDev) return null;
 
@@ -198,12 +197,8 @@ export function FeatureFlagsPanel() {
   };
 
   const handleFinalArtToggle = (enabled: boolean) => {
-    setFinalArtEnabled(enabled);
     Flags.set({ finalArt: enabled });
-    // Dispatch custom event to notify art components
-    window.dispatchEvent(new CustomEvent('final-art-toggle', { 
-      detail: { enabled } 
-    }));
+    // Note: useFlags hook automatically handles reactivity, no event needed
   };
 
   return (
