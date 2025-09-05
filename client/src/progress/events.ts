@@ -14,8 +14,24 @@ export type ProgressEvent =
   | { kind: 'difficulty_adjusted'; at: number; skillId: string; baseLevel: string; adjustedLevel: string; delta: number; tuningNoteId: string };
 
 import { ns, BASE_KEYS } from '../storage/namespace';
+import { isPrivacyStrictModeEnabled } from '../utils/featureFlags';
 
 const MAX_EVENTS = 5000;
+
+/**
+ * Essential event types that are allowed in privacy strict mode
+ * Limited to core learning events required for educational compliance
+ */
+const ESSENTIAL_EVENT_TYPES: ProgressEvent['kind'][] = [
+  // Core learning events required for educational compliance
+  'lesson_start',
+  'lesson_finish', 
+  'journal_start',
+  'journal_finish',
+  // Tuning events for content adaptation
+  'tuning_applied',
+  'difficulty_adjusted'
+];
 
 /**
  * Load all progress events from localStorage, sorted by timestamp ascending
@@ -48,9 +64,18 @@ export function loadEvents(learnerId?: string): ProgressEvent[] {
  * Add a new progress event and persist to localStorage
  * Maintains max events limit by removing oldest events
  * Also enqueues event for sync when online
+ * In privacy strict mode, only essential events are logged
  */
 export function pushEvent(event: ProgressEvent, learnerId?: string): void {
   try {
+    // Privacy strict mode: only allow essential events
+    if (isPrivacyStrictModeEnabled() && !ESSENTIAL_EVENT_TYPES.includes(event.kind)) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Privacy] Blocked non-essential event in strict mode:', event.kind);
+      }
+      return;
+    }
+
     const events = loadEvents(learnerId);
     
     // Add new event
@@ -87,7 +112,8 @@ export function pushEvent(event: ProgressEvent, learnerId?: string): void {
         skillId: 'skillId' in event ? event.skillId : undefined,
         biome: 'biomeId' in event ? event.biomeId : undefined,
         duration: 'durationSec' in event ? event.durationSec : undefined,
-        result: 'result' in event ? event.result : undefined
+        result: 'result' in event ? event.result : undefined,
+        privacyStrict: isPrivacyStrictModeEnabled()
       });
     }
   } catch (error) {
