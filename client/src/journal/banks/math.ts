@@ -6,6 +6,240 @@
 import type { JournalItem } from '../../schema/journal';
 
 export const mathBanks: Record<string, Record<string, JournalItem[]>> = {
+  // New standards for lesson blueprints
+  'M.FRAC.EQ.3': {
+    easy: [
+      {
+        id: 'frac-eq-easy-1',
+        skillId: 'M.FRAC.EQ.3',
+        prompt: 'Which fraction is equal to 1/2?',
+        kind: 'mcq',
+        options: ['2/4', '1/3', '3/5', '1/4'],
+        answer: '2/4',
+        explanation: 'Both 1/2 and 2/4 represent the same amount - half of something'
+      },
+      {
+        id: 'frac-eq-easy-2',
+        skillId: 'M.FRAC.EQ.3',
+        prompt: 'Are 2/3 and 4/6 equal?',
+        kind: 'mcq',
+        options: ['Yes', 'No'],
+        answer: 'Yes',
+        explanation: 'If you multiply both parts of 2/3 by 2, you get 4/6'
+      },
+      {
+        id: 'frac-eq-easy-3',
+        skillId: 'M.FRAC.EQ.3',
+        prompt: 'Which shows 3/6 in simplest form?',
+        kind: 'short',
+        answer: '1/2',
+        explanation: 'Divide both 3 and 6 by 3 to get 1/2'
+      }
+    ],
+    core: [
+      {
+        id: 'frac-eq-core-1',
+        skillId: 'M.FRAC.EQ.3',
+        prompt: 'Find an equivalent fraction for 3/4',
+        kind: 'mcq',
+        options: ['6/8', '4/5', '2/3', '5/7'],
+        answer: '6/8',
+        explanation: 'Multiply both 3 and 4 by 2 to get 6/8'
+      },
+      {
+        id: 'frac-eq-core-2',
+        skillId: 'M.FRAC.EQ.3',
+        prompt: 'Which fraction is NOT equivalent to 1/4?',
+        kind: 'mcq',
+        options: ['2/8', '3/12', '4/16', '2/6'],
+        answer: '2/6',
+        explanation: '2/6 simplifies to 1/3, not 1/4'
+      },
+      {
+        id: 'frac-eq-core-3',
+        skillId: 'M.FRAC.EQ.3',
+        prompt: 'Complete: 2/5 = ?/10',
+        kind: 'short',
+        answer: '4',
+        explanation: 'Multiply 2 by 2 since 5×2=10, so 2/5 = 4/10'
+      }
+    ],
+    stretch: [
+      {
+        id: 'frac-eq-stretch-1',
+        skillId: 'M.FRAC.EQ.3',
+        prompt: 'Which set contains all equivalent fractions?',
+        kind: 'mcq',
+        options: ['1/3, 2/6, 3/9', '1/4, 2/6, 3/8', '2/3, 4/6, 5/9', '1/2, 3/4, 2/8'],
+        answer: '1/3, 2/6, 3/9',
+        explanation: 'All equal 1/3 when simplified'
+      },
+      {
+        id: 'frac-eq-stretch-2',
+        skillId: 'M.FRAC.EQ.3',
+        prompt: 'Find the simplest form of 12/16',
+        kind: 'short',
+        answer: '3/4',
+        explanation: 'Divide both by their greatest common factor, 4'
+      }
+    ]
+  },
+
+  'M.FRAC.COMP.3': {
+    easy: [
+      {
+        id: 'frac-comp-easy-1',
+        skillId: 'M.FRAC.COMP.3',
+        prompt: 'Which is larger: 1/2 or 1/4?',
+        kind: 'mcq',
+        options: ['1/2', '1/4', 'They are equal'],
+        answer: '1/2',
+        explanation: 'Think of pizza slices - half a pizza is bigger than a quarter'
+      },
+      {
+        id: 'frac-comp-easy-2',
+        skillId: 'M.FRAC.COMP.3',
+        prompt: 'Which is smaller: 2/3 or 1/3?',
+        kind: 'mcq',
+        options: ['2/3', '1/3', 'They are equal'],
+        answer: '1/3',
+        explanation: 'With the same denominator, compare the numerators'
+      },
+      {
+        id: 'frac-comp-easy-3',
+        skillId: 'M.FRAC.COMP.3',
+        prompt: 'Put these in order from smallest to largest: 1/4, 1/2, 1/8',
+        kind: 'short',
+        answer: '1/8, 1/4, 1/2',
+        explanation: 'With unit fractions, larger denominators mean smaller values'
+      }
+    ],
+    core: [
+      {
+        id: 'frac-comp-core-1',
+        skillId: 'M.FRAC.COMP.3',
+        prompt: 'Compare: 3/4 and 2/3',
+        kind: 'mcq',
+        options: ['3/4 > 2/3', '3/4 < 2/3', '3/4 = 2/3'],
+        answer: '3/4 > 2/3',
+        explanation: 'Convert to common denominators: 9/12 > 8/12'
+      },
+      {
+        id: 'frac-comp-core-2',
+        skillId: 'M.FRAC.COMP.3',
+        prompt: 'Which fraction is closest to 1?',
+        kind: 'mcq',
+        options: ['3/4', '5/6', '7/8', '2/3'],
+        answer: '7/8',
+        explanation: '7/8 is only 1/8 away from 1, the closest'
+      },
+      {
+        id: 'frac-comp-core-3',
+        skillId: 'M.FRAC.COMP.3',
+        prompt: 'Order from smallest to largest: 5/8, 3/4, 1/2',
+        kind: 'short',
+        answer: '1/2, 5/8, 3/4',
+        explanation: 'Convert to eighths: 4/8, 5/8, 6/8'
+      }
+    ],
+    stretch: [
+      {
+        id: 'frac-comp-stretch-1',
+        skillId: 'M.FRAC.COMP.3',
+        prompt: 'Which is greater: 5/7 or 6/8?',
+        kind: 'mcq',
+        options: ['5/7', '6/8', 'They are equal'],
+        answer: '6/8',
+        explanation: 'Cross multiply: 5×8=40, 6×7=42, so 6/8 is larger'
+      },
+      {
+        id: 'frac-comp-stretch-2',
+        skillId: 'M.FRAC.COMP.3',
+        prompt: 'Find a fraction between 1/3 and 1/2',
+        kind: 'short',
+        answer: '2/5',
+        explanation: '2/5 = 0.4, which is between 1/3 ≈ 0.33 and 1/2 = 0.5'
+      }
+    ]
+  },
+
+  'M.NUM.MUL.3': {
+    easy: [
+      {
+        id: 'num-mul-easy-1',
+        skillId: 'M.NUM.MUL.3',
+        prompt: 'What is 3 × 2?',
+        kind: 'mcq',
+        options: ['5', '6', '8', '4'],
+        answer: '6',
+        explanation: 'Think of 3 groups of 2: 2 + 2 + 2 = 6'
+      },
+      {
+        id: 'num-mul-easy-2',
+        skillId: 'M.NUM.MUL.3',
+        prompt: 'What is 4 × 1?',
+        kind: 'short',
+        answer: '4',
+        explanation: 'Any number times 1 equals itself'
+      },
+      {
+        id: 'num-mul-easy-3',
+        skillId: 'M.NUM.MUL.3',
+        prompt: 'What is 2 × 5?',
+        kind: 'mcq',
+        options: ['7', '10', '12', '8'],
+        answer: '10',
+        explanation: 'Count by 2s five times: 2, 4, 6, 8, 10'
+      }
+    ],
+    core: [
+      {
+        id: 'num-mul-core-1',
+        skillId: 'M.NUM.MUL.3',
+        prompt: 'What is 7 × 8?',
+        kind: 'mcq',
+        options: ['54', '56', '58', '52'],
+        answer: '56',
+        explanation: 'Use the multiplication table or break it down: 7×8 = 7×(10-2) = 70-14'
+      },
+      {
+        id: 'num-mul-core-2',
+        skillId: 'M.NUM.MUL.3',
+        prompt: 'If 6 × 4 = 24, what is 4 × 6?',
+        kind: 'short',
+        answer: '24',
+        explanation: 'Multiplication is commutative - order doesn\'t matter'
+      },
+      {
+        id: 'num-mul-core-3',
+        skillId: 'M.NUM.MUL.3',
+        prompt: 'There are 9 boxes with 6 crayons each. How many crayons total?',
+        kind: 'mcq',
+        options: ['54', '56', '48', '52'],
+        answer: '54',
+        explanation: 'This is 9 × 6 = 54 crayons'
+      }
+    ],
+    stretch: [
+      {
+        id: 'num-mul-stretch-1',
+        skillId: 'M.NUM.MUL.3',
+        prompt: 'What is 12 × 8?',
+        kind: 'short',
+        answer: '96',
+        explanation: 'Break it down: 12×8 = (10+2)×8 = 80+16 = 96'
+      },
+      {
+        id: 'num-mul-stretch-2',
+        skillId: 'M.NUM.MUL.3',
+        prompt: 'If 7 × ? = 63, what is the missing number?',
+        kind: 'mcq',
+        options: ['8', '9', '10', '7'],
+        answer: '9',
+        explanation: 'Think: what times 7 equals 63? Count by 7s or use division'
+      }
+    ]
+  },
   'math.addition': {
     easy: [
       {

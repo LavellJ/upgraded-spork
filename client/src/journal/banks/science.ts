@@ -6,6 +6,84 @@
 import type { JournalItem } from '../../schema/journal';
 
 export const scienceBanks: Record<string, Record<string, JournalItem[]>> = {
+  // New standards for lesson blueprints
+  'SCI.HABIT.3': {
+    easy: [
+      {
+        id: 'habit-easy-1',
+        skillId: 'SCI.HABIT.3',
+        prompt: 'Where do fish live?',
+        kind: 'mcq',
+        options: ['In trees', 'In water', 'Underground', 'In the air'],
+        answer: 'In water',
+        explanation: 'Fish need water to breathe and live'
+      },
+      {
+        id: 'habit-easy-2',
+        skillId: 'SCI.HABIT.3',
+        prompt: 'What do we call the place where an animal lives?',
+        kind: 'short',
+        answer: 'Habitat',
+        explanation: 'A habitat is an animal\'s natural home'
+      },
+      {
+        id: 'habit-easy-3',
+        skillId: 'SCI.HABIT.3',
+        prompt: 'Which animal lives in the forest?',
+        kind: 'mcq',
+        options: ['Shark', 'Bear', 'Dolphin', 'Crab'],
+        answer: 'Bear',
+        explanation: 'Bears live in forest habitats with trees and plants'
+      }
+    ],
+    core: [
+      {
+        id: 'habit-core-1',
+        skillId: 'SCI.HABIT.3',
+        prompt: 'Why do polar bears have thick fur?',
+        kind: 'mcq',
+        options: ['To look pretty', 'To stay warm in cold habitat', 'To swim faster', 'To hide from fish'],
+        answer: 'To stay warm in cold habitat',
+        explanation: 'Thick fur helps polar bears survive in their icy Arctic habitat'
+      },
+      {
+        id: 'habit-core-2',
+        skillId: 'SCI.HABIT.3',
+        prompt: 'What do desert animals need to survive in their habitat?',
+        kind: 'mcq',
+        options: ['Lots of water', 'Ways to stay cool and save water', 'Thick fur', 'Large fins'],
+        answer: 'Ways to stay cool and save water',
+        explanation: 'Desert habitats are hot and dry, so animals need special adaptations'
+      },
+      {
+        id: 'habit-core-3',
+        skillId: 'SCI.HABIT.3',
+        prompt: 'Name two things animals get from their habitat.',
+        kind: 'short',
+        answer: 'Food and shelter',
+        explanation: 'Habitats provide animals with food to eat and places to live safely'
+      }
+    ],
+    stretch: [
+      {
+        id: 'habit-stretch-1',
+        skillId: 'SCI.HABIT.3',
+        prompt: 'How might cutting down a forest affect the animals that live there?',
+        kind: 'mcq',
+        options: ['Animals would find new homes easily', 'Animals would lose their habitat and might struggle to survive', 'Animals would become stronger', 'Nothing would change'],
+        answer: 'Animals would lose their habitat and might struggle to survive',
+        explanation: 'Destroying habitats removes animals\' homes, food sources, and shelter'
+      },
+      {
+        id: 'habit-stretch-2',
+        skillId: 'SCI.HABIT.3',
+        prompt: 'Why do different animals live in different habitats?',
+        kind: 'short',
+        answer: 'Animals have adaptations that help them survive in specific environments',
+        explanation: 'Each animal has special features that work best in certain habitats'
+      }
+    ]
+  },
   'science.forces': {
     easy: [
       {

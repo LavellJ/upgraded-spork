@@ -1,0 +1,374 @@
+{
+  "version": 2,
+  "id": "math_frac_equiv_3",
+  "biomeId": "reef",
+  "title": {
+    "en-AU": "Fraction Equivalence"
+  },
+  "summary": {
+    "en-AU": "Learn Fraction Equivalence with interactive practice and assessment."
+  },
+  "skills": ["M.FRAC.EQ.3"],
+  "activities": [
+    {
+      "kind": "teach_block",
+      "id": "teach_kMn8xQp2",
+      "title": {
+        "en-AU": "Learn: Fraction Equivalence"
+      },
+      "video": {
+        "src": "https://example.com/videos/reef/math_frac_equiv_3.mp4",
+        "duration": 90,
+        "captions": [
+          {
+            "src": "https://example.com/videos/reef/math_frac_equiv_3.vtt",
+            "srclang": "en-AU",
+            "label": "English (Australia)",
+            "default": true
+          }
+        ]
+      },
+      "transcript": {
+        "text": {
+          "en-AU": "Welcome to learning about equivalent fractions! Today we'll discover that different fractions can represent the same amount. When we have 1/2 and 2/4, they look different but they're actually equal. Let's explore how to identify and create equivalent fractions using visual models and number patterns."
+        }
+      },
+      "alt": "Instructional video for Fraction Equivalence",
+      "ariaLabel": "Interactive video player: Fraction Equivalence"
+    },
+    {
+      "kind": "guided_practice",
+      "id": "guided_n7Hp5Wq1",
+      "title": {
+        "en-AU": "Practice: Fraction Equivalence"
+      },
+      "steps": [
+        {
+          "id": "step_1_rT3kMx8z",
+          "instruction": {
+            "en-AU": "Step 1"
+          },
+          "question": {
+            "en-AU": "Look at these circles. 1/2 is shaded in one circle, 2/4 is shaded in another. Are these fractions equal?"
+          },
+          "correctAnswer": "Yes, they represent the same amount",
+          "hints": [
+            {
+              "en-AU": "When you have the same amount of shading, the fractions are equivalent."
+            },
+            {
+              "en-AU": "Think of cutting a pizza in half versus cutting it into fourths and taking 2 pieces."
+            }
+          ],
+          "branchingPaths": {
+            "fraction_equiv_confusion": {
+              "condition": "incorrect",
+              "remediation": {
+                "en-AU": "Let's try again. When you have the same amount of shading, the fractions are equivalent."
+              },
+              "nextHint": {
+                "en-AU": "Think of cutting a pizza in half versus cutting it into fourths and taking 2 pieces."
+              }
+            }
+          }
+        },
+        {
+          "id": "step_2_xY9mKp7r",
+          "instruction": {
+            "en-AU": "Step 2"
+          },
+          "question": {
+            "en-AU": "If 1/2 = 2/4, what would be an equivalent fraction to 1/3?"
+          },
+          "correctAnswer": "2/6",
+          "hints": [
+            {
+              "en-AU": "Multiply both the top and bottom numbers by the same amount."
+            },
+            {
+              "en-AU": "If we multiply 1/3 by 2/2, we get 2/6."
+            }
+          ]
+        },
+        {
+          "id": "step_3_pL8nRw6t",
+          "instruction": {
+            "en-AU": "Step 3"
+          },
+          "question": {
+            "en-AU": "Which fraction is equivalent to 3/4?"
+          },
+          "correctAnswer": "6/8",
+          "hints": [
+            {
+              "en-AU": "Multiply both numbers by 2 to find an equivalent fraction."
+            },
+            {
+              "en-AU": "3 × 2 = 6 and 4 × 2 = 8, so 6/8 is equivalent to 3/4."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "independent_practice",
+      "id": "independent_hJ4nLx9m",
+      "title": {
+        "en-AU": "Apply: Fraction Equivalence"
+      },
+      "questionBank": [
+        {
+          "id": "bank_1_qW7rTy3k",
+          "question": {
+            "en-AU": "Which fraction is equivalent to 1/2?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "4/8"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "1/4"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "2/3"
+              }
+            },
+            {
+              "id": "option_3",
+              "text": {
+                "en-AU": "3/4"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_2_eR8mNp6x",
+          "question": {
+            "en-AU": "Complete the equivalent fraction: 2/3 = ?/9"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "6"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "3"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "4"
+              }
+            },
+            {
+              "id": "option_3",
+              "text": {
+                "en-AU": "7"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_3_iU5jVw2q",
+          "question": {
+            "en-AU": "Are 3/6 and 1/2 equivalent fractions?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "Yes"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "No"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_4_oP9lBx5n",
+          "question": {
+            "en-AU": "Which shows an equivalent fraction to 4/6?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "2/3"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "4/8"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "1/2"
+              }
+            },
+            {
+              "id": "option_3",
+              "text": {
+                "en-AU": "3/4"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_5_mK7qCy8r",
+          "question": {
+            "en-AU": "What is 5/10 in simplest form?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "1/2"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "5/5"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "2/4"
+              }
+            },
+            {
+              "id": "option_3",
+              "text": {
+                "en-AU": "10/20"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        }
+      ],
+      "randomize": true,
+      "questionsToShow": 5,
+      "passingScore": 0.7
+    },
+    {
+      "kind": "exit_ticket",
+      "id": "exit_tA3mQx6p",
+      "title": {
+        "en-AU": "Check: Fraction Equivalence"
+      },
+      "questions": [
+        {
+          "id": "exit_1_bH8nRz4k",
+          "type": "multiple_choice",
+          "question": {
+            "en-AU": "A chocolate bar is divided into 8 pieces. Maya eats 4 pieces. What fraction shows an equivalent amount to what Maya ate?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "1/2"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "4/6"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "2/3"
+              }
+            },
+            {
+              "id": "option_3",
+              "text": {
+                "en-AU": "3/8"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Excellent understanding!"
+          }
+        }
+      ],
+      "masteryThreshold": 0.8,
+      "compassLogic": {
+        "onMastery": {
+          "nextStep": "journal_skill_practice",
+          "skillId": "M.FRAC.EQ.3",
+          "rationale": {
+            "en-AU": "Understanding fraction equivalence is essential for building strong math skills and will help you in more advanced topics."
+          }
+        },
+        "onNeedsPractice": {
+          "nextStep": "journal_review",
+          "skillId": "M.FRAC.EQ.3",
+          "rationale": {
+            "en-AU": "Let's practice this concept more to build confidence."
+          }
+        }
+      }
+    }
+  ],
+  "standards": [
+    {
+      "framework": "australian-curriculum",
+      "code": "M.FRAC.EQ.3"
+    }
+  ],
+  "meta": {
+    "estimatedDuration": 15,
+    "difficultyLevel": "grade-3",
+    "prerequisiteSkills": [],
+    "learningObjectives": ["Understanding fraction equivalence is essential for building strong math skills and will help you in more advanced topics."],
+    "scoutCues": {
+      "celebration": "Fantastic work on mastering this concept!",
+      "encouragement": "You're doing great! Keep practicing.",
+      "nextSteps": "Understanding fraction equivalence is essential for building strong math skills and will help you in more advanced topics."
+    }
+  }
+}

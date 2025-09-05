@@ -1,0 +1,350 @@
+{
+  "version": 2,
+  "id": "sci_habitat_3",
+  "biomeId": "reef",
+  "title": {
+    "en-AU": "Animal Habitats"
+  },
+  "summary": {
+    "en-AU": "Learn Animal Habitats with interactive practice and assessment."
+  },
+  "skills": ["SCI.HABIT.3"],
+  "activities": [
+    {
+      "kind": "teach_block",
+      "id": "teach_mE3fDg8h",
+      "title": {
+        "en-AU": "Learn: Animal Habitats"
+      },
+      "video": {
+        "src": "https://example.com/videos/reef/sci_habitat_3.mp4",
+        "duration": 90,
+        "captions": [
+          {
+            "src": "https://example.com/videos/reef/sci_habitat_3.vtt",
+            "srclang": "en-AU",
+            "label": "English (Australia)",
+            "default": true
+          }
+        ]
+      },
+      "transcript": {
+        "text": {
+          "en-AU": "Welcome to learning about animal habitats! A habitat is an animal's natural home where it can find food, water, shelter, and space to live. Different animals are specially adapted to live in different environments like deserts, rainforests, oceans, and grasslands. Let's explore how animals survive in their unique homes!"
+        }
+      },
+      "alt": "Instructional video for Animal Habitats",
+      "ariaLabel": "Interactive video player: Animal Habitats"
+    },
+    {
+      "kind": "guided_practice",
+      "id": "guided_nF4gEh9i",
+      "title": {
+        "en-AU": "Practice: Animal Habitats"
+      },
+      "steps": [
+        {
+          "id": "step_1_oG5hFi0j",
+          "instruction": {
+            "en-AU": "Step 1"
+          },
+          "question": {
+            "en-AU": "What do all living things need to survive?"
+          },
+          "correctAnswer": "Food, water, shelter, air",
+          "hints": [
+            {
+              "en-AU": "Think about what plants and animals both need to live."
+            },
+            {
+              "en-AU": "Consider the basic needs for any living creature."
+            }
+          ],
+          "branchingPaths": {
+            "basic_needs_confusion": {
+              "condition": "incorrect",
+              "remediation": {
+                "en-AU": "Let's try again. Think about what plants and animals both need to live."
+              },
+              "nextHint": {
+                "en-AU": "Consider the basic needs for any living creature."
+              }
+            }
+          }
+        },
+        {
+          "id": "step_2_pH6iGj1k",
+          "instruction": {
+            "en-AU": "Step 2"
+          },
+          "question": {
+            "en-AU": "Where do desert animals find water?"
+          },
+          "correctAnswer": "From their food and stored in their bodies",
+          "hints": [
+            {
+              "en-AU": "Desert animals have special ways to get and save water."
+            },
+            {
+              "en-AU": "Some animals get water from the food they eat."
+            }
+          ]
+        },
+        {
+          "id": "step_3_qI7jHk2l",
+          "instruction": {
+            "en-AU": "Step 3"
+          },
+          "question": {
+            "en-AU": "How do polar bears stay warm in the Arctic?"
+          },
+          "correctAnswer": "Thick fur and fat layer",
+          "hints": [
+            {
+              "en-AU": "Polar bears have special body features for cold weather."
+            },
+            {
+              "en-AU": "Think about what covers their body to keep heat in."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "independent_practice",
+      "id": "independent_rJ8kIl3m",
+      "title": {
+        "en-AU": "Apply: Animal Habitats"
+      },
+      "questionBank": [
+        {
+          "id": "bank_1_sK9lJm4n",
+          "question": {
+            "en-AU": "Which habitat has very little rain?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "Desert"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "Rainforest"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "Ocean"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_2_tL0mKn5o",
+          "question": {
+            "en-AU": "What adaptation helps fish live underwater?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "Gills"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "Wings"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "Thick fur"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_3_uM1nLo6p",
+          "question": {
+            "en-AU": "Which animal is adapted for cold climates?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "Penguin"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "Lizard"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "Butterfly"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_4_vN2oMp7q",
+          "question": {
+            "en-AU": "Where would you find the most plants?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "Rainforest"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "Desert"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "Arctic"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_5_wO3pNq8r",
+          "question": {
+            "en-AU": "What do we call an animal's natural home?"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "Habitat"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "House"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "Nest"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        }
+      ],
+      "randomize": true,
+      "questionsToShow": 5,
+      "passingScore": 0.7
+    },
+    {
+      "kind": "exit_ticket",
+      "id": "exit_xP4qOr9s",
+      "title": {
+        "en-AU": "Check: Animal Habitats"
+      },
+      "questions": [
+        {
+          "id": "exit_1_yQ5rPs0t",
+          "type": "multiple_choice",
+          "question": {
+            "en-AU": "A cactus has thick, waxy skin. This helps it to..."
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "Store water in the desert"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "Fly in the wind"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "Hide from predators"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Excellent understanding!"
+          }
+        }
+      ],
+      "masteryThreshold": 0.8,
+      "compassLogic": {
+        "onMastery": {
+          "nextStep": "journal_skill_practice",
+          "skillId": "SCI.HABIT.3",
+          "rationale": {
+            "en-AU": "Understanding science helps us make sense of the natural world."
+          }
+        },
+        "onNeedsPractice": {
+          "nextStep": "journal_review",
+          "skillId": "SCI.HABIT.3",
+          "rationale": {
+            "en-AU": "Let's practice this concept more to build confidence."
+          }
+        }
+      }
+    }
+  ],
+  "standards": [
+    {
+      "framework": "australian-curriculum",
+      "code": "SCI.HABIT.3"
+    }
+  ],
+  "meta": {
+    "estimatedDuration": 15,
+    "difficultyLevel": "grade-3",
+    "prerequisiteSkills": [],
+    "learningObjectives": ["Understanding science helps us make sense of the natural world."],
+    "scoutCues": {
+      "celebration": "Fantastic work on mastering this concept!",
+      "encouragement": "You're doing great! Keep practicing.",
+      "nextSteps": "Understanding science helps us make sense of the natural world."
+    }
+  }
+}

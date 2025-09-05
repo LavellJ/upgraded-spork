@@ -1,0 +1,350 @@
+{
+  "version": 2,
+  "id": "eng_read_main_3",
+  "biomeId": "desert",
+  "title": {
+    "en-AU": "Finding Main Ideas"
+  },
+  "summary": {
+    "en-AU": "Learn Finding Main Ideas with interactive practice and assessment."
+  },
+  "skills": ["E.READ.MAIN.3"],
+  "activities": [
+    {
+      "kind": "teach_block",
+      "id": "teach_zR0oQs5t",
+      "title": {
+        "en-AU": "Learn: Finding Main Ideas"
+      },
+      "video": {
+        "src": "https://example.com/videos/desert/eng_read_main_3.mp4",
+        "duration": 90,
+        "captions": [
+          {
+            "src": "https://example.com/videos/desert/eng_read_main_3.vtt",
+            "srclang": "en-AU",
+            "label": "English (Australia)",
+            "default": true
+          }
+        ]
+      },
+      "transcript": {
+        "text": {
+          "en-AU": "Today we'll learn how to find the main idea in a text! The main idea is the most important message the author wants you to understand. It's like the big picture that all the details support. We'll practice identifying main ideas using key details and asking the right questions."
+        }
+      },
+      "alt": "Instructional video for Finding Main Ideas",
+      "ariaLabel": "Interactive video player: Finding Main Ideas"
+    },
+    {
+      "kind": "guided_practice",
+      "id": "guided_aS1pRt6u",
+      "title": {
+        "en-AU": "Practice: Finding Main Ideas"
+      },
+      "steps": [
+        {
+          "id": "step_1_bT2qSu7v",
+          "instruction": {
+            "en-AU": "Step 1"
+          },
+          "question": {
+            "en-AU": "When you read a story, what question should you ask to find the main idea?"
+          },
+          "correctAnswer": "What is this mostly about?",
+          "hints": [
+            {
+              "en-AU": "The main idea tells us the overall topic or message."
+            },
+            {
+              "en-AU": "Think about the big picture, not small details."
+            }
+          ],
+          "branchingPaths": {
+            "main_idea_confusion": {
+              "condition": "incorrect",
+              "remediation": {
+                "en-AU": "Let's try again. The main idea tells us the overall topic or message."
+              },
+              "nextHint": {
+                "en-AU": "Think about the big picture, not small details."
+              }
+            }
+          }
+        },
+        {
+          "id": "step_2_cU3rTv8w",
+          "instruction": {
+            "en-AU": "Step 2"
+          },
+          "question": {
+            "en-AU": "Where can you usually find clues about the main idea?"
+          },
+          "correctAnswer": "Throughout the whole text",
+          "hints": [
+            {
+              "en-AU": "Main idea clues appear in many parts of the text."
+            },
+            {
+              "en-AU": "Look for repeated words and important details everywhere."
+            }
+          ]
+        },
+        {
+          "id": "step_3_dV4sUw9x",
+          "instruction": {
+            "en-AU": "Step 3"
+          },
+          "question": {
+            "en-AU": "Read this paragraph: 'Dogs make great pets. They are loyal and friendly. Dogs can be trained to help people. Many families love having dogs.' What is the main idea?"
+          },
+          "correctAnswer": "Dogs make great pets",
+          "hints": [
+            {
+              "en-AU": "Look at what all the sentences have in common."
+            },
+            {
+              "en-AU": "All the details support the idea that dogs are wonderful companions."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "independent_practice",
+      "id": "independent_eW5tVx0y",
+      "title": {
+        "en-AU": "Apply: Finding Main Ideas"
+      },
+      "questionBank": [
+        {
+          "id": "bank_1_fX6uWy1z",
+          "question": {
+            "en-AU": "Read this paragraph. What is the main idea? 'Elephants are the largest animals on land. They have long trunks and big ears. Elephants live in herds and take care of each other. These amazing animals need our protection.'"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "Elephants are amazing animals"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "Elephants have big ears"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "Elephants live in herds"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_2_gY7vXz2a",
+          "question": {
+            "en-AU": "Which sentence states the main idea? 'Exercise is important for health. Running helps your heart. Swimming builds muscles. Playing sports is fun too.'"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "Exercise is important for health"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "Running helps your heart"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "Playing sports is fun"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_3_hZ8wYa3b",
+          "question": {
+            "en-AU": "What is this article mostly about? 'Trees clean the air we breathe. They provide homes for animals. Trees give us shade on hot days. We should plant more trees to help our planet.'"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "Trees are important for our planet"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "Trees give us shade"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "Animals live in trees"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_4_iA9xZb4c",
+          "question": {
+            "en-AU": "Which detail supports the main idea about healthy eating? 'Eating healthy foods helps us grow strong. Fruits have vitamins. Vegetables give us energy. Milk builds strong bones.'"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "Fruits have vitamins"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "Pizza tastes good"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "Ice cream is cold"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        },
+        {
+          "id": "bank_5_jB0yAc5d",
+          "question": {
+            "en-AU": "What do all these details have in common? 'Sarah helped her friend with homework. Tom shared his lunch. Emma listened when her friend was sad. Jake played with the new student.'"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "They are about being a good friend"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "They are about school work"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "They are about playing games"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Great work!"
+          }
+        }
+      ],
+      "randomize": true,
+      "questionsToShow": 5,
+      "passingScore": 0.7
+    },
+    {
+      "kind": "exit_ticket",
+      "id": "exit_kC1zBd6e",
+      "title": {
+        "en-AU": "Check: Finding Main Ideas"
+      },
+      "questions": [
+        {
+          "id": "exit_1_lD2aCe7f",
+          "type": "multiple_choice",
+          "question": {
+            "en-AU": "After reading about recycling, what is the main message? 'Recycling helps save the Earth. We can recycle paper, plastic, and glass. Recycling reduces waste in landfills. Everyone should recycle to protect our planet.'"
+          },
+          "options": [
+            {
+              "id": "correct",
+              "text": {
+                "en-AU": "Recycling helps save the Earth"
+              }
+            },
+            {
+              "id": "option_1",
+              "text": {
+                "en-AU": "We can recycle plastic"
+              }
+            },
+            {
+              "id": "option_2",
+              "text": {
+                "en-AU": "Recycling is hard work"
+              }
+            }
+          ],
+          "correctAnswer": "correct",
+          "explanation": {
+            "en-AU": "Excellent understanding!"
+          }
+        }
+      ],
+      "masteryThreshold": 0.8,
+      "compassLogic": {
+        "onMastery": {
+          "nextStep": "journal_skill_practice",
+          "skillId": "E.READ.MAIN.3",
+          "rationale": {
+            "en-AU": "Strong reading skills are essential for success across all subjects."
+          }
+        },
+        "onNeedsPractice": {
+          "nextStep": "journal_review",
+          "skillId": "E.READ.MAIN.3",
+          "rationale": {
+            "en-AU": "Let's practice this concept more to build confidence."
+          }
+        }
+      }
+    }
+  ],
+  "standards": [
+    {
+      "framework": "australian-curriculum",
+      "code": "E.READ.MAIN.3"
+    }
+  ],
+  "meta": {
+    "estimatedDuration": 15,
+    "difficultyLevel": "grade-3",
+    "prerequisiteSkills": [],
+    "learningObjectives": ["Strong reading skills are essential for success across all subjects."],
+    "scoutCues": {
+      "celebration": "Fantastic work on mastering this concept!",
+      "encouragement": "You're doing great! Keep practicing.",
+      "nextSteps": "Strong reading skills are essential for success across all subjects."
+    }
+  }
+}
