@@ -1,7 +1,10 @@
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { DensityProvider, useDensity } from './density'
 import { ToastHost } from '../../ui2/Toast'
+import { useFlags } from '../../config/flags'
+import { useTheme, type Theme } from '../../theme/useTheme'
+import { validateThemeContrast } from '../../theme/contrast'
 
 const TAB_CONFIG = {
   overview: { icon: '🏠', label: 'Overview' },
@@ -34,16 +37,40 @@ interface TeacherLayoutV2Props {
 }
 
 export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent }: TeacherLayoutV2Props) {
+  const { teacherThemeV2 } = useFlags()
+  const { theme } = useTheme()
+  
+  // Apply theme on mount/update when feature is enabled
+  useEffect(() => {
+    if (teacherThemeV2) {
+      validateThemeContrast()
+    }
+  }, [teacherThemeV2, theme])
+  
+  const themeClasses = teacherThemeV2 
+    ? "bg-bg-base text-fg-base" 
+    : "bg-black bg-opacity-50"
+  
+  const sidebarClasses = teacherThemeV2
+    ? "w-64 bg-bg-card border-r border-border flex flex-col"
+    : "w-64 bg-white border-r border-gray-200 flex flex-col"
+  
   return (
     <DensityProvider>
-      <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex">
+      <div className={`fixed inset-0 z-50 flex ${themeClasses}`}>
         {/* Sidebar */}
-        <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Teacher Panel</h2>
+        <aside className={sidebarClasses}>
+          <div className={`p-4 flex items-center justify-between ${
+            teacherThemeV2 ? 'border-b border-border' : 'border-b border-gray-200'
+          }`}>
+            <h2 className={`text-lg font-semibold ${
+              teacherThemeV2 ? 'text-fg-base' : ''
+            }`}>Teacher Panel</h2>
             <button 
               onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-gray-100 focus-ring"
+              className={`p-1.5 rounded-lg focus-ring ${
+                teacherThemeV2 ? 'hover:bg-bg-elev/60' : 'hover:bg-gray-100'
+              }`}
             >
               <X className="w-4 h-4" />
             </button>
@@ -57,9 +84,13 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
                   onClick={() => onTabChange(tabKey)}
                   className={
                     'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left focus-ring ' +
-                    (activeTab === tabKey
-                      ? 'bg-blue-100 text-blue-900'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900')
+                    (teacherThemeV2 
+                      ? (activeTab === tabKey
+                          ? 'bg-brand-500/10 text-brand-600'
+                          : 'text-fg-muted hover:bg-bg-elev/60 hover:text-fg-base')
+                      : (activeTab === tabKey
+                          ? 'bg-blue-100 text-blue-900'
+                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'))
                   }
                   aria-current={activeTab === tabKey ? 'page' : undefined}
                 >
@@ -70,13 +101,17 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
             </div>
           </nav>
           
-          <div className="p-3 border-t border-gray-200">
+          <div className={`p-3 ${
+            teacherThemeV2 ? 'border-t border-border' : 'border-t border-gray-200'
+          }`}>
             <DensityToggle />
           </div>
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 bg-gray-50 overflow-auto">
+        <main className={`flex-1 overflow-auto ${
+          teacherThemeV2 ? 'bg-bg-elev' : 'bg-gray-50'
+        }`}>
           <ToastHost>
             <div className="p-6">
               {renderContent()}
@@ -90,10 +125,16 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
 
 function DensityToggle() {
   const { density, toggle } = useDensity()
+  const { teacherThemeV2 } = useFlags()
+  
   return (
     <button 
       onClick={toggle}
-      className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 hover:bg-white focus-ring"
+      className={`w-full px-3 py-2 text-sm rounded-lg focus-ring ${
+        teacherThemeV2 
+          ? 'border border-border hover:bg-bg-base text-fg-muted'
+          : 'border border-gray-300 hover:bg-white'
+      }`}
     >
       {density === 'cozy' ? 'Switch to Compact' : 'Switch to Cozy'}
     </button>
