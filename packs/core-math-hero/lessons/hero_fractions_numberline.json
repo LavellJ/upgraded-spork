@@ -1,0 +1,346 @@
+{
+  "version": 2,
+  "id": "hero_fractions_numberline",
+  "biomeId": "desert",
+  "title": {
+    "en-AU": "Unit Fractions on a Number Line"
+  },
+  "summary": {
+    "en-AU": "Explore how unit fractions like 1/2, 1/3, and 1/4 fit on a number line between 0 and 1"
+  },
+  "skills": ["math_fractions_basic", "math_numberline"],
+  "activities": [
+    {
+      "kind": "teach_block",
+      "id": "teach_intro",
+      "ariaLabel": "Introduction to unit fractions on number line",
+      "title": {
+        "en-AU": "What are Unit Fractions?"
+      },
+      "video": {
+        "src": "/packs/core-math-hero/assets/videos/fractions_intro.webm",
+        "duration": 85,
+        "captions": [
+          {
+            "src": "/packs/core-math-hero/assets/captions/fractions_intro_en-AU.vtt",
+            "srclang": "en-AU",
+            "label": "English (Australia)"
+          }
+        ]
+      },
+      "transcript": {
+        "text": {
+          "en-AU": "Today we're exploring unit fractions on a number line. A unit fraction has 1 as its numerator - like 1/2, 1/3, or 1/4. Let's see how these special fractions fit between 0 and 1 on our number line. When we divide the space between 0 and 1 into equal parts, we can mark where each unit fraction belongs."
+        },
+        "timestamps": [
+          {"time": 0, "text": "Today we're exploring unit fractions on a number line."},
+          {"time": 8, "text": "A unit fraction has 1 as its numerator - like 1/2, 1/3, or 1/4."},
+          {"time": 18, "text": "Let's see how these special fractions fit between 0 and 1 on our number line."},
+          {"time": 28, "text": "When we divide the space between 0 and 1 into equal parts, we can mark where each unit fraction belongs."}
+        ]
+      }
+    },
+    {
+      "kind": "guided_practice", 
+      "id": "guided_steps",
+      "ariaLabel": "Guided practice placing unit fractions",
+      "title": {
+        "en-AU": "Let's Practice Together"
+      },
+      "steps": [
+        {
+          "id": "step_1_halves",
+          "instruction": {
+            "en-AU": "Let's start with 1/2. Where do you think 1/2 goes on the number line between 0 and 1?"
+          },
+          "question": {
+            "en-AU": "Place 1/2 on the number line"
+          },
+          "correctAnswer": "0.5",
+          "tolerance": 0.05,
+          "hints": [
+            {
+              "en-AU": "Think about dividing the line into 2 equal parts"
+            },
+            {
+              "en-AU": "1/2 means 1 out of 2 equal parts, so it's halfway between 0 and 1"
+            }
+          ],
+          "branchingPaths": {
+            "too_small": {
+              "condition": "answer < 0.3",
+              "remediation": {
+                "en-AU": "That's a bit too small. Remember, 1/2 is exactly half of the whole distance from 0 to 1."
+              },
+              "nextHint": {
+                "en-AU": "Try clicking right in the middle of the number line"
+              }
+            },
+            "too_large": {
+              "condition": "answer > 0.7",
+              "remediation": {
+                "en-AU": "That's getting close to 1, but 1/2 should be smaller. It's exactly half the distance."
+              },
+              "nextHint": {
+                "en-AU": "Move your answer closer to the middle"
+              }
+            }
+          }
+        },
+        {
+          "id": "step_2_thirds", 
+          "instruction": {
+            "en-AU": "Great! Now let's try 1/3. This one divides our line into 3 equal parts."
+          },
+          "question": {
+            "en-AU": "Place 1/3 on the number line"
+          },
+          "correctAnswer": "0.333",
+          "tolerance": 0.05,
+          "hints": [
+            {
+              "en-AU": "Imagine dividing the line from 0 to 1 into 3 equal pieces"
+            },
+            {
+              "en-AU": "1/3 is the first piece, so it's about 1/3 of the way from 0 to 1"
+            }
+          ],
+          "branchingPaths": {
+            "confused_with_half": {
+              "condition": "answer > 0.45 && answer < 0.55",
+              "remediation": {
+                "en-AU": "That's where 1/2 goes! Remember, 1/3 is smaller than 1/2."
+              },
+              "nextHint": {
+                "en-AU": "1/3 comes before the halfway point"
+              }
+            }
+          }
+        },
+        {
+          "id": "step_3_quarters",
+          "instruction": {
+            "en-AU": "Excellent! Finally, let's place 1/4 on our number line."
+          },
+          "question": {
+            "en-AU": "Place 1/4 on the number line"
+          },
+          "correctAnswer": "0.25",
+          "tolerance": 0.05,
+          "hints": [
+            {
+              "en-AU": "1/4 means dividing into 4 equal parts and taking the first one"
+            },
+            {
+              "en-AU": "1/4 is smaller than both 1/3 and 1/2"
+            }
+          ],
+          "branchingPaths": {
+            "too_large": {
+              "condition": "answer > 0.3",
+              "remediation": {
+                "en-AU": "Remember, 1/4 is the smallest unit fraction we've worked with so far."
+              },
+              "nextHint": {
+                "en-AU": "1/4 is closer to 0 than the others"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "independent_practice",
+      "id": "practice_bank",
+      "ariaLabel": "Independent practice with unit fractions",
+      "title": {
+        "en-AU": "Practice on Your Own"
+      },
+      "questionBank": [
+        {
+          "id": "q1",
+          "question": {
+            "en-AU": "Which unit fraction is closest to 1 on the number line?"
+          },
+          "options": [
+            {"id": "a", "text": {"en-AU": "1/2"}},
+            {"id": "b", "text": {"en-AU": "1/3"}},
+            {"id": "c", "text": {"en-AU": "1/4"}},
+            {"id": "d", "text": {"en-AU": "1/5"}}
+          ],
+          "correctAnswer": "a",
+          "explanation": {
+            "en-AU": "1/2 is the largest unit fraction among these choices, making it closest to 1."
+          },
+          "hint": {
+            "en-AU": "The larger the bottom number (denominator), the smaller the fraction becomes."
+          }
+        },
+        {
+          "id": "q2",
+          "question": {
+            "en-AU": "If you divide the space between 0 and 1 into 6 equal parts, where would 1/6 be located?"
+          },
+          "options": [
+            {"id": "a", "text": {"en-AU": "Very close to 0"}},
+            {"id": "b", "text": {"en-AU": "At the halfway point"}},
+            {"id": "c", "text": {"en-AU": "Very close to 1"}},
+            {"id": "d", "text": {"en-AU": "At 0.6"}}
+          ],
+          "correctAnswer": "a",
+          "explanation": {
+            "en-AU": "1/6 is about 0.17, which is much closer to 0 than to 1."
+          },
+          "hint": {
+            "en-AU": "1/6 means taking just 1 piece out of 6 equal pieces."
+          }
+        },
+        {
+          "id": "q3",
+          "question": {
+            "en-AU": "Which statement about unit fractions is true?"
+          },
+          "options": [
+            {"id": "a", "text": {"en-AU": "1/8 is larger than 1/4"}},
+            {"id": "b", "text": {"en-AU": "1/3 is larger than 1/2"}},
+            {"id": "c", "text": {"en-AU": "1/2 is larger than 1/5"}},
+            {"id": "d", "text": {"en-AU": "All unit fractions are equal"}}
+          ],
+          "correctAnswer": "c",
+          "explanation": {
+            "en-AU": "1/2 = 0.5 and 1/5 = 0.2, so 1/2 is indeed larger than 1/5."
+          },
+          "hint": {
+            "en-AU": "Compare the decimal values: which fraction gives you a bigger piece?"
+          }
+        },
+        {
+          "id": "q4",
+          "question": {
+            "en-AU": "On a number line from 0 to 1, which two unit fractions are closest to each other?"
+          },
+          "options": [
+            {"id": "a", "text": {"en-AU": "1/2 and 1/3"}},
+            {"id": "b", "text": {"en-AU": "1/4 and 1/5"}},
+            {"id": "c", "text": {"en-AU": "1/3 and 1/6"}},
+            {"id": "d", "text": {"en-AU": "1/2 and 1/8"}}
+          ],
+          "correctAnswer": "b",
+          "explanation": {
+            "en-AU": "1/4 = 0.25 and 1/5 = 0.2, with a difference of only 0.05. These are the closest pair."
+          },
+          "hint": {
+            "en-AU": "Convert each fraction to decimal and find the smallest difference."
+          }
+        },
+        {
+          "id": "q5",
+          "question": {
+            "en-AU": "If you wanted to mark 1/10 on a number line, where would it be positioned?"
+          },
+          "options": [
+            {"id": "a", "text": {"en-AU": "Right next to 0"}},
+            {"id": "b", "text": {"en-AU": "At the 1/4 position"}},
+            {"id": "c", "text": {"en-AU": "Near the middle"}},
+            {"id": "d", "text": {"en-AU": "Close to 1"}}
+          ],
+          "correctAnswer": "a",
+          "explanation": {
+            "en-AU": "1/10 = 0.1, which is very close to 0 on the number line."
+          },
+          "hint": {
+            "en-AU": "1/10 is a very small piece - only one-tenth of the whole distance."
+          }
+        }
+      ],
+      "randomize": true,
+      "questionsToShow": 3,
+      "passingScore": 2
+    },
+    {
+      "kind": "exit_ticket",
+      "id": "mastery_check",
+      "ariaLabel": "Final mastery check for unit fractions",
+      "title": {
+        "en-AU": "Show What You Know"
+      },
+      "questions": [
+        {
+          "id": "exit_q1",
+          "question": {
+            "en-AU": "Place these unit fractions in order from smallest to largest: 1/2, 1/7, 1/3"
+          },
+          "type": "ordering",
+          "items": [
+            {"id": "half", "text": {"en-AU": "1/2"}},
+            {"id": "seventh", "text": {"en-AU": "1/7"}},
+            {"id": "third", "text": {"en-AU": "1/3"}}
+          ],
+          "correctOrder": ["seventh", "third", "half"],
+          "explanation": {
+            "en-AU": "The correct order is 1/7, 1/3, 1/2. Remember: the larger the denominator, the smaller the unit fraction."
+          }
+        },
+        {
+          "id": "exit_q2",
+          "question": {
+            "en-AU": "Explain in your own words: Why is 1/2 larger than 1/4?"
+          },
+          "type": "open_response",
+          "rubric": {
+            "key_concepts": [
+              "mentions equal parts/pieces",
+              "explains denominator relationship", 
+              "compares piece sizes"
+            ],
+            "sample_response": "When you divide something into 2 equal parts, each part is bigger than when you divide the same thing into 4 equal parts. So 1/2 (one piece out of 2) is bigger than 1/4 (one piece out of 4)."
+          }
+        }
+      ],
+      "masteryThreshold": 0.8,
+      "compassLogic": {
+        "onMastery": {
+          "nextStep": "journal_skill_practice",
+          "skillId": "M.FRAC.NL",
+          "rationale": {
+            "en-AU": "Great job! You understand unit fractions on a number line. Let's practice more with mixed numbers next."
+          }
+        },
+        "onNeedsPractice": {
+          "nextStep": "remediation_lesson", 
+          "lessonId": "fractions_foundation",
+          "rationale": {
+            "en-AU": "Let's go back and strengthen your understanding of what fractions represent before working with number lines."
+          }
+        }
+      }
+    }
+  ],
+  "standards": [
+    {
+      "framework": "ACARA",
+      "code": "M.FRAC.NL.3"
+    }
+  ],
+  "assets": [
+    "/packs/core-math-hero/assets/videos/fractions_intro.webm",
+    "/packs/core-math-hero/assets/captions/fractions_intro_en-AU.vtt",
+    "/packs/core-math-hero/assets/images/number_line_visual.webp"
+  ],
+  "meta": {
+    "estimatedDuration": 15,
+    "difficultyLevel": "year3-4",
+    "prerequisiteSkills": ["math_basic_counting", "math_whole_numbers"],
+    "learningObjectives": [
+      "Understand what unit fractions are",
+      "Locate unit fractions on a number line", 
+      "Compare unit fraction sizes",
+      "Order unit fractions from smallest to largest"
+    ],
+    "scoutCues": {
+      "celebration": "Fantastic work with fractions!",
+      "encouragement": "You're becoming a fraction expert!",
+      "nextSteps": "Ready to explore more fraction adventures?"
+    }
+  }
+}

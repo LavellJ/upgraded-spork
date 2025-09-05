@@ -1,0 +1,26 @@
+{
+  "name": "Core Math Hero Lesson",
+  "id": "core-math-hero",
+  "version": "1.0.0",
+  "locale": "en-AU",
+  "description": "Production-ready hero lesson template for unit fractions on number line",
+  "author": "LearnOz Education Team",
+  "frameworks": ["ACARA"],
+  "lessons": [
+    "lessons/*.json"
+  ],
+  "assets": [
+    "assets/**/*.{png,jpg,jpeg,gif,webp,svg}",
+    "assets/**/*.{mp3,wav,ogg,m4a}",
+    "assets/**/*.{mp4,webm,mov}",
+    "assets/**/*.{vtt,srt}"
+  ],
+  "dependencies": {},
+  "meta": {
+    "ageRange": "8-10",
+    "subjects": ["numeracy"],
+    "difficulty": "year3-4",
+    "estimatedHours": 1,
+    "lessonTypes": ["hero-template"]
+  }
+}
