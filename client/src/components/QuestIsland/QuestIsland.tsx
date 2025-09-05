@@ -11,6 +11,10 @@ import { getAsset } from "../../lib/assetResolver";
 import { ShimmerImage } from "../ShimmerImage";
 import { schedulePrefetch } from "../../pwa/prefetch";
 import ArtPinsPreview from "../../map/ArtPinsPreview";
+import { BiomePlates } from "../../map/BiomePlates";
+import { Flags } from "../../config/flags";
+import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
+import { getCurrentBiomeFromUrl } from "../../utils/urlBiome";
 
 export interface Collectible {
   id: string;
@@ -294,6 +298,11 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   const [currentCollectible, setCurrentCollectible] = useState<Collectible | null>(null);
   const [newDiscovery, setNewDiscovery] = useState<string | null>(null);
   const [showJourneyJournal, setShowJourneyJournal] = useState(false);
+
+  // Biome plates configuration
+  const { finalArt } = Flags.get();
+  const activeBiome = getCurrentBiomeFromUrl();
+  const reduceMotion = usePrefersReducedMotion();
 
   // Dynamic collectible discovery system
   const discoverNewCollectible = useCallback((completedLessonId: string) => {
@@ -729,6 +738,16 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
         {/* Island Base */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative w-[1200px] h-[900px]">
+            
+            {/* Biome Background Plates (behind everything when Final Art is ON) */}
+            {finalArt && activeBiome === 'reef' && (
+              <BiomePlates 
+                biome="reef" 
+                enable={true} 
+                intensity={8} 
+                reduceMotion={reduceMotion} 
+              />
+            )}
             
             {/* Island Shape */}
             <div className="absolute inset-0 bg-gradient-to-br from-sand-200 via-sand-100 to-green-200 rounded-full opacity-90 transform rotate-12 scale-110" />

@@ -127,6 +127,10 @@
   --border: 71, 85, 105;
 }
 
+[data-contrast="high"] .map-scrim { 
+  background: rgba(0,0,0,.24) !important; 
+}
+
 /* Density */
 [data-density="compact"] {
   --density: .9;
