@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
@@ -14,27 +14,14 @@ import {
   Users,
   Eye
 } from 'lucide-react';
+import { ExportData } from './ExportData';
 
 /**
  * Privacy & Data Hub - Central location for privacy documentation and data management
  * Provides teachers with easy access to privacy compliance docs and data controls
  */
 export function PrivacyHub() {
-  
-  const handleExportData = () => {
-    // TODO: Implement teacher data export functionality
-    console.log('Exporting teacher data...');
-  };
-
-  const handleExportLearner = () => {
-    // TODO: Implement learner data export functionality  
-    console.log('Exporting learner data...');
-  };
-
-  const handleDeleteLearner = () => {
-    // TODO: Implement learner deletion functionality
-    console.log('Delete learner account...');
-  };
+  const [showExportPanel, setShowExportPanel] = useState(false);
 
   const handleClearLocalData = () => {
     // Clear local storage data
@@ -190,19 +177,15 @@ export function PrivacyHub() {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={handleExportData}
-                  data-testid="export-teacher-data-button"
+                  onClick={() => setShowExportPanel(true)}
+                  data-testid="open-export-panel-button"
                 >
-                  Export My Teacher Data
+                  <Download className="h-4 w-4 mr-2" />
+                  Data Export Requests
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleExportLearner}
-                  data-testid="export-learner-data-button"
-                >
-                  Export Learner Data
-                </Button>
+                <p className="text-xs text-gray-500">
+                  Create DSAR exports with learner data, audit logs, and account information
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -229,20 +212,36 @@ export function PrivacyHub() {
                 >
                   Clear Local Data
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleDeleteLearner}
-                  className="text-red-600 border-red-200 hover:bg-red-50"
-                  data-testid="delete-learner-button"
-                >
-                  Delete Learner Account
-                </Button>
+                <p className="text-xs text-gray-500">
+                  Clears all local learning progress and preferences
+                </p>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Export Data Panel Modal/Overlay */}
+      {showExportPanel && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Data Export Requests</h2>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowExportPanel(false)}
+                data-testid="close-export-panel-button"
+              >
+                Close
+              </Button>
+            </div>
+            <div className="p-6">
+              <ExportData />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Compliance Information */}
       <Card className="border-gray-200">
