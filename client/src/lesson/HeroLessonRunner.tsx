@@ -15,7 +15,7 @@ import type {
 import { pushEvent } from '../progress/events';
 import { startOnTask, stopOnTask } from '../analytics/onTask';
 import { useScoutQueue } from '../hooks/useScoutQueue';
-import { pickScoutLine } from '../learning/scout';
+import { pickScoutLine, triggerScoutEvent } from '../learning/scout';
 import { useProfile } from '../profile/context';
 import { useRoster } from '../roster/context';
 
@@ -114,6 +114,12 @@ export function HeroLessonRunner({ lessonData, onComplete, onExit }: HeroLessonR
       biomeId: lessonData.biomeId
     }, activeLearner?.id);
 
+    // Trigger Scout lesson start event
+    triggerScoutEvent('lessonStart', { 
+      lessonId: lessonData.id, 
+      biomeId: lessonData.biomeId 
+    });
+
     // Send Scout welcome message
     const scoutLine = pickScoutLine(
       'lesson_welcome',
@@ -178,6 +184,14 @@ export function HeroLessonRunner({ lessonData, onComplete, onExit }: HeroLessonR
           priority: 'info'
         });
       }
+    }
+
+    // Trigger Scout events for expression changes
+    if (eventType === 'incorrect_answer') {
+      triggerScoutEvent('firstMiss', { step: data?.step || 1, hintsUsed: data?.hintsUsed || 0 });
+    }
+    if (eventType === 'hint_requested') {
+      triggerScoutEvent('hintUsed', { step: data?.step || 1, hintsUsed: (data?.hintsUsed || 0) + 1 });
     }
   };
 

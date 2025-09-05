@@ -217,3 +217,31 @@ export function getAvailableGroups(): string[] {
   const scoutLines = loadScoutLines();
   return Object.keys(scoutLines.groups);
 }
+
+// Scout Event System for Expression Wiring
+export type ScoutEventType =
+  | 'lessonStart'
+  | 'firstMiss'
+  | 'branchingTaken'
+  | 'hintUsed'
+  | 'masteryAchieved'
+  | 'encourage'
+  | 'alert'
+  | 'celebrate'
+
+const __scoutEvt = (globalThis as any).__qiScoutEvt || new EventTarget()
+;(globalThis as any).__qiScoutEvt = __scoutEvt
+
+export function onScoutEvent(handler: (ev:{type:ScoutEventType, detail?:any})=>void){
+  const types: ScoutEventType[] = ['lessonStart','firstMiss','branchingTaken','hintUsed','masteryAchieved','encourage','alert','celebrate']
+  const fns = types.map(t=>{
+    const fn = (e: Event) => handler({ type: t, detail: (e as CustomEvent).detail })
+    __scoutEvt.addEventListener(t, fn as EventListener)
+    return { t, fn }
+  })
+  return () => fns.forEach(({t, fn}) => __scoutEvt.removeEventListener(t, fn as EventListener))
+}
+
+export function triggerScoutEvent(type: ScoutEventType, detail?: any){
+  __scoutEvt.dispatchEvent(new CustomEvent(type, { detail }))
+}

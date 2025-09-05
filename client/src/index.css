@@ -190,3 +190,10 @@ body {
 [data-theme="dark"] .art-shadow { 
   filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); 
 }
+
+/* Scout Sprite Blink Animation */
+#scout-sprite [id="eyes-blink"] { animation: scoutBlink 4.5s infinite; opacity: 0; }
+@keyframes scoutBlink { 0%, 96% { opacity:0 } 97%, 99% { opacity:1 } 100% { opacity:0 } }
+@media (prefers-reduced-motion: reduce) {
+  #scout-sprite [id="eyes-blink"] { animation: none; opacity: 0; }
+}
