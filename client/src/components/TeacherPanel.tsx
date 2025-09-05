@@ -43,6 +43,7 @@ import { Dashboard } from '../guide/Dashboard';
 import { FeedbackPanel } from '../feedback/FeedbackPanel';
 import { useFlags, Flags } from '../config/flags';
 import { TeacherLayoutV2 } from '../guide/teacher/TeacherLayoutV2';
+import TabContentV2 from '../guide/teacher/TabContentV2';
 
 // Lazy import Appearance settings
 const Appearance = lazy(() => import('../settings/Appearance'));
@@ -268,7 +269,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
       activeTab={activeTab} 
       onTabChange={setActiveTab} 
       onClose={onClose}
-      renderContent={renderTabContent} 
+      renderContent={() => <TabContentV2 tab={activeTab} />} 
     />
   }
 
