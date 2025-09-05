@@ -1,12 +1,24 @@
 import React from "react";
 import { motion } from "framer-motion";
-import balloonIcon from '@assets/097fe560-b8ac-4192-b450-4f106e9ff693_1756279378478.png';
-import lockIcon from '@assets/9252541e-bdfc-4bfa-ab60-c69c63a4297e_1756279935456.png';
+// Legacy assets - only used when Final Art is disabled
+let balloonIcon: string, lockIcon: string;
+try {
+  balloonIcon = require('@assets/097fe560-b8ac-4192-b450-4f106e9ff693_1756279378478.png');
+} catch {
+  balloonIcon = ''; // Fallback if asset doesn't exist
+}
+try {
+  lockIcon = require('@assets/9252541e-bdfc-4bfa-ab60-c69c63a4297e_1756279935456.png');
+} catch {
+  lockIcon = ''; // Fallback if asset doesn't exist
+}
 import { getPinAriaLabel } from '../../data/meta';
 import { getActiveAssignedLessonsForCurrentLearner, getActiveAssignments, getLessonAssignment, isDueSoon, isOverdue } from '../../guide/assign';
 import { AssignmentBadge, type AssignmentState } from '../AssignmentBadge';
 import { formatDue } from '../../guide/assign';
 import { useRosterOptional } from '../../roster';
+import { Pin } from '../../ui/Pin';
+import { useFlags } from '../../config/flags';
 
 interface LessonNodeProps {
   id: string;
@@ -17,10 +29,13 @@ interface LessonNodeProps {
   locked: boolean;
   onClick: () => void;
   isVisible?: boolean;
+  allNodes?: LessonNodeProps[]; // For collision detection
 }
 
-export function LessonNode({ id, title, biome, position, completed, locked, onClick, isVisible = true }: LessonNodeProps) {
+export function LessonNode({ id, title, biome, position, completed, locked, onClick, isVisible = true, allNodes = [] }: LessonNodeProps) {
   const rosterContext = useRosterOptional();
+  const flags = useFlags();
+  const finalArtEnabled = flags.finalArt;
   
   // Get assignment status using v2 system
   const getAssignmentState = (): { isAssigned: boolean; state?: AssignmentState; dueAt?: number } => {
@@ -55,6 +70,91 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
   const assignmentInfo = getAssignmentState();
   const isAssigned = assignmentInfo.isAssigned;
 
+  // Map lesson status to pin state for Final Art mode
+  const getPinState = () => {
+    if (!isVisible) return null; // hidden -> don't render
+    if (locked) return 'locked';
+    if (completed) return 'done';
+    if (isAssigned) {
+      switch (assignmentInfo.state) {
+        case 'done': return 'done';
+        case 'overdue': return 'overdue';
+        case 'due_soon': return 'due';
+        case 'assigned': return 'assigned';
+        default: return 'assigned';
+      }
+    }
+    return 'next'; // Available lessons use 'next' state
+  };
+
+  // Collision detection for density handling
+  const getCollisionOffset = () => {
+    if (!finalArtEnabled || allNodes.length <= 1) return { x: 0, y: 0 };
+    
+    const currentNode = { id, position };
+    const collisions = allNodes.filter(node => 
+      node.id !== id && 
+      Math.abs(node.position.x - position.x) < 3 && // Within 3% horizontally
+      Math.abs(node.position.y - position.y) < 3    // Within 3% vertically
+    );
+    
+    if (collisions.length === 0) return { x: 0, y: 0 };
+    
+    // Simple offset strategy: alternate +/- 10px vertically
+    const index = allNodes.findIndex(node => node.id === id);
+    const offsetDirection = index % 2 === 0 ? 1 : -1;
+    return { x: 0, y: offsetDirection * 10 };
+  };
+
+  // Enhanced aria label with state suffix
+  const getAriaLabel = () => {
+    const baseLabel = `Start lesson: ${title}`;
+    const pinState = getPinState();
+    
+    let suffix = '';
+    switch (pinState) {
+      case 'overdue': suffix = ' (overdue)'; break;
+      case 'due': suffix = ' (due soon)'; break;
+      case 'assigned': suffix = ' (assigned)'; break;
+      case 'done': suffix = ' (completed)'; break;
+      case 'locked': suffix = ' (locked)'; break;
+    }
+    
+    return baseLabel + suffix;
+  };
+
+  const pinState = getPinState();
+  const collisionOffset = getCollisionOffset();
+
+  // Don't render if hidden
+  if (!pinState) return null;
+
+  // Final Art mode: use Pin component
+  if (finalArtEnabled) {
+    return (
+      <div
+        className="absolute"
+        style={{ 
+          left: position.x + "%", 
+          top: position.y + "%",
+          transform: "translate(-50%, -50%)"
+        }}
+      >
+        <Pin
+          state={pinState}
+          size={24}
+          ariaLabel={getAriaLabel()}
+          onClick={onClick}
+          collisionOffset={collisionOffset}
+          tooltip={{
+            title,
+            dueAt: assignmentInfo.dueAt
+          }}
+        />
+      </div>
+    );
+  }
+
   const getNodeColor = () => {
     if (isAssigned) {
       return "from-blue-400 to-indigo-500"; // Blue gradient for assigned lessons
@@ -66,6 +166,7 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
     return "●";
   };
 
+  // Legacy mode: original hot air balloon UI
   return (
     <button
       className={`absolute cursor-pointer group border-0 bg-transparent p-0 ${locked ? 'cursor-not-allowed' : ''}`}

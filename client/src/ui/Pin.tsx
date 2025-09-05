@@ -1,5 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
+import { useProfile } from '../profile/context'
 
 export type PinState = 'base'|'next'|'assigned'|'due'|'overdue'|'done'|'locked'
 
@@ -25,23 +26,84 @@ export function Pin({
   state='base',
   size=24,
   selected=false,
-  ariaLabel
-}:{ state?: PinState; size?: 16|24|48; selected?: boolean; ariaLabel?: string }) {
+  ariaLabel,
+  onClick,
+  collisionOffset,
+  tooltip
+}:{ 
+  state?: PinState; 
+  size?: 16|24|48; 
+  selected?: boolean; 
+  ariaLabel?: string;
+  onClick?: () => void;
+  collisionOffset?: { x: number; y: number };
+  tooltip?: { title: string; dueAt?: number };
+}) {
+  const { profile } = useProfile();
+  const isCalm = profile?.calmMode || false;
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const disableAnimations = isCalm || prefersReducedMotion;
+  
   const tone = TONES[state]
   const classes = clsx(
-    'transition-transform',
-    'hover:-translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-[rgb(var(--brand))] rounded-full',
+    'transition-transform relative',
+    !disableAnimations && 'hover:-translate-y-px',
+    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-[rgb(var(--brand))] rounded-full',
     selected && 'outline outline-2 outline-[rgb(var(--brand))]'
   )
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
+  // Ensure minimum hit target of 44x44
+  const hitAreaSize = Math.max(44, size);
+  const offsetStyle = collisionOffset ? { 
+    transform: `translate(${collisionOffset.x}px, ${collisionOffset.y}px)` 
+  } : {};
+
   return (
-    <button
-      type="button"
-      className={classes}
-      style={{ width: size, height: size, lineHeight: 0 }}
-      aria-label={ariaLabel}
-      data-testid={`pin-${state}`}
-    >
+    <div className="group relative" style={offsetStyle}>
+      {/* Collision connector line if offset */}
+      {collisionOffset && (collisionOffset.x !== 0 || collisionOffset.y !== 0) && (
+        <div 
+          className="absolute border-l border-[rgb(var(--border))] opacity-60 z-0"
+          style={{
+            left: -collisionOffset.x,
+            top: -collisionOffset.y,
+            width: Math.abs(collisionOffset.x),
+            height: Math.abs(collisionOffset.y),
+            transformOrigin: '0 0'
+          }}
+        />
+      )}
+      
+      <button
+        type="button"
+        className={classes}
+        style={{ 
+          width: hitAreaSize, 
+          height: hitAreaSize, 
+          lineHeight: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+        aria-label={ariaLabel}
+        data-testid={`pin-${state}`}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+      >
       <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden focusable="false">
         {/* Base teardrop pin shape */}
         <path 
@@ -81,7 +143,16 @@ export function Pin({
         {tone.icon === 'dot' && (
           <circle cx="12" cy="12" r="4" fill={tone.iconColor} />
         )}
-      </svg>
-    </button>
+        </svg>
+        
+        {/* Tooltip on hover/focus */}
+        {tooltip && (
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/80 text-white text-xs rounded opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity pointer-events-none z-50 whitespace-nowrap">
+            {tooltip.title}
+            {tooltip.dueAt && <div className="text-xs opacity-75">Due {new Date(tooltip.dueAt).toLocaleDateString()}</div>}
+          </div>
+        )}
+      </button>
+    </div>
   )
 }
