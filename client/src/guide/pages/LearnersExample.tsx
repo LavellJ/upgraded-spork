@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useFlags } from '../../config/flags'
 import TeacherLayout from '../teacher/Layout'
 import { Card } from '../../ui2/Card'
@@ -11,6 +11,12 @@ import { ActionBar } from '../../ui2/ActionBar'
 import { StatusChip } from '../../ui2/StatusChip'
 import { KV } from '../../ui2/KV'
 import { MiniProgress } from '../../ui2/MiniProgress'
+import { Button } from '../../ui2/Button'
+import { useToast } from '../../ui2/Toast'
+import { confirm } from '../../ui2/Confirm'
+import { Empty } from '../../ui2/States'
+import { fmtPercent } from '../../lib/fmt'
+import { copy } from '../../copy'
 
 type Learner = {
   id: string
@@ -32,6 +38,7 @@ const mockLearners: Learner[] = [
 
 export default function LearnersExample(){
   const { teacherPanelV2 } = useFlags()
+  const toast = useToast()
   
   // Fallback to legacy layout if flag disabled
   if (!teacherPanelV2) {
@@ -102,13 +109,8 @@ export default function LearnersExample(){
       width: '25%',
       render: (learner) => (
         <div className="space-y-1">
-          <div className="text-sm font-medium">{learner.progress}%</div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
-              className="bg-blue-500 h-2 rounded-full" 
-              style={{ width: `${learner.progress}%` }}
-            />
-          </div>
+          <div className="text-sm font-medium">{fmtPercent(learner.progress / 100)}</div>
+          <MiniProgress value={learner.progress} />
         </div>
       ),
       sort: (a, b) => a.progress - b.progress
@@ -178,11 +180,10 @@ export default function LearnersExample(){
                   setDrawerOpen(true)
                 }}
                 empty={
-                  <div className="text-center py-8 text-gray-500">
-                    <div className="text-4xl mb-2">👥</div>
-                    <p className="font-medium">No learners found</p>
-                    <p className="text-sm">Try adjusting your search or filters</p>
-                  </div>
+                  <Empty 
+                    title="No learners found"
+                    message="Try adjusting your search or filters"
+                  />
                 }
               />
               {totalPages > 1 && (
@@ -204,16 +205,27 @@ export default function LearnersExample(){
           subtitle="Learner"
           footer={
             <ActionBar>
-              <button className="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
-                Export CSV
-              </button>
-              <button 
+              <Button variant="subtle" onClick={() => console.log('Export CSV')}>
+                {copy.actions.export}
+              </Button>
+              <Button 
                 data-autofocus
-                className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
-                onClick={() => console.log('Assign work to', activeLearner?.name)}
+                onClick={async () => {
+                  const confirmed = await confirm({
+                    title: 'Assign work?',
+                    body: 'This will assign the selected items.'
+                  })
+                  if (confirmed) {
+                    console.log('Assign work to', activeLearner?.name)
+                    toast.push({ 
+                      title: 'Assigned', 
+                      body: '3 items assigned'
+                    })
+                  }
+                }}
               >
-                Assign work
-              </button>
+                {copy.actions.assign}
+              </Button>
             </ActionBar>
           }
         >
@@ -235,7 +247,7 @@ export default function LearnersExample(){
                   <KV items={[
                     { k: 'Last seen', v: activeLearner.lastSeen },
                     { k: 'Streak', v: '12 days' },
-                    { k: 'Progress', v: `${activeLearner.progress}%` }
+                    { k: 'Progress', v: fmtPercent(activeLearner.progress / 100) }
                   ]} />
                   
                   <div>
@@ -251,21 +263,21 @@ export default function LearnersExample(){
                   <div className="flex items-center justify-between border-b border-gray-200 pb-2">
                     <span className="text-sm font-medium">Math: Fractions</span>
                     <div className="flex items-center gap-2">
-                      <StatusChip kind="assigned">Assigned</StatusChip>
+                      <StatusChip kind="assigned">{copy.states.assigned}</StatusChip>
                       <span className="text-xs text-gray-500">Due in 2 days</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between border-b border-gray-200 pb-2">
                     <span className="text-sm font-medium">Science: Plants</span>
                     <div className="flex items-center gap-2">
-                      <StatusChip kind="overdue">Overdue</StatusChip>
+                      <StatusChip kind="overdue">{copy.states.overdue}</StatusChip>
                       <span className="text-xs text-gray-500">Due 1 day ago</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Literacy: Reading</span>
                     <div className="flex items-center gap-2">
-                      <StatusChip kind="due">Due Soon</StatusChip>
+                      <StatusChip kind="due">{copy.states.due}</StatusChip>
                       <span className="text-xs text-gray-500">Due tomorrow</span>
                     </div>
                   </div>

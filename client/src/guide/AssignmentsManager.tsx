@@ -26,6 +26,13 @@ import { EmptyState } from '../components/ui/empty';
 import { Skeleton } from '../components/ui/skeleton';
 import { InlineError } from '../components/ui/inline-error';
 import { useToast } from '../components/ui/toast';
+import { useFlags } from '../config/flags';
+import { Button as Button2 } from '../ui2/Button';
+import { useToast as useToast2 } from '../ui2/Toast';
+import { confirm } from '../ui2/Confirm';
+import { Empty } from '../ui2/States';
+import { fmtRelative, fmtDate } from '../lib/fmt';
+import { copy } from '../copy';
 import { 
   loadPathsV2, 
   savePathsV2, 
@@ -46,6 +53,7 @@ interface AssignmentsManagerProps {
 }
 
 export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) {
+  const { teacherPanelV2 } = useFlags();
   const rosterContext = useRosterOptional();
   const learnerId = rosterContext?.activeLearner?.id;
   
@@ -56,6 +64,7 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
+  const toast2 = useToast2();
   
   // Form state
   const [formData, setFormData] = useState({
@@ -134,10 +143,17 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
       upsertPathV2(path, learnerId);
       loadAssignments();
       resetForm();
-      toast.push({
-        kind: "success",
-        text: editingId ? "Assignment updated successfully" : "Assignment created successfully"
-      });
+      if (teacherPanelV2) {
+        toast2.push({
+          title: copy.actions.save,
+          body: editingId ? "Assignment updated successfully" : "Assignment created successfully"
+        });
+      } else {
+        toast.push({
+          kind: "success",
+          text: editingId ? "Assignment updated successfully" : "Assignment created successfully"
+        });
+      }
     } catch (error) {
       toast.push({
         kind: "error",
@@ -158,21 +174,42 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
     setShowForm(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (!learnerId) return;
-    if (confirm('Are you sure you want to delete this assignment? This action cannot be undone.')) {
+    const confirmed = teacherPanelV2 
+      ? await confirm({
+          title: 'Delete assignment?',
+          body: 'This action cannot be undone.'
+        })
+      : confirm('Are you sure you want to delete this assignment? This action cannot be undone.');
+    
+    if (confirmed) {
       try {
         deletePathV2(id, learnerId);
         loadAssignments();
-        toast.push({
-          kind: "success",
-          text: "Assignment deleted successfully"
-        });
+        if (teacherPanelV2) {
+          toast2.push({
+            title: "Assignment deleted",
+            body: "Assignment deleted successfully"
+          });
+        } else {
+          toast.push({
+            kind: "success",
+            text: "Assignment deleted successfully"
+          });
+        }
       } catch (error) {
-        toast.push({
-          kind: "error",
-          text: "Failed to delete assignment"
-        });
+        if (teacherPanelV2) {
+          toast2.push({
+            title: "Error",
+            body: "Failed to delete assignment"
+          });
+        } else {
+          toast.push({
+            kind: "error",
+            text: "Failed to delete assignment"
+          });
+        }
       }
     }
   };
