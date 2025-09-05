@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { Badge } from './ui/badge';
-import { AlertTriangle, Shield, Bell, Monitor, MessageSquare, Star, Bug, Share2 } from 'lucide-react';
+import { AlertTriangle, Shield, Bell, Monitor, MessageSquare, Star, Bug, Share2, Palette } from 'lucide-react';
 import { setGuardrailsEnabled } from '../hooks/useScoutQueue';
+import { Flags } from '../config/flags';
 
 /**
  * FeatureFlagsPanel - Development feature toggles for safe pilot switches
@@ -74,6 +75,11 @@ export function FeatureFlagsPanel() {
       return localStorage.getItem('qi.features.enableReferrals') === 'true';
     }
     return localStorage.getItem('qi.features.enableReferrals') !== 'false';
+  });
+
+  // Final Art flag
+  const [finalArtEnabled, setFinalArtEnabled] = useState(() => {
+    return Flags.get().finalArt;
   });
 
   if (!isDev) return null;
@@ -187,6 +193,15 @@ export function FeatureFlagsPanel() {
     localStorage.setItem('qi.features.enableReferrals', enabled ? 'true' : 'false');
     // Dispatch custom event to notify growth components
     window.dispatchEvent(new CustomEvent('referrals-toggle', { 
+      detail: { enabled } 
+    }));
+  };
+
+  const handleFinalArtToggle = (enabled: boolean) => {
+    setFinalArtEnabled(enabled);
+    Flags.set({ finalArt: enabled });
+    // Dispatch custom event to notify art components
+    window.dispatchEvent(new CustomEvent('final-art-toggle', { 
       detail: { enabled } 
     }));
   };
@@ -510,6 +525,32 @@ export function FeatureFlagsPanel() {
           />
         </div>
 
+        {/* Final Art */}
+        <div className="flex items-center justify-between p-3 rounded-lg bg-white border border-orange-200">
+          <div className="flex items-start gap-3">
+            <Palette className="w-5 h-5 text-orange-600 mt-0.5" />
+            <div className="flex-1">
+              <Label className="text-sm font-medium">Final Art Assets</Label>
+              <p className="text-xs text-gray-600 mt-1">
+                Use production art assets for Scout avatar, Backpack icon, and EmptyState spot art.
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant={finalArtEnabled ? "default" : "secondary"} className="text-xs">
+                  {finalArtEnabled ? 'Final Art' : 'Placeholder'}
+                </Badge>
+                {finalArtEnabled && (
+                  <span className="text-xs text-orange-600">Production assets</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <Switch
+            checked={finalArtEnabled}
+            onCheckedChange={handleFinalArtToggle}
+            data-testid="final-art-toggle"
+          />
+        </div>
+
         {/* Status Summary */}
         <div className="p-3 rounded-lg bg-gray-50 border-t">
           <div className="text-xs text-gray-600 space-y-1">
@@ -526,6 +567,7 @@ export function FeatureFlagsPanel() {
               <span>• Privacy: {privacyStrictModeEnabled ? 'Strict Mode ON' : 'Standard Mode'}</span>
               <span>• Invites: {invitesEnabled ? 'Enabled' : 'Disabled'}</span>
               <span>• Referrals: {referralsEnabled ? 'Enabled' : 'Disabled'}</span>
+              <span>• Final Art: {finalArtEnabled ? 'Enabled' : 'Disabled'}</span>
             </div>
           </div>
         </div>

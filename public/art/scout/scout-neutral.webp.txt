@@ -1,0 +1,3 @@
+# Placeholder for Scout neutral art
+# This would be a webp image file ≤150KB in production
+# Shows Scout character in neutral/idle pose
