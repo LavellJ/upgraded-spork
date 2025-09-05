@@ -1,4 +1,4 @@
-import { Suspense } from 'react'
+import React, { Suspense } from 'react'
 
 // Import main panels that exist in the codebase
 import { Timeline } from '../Timeline'                             // from guide/Timeline.tsx
@@ -26,24 +26,49 @@ function Missing({ name }: { name: string }) {
 }
 
 export default function TabContentV2({ tab }: Props) {
+  // Debug the tab value
+  console.log('TabContentV2 rendering with tab:', tab)
+  
   const body = (() => {
     switch (tab) {
-      case 'timeline':     return <Timeline />
-      case 'assignments':  return <AssignmentsManager />
+      case 'timeline':     
+        console.log('Rendering Timeline component')
+        return <Timeline />
+      case 'assignments':  
+        console.log('Rendering AssignmentsManager component')
+        return <AssignmentsManager />
       case 'content':      
-      case 'studio':       return <ContentStudio />
+      case 'studio':       
+        console.log('Rendering ContentStudio component')
+        return <ContentStudio />
       case 'roster':       
-      case 'learners':     return <RosterManagement />
-      case 'classes':      return <Classes />
-      case 'privacy':      return <PrivacyHub />
-      case 'appearance':   return <Appearance />
-      case 'reports':      return <Reports />
-      case 'insights':     return <InsightsCard timeRange={30} />
+      case 'learners':     
+        console.log('Rendering RosterManagement component')
+        return <RosterManagement />
+      case 'classes':      
+        console.log('Rendering Classes component')
+        return <Classes />
+      case 'privacy':      
+        console.log('Rendering PrivacyHub component')
+        return <PrivacyHub />
+      case 'appearance':   
+        console.log('Rendering Appearance component')
+        return <Appearance />
+      case 'reports':      
+        console.log('Rendering Reports component')
+        return <Reports />
+      case 'insights':     
+        console.log('Rendering InsightsCard component')
+        return <InsightsCard timeRange={30} />
       case 'overview':
       case 'dashboard':
       case '':
-      case undefined:      return <InsightsCard timeRange={30} />
-      default:             return <Missing name={tab} />
+      case undefined:      
+        console.log('Rendering default InsightsCard component')
+        return <InsightsCard timeRange={30} />
+      default:             
+        console.log('Rendering Missing component for tab:', tab)
+        return <Missing name={tab} />
     }
   })()
 
