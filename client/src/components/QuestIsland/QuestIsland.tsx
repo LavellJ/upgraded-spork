@@ -48,6 +48,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
   const [showJournal, setShowJournal] = useState(false);
   const [scoutPosition, setScoutPosition] = useState({ x: 50, y: 75 }); // Starting on kidney trail path
   const [scoutTarget, setScoutTarget] = useState<string | null>(null);
+  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
   const [lessonProgress, setLessonProgress] = useState<Record<string, { completed: boolean; locked: boolean }>>(() => {
     // Initialize with first lesson unlocked
     const initialProgress: Record<string, { completed: boolean; locked: boolean }> = {};
@@ -499,6 +500,9 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
       return;
     }
     
+    // Set as selected lesson for visual feedback
+    setSelectedLessonId(lessonId);
+    
     // Navigate to learning activity
     setLocation(`/learning?topic=${lessonId}`);
     onLessonSelect?.(lessonId);
@@ -889,6 +893,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
               <LessonNode
                 key={node.id}
                 {...node}
+                selected={selectedLessonId === node.id}
                 onClick={() => handleLessonClick(node.id)}
                 allNodes={lessonNodes}
               />

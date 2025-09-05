@@ -29,10 +29,11 @@ interface LessonNodeProps {
   locked: boolean;
   onClick: () => void;
   isVisible?: boolean;
+  selected?: boolean;
   allNodes?: LessonNodeProps[]; // For collision detection
 }
 
-export function LessonNode({ id, title, biome, position, completed, locked, onClick, isVisible = true, allNodes = [] }: LessonNodeProps) {
+export function LessonNode({ id, title, biome, position, completed, locked, selected = false, onClick, isVisible = true, allNodes = [] }: LessonNodeProps) {
   const rosterContext = useRosterOptional();
   const flags = useFlags();
   const finalArtEnabled = flags.finalArt;
@@ -143,6 +144,7 @@ export function LessonNode({ id, title, biome, position, completed, locked, onCl
         <Pin
           state={pinState}
           size={24}
+          selected={selected}
           ariaLabel={getAriaLabel()}
           onClick={onClick}
           collisionOffset={collisionOffset}
