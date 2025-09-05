@@ -13,7 +13,6 @@ export default function ArtDiagnostics(){
   const [res, setRes] = useState<{[k:string]:boolean}>({})
   
   useEffect(()=>{
-    let cancelled = false
     const checkAssets = async () => {
       const entries = [
         ['/art/ui/backpack.webp','Backpack'],
@@ -23,20 +22,22 @@ export default function ArtDiagnostics(){
       ]
       const out: Record<string, boolean> = {}
       for (const [url, name] of entries){ 
-        if (cancelled) return
         out[name] = await check(url) 
       }
-      if (!cancelled) setRes(out)
+      setRes(out)
     }
     checkAssets()
-    return () => { cancelled = true }
-  }, [flags.finalArt])
+  }, [])
+  
+  const handleToggle = (checked: boolean) => {
+    Flags.set({ finalArt: checked })
+  }
   return (
     <section className="card p-4 space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold">Art Diagnostics</h3>
         <label className="flex items-center gap-2">
-          <input type="checkbox" checked={flags.finalArt} onChange={e=>Flags.set({ finalArt: e.target.checked })}/>
+          <input type="checkbox" checked={flags.finalArt} onChange={e=>handleToggle(e.target.checked)}/>
           <span>Final Art</span>
         </label>
       </div>
