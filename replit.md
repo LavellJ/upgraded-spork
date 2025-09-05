@@ -4,6 +4,15 @@ This is a full-stack educational web application called "LearnOz" that provides 
 
 # Recent Changes
 
+## TP2: Teacher Panel Polish - Shared Primitives & Enhanced Pages (Completed)
+- **Shared UI Primitives**: Created FilterBar, DataTable, Pagination, and Skeleton components with URL-synced filters and density-aware responsive design
+- **Enhanced Pages**: Polished Learners, Assignments, and Insights pages with professional data tables, search/filter capabilities, and loading states
+- **Accessibility Features**: Added ARIA live regions for filter updates, sort button labels, focus management, and keyboard navigation support  
+- **Data Table System**: Sortable columns, custom renderers, empty states, and row click handlers with density-responsive row heights
+- **URL State Management**: Filter parameters synced to URL for shareable filtered views using useUrlState hook
+- **Test Coverage**: Basic DataTable functionality tests with sort, empty state, and row click interaction coverage
+- **Flag-Gated Implementation**: All enhancements conditionally render based on teacherPanelV2 flag, maintaining backward compatibility
+
 ## TP1: Teacher Panel v2 Layout System (Completed)
 - **Feature Flag Integration**: Added teacherPanelV2 feature flag to config/flags.ts with FeatureFlagsPanel toggle
 - **Professional Sidebar Layout**: Created TeacherLayoutV2 with left navigation, replacing bottom sheet tabs with sidebar navigation
