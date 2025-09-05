@@ -69,6 +69,37 @@ Failures will block deployment until resolved.
 ### PWA Caching
 Art assets under `/public/art/` are automatically included in PWA precache for offline support.
 
+## Pins — Interaction
+
+### Selection Rings
+When pins are selected, they display a subtle selection ring with inner glow effect:
+
+- **Visual**: 2px outline ring using `--brand` color with 60% opacity inner stroke
+- **Accessibility**: `aria-pressed="true"` and `aria-current="true"` for screen readers
+- **Projector Mode**: Enhanced stroke width (+0.5px) for better visibility
+
+### High Contrast Support
+In high contrast mode (`data-contrast="high"`):
+
+- **Done state**: Uses solid fill instead of transparent background
+- **All states**: Enhanced stroke colors for better visibility
+- **Breadcrumbs**: Switch to `--fg-default` color for maximum contrast
+
+### Projector Mode Scaling
+When projector mode is active (`data-projector-font-scale` attribute present):
+
+- **Size scaling**: Pins bump up one size tier (16→24px, 24→48px)
+- **Stroke enhancement**: Increased stroke width for projection clarity
+- **Parallax disabled**: BiomePlates parallax effects are automatically disabled
+
+### Route Breadcrumbs
+Compass navigation between pins shows dotted breadcrumb trails:
+
+- **Animation**: Slow dash offset animation (disabled with reduced motion)
+- **Colors**: Highlight emphasis uses `--brand`, normal uses `--fg-muted`
+- **High contrast**: Adapts to use `--fg-default` for visibility
+- **Final Art gated**: Only visible when Final Art toggle is enabled
+
 ## Component Integration
 
 ### Using Art Assets

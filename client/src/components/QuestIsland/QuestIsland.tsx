@@ -6,12 +6,14 @@ import { Scout } from "./Scout";
 import { Biome } from "./Biome";
 import { JourneyJournal } from "./JourneyJournal";
 import { LessonNode } from "./LessonNode";
-import { getLearnerName } from "@/utils/learnerName";
+// import { getLearnerName } from "@/utils/learnerName";
+const getLearnerName = () => 'Explorer'; // Temporary fallback
 import { getAsset } from "../../lib/assetResolver";
 import { ShimmerImage } from "../ShimmerImage";
 import { schedulePrefetch } from "../../pwa/prefetch";
 import ArtPinsPreview from "../../map/ArtPinsPreview";
 import { BiomePlates } from "../../map/BiomePlates";
+import { RouteBreadcrumbs } from "../../map/RouteBreadcrumbs";
 import { useFlags } from "../../config/flags";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 import { getCurrentBiomeFromUrl } from "../../utils/urlBiome";
@@ -507,6 +509,66 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
     return lessonOrder.find(id => !lessonProgress[id]?.completed && !lessonProgress[id]?.locked);
   }, [lessonProgress]);
   
+  // Get compass breadcrumb points for current to next lesson
+  const getBreadcrumbPoints = useCallback(() => {
+    const nextLesson = getNextSuggestedLesson();
+    if (!nextLesson) return [];
+    
+    // Find current lesson (last completed)
+    const lessonOrder = ["beach-1", "beach-2", "beach-3", "jungle-1", "jungle-2", "jungle-3", "volcano-1", "volcano-2", "volcano-3", "lagoon-1", "lagoon-2", "lagoon-3"];
+    let currentLesson: string | null = null;
+    for (let i = lessonOrder.length - 1; i >= 0; i--) {
+      if (lessonProgress[lessonOrder[i]]?.completed) {
+        currentLesson = lessonOrder[i];
+        break;
+      }
+    }
+    
+    // If no completed lessons, start from Scout position
+    if (!currentLesson) {
+      const lessonPositions: Record<string, { leftPct: number; topPct: number }> = {
+        "beach-1": { leftPct: (treeBranches.beach.branches[0].endpoint.x/1200)*100, topPct: (treeBranches.beach.branches[0].endpoint.y/900)*100 },
+        "beach-2": { leftPct: (treeBranches.beach.branches[1].endpoint.x/1200)*100, topPct: (treeBranches.beach.branches[1].endpoint.y/900)*100 },
+        "beach-3": { leftPct: (treeBranches.beach.branches[2].endpoint.x/1200)*100, topPct: (treeBranches.beach.branches[2].endpoint.y/900)*100 },
+        "jungle-1": { leftPct: (treeBranches.jungle.branches[0].endpoint.x/1200)*100, topPct: (treeBranches.jungle.branches[0].endpoint.y/900)*100 },
+        "jungle-2": { leftPct: (treeBranches.jungle.branches[1].endpoint.x/1200)*100, topPct: (treeBranches.jungle.branches[1].endpoint.y/900)*100 },
+        "jungle-3": { leftPct: (treeBranches.jungle.branches[2].endpoint.x/1200)*100, topPct: (treeBranches.jungle.branches[2].endpoint.y/900)*100 },
+        "volcano-1": { leftPct: (treeBranches.volcano.branches[0].endpoint.x/1200)*100, topPct: (treeBranches.volcano.branches[0].endpoint.y/900)*100 },
+        "volcano-2": { leftPct: (treeBranches.volcano.branches[1].endpoint.x/1200)*100, topPct: (treeBranches.volcano.branches[1].endpoint.y/900)*100 },
+        "volcano-3": { leftPct: (treeBranches.volcano.branches[2].endpoint.x/1200)*100, topPct: (treeBranches.volcano.branches[2].endpoint.y/900)*100 },
+        "lagoon-1": { leftPct: (treeBranches.lagoon.branches[0].endpoint.x/1200)*100, topPct: (treeBranches.lagoon.branches[0].endpoint.y/900)*100 },
+        "lagoon-2": { leftPct: (treeBranches.lagoon.branches[1].endpoint.x/1200)*100, topPct: (treeBranches.lagoon.branches[1].endpoint.y/900)*100 },
+        "lagoon-3": { leftPct: (treeBranches.lagoon.branches[2].endpoint.x/1200)*100, topPct: (treeBranches.lagoon.branches[2].endpoint.y/900)*100 }
+      };
+      
+      return [
+        { leftPct: scoutPosition.x, topPct: scoutPosition.y },
+        lessonPositions[nextLesson]
+      ].filter(Boolean);
+    }
+    
+    // Create path from current to next lesson
+    const lessonPositions: Record<string, { leftPct: number; topPct: number }> = {
+      "beach-1": { leftPct: (treeBranches.beach.branches[0].endpoint.x/1200)*100, topPct: (treeBranches.beach.branches[0].endpoint.y/900)*100 },
+      "beach-2": { leftPct: (treeBranches.beach.branches[1].endpoint.x/1200)*100, topPct: (treeBranches.beach.branches[1].endpoint.y/900)*100 },
+      "beach-3": { leftPct: (treeBranches.beach.branches[2].endpoint.x/1200)*100, topPct: (treeBranches.beach.branches[2].endpoint.y/900)*100 },
+      "jungle-1": { leftPct: (treeBranches.jungle.branches[0].endpoint.x/1200)*100, topPct: (treeBranches.jungle.branches[0].endpoint.y/900)*100 },
+      "jungle-2": { leftPct: (treeBranches.jungle.branches[1].endpoint.x/1200)*100, topPct: (treeBranches.jungle.branches[1].endpoint.y/900)*100 },
+      "jungle-3": { leftPct: (treeBranches.jungle.branches[2].endpoint.x/1200)*100, topPct: (treeBranches.jungle.branches[2].endpoint.y/900)*100 },
+      "volcano-1": { leftPct: (treeBranches.volcano.branches[0].endpoint.x/1200)*100, topPct: (treeBranches.volcano.branches[0].endpoint.y/900)*100 },
+      "volcano-2": { leftPct: (treeBranches.volcano.branches[1].endpoint.x/1200)*100, topPct: (treeBranches.volcano.branches[1].endpoint.y/900)*100 },
+      "volcano-3": { leftPct: (treeBranches.volcano.branches[2].endpoint.x/1200)*100, topPct: (treeBranches.volcano.branches[2].endpoint.y/900)*100 },
+      "lagoon-1": { leftPct: (treeBranches.lagoon.branches[0].endpoint.x/1200)*100, topPct: (treeBranches.lagoon.branches[0].endpoint.y/900)*100 },
+      "lagoon-2": { leftPct: (treeBranches.lagoon.branches[1].endpoint.x/1200)*100, topPct: (treeBranches.lagoon.branches[1].endpoint.y/900)*100 },
+      "lagoon-3": { leftPct: (treeBranches.lagoon.branches[2].endpoint.x/1200)*100, topPct: (treeBranches.lagoon.branches[2].endpoint.y/900)*100 }
+    };
+    
+    return [
+      lessonPositions[currentLesson],
+      lessonPositions[nextLesson]
+    ].filter(Boolean);
+  }, [getNextSuggestedLesson, lessonProgress, scoutPosition]);
+
   const handleScoutClick = useCallback(() => {
     const nextLesson = getNextSuggestedLesson();
     const lessonTitles: Record<string, string> = {
@@ -746,6 +808,15 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 enable={true} 
                 intensity={8} 
                 reduceMotion={reduceMotion} 
+              />
+            )}
+            
+            {/* Compass Route Breadcrumbs (when Final Art is ON and has next lesson) */}
+            {finalArt && getBreadcrumbPoints().length > 0 && (
+              <RouteBreadcrumbs
+                points={getBreadcrumbPoints()}
+                emphasis="highlight"
+                animated={!reduceMotion}
               />
             )}
             
