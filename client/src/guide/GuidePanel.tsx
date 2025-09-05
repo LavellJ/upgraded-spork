@@ -2,6 +2,9 @@ import React, { lazy, Suspense, useState } from 'react'
 import GuideShell from './layout/GuideShell'
 import PageHeader from './layout/PageHeader'
 import SubTabs, { type TabItem } from './layout/SubTabs'
+import { useFlags } from '../config/flags'
+import { TeacherLayoutV2 } from './teacher/TeacherLayoutV2'
+import TabContentV2 from './teacher/TabContentV2'
 
 const Insights = lazy(() => import('./InsightsCard').then(m => ({ default: m.InsightsCard })))
 const Reports = lazy(() => import('./reports/Reports').then(m => ({ default: m.Reports })))
@@ -21,7 +24,24 @@ const TABS: TabItem[] = [
 
 export default function GuidePanel() {
   const [tab, setTab] = useState<string>('insights')
+  const { teacherPanelV2 } = useFlags()
 
+  // Use new TeacherLayoutV2 when flag is enabled
+  if (teacherPanelV2) {
+    return (
+      <TeacherLayoutV2
+        activeTab={tab}
+        onTabChange={setTab}
+        onClose={() => {
+          // Handle close - could navigate back or hide panel
+          window.history.back()
+        }}
+        renderContent={() => <TabContentV2 tab={tab} />}
+      />
+    )
+  }
+
+  // Legacy layout when flag is disabled
   return (
     <GuideShell topbar={<div className="flex items-center gap-3">
       <img src="/brand/logo.png" alt="" className="h-6 w-6 rounded-md" />
