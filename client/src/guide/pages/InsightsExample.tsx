@@ -3,6 +3,8 @@ import { useFlags } from '../../config/flags'
 import TeacherLayout from '../teacher/Layout'
 import { Card } from '../../ui2/Card'
 import { Line } from '../../ui2/Skeleton'
+import { DetailDrawer } from '../../ui2/DetailDrawer'
+import { ActionBar } from '../../ui2/ActionBar'
 
 type MetricCard = {
   title: string
@@ -39,6 +41,8 @@ const mockMetrics: MetricCard[] = [
 export default function InsightsExample(){
   const { teacherPanelV2 } = useFlags()
   const [loading, setLoading] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [activeMetric, setActiveMetric] = useState<MetricCard | null>(null)
   
   // Fallback to legacy layout if flag disabled
   if (!teacherPanelV2) {
@@ -74,7 +78,14 @@ export default function InsightsExample(){
         {/* Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {mockMetrics.map((metric, index) => (
-            <Card key={metric.title}>
+            <Card 
+              key={metric.title}
+              className="cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => {
+                setActiveMetric(metric)
+                setDrawerOpen(true)
+              }}
+            >
               {loading ? (
                 <div className="space-y-3">
                   <Line w="60%" />
@@ -156,6 +167,87 @@ export default function InsightsExample(){
             </button>
           </div>
         </Card>
+
+        {/* Metric Detail Drawer */}
+        <DetailDrawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          title={activeMetric?.title || 'Metric Details'}
+          subtitle="Insights"
+          footer={
+            <ActionBar>
+              <button 
+                data-autofocus
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
+                onClick={() => setDrawerOpen(false)}
+              >
+                Close
+              </button>
+            </ActionBar>
+          }
+        >
+          {activeMetric && (
+            <div className="space-y-6">
+              <Card title="Overview">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{activeMetric.icon}</span>
+                    <div>
+                      <div className="text-2xl font-bold">{activeMetric.value}</div>
+                      <div className={`text-sm ${getTrendColor(activeMetric.trend)}`}>
+                        {activeMetric.change}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-sm text-gray-600">
+                    {activeMetric.title === 'Minutes on-task' && (
+                      <p>Total time learners spent actively engaged with learning materials across all subjects this week.</p>
+                    )}
+                    {activeMetric.title === 'Returns this week' && (
+                      <p>Number of learners who returned to continue their learning journey after completing previous sessions.</p>
+                    )}
+                    {activeMetric.title === 'Due/Overdue Summary' && (
+                      <p>Current status of assignments with approaching deadlines and items requiring attention.</p>
+                    )}
+                  </div>
+                </div>
+              </Card>
+
+              <Card title="Quick Filters">
+                <div className="space-y-3">
+                  <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                    <div className="font-medium text-sm">Show last 14 days</div>
+                    <div className="text-xs text-gray-500">Extended time range view</div>
+                  </button>
+                  <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                    <div className="font-medium text-sm">Filter by Grade 2A</div>
+                    <div className="text-xs text-gray-500">Focus on specific class</div>
+                  </button>
+                  <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                    <div className="font-medium text-sm">Compare with last month</div>
+                    <div className="text-xs text-gray-500">Trend analysis view</div>
+                  </button>
+                </div>
+              </Card>
+
+              {activeMetric.title === 'Due/Overdue Summary' && (
+                <Card title="Action Items">
+                  <div className="space-y-2">
+                    <div className="p-2 bg-red-50 border border-red-200 rounded">
+                      <div className="text-sm font-medium text-red-800">3 overdue assignments</div>
+                      <div className="text-xs text-red-600">Require immediate attention</div>
+                    </div>
+                    <div className="p-2 bg-yellow-50 border border-yellow-200 rounded">
+                      <div className="text-sm font-medium text-yellow-800">12 due this week</div>
+                      <div className="text-xs text-yellow-600">Send reminders to learners</div>
+                    </div>
+                  </div>
+                </Card>
+              )}
+            </div>
+          )}
+        </DetailDrawer>
       </div>
     </TeacherLayout>
   )

@@ -6,6 +6,10 @@ import { FilterBar, SearchInput, Select, useUrlState } from '../../ui2/FilterBar
 import { DataTable, Column } from '../../ui2/DataTable'
 import { Pagination } from '../../ui2/Pagination'
 import { TableSkeleton } from '../../ui2/Skeleton'
+import { DetailDrawer } from '../../ui2/DetailDrawer'
+import { ActionBar } from '../../ui2/ActionBar'
+import { StatusChip } from '../../ui2/StatusChip'
+import { KV } from '../../ui2/KV'
 
 type Assignment = {
   id: string
@@ -52,6 +56,8 @@ export default function AssignmentsExample(){
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [activeAssignment, setActiveAssignment] = useState<Assignment | null>(null)
 
   const pageSize = 10
 
@@ -174,7 +180,10 @@ export default function AssignmentsExample(){
                 sortKey={sortKey}
                 sortDir={sortDir}
                 onSort={handleSort}
-                onRowClick={(assignment) => console.log('View assignment:', assignment.title)}
+                onRowClick={(assignment) => {
+                  setActiveAssignment(assignment)
+                  setDrawerOpen(true)
+                }}
                 empty={
                   <div className="text-center py-8 text-gray-500">
                     <div className="text-4xl mb-2">📝</div>
@@ -196,6 +205,111 @@ export default function AssignmentsExample(){
             </div>
           )}
         </Card>
+
+        {/* Assignment Detail Drawer */}
+        <DetailDrawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          title={activeAssignment?.title || 'Assignment'}
+          subtitle="Assignment"
+          footer={
+            <ActionBar>
+              <button className="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
+                Archive
+              </button>
+              <button 
+                data-autofocus
+                className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
+              >
+                Save changes
+              </button>
+            </ActionBar>
+          }
+        >
+          {activeAssignment && (
+            <div className="space-y-6">
+              {/* Assignment Details */}
+              <Card title="Details">
+                <div className="space-y-4">
+                  <KV items={[
+                    { k: 'Due date', v: <input type="date" defaultValue="2025-01-15" className="text-sm border border-gray-300 rounded px-2 py-1" /> },
+                    { k: 'Status', v: getStatusChip(activeAssignment.status) },
+                    { k: 'Priority', v: 'Medium' },
+                    { k: 'Created', v: '3 days ago' }
+                  ]} />
+                </div>
+              </Card>
+
+              {/* Assigned Learners */}
+              <Card title="Assigned Learners">
+                <div className="space-y-3">
+                  <div className="text-sm text-gray-600 mb-3">
+                    {activeAssignment.assigned} learners assigned
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-2 border border-gray-200 rounded">
+                      <div className="flex items-center gap-2">
+                        <input type="checkbox" className="rounded" />
+                        <span className="text-sm font-medium">Emma Thompson</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <StatusChip kind="assigned">In Progress</StatusChip>
+                        <span className="text-xs text-gray-500">Active 2h ago</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-2 border border-gray-200 rounded">
+                      <div className="flex items-center gap-2">
+                        <input type="checkbox" className="rounded" />
+                        <span className="text-sm font-medium">Jack Wilson</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <StatusChip kind="overdue">Not Started</StatusChip>
+                        <span className="text-xs text-gray-500">Active 1d ago</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-2 border border-gray-200 rounded">
+                      <div className="flex items-center gap-2">
+                        <input type="checkbox" className="rounded" />
+                        <span className="text-sm font-medium">Sophie Chen</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <StatusChip kind="done">Completed</StatusChip>
+                        <span className="text-xs text-gray-500">Submitted today</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2 pt-2">
+                    <button className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200">
+                      Send Reminder
+                    </button>
+                    <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-xs hover:bg-gray-200">
+                      Extend Deadline
+                    </button>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Notes Section */}
+              <Card title="Notes">
+                <div className="space-y-3">
+                  <textarea 
+                    className="w-full p-3 border border-gray-300 rounded-lg text-sm resize-none"
+                    rows={4}
+                    placeholder="Add notes about this assignment..."
+                    defaultValue="This assignment focuses on understanding fractions. Students should work through examples 1-15 and complete the practice worksheet."
+                  />
+                  <div className="text-xs text-gray-500">
+                    Last updated 2 days ago
+                  </div>
+                </div>
+              </Card>
+            </div>
+          )}
+        </DetailDrawer>
       </div>
     </TeacherLayout>
   )
