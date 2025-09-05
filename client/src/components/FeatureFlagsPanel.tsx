@@ -81,6 +81,7 @@ export function FeatureFlagsPanel() {
   const flags = useFlags();
   const finalArtEnabled = flags.finalArt;
   const teacherPanelV2Enabled = flags.teacherPanelV2;
+  const teacherThemeV2Enabled = flags.teacherThemeV2;
 
   if (!isDev) return null;
 
@@ -204,6 +205,11 @@ export function FeatureFlagsPanel() {
 
   const handleTeacherPanelV2Toggle = (enabled: boolean) => {
     Flags.set({ teacherPanelV2: enabled });
+    // Note: useFlags hook automatically handles reactivity, no event needed
+  };
+
+  const handleTeacherThemeV2Toggle = (enabled: boolean) => {
+    Flags.set({ teacherThemeV2: enabled });
     // Note: useFlags hook automatically handles reactivity, no event needed
   };
 
@@ -578,6 +584,32 @@ export function FeatureFlagsPanel() {
           />
         </div>
 
+        {/* Teacher Theme V2 */}
+        <div className="flex items-center justify-between p-3 rounded-lg bg-white border border-purple-200">
+          <div className="flex items-start gap-3">
+            <Palette className="w-5 h-5 text-purple-600 mt-0.5" />
+            <div className="flex-1">
+              <Label className="text-sm font-medium">Teacher Theme v2 (accessible colors)</Label>
+              <p className="text-xs text-gray-600 mt-1">
+                Use the new theme system with Parchment Light, Slate Dark, and High Contrast themes.
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant={teacherThemeV2Enabled ? "default" : "secondary"} className="text-xs">
+                  {teacherThemeV2Enabled ? 'Themed' : 'Default'}
+                </Badge>
+                {teacherThemeV2Enabled && (
+                  <span className="text-xs text-purple-600">Accessible themes</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <Switch
+            checked={teacherThemeV2Enabled}
+            onCheckedChange={handleTeacherThemeV2Toggle}
+            data-testid="teacher-theme-v2-toggle"
+          />
+        </div>
+
         {/* Status Summary */}
         <div className="p-3 rounded-lg bg-gray-50 border-t">
           <div className="text-xs text-gray-600 space-y-1">
@@ -596,6 +628,7 @@ export function FeatureFlagsPanel() {
               <span>• Referrals: {referralsEnabled ? 'Enabled' : 'Disabled'}</span>
               <span>• Final Art: {finalArtEnabled ? 'Enabled' : 'Disabled'}</span>
               <span>• Teacher Panel: {teacherPanelV2Enabled ? 'v2 Layout' : 'Current Layout'}</span>
+              <span>• Teacher Theme: {teacherThemeV2Enabled ? 'v2 Themes' : 'Default'}</span>
             </div>
           </div>
         </div>

@@ -27,6 +27,7 @@ import { TriageBoard } from '../dev/TriageBoard'                     // from gui
 import PinGallery from '../dev/PinGallery'                          // from guide/dev/PinGallery.tsx
 import ScoutGallery from '../dev/ScoutGallery'                      // from guide/dev/ScoutGallery.tsx
 import ArtDiagnostics from '../dev/ArtDiagnostics'                  // from guide/dev/ArtDiagnostics.tsx
+import { ThemeSelector } from '../dev/ThemeSelector'                 // from guide/dev/ThemeSelector.tsx
 
 // Providers your panels expect (so nothing is "empty"):
 import { RosterProvider } from '../../roster/context'
@@ -131,6 +132,7 @@ export default function TabContentV2({ tab }: Props) {
       case 'dev':          
         return (
           <div className="space-y-6">
+            <ThemeSelector />
             <TriageBoard />
             <PinGallery />
             <ScoutGallery />

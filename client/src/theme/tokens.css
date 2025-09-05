@@ -1,0 +1,53 @@
+:root {
+  /* Parchment Light (default) */
+  --bg-base: 249 246 238;   /* parchment */
+  --bg-card: 255 252 246;   /* lighter card */
+  --bg-elev: 255 255 255;   /* highest surface */
+  --border: 214 211 209;    /* warm stone */
+  --fg-base: 41 37 36;      /* stone-800 */
+  --fg-muted: 87 83 78;     /* stone-600 */
+
+  /* Brand (Trail green) */
+  --brand-500: 18 120 98;   /* #127862 */
+  --brand-600: 10 95 83;    /* #0A5F53 */
+
+  /* Status */
+  --success-500: 16 185 129;
+  --warn-500: 245 158 11;
+  --danger-500: 239 68 68;
+
+  /* Focus & shadows */
+  --ring: var(--brand-500);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / .05);
+  --shadow-md: 0 4px 14px rgb(0 0 0 / .08);
+}
+
+/* Slate Dark */
+[data-theme="dark"] {
+  --bg-base: 17 24 39;
+  --bg-card: 30 41 59;
+  --bg-elev: 45 55 72;
+  --border: 71 85 105;
+  --fg-base: 241 245 249;
+  --fg-muted: 203 213 225;
+
+  --brand-500: 56 189 248; /* sky-400 */
+  --brand-600: 2 132 199;
+
+  --ring: var(--brand-500);
+}
+
+/* High Contrast (true accessibility mode) */
+[data-theme="hc"] {
+  --bg-base: 255 255 255;
+  --bg-card: 255 255 255;
+  --bg-elev: 255 255 255;
+  --border: 0 0 0;
+  --fg-base: 0 0 0;
+  --fg-muted: 32 32 32;
+
+  --brand-500: 0 0 0;
+  --brand-600: 0 0 0;
+
+  --ring: 0 0 0;
+}

@@ -27,6 +27,9 @@ export default {
           soft: 'rgb(var(--bg-soft))',
           // Legacy compatibility
           subtle: 'rgb(var(--bg-soft))',
+          // TP5 theme tokens
+          base: 'rgb(var(--bg-base) / <alpha-value>)',
+          elev: 'rgb(var(--bg-elev) / <alpha-value>)',
         },
         fg: {
           DEFAULT: 'rgb(var(--fg-default))',
@@ -35,16 +38,23 @@ export default {
           inverse: 'rgb(var(--fg-inverse))',
           // Legacy compatibility
           default: 'rgb(var(--fg-default))',
+          // TP5 theme tokens
+          base: 'rgb(var(--fg-base) / <alpha-value>)',
         },
         brand: {
           DEFAULT: 'rgb(var(--brand))',
           600: 'rgb(var(--brand-600))',
           700: 'rgb(var(--brand-700))',
+          // TP5 theme tokens
+          500: 'rgb(var(--brand-500) / <alpha-value>)',
         },
-        border: 'rgb(var(--border))',
+        border: 'rgb(var(--border) / <alpha-value>)',
         positive: 'rgb(var(--positive))',
         warning: 'rgb(var(--warning))',
         danger: 'rgb(var(--danger))',
+        // TP5 status tokens
+        success: { 500: 'rgb(var(--success-500) / <alpha-value>)' },
+        warn: { 500: 'rgb(var(--warn-500) / <alpha-value>)' },
         
         // Legacy shadcn/ui colors for compatibility
         background: "var(--background)",
