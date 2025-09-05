@@ -1,3 +1,0 @@
-# Placeholder for Backpack UI icon
-# This would be a webp image file ≤150KB in production
-# Shows inventory/backpack icon for the app
