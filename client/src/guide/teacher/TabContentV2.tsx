@@ -14,6 +14,7 @@ import { Reports } from '../reports/Reports'                        // from guid
 // Providers your panels expect (so nothing is "empty"):
 import { RosterProvider } from '../../roster/context'
 import { GuideNoticeProvider } from '../notices'
+import { ToastProvider } from '../../components/ui/toast'
 
 type Props = { tab: string }
 
@@ -73,12 +74,14 @@ export default function TabContentV2({ tab }: Props) {
   })()
 
   return (
-    <RosterProvider>
-      <GuideNoticeProvider>
-        <Suspense fallback={<div className="p-6">Loading…</div>}>
-          {body}
-        </Suspense>
-      </GuideNoticeProvider>
-    </RosterProvider>
+    <ToastProvider>
+      <RosterProvider>
+        <GuideNoticeProvider>
+          <Suspense fallback={<div className="p-6">Loading…</div>}>
+            {body}
+          </Suspense>
+        </GuideNoticeProvider>
+      </RosterProvider>
+    </ToastProvider>
   )
 }
