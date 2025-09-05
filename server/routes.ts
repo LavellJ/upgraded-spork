@@ -45,6 +45,7 @@ import { classesRouter } from './routes/classes';
 import invitesRouter from './routes/invites';
 import referralsRouter from './routes/referrals';
 import dsarRouter from './routes/dsar';
+import erasureRouter from './routes/erasure';
 import { syncBatchSLO, trackSLO } from './metrics/slo';
 import { asyncHandler, AppError, ValidationError, NotFoundError } from './middleware/errorHandler';
 import { log } from './log';
@@ -689,6 +690,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Mount DSAR routes
   app.use('/api/dsar', dsarRouter);
+  
+  // Mount erasure routes
+  app.use('/api/erasure', erasureRouter);
 
   console.log('🗄️  File-backed user storage initialized');
   console.log('📁  Data directory: .data/');

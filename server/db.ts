@@ -82,6 +82,18 @@ db.exec(`
     FOREIGN KEY (requesterEmail) REFERENCES users(email)
   );
 
+  -- Erasure requests for data deletion with grace period
+  CREATE TABLE IF NOT EXISTS erasure_requests (
+    id TEXT PRIMARY KEY,              -- uuid
+    email TEXT NOT NULL,
+    scope TEXT NOT NULL,              -- 'learner'|'account'
+    learnerId TEXT,                   -- when scope='learner'
+    status TEXT NOT NULL,             -- 'pending'|'scheduled'|'done'|'canceled'
+    requestedAt INTEGER NOT NULL,
+    dueAt INTEGER NOT NULL,           -- when to execute deletion
+    FOREIGN KEY (email) REFERENCES users(email)
+  );
+
   -- Indexes for better query performance
   CREATE INDEX IF NOT EXISTS idx_user_docs_email ON user_docs(email);
   CREATE INDEX IF NOT EXISTS idx_user_docs_learner ON user_docs(email, learnerId);
@@ -94,6 +106,9 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_dsar_requests_email ON dsar_requests(requesterEmail);
   CREATE INDEX IF NOT EXISTS idx_dsar_requests_status ON dsar_requests(status);
   CREATE INDEX IF NOT EXISTS idx_dsar_requests_created ON dsar_requests(createdAt);
+  CREATE INDEX IF NOT EXISTS idx_erasure_requests_email ON erasure_requests(email);
+  CREATE INDEX IF NOT EXISTS idx_erasure_requests_status ON erasure_requests(status);
+  CREATE INDEX IF NOT EXISTS idx_erasure_requests_due ON erasure_requests(dueAt);
 `);
 
 // Prepared statements for common operations
@@ -212,6 +227,41 @@ export const statements = {
   
   countRecentDsarRequests: db.prepare(`
     SELECT COUNT(*) as count FROM dsar_requests WHERE requesterEmail = ? AND createdAt > ?
+  `),
+
+  // Erasure requests
+  insertErasureRequest: db.prepare(`
+    INSERT INTO erasure_requests (id, email, scope, learnerId, status, requestedAt, dueAt)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `),
+  
+  getErasureRequest: db.prepare(`
+    SELECT * FROM erasure_requests WHERE id = ?
+  `),
+  
+  getErasureRequestsByUser: db.prepare(`
+    SELECT * FROM erasure_requests WHERE email = ? ORDER BY requestedAt DESC
+  `),
+  
+  updateErasureRequestStatus: db.prepare(`
+    UPDATE erasure_requests SET status = ? WHERE id = ?
+  `),
+  
+  getDueErasureRequests: db.prepare(`
+    SELECT * FROM erasure_requests WHERE status = 'scheduled' AND dueAt <= ?
+  `),
+
+  deleteUserDocsByLearner: db.prepare(`
+    DELETE FROM user_docs WHERE email = ? AND learnerId = ?
+  `),
+
+  deleteUserDocsByEmail: db.prepare(`
+    DELETE FROM user_docs WHERE email = ?
+  `),
+
+  maskAuditLogLearner: db.prepare(`
+    UPDATE audit_log SET meta = json_replace(COALESCE(meta, '{}'), '$.learnerId', ?)
+    WHERE email = ? AND json_extract(meta, '$.learnerId') = ?
   `)
 };
 
@@ -257,6 +307,16 @@ export interface DsarRequestRow {
   readyAt: number | null;
   error: string | null;
   artifactPath: string | null;
+}
+
+export interface ErasureRequestRow {
+  id: string;
+  email: string;
+  scope: 'learner' | 'account';
+  learnerId: string | null;
+  status: 'pending' | 'scheduled' | 'done' | 'canceled';
+  requestedAt: number;
+  dueAt: number;
 }
 
 // Close database on process exit
