@@ -1,10 +1,10 @@
 import { createRoot } from "react-dom/client";
 import React from "react";
-import App from "./App";
+import { AppRouter } from "./AppRouter";
 import "./index.css";
 import Providers from "./Providers";
 import { initUiPrefs } from './ui/theme';
-import { ToastProvider } from '@/components/ui/toast';
+import { ToastProvider } from './components/ui/toast';
 
 // Initialize UI preferences
 initUiPrefs();
@@ -26,7 +26,7 @@ createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ToastProvider>
       <Providers>
-        <App />
+        <AppRouter />
       </Providers>
     </ToastProvider>
   </React.StrictMode>
