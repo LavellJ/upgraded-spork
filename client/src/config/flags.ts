@@ -1,4 +1,7 @@
-export type FeatureFlags = { finalArt: boolean }
+export type FeatureFlags = { 
+  finalArt: boolean
+  teacherPanelV2: boolean
+}
 const KEY = 'qi.flags.v1'
 const EVT: EventTarget = (globalThis as any).__qiFlagsEvt || new EventTarget()
 ;(globalThis as any).__qiFlagsEvt = EVT
@@ -9,11 +12,11 @@ function load(): FeatureFlags {
   try{ 
     const raw=localStorage.getItem(KEY); 
     if(raw) {
-      cachedFlags = { finalArt:false, ...JSON.parse(raw) }
+      cachedFlags = { finalArt:false, teacherPanelV2:false, ...JSON.parse(raw) }
       return cachedFlags
     }
   }catch{}; 
-  cachedFlags = { finalArt:false }
+  cachedFlags = { finalArt:false, teacherPanelV2:false }
   return cachedFlags
 }
 function save(next: FeatureFlags){ 

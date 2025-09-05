@@ -205,3 +205,9 @@ body {
 /* Map scrim for biome plates contrast */
 .map-scrim { background: linear-gradient(to top, rgba(0,0,0,.10), rgba(0,0,0,.02)); }
 [data-contrast="high"] .map-scrim { background: rgba(0,0,0,.24); }
+
+/* Accessibility focus ring utility */
+.focus-ring:focus-visible { 
+  outline: none; 
+  box-shadow: 0 0 0 2px rgb(var(--brand)); 
+}
