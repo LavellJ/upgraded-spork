@@ -4,6 +4,15 @@ This is a full-stack educational web application called "LearnOz" that provides 
 
 # Recent Changes
 
+## TP3: Teacher Panel Detail Drawers & Polish (Completed)
+- **DetailDrawer Component**: Accessible drawer pattern with focus trap, Esc key handling, and return focus management
+- **Enhanced UI Primitives**: ActionBar for consistent primary actions, StatusChip for status display, KV for key-value lists, MiniProgress bars
+- **Learner Detail Drawer**: Overview section with avatar/progress, active assignments with status chips, recent journal entries with full journal link
+- **Assignment Detail Drawer**: Editable details, assigned learners with bulk actions, notes section with textarea
+- **Insights Metric Drawers**: Clickable metric cards opening light drawers with explanations, quick filters, and action items
+- **Accessibility Features**: Role="dialog", aria-modal, focus trap implementation, keyboard navigation, backdrop click handling
+- **Test Coverage**: DetailDrawer component tests for focus management, backdrop clicks, and drawer state handling
+
 ## TP2: Teacher Panel Polish - Shared Primitives & Enhanced Pages (Completed)
 - **Shared UI Primitives**: Created FilterBar, DataTable, Pagination, and Skeleton components with URL-synced filters and density-aware responsive design
 - **Enhanced Pages**: Polished Learners, Assignments, and Insights pages with professional data tables, search/filter capabilities, and loading states

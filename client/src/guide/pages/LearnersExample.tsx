@@ -6,6 +6,11 @@ import { FilterBar, SearchInput, Select, useUrlState } from '../../ui2/FilterBar
 import { DataTable, Column } from '../../ui2/DataTable'
 import { Pagination } from '../../ui2/Pagination'
 import { TableSkeleton } from '../../ui2/Skeleton'
+import { DetailDrawer } from '../../ui2/DetailDrawer'
+import { ActionBar } from '../../ui2/ActionBar'
+import { StatusChip } from '../../ui2/StatusChip'
+import { KV } from '../../ui2/KV'
+import { MiniProgress } from '../../ui2/MiniProgress'
 
 type Learner = {
   id: string
@@ -45,6 +50,8 @@ export default function LearnersExample(){
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [activeLearner, setActiveLearner] = useState<Learner | null>(null)
 
   const pageSize = 10
 
@@ -166,7 +173,10 @@ export default function LearnersExample(){
                 sortKey={sortKey}
                 sortDir={sortDir}
                 onSort={handleSort}
-                onRowClick={(learner) => console.log('View learner:', learner.name)}
+                onRowClick={(learner) => {
+                  setActiveLearner(learner)
+                  setDrawerOpen(true)
+                }}
                 empty={
                   <div className="text-center py-8 text-gray-500">
                     <div className="text-4xl mb-2">👥</div>
@@ -185,6 +195,106 @@ export default function LearnersExample(){
             </div>
           )}
         </Card>
+
+        {/* Learner Detail Drawer */}
+        <DetailDrawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          title={activeLearner?.name || 'Learner'}
+          subtitle="Learner"
+          footer={
+            <ActionBar>
+              <button className="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
+                Export CSV
+              </button>
+              <button 
+                data-autofocus
+                className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
+                onClick={() => console.log('Assign work to', activeLearner?.name)}
+              >
+                Assign work
+              </button>
+            </ActionBar>
+          }
+        >
+          {activeLearner && (
+            <div className="space-y-6">
+              {/* Overview Section */}
+              <Card title="Overview">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-lg font-medium">
+                      {activeLearner.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div>
+                      <h3 className="font-medium">{activeLearner.name}</h3>
+                      <p className="text-sm text-gray-600">{activeLearner.group}</p>
+                    </div>
+                  </div>
+                  
+                  <KV items={[
+                    { k: 'Last seen', v: activeLearner.lastSeen },
+                    { k: 'Streak', v: '12 days' },
+                    { k: 'Progress', v: `${activeLearner.progress}%` }
+                  ]} />
+                  
+                  <div>
+                    <div className="text-sm text-gray-600 mb-2">Overall Progress</div>
+                    <MiniProgress value={activeLearner.progress} />
+                  </div>
+                </div>
+              </Card>
+
+              {/* Assignments Section */}
+              <Card title="Active Assignments">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                    <span className="text-sm font-medium">Math: Fractions</span>
+                    <div className="flex items-center gap-2">
+                      <StatusChip kind="assigned">Assigned</StatusChip>
+                      <span className="text-xs text-gray-500">Due in 2 days</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                    <span className="text-sm font-medium">Science: Plants</span>
+                    <div className="flex items-center gap-2">
+                      <StatusChip kind="overdue">Overdue</StatusChip>
+                      <span className="text-xs text-gray-500">Due 1 day ago</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Literacy: Reading</span>
+                    <div className="flex items-center gap-2">
+                      <StatusChip kind="due">Due Soon</StatusChip>
+                      <span className="text-xs text-gray-500">Due tomorrow</span>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Journal & Notes Section */}
+              <Card title="Recent Journal">
+                <div className="space-y-3">
+                  <div className="border-b border-gray-200 pb-2">
+                    <div className="text-xs text-gray-500 mb-1">Today, 2:30 PM</div>
+                    <p className="text-sm">Completed fractions worksheet. Found decimals challenging but worked through examples.</p>
+                  </div>
+                  <div className="border-b border-gray-200 pb-2">
+                    <div className="text-xs text-gray-500 mb-1">Yesterday, 11:15 AM</div>
+                    <p className="text-sm">Science experiment on plant growth was engaging. Asked great questions about photosynthesis.</p>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 mb-1">2 days ago, 9:45 AM</div>
+                    <p className="text-sm">Reading comprehension improving. Showed good understanding of main ideas.</p>
+                  </div>
+                  <button className="text-sm text-blue-600 hover:underline">
+                    Open full Journal →
+                  </button>
+                </div>
+              </Card>
+            </div>
+          )}
+        </DetailDrawer>
       </div>
     </TeacherLayout>
   )
