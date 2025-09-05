@@ -21,7 +21,7 @@ const createErasureRequestSchema = z.object({
 
 // Create erasure request
 router.post('/request', asyncHandler(async (req, res) => {
-  const token = verifyToken(req);
+  const token = verifyToken(req.headers.authorization);
   if (!token?.email) {
     throw new ValidationError('Authentication required');
   }
@@ -49,7 +49,7 @@ router.post('/request', asyncHandler(async (req, res) => {
   );
 
   // Log the request
-  auditLog(token.email, 'erasure_requested', { 
+  auditLog.erasureRequested(token.email, { 
     requestId, 
     scope, 
     learnerId: scope === 'learner' ? learnerId : undefined,
@@ -70,7 +70,7 @@ router.post('/request', asyncHandler(async (req, res) => {
 
 // Cancel erasure request (within grace period)
 router.post('/:id/cancel', asyncHandler(async (req, res) => {
-  const token = verifyToken(req);
+  const token = verifyToken(req.headers.authorization);
   if (!token?.email) {
     throw new ValidationError('Authentication required');
   }
@@ -97,7 +97,7 @@ router.post('/:id/cancel', asyncHandler(async (req, res) => {
   statements.updateErasureRequestStatus.run('canceled', request.id);
 
   // Log cancellation
-  auditLog(token.email, 'erasure_canceled', { requestId: request.id });
+  auditLog.erasureCanceled(token.email, { requestId: request.id });
 
   res.json({ 
     message: 'Erasure request canceled successfully',
@@ -107,7 +107,7 @@ router.post('/:id/cancel', asyncHandler(async (req, res) => {
 
 // Execute erasure request (admin/cron only)
 router.post('/:id/run', asyncHandler(async (req, res) => {
-  const token = verifyToken(req);
+  const token = verifyToken(req.headers.authorization);
   if (!token?.email) {
     throw new ValidationError('Authentication required');
   }
@@ -143,7 +143,7 @@ router.post('/:id/run', asyncHandler(async (req, res) => {
 
 // List user's erasure requests
 router.get('/', asyncHandler(async (req, res) => {
-  const token = verifyToken(req);
+  const token = verifyToken(req.headers.authorization);
   if (!token?.email) {
     throw new ValidationError('Authentication required');
   }
@@ -167,7 +167,7 @@ router.get('/', asyncHandler(async (req, res) => {
 
 // Get specific erasure request status
 router.get('/:id/status', asyncHandler(async (req, res) => {
-  const token = verifyToken(req);
+  const token = verifyToken(req.headers.authorization);
   if (!token?.email) {
     throw new ValidationError('Authentication required');
   }
@@ -205,7 +205,7 @@ async function executeErasure(request: ErasureRequestRow): Promise<void> {
       const maskedId = crypto.createHash('sha256').update(request.learnerId).digest('hex').substring(0, 8);
       statements.maskAuditLogLearner.run(maskedId, request.email, request.learnerId);
       
-      auditLog(request.email, 'erasure_done', { 
+      auditLog.erasureDone(request.email, { 
         requestId: request.id, 
         scope: 'learner', 
         maskedLearnerId: maskedId 
@@ -214,7 +214,7 @@ async function executeErasure(request: ErasureRequestRow): Promise<void> {
       // Delete all user_docs for entire account
       statements.deleteUserDocsByEmail.run(request.email);
       
-      auditLog(request.email, 'erasure_done', { 
+      auditLog.erasureDone(request.email, { 
         requestId: request.id, 
         scope: 'account'
       });
