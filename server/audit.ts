@@ -111,5 +111,33 @@ export const auditLog = {
       details: { item_count: itemCount },
       ip
     });
+  },
+
+  // Erasure operations
+  erasureRequested: (email: string, details: any, ip?: string) => {
+    logAuditEvent({
+      action: 'erasure_requested',
+      actor: email,
+      details,
+      ip
+    });
+  },
+
+  erasureCanceled: (email: string, details: any, ip?: string) => {
+    logAuditEvent({
+      action: 'erasure_canceled',
+      actor: email,
+      details,
+      ip
+    });
+  },
+
+  erasureDone: (email: string, details: any, ip?: string) => {
+    logAuditEvent({
+      action: 'erasure_done',
+      actor: email,
+      details,
+      ip
+    });
   }
 };
