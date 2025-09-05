@@ -37,6 +37,7 @@ import { FeatureFlagsPanel } from './FeatureFlagsPanel';
 import { ContentStudio } from '../authoring/Studio';
 import { CoverageReportComponent } from '../authoring/CoverageReport';
 import { ContentPackSettings } from './ContentPackSettings';
+import { PrivacyHub } from '../guide/privacy/PrivacyHub';
 import { Classes } from '../guide/Classes';
 import { Dashboard } from '../guide/Dashboard';
 import { FeedbackPanel } from '../feedback/FeedbackPanel';
@@ -565,7 +566,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 }`}
                 data-testid="tab-privacy"
               >
-                🛡️ Privacy
+                🛡️ Privacy & Data
               </button>
               <button 
                 type="button"
@@ -942,10 +943,14 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 <CoverageReportComponent />
               </div>
             ) : activeTab === 'privacy' ? (
-              <div className="max-h-96 overflow-y-auto space-y-4">
-                <CloudSyncSettings />
-                <PrefetchSettings />
-                <InsightsCard timeRange={30} />
+              <div 
+                id="tab-content-privacy" 
+                role="region" 
+                aria-live="polite" 
+                aria-labelledby="tab-privacy"
+                className="max-h-96 overflow-y-auto space-y-4"
+              >
+                <PrivacyHub />
               </div>
             ) : activeTab === 'appearance' ? (
               <div 
