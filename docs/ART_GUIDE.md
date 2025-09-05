@@ -94,3 +94,7 @@ Use the `.art-shadow` class for consistent drop shadows across light/dark themes
   filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); 
 }
 ```
+
+## Biome Plates
+
+Each biome uses 3 WebP plates (far/mid/near), ≤300KB each. Avoid text; calm gradients/patterns only. Contrast scrim is applied by app; no baked shadows.

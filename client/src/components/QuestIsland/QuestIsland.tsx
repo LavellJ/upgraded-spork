@@ -740,9 +740,9 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
           <div className="relative w-[1200px] h-[900px]">
             
             {/* Biome Background Plates (behind everything when Final Art is ON) */}
-            {finalArt && activeBiome === 'reef' && (
+            {finalArt && activeBiome && ['reef', 'alpine', 'forest', 'desert'].includes(activeBiome) && (
               <BiomePlates 
-                biome="reef" 
+                biome={activeBiome as 'reef'|'alpine'|'forest'|'desert'} 
                 enable={true} 
                 intensity={8} 
                 reduceMotion={reduceMotion} 

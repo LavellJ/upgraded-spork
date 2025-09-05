@@ -201,3 +201,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   #scout-sprite [id="eyes-blink"] { animation: none; opacity: 0; }
 }
+
+/* Map scrim for biome plates contrast */
+.map-scrim { background: linear-gradient(to top, rgba(0,0,0,.10), rgba(0,0,0,.02)); }
+[data-contrast="high"] .map-scrim { background: rgba(0,0,0,.24); }
