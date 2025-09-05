@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Pin } from '@/ui/Pin'
-import { Flags } from '@/config/flags'
+import { useFlags } from '@/config/flags'
 
 function useUrlFlag(name: string){
   try {
@@ -12,7 +12,7 @@ function useUrlFlag(name: string){
 type Biome = 'beach'|'jungle'|'volcano'|'lagoon'
 
 export default function ArtPinsPreview({ biome }: { biome: Biome }){
-  const { finalArt } = Flags.get()
+  const { finalArt } = useFlags()
   const on = finalArt && (useUrlFlag('artpins') || true) // set to `|| false` if you want URL-gated only
 
   const samples = useMemo(() => {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Flags } from '@/config/flags'
+import { useFlags } from '@/config/flags'
 import { onScoutEvent } from '@/learning/scout'
 
 type Expr = 'neutral'|'happy'|'thinking'|'encouraging'|'alert'|'celebrate'
@@ -17,7 +17,7 @@ function mapEventToExpr(t: string, { hintsUsed }: any): Expr {
 }
 
 export default function ScoutSprite({ size=96 }: { size?: number }) {
-  const { finalArt } = Flags.get()
+  const { finalArt } = useFlags()
   const [svgMarkup, setSvgMarkup] = useState<string | null>(null)
   const [expr, setExpr] = useState<Expr>('neutral')
   const hostRef = useRef<HTMLSpanElement>(null)
