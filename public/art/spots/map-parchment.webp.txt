@@ -1,0 +1,3 @@
+# Placeholder for Map parchment spot art
+# This would be a webp image file ≤150KB in production
+# Shows decorative parchment/map texture for empty states
