@@ -694,6 +694,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mount erasure routes
   app.use('/api/erasure', erasureRouter);
 
+  // Mount audit routes (admin/dev only)
+  const auditRouter = (await import('./routes/audit')).default;
+  app.use('/api/admin/audit', auditRouter);
+
   console.log('🗄️  File-backed user storage initialized');
   console.log('📁  Data directory: .data/');
   
