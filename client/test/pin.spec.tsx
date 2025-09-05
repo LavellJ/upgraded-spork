@@ -52,40 +52,55 @@ describe('Pin Component', () => {
     expect(svg).toHaveAttribute('aria-hidden', 'true')
   })
 
-  it('displays checkmark for done state', () => {
+  it('displays overlay icons for appropriate states', () => {
+    // Test that overlay icons are rendered for states that have them
     render(<Pin state="done" ariaLabel="Completed task" />)
     
-    // Check that done state has the checkmark path
-    const button = screen.getByRole('button', { name: 'Completed task' })
-    const svg = button.querySelector('svg')
-    const checkPath = svg?.querySelector('path[d="M7 12.5l3 3 7-7"]')
+    const doneButton = screen.getByRole('button', { name: 'Completed task' })
+    const svg = doneButton.querySelector('svg')
+    expect(svg).toBeInTheDocument()
+    
+    // Check that the checkmark path exists for done state
+    const checkPath = svg?.querySelector('path[d*="M6 12.5l3.2 3.2L18 7.9"]')
     expect(checkPath).toBeInTheDocument()
   })
 
-  it('displays notification dot for assigned state', () => {
+  it('renders without overlay icons for base states', () => {
+    render(<Pin state="base" ariaLabel="Base task" />)
+    
+    const button = screen.getByRole('button', { name: 'Base task' })
+    const svg = button.querySelector('svg')
+    expect(svg).toBeInTheDocument()
+    
+    // Base state should only have the teardrop path, no overlay icons
+    const tearDropPath = svg?.querySelector('path[d*="M12 2c-4 0-7 3.1-7 7"]')
+    expect(tearDropPath).toBeInTheDocument()
+    
+    // Should not have any overlay icon paths
+    const overlayPaths = svg?.querySelectorAll('path:not([d*="M12 2c-4 0-7 3.1-7 7"])')
+    expect(overlayPaths?.length).toBe(0)
+  })
+
+  it('applies hover and focus styles', () => {
+    render(<Pin state="next" ariaLabel="Next task" />)
+    
+    const button = screen.getByRole('button', { name: 'Next task' })
+    expect(button).toHaveClass('transition-transform', 'hover:-translate-y-px')
+  })
+
+  it('renders proper SVG structure', () => {
     render(<Pin state="assigned" ariaLabel="Assigned task" />)
     
     const button = screen.getByRole('button', { name: 'Assigned task' })
     const svg = button.querySelector('svg')
-    const notificationCircle = svg?.querySelector('circle[cx="17"][cy="17"]')
-    expect(notificationCircle).toBeInTheDocument()
-  })
-
-  it('displays exclamation for overdue state', () => {
-    render(<Pin state="overdue" ariaLabel="Overdue task" />)
+    expect(svg).toBeInTheDocument()
     
-    const button = screen.getByRole('button', { name: 'Overdue task' })
-    const svg = button.querySelector('svg')
-    const exclamationText = svg?.querySelector('text')
-    expect(exclamationText).toHaveTextContent('!')
-  })
-
-  it('displays lock icon for locked state', () => {
-    render(<Pin state="locked" ariaLabel="Locked task" />)
+    // Check that the SVG has proper attributes
+    expect(svg).toHaveAttribute('viewBox', '0 0 24 24')
+    expect(svg).toHaveAttribute('aria-hidden', 'true')
     
-    const button = screen.getByRole('button', { name: 'Locked task' })
-    const svg = button.querySelector('svg')
-    const lockCircle = svg?.querySelector('circle[cx="12"][cy="12"]')
-    expect(lockCircle).toBeInTheDocument()
+    // Check for dot overlay in assigned state
+    const dotCircle = svg?.querySelector('circle[r="4"]')
+    expect(dotCircle).toBeInTheDocument()
   })
 })

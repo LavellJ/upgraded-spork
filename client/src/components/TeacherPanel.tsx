@@ -47,6 +47,7 @@ const Appearance = lazy(() => import('../settings/Appearance'));
 
 // Import TriageBoard for development mode
 import { TriageBoard } from '../guide/dev/TriageBoard';
+import PinGallery from '../guide/dev/PinGallery';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -1157,7 +1158,18 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 aria-labelledby="tab-dev"
                 className="max-h-96 overflow-y-auto space-y-4"
               >
-                <TriageBoard userId="dev-user" />
+                <div className="space-y-6">
+                  <div className="bg-white rounded-lg border p-4">
+                    <h3 className="text-sm font-medium text-gray-700 mb-3">📍 Pin Gallery</h3>
+                    <p className="text-xs text-gray-500 mb-4">Visual test gallery for all pin states and sizes</p>
+                    <PinGallery />
+                  </div>
+                  
+                  <div className="bg-white rounded-lg border p-4">
+                    <h3 className="text-sm font-medium text-gray-700 mb-3">🔍 Triage Board</h3>
+                    <TriageBoard userId="dev-user" />
+                  </div>
+                </div>
               </div>
             ) : (
               <div>Unknown tab</div>
