@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react'
 import { X } from 'lucide-react'
 import { DensityProvider, useDensity } from './density'
+import { ToastHost } from '../../ui2/Toast'
 
 const TAB_CONFIG = {
   overview: { icon: '🏠', label: 'Overview' },
@@ -76,9 +77,11 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
 
         {/* Main content */}
         <main className="flex-1 bg-gray-50 overflow-auto">
-          <div className="p-6">
-            {renderContent()}
-          </div>
+          <ToastHost>
+            <div className="p-6">
+              {renderContent()}
+            </div>
+          </ToastHost>
         </main>
       </div>
     </DensityProvider>
