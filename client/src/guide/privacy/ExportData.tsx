@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { useToast } from '../../hooks/use-toast';
+import { loadAuth, type Auth } from '../../auth/model';
 import { apiRequest } from '../../lib/queryClient';
 import {
   Download,
@@ -38,18 +39,28 @@ export function ExportData() {
   const [selectedLearners, setSelectedLearners] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreatingRequest, setIsCreatingRequest] = useState(false);
+  const [auth, setAuth] = useState<Auth>(() => loadAuth());
   const { toast } = useToast();
 
   // Load export requests and learners on mount
   useEffect(() => {
-    loadExportRequests();
-    loadLearners();
-  }, []);
+    if (auth.verified && auth.token) {
+      loadExportRequests();
+      loadLearners();
+    }
+  }, [auth]);
 
   const loadExportRequests = async () => {
+    if (!auth.verified || !auth.token) {
+      setExportRequests([]);
+      return;
+    }
+    
     try {
       const response = await fetch('/api/dsar', {
-        credentials: 'include'
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
       });
       
       if (!response.ok) {
@@ -89,9 +100,9 @@ export function ExportData() {
       const response = await fetch('/api/dsar/request', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${auth.token}`
         },
-        credentials: 'include',
         body: JSON.stringify({
           learnerIds: selectedLearners.length > 0 ? selectedLearners : undefined
         })
@@ -165,7 +176,9 @@ export function ExportData() {
     try {
       const response = await fetch(`/api/dsar/${requestId}/purge`, {
         method: 'POST',
-        credentials: 'include'
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
       });
 
       if (!response.ok) {

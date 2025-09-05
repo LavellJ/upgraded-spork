@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { useToast } from '../../hooks/use-toast';
+import { loadAuth, type Auth } from '../../auth/model';
 import {
   Trash2,
   AlertTriangle,
@@ -43,18 +44,28 @@ export function DeleteData() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showLearnerConfirm, setShowLearnerConfirm] = useState(false);
   const [showAccountConfirm, setShowAccountConfirm] = useState(false);
+  const [auth, setAuth] = useState<Auth>(() => loadAuth());
   const { toast } = useToast();
 
   // Load erasure requests and learners on mount
   useEffect(() => {
-    loadErasureRequests();
-    loadLearners();
-  }, []);
+    if (auth.verified && auth.token) {
+      loadErasureRequests();
+      loadLearners();
+    }
+  }, [auth]);
 
   const loadErasureRequests = async () => {
+    if (!auth.verified || !auth.token) {
+      setErasureRequests([]);
+      return;
+    }
+    
     try {
       const response = await fetch('/api/erasure', {
-        credentials: 'include'
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
       });
       
       if (!response.ok) {
@@ -109,9 +120,9 @@ export function DeleteData() {
       const response = await fetch('/api/erasure/request', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${auth.token}`
         },
-        credentials: 'include',
         body: JSON.stringify({
           scope: 'learner',
           learnerId: selectedLearner
@@ -158,9 +169,9 @@ export function DeleteData() {
       const response = await fetch('/api/erasure/request', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${auth.token}`
         },
-        credentials: 'include',
         body: JSON.stringify({
           scope: 'account'
         })
@@ -198,7 +209,9 @@ export function DeleteData() {
     try {
       const response = await fetch(`/api/erasure/${requestId}/cancel`, {
         method: 'POST',
-        credentials: 'include'
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
       });
 
       if (!response.ok) {
@@ -248,6 +261,33 @@ export function DeleteData() {
   };
 
   const selectedLearnerData = learners.find(l => l.id === selectedLearner);
+
+  // Show sign-in prompt if not authenticated
+  if (!auth.verified || !auth.token) {
+    return (
+      <div className="space-y-6" data-testid="delete-data-panel">
+        <Card className="border-orange-200 bg-orange-50">
+          <CardContent className="p-6 text-center">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <Shield className="h-8 w-8 text-orange-600" />
+              <h3 className="text-lg font-semibold text-orange-900">Sign In Required</h3>
+            </div>
+            <p className="text-sm text-orange-800 mb-4">
+              You need to be signed in to manage data deletion requests.
+              Please sign in using the authentication panel in the app.
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={() => window.location.reload()}
+              className="text-orange-600 border-orange-200 hover:bg-orange-100"
+            >
+              Refresh After Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6" data-testid="delete-data-panel">
