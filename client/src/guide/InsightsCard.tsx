@@ -11,6 +11,7 @@ import { getEventsRange, scoutSummary, scoutAnalytics, type ScoutSummary, type S
 import { onTaskMinutes, weeklyReturn, sessionStreak } from '../progress/metrics';
 import { loadEvents } from '../progress/events';
 import { Sparkline } from '../components/Sparkline';
+import { getHeroLessonKPIs, getTemplateLessonsKPIs, formatTimeOnTask, getLessonQualityTrend } from '../progress/kpi.lessons';
 
 interface InsightsCardProps {
   timeRange?: 7 | 30 | 90;
@@ -46,6 +47,21 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
       streak: streakData
     };
   }, []);
+
+  // Lesson quality KPIs
+  const lessonKPIs = useMemo(() => {
+    const heroKPIs = getHeroLessonKPIs(timeRange);
+    const templateKPIs = getTemplateLessonsKPIs(timeRange);
+    const heroTrend = getLessonQualityTrend(['M.FRAC.NL.3'], timeRange);
+    const templateTrend = getLessonQualityTrend(['M.FRAC.EQ.3', 'M.FRAC.COMP.3', 'M.NUM.MUL.3', 'E.READ.MAIN.3', 'E.READ.DETAIL.3', 'SCI.HABIT.3'], timeRange);
+    
+    return {
+      hero: heroKPIs,
+      templates: templateKPIs,
+      heroTrend,
+      templateTrend
+    };
+  }, [timeRange]);
 
   const hasData = summary.totalShown > 0;
 
@@ -346,6 +362,104 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
             )}
           </div>
         )}
+
+        {/* Lesson Quality Section */}
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-100">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <Target className="w-4 h-4 text-purple-600" />
+              Lesson Quality ({timeRange} days)
+            </h4>
+            <div className="text-xs text-gray-500">
+              Hero + Templates
+            </div>
+          </div>
+          
+          {/* Hero Lesson KPIs */}
+          <div className="mb-4">
+            <h5 className="text-xs font-medium text-purple-700 mb-2 flex items-center gap-1">
+              <Heart className="w-3 h-3" />
+              Hero Lesson (M.FRAC.NL.3)
+              {lessonKPIs.heroTrend === 'improving' && <span className="text-green-600">↗</span>}
+              {lessonKPIs.heroTrend === 'declining' && <span className="text-red-600">↘</span>}
+            </h5>
+            <div className="grid grid-cols-4 gap-2 text-center">
+              <div className="bg-white rounded p-2 border border-purple-100">
+                <div className="text-sm font-bold text-purple-700">
+                  {Math.round(lessonKPIs.hero.passRate * 100)}%
+                </div>
+                <div className="text-xs text-gray-600">Pass Rate</div>
+                <span className="sr-only">Pass rate percentage for hero lesson</span>
+              </div>
+              <div className="bg-white rounded p-2 border border-purple-100">
+                <div className="text-sm font-bold text-purple-700">
+                  {formatTimeOnTask(lessonKPIs.hero.medianTimeSec)}
+                </div>
+                <div className="text-xs text-gray-600">Time</div>
+                <span className="sr-only">Median time on task in seconds</span>
+              </div>
+              <div className="bg-white rounded p-2 border border-purple-100">
+                <div className="text-sm font-bold text-purple-700">
+                  {lessonKPIs.hero.hintUsagePct}%
+                </div>
+                <div className="text-xs text-gray-600">Hints</div>
+                <span className="sr-only">Hint usage percentage</span>
+              </div>
+              <div className="bg-white rounded p-2 border border-purple-100">
+                <div className="text-sm font-bold text-purple-700">
+                  {lessonKPIs.hero.branchRate}%
+                </div>
+                <div className="text-xs text-gray-600">Branch</div>
+                <span className="sr-only">Remediation branch rate percentage</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Template Lessons KPIs */}
+          <div>
+            <h5 className="text-xs font-medium text-purple-700 mb-2 flex items-center gap-1">
+              <Activity className="w-3 h-3" />
+              Template Average (6 lessons)
+              {lessonKPIs.templateTrend === 'improving' && <span className="text-green-600">↗</span>}
+              {lessonKPIs.templateTrend === 'declining' && <span className="text-red-600">↘</span>}
+            </h5>
+            <div className="grid grid-cols-4 gap-2 text-center">
+              <div className="bg-white rounded p-2 border border-purple-100">
+                <div className="text-sm font-bold text-purple-700">
+                  {Math.round(lessonKPIs.templates.passRate * 100)}%
+                </div>
+                <div className="text-xs text-gray-600">Pass Rate</div>
+                <span className="sr-only">Pass rate percentage for template lessons</span>
+              </div>
+              <div className="bg-white rounded p-2 border border-purple-100">
+                <div className="text-sm font-bold text-purple-700">
+                  {formatTimeOnTask(lessonKPIs.templates.medianTimeSec)}
+                </div>
+                <div className="text-xs text-gray-600">Time</div>
+                <span className="sr-only">Median time on task in seconds</span>
+              </div>
+              <div className="bg-white rounded p-2 border border-purple-100">
+                <div className="text-sm font-bold text-purple-700">
+                  {lessonKPIs.templates.hintUsagePct}%
+                </div>
+                <div className="text-xs text-gray-600">Hints</div>
+                <span className="sr-only">Hint usage percentage</span>
+              </div>
+              <div className="bg-white rounded p-2 border border-purple-100">
+                <div className="text-sm font-bold text-purple-700">
+                  {lessonKPIs.templates.branchRate}%
+                </div>
+                <div className="text-xs text-gray-600">Branch</div>
+                <span className="sr-only">Remediation branch rate percentage</span>
+              </div>
+            </div>
+            <div className="mt-2 text-xs text-gray-500 text-center" aria-describedby="lesson-quality-summary">
+              <span id="lesson-quality-summary">
+                Overall lesson quality shows {Math.round(lessonKPIs.templates.passRate * 100)}% success rate with {formatTimeOnTask(lessonKPIs.templates.medianTimeSec)} average completion time.
+              </span>
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

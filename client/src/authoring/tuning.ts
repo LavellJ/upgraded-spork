@@ -6,7 +6,7 @@ import { pushEvent } from '../progress/events';
 
 export function clearTuningStorage(): void {
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(TUNING_STORAGE_KEY);
   } catch (error) {
     console.warn('Failed to clear tuning storage:', error);
   }
@@ -26,6 +26,60 @@ export type TuningNote = {
 };
 
 const TUNING_STORAGE_KEY = 'qi.tuning.v1';
+
+/**
+ * Initialize tuning notes for hero and template lessons
+ */
+export function initializeProductionTuningNotes(): void {
+  const now = Date.now();
+  
+  // Hero lesson M.FRAC.NL.3 tuning notes
+  const heroNote: TuningNote = {
+    id: 'hero:M.FRAC.NL.3:step2',
+    at: now,
+    kind: 'lesson',
+    change: {
+      difficultyDelta: -1,
+      hintAdds: ["Count the spaces between marks; 1/2 is halfway."]
+    },
+    rationale: 'Step2 positioning concept needs clearer spatial hint',
+    author: 'Content Team'
+  };
+
+  // Template lesson M.FRAC.COMP.3 tuning notes  
+  const fracCompNote: TuningNote = {
+    id: 'journal:M.FRAC.COMP.3:same_denom',
+    at: now + 1,
+    kind: 'journal',
+    change: {
+      difficultyDelta: 1
+    },
+    rationale: 'Independent practice items with same denominators need increased challenge',
+    author: 'Content Team'
+  };
+
+  // Template lesson E.READ.MAIN.3 tuning notes
+  const readMainNote: TuningNote = {
+    id: 'lesson:E.READ.MAIN.3:step1',
+    at: now + 2,
+    kind: 'lesson', 
+    change: {
+      difficultyDelta: -1,
+      hintAdds: ["Look for the big idea that all details support, not just one detail."]
+    },
+    rationale: 'Step1 needs clearer distinction between main ideas vs details',
+    author: 'Content Team'
+  };
+
+  // Save all tuning notes
+  const notes = [heroNote, fracCompNote, readMainNote];
+  for (const note of notes) {
+    saveTuningNote(note);
+    applyTuning(note);
+  }
+
+  console.log('✅ Initialized production tuning notes:', notes.length);
+}
 
 /**
  * Get all tuning notes from localStorage
