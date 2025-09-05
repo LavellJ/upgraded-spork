@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
+import { assetUrl } from '@/lib/assetUrl'
 
 function useUrlFlag(name: string): string | null {
   try {
@@ -26,10 +27,10 @@ export function BiomePlates({
 
   const urls = useMemo(() => {
     const map: Record<'reef'|'alpine'|'forest'|'desert', {far:string; mid:string; near:string}> = {
-      reef:   { far:'/art/biomes/reef/bg-far.webp',   mid:'/art/biomes/reef/bg-mid.webp',   near:'/art/biomes/reef/bg-near.webp' },
-      alpine: { far:'/art/biomes/alpine/bg-far.webp', mid:'/art/biomes/alpine/bg-mid.webp', near:'/art/biomes/alpine/bg-near.webp' },
-      forest: { far:'/art/biomes/forest/bg-far.webp', mid:'/art/biomes/forest/bg-mid.webp', near:'/art/biomes/forest/bg-near.webp' },
-      desert: { far:'/art/biomes/desert/bg-far.webp', mid:'/art/biomes/desert/bg-mid.webp', near:'/art/biomes/desert/bg-near.webp' },
+      reef:   { far:assetUrl('art/biomes/reef/bg-far.webp'),   mid:assetUrl('art/biomes/reef/bg-mid.webp'),   near:assetUrl('art/biomes/reef/bg-near.webp') },
+      alpine: { far:assetUrl('art/biomes/alpine/bg-far.webp'), mid:assetUrl('art/biomes/alpine/bg-mid.webp'), near:assetUrl('art/biomes/alpine/bg-near.webp') },
+      forest: { far:assetUrl('art/biomes/forest/bg-far.webp'), mid:assetUrl('art/biomes/forest/bg-mid.webp'), near:assetUrl('art/biomes/forest/bg-near.webp') },
+      desert: { far:assetUrl('art/biomes/desert/bg-far.webp'), mid:assetUrl('art/biomes/desert/bg-mid.webp'), near:assetUrl('art/biomes/desert/bg-near.webp') },
     }
     return map[biome]
   }, [biome])

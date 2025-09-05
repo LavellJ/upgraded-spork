@@ -50,6 +50,7 @@ const Appearance = lazy(() => import('../settings/Appearance'));
 import { TriageBoard } from '../guide/dev/TriageBoard';
 import PinGallery from '../guide/dev/PinGallery';
 import ScoutGallery from '../guide/dev/ScoutGallery';
+import ArtDiagnostics from '../guide/dev/ArtDiagnostics';
 
 const SUBJECTS = {
   forest: { label: "Literacy", color: "#3B7D44" },
@@ -1169,19 +1170,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
                 className="max-h-96 overflow-y-auto space-y-4"
               >
                 <div className="space-y-6">
-                  <div className="bg-white rounded-lg border p-4">
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">🎨 Art Diagnostics</h3>
-                    <p className="text-xs text-gray-500 mb-4">Toggle Final Art to see Scout, Backpack, and EmptyState changes</p>
-                    <div className="flex items-center gap-2">
-                      <input 
-                        type="checkbox" 
-                        id="final-art-toggle"
-                        checked={finalArtEnabled}
-                        onChange={e => handleFinalArtToggle(e.target.checked)}
-                      />
-                      <label htmlFor="final-art-toggle" className="text-sm">Final Art</label>
-                    </div>
-                  </div>
+                  <ArtDiagnostics />
                   <div className="bg-white rounded-lg border p-4">
                     <h3 className="text-sm font-medium text-gray-700 mb-3">📍 Pin Gallery</h3>
                     <p className="text-xs text-gray-500 mb-4">Visual test gallery for all pin states and sizes</p>
