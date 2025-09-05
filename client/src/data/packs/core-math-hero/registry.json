@@ -1,0 +1,52 @@
+{
+  "id": "core-math-hero",
+  "name": "Core Mathematics Hero Pack",
+  "version": "1.0.0",
+  "description": "Production-ready hero lesson templates with M.FRAC.NL.3 unit fractions content",
+  "lessons": [
+    {
+      "id": "frac_nl_intro",
+      "title": "Unit Fractions on a Number Line",
+      "skillTag": "M.FRAC.NL.3",
+      "difficulty": "introductory",
+      "estimatedMinutes": 15
+    }
+  ],
+  "journal": {
+    "frac_nl": {
+      "file": "journal/frac_nl.json",
+      "skillTags": ["M.FRAC.NL.3", "fractions", "number-line"],
+      "itemCount": 15,
+      "version": "2.0",
+      "description": "Unit fractions practice with adaptive difficulty bands"
+    }
+  },
+  "media": {
+    "images": [
+      "journal/media/frac_nl_001.webp",
+      "journal/media/frac_nl_002.webp",
+      "journal/media/frac_nl_003.webp",
+      "journal/media/frac_nl_004.webp",
+      "journal/media/frac_nl_005.webp",
+      "journal/media/frac_nl_006.webp",
+      "journal/media/frac_nl_007.webp",
+      "journal/media/frac_nl_008.webp",
+      "journal/media/frac_nl_009.webp",
+      "journal/media/frac_nl_010.webp",
+      "journal/media/frac_nl_011.webp",
+      "journal/media/frac_nl_012.webp",
+      "journal/media/frac_nl_013.webp",
+      "journal/media/frac_nl_014.webp"
+    ]
+  },
+  "requirements": {
+    "age": "9-12",
+    "curriculum": "australian",
+    "prerequisites": ["basic-fractions"]
+  },
+  "analytics": {
+    "trackMiscues": true,
+    "trackDifficulty": true,
+    "trackSpacedRefresh": true
+  }
+}

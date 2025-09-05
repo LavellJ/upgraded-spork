@@ -3,12 +3,20 @@ import { z } from 'zod';
 // Journal item schema for individual Q&A prompts
 export const journalItem = z.object({
   id: z.string(),
-  skillId: z.string(),
+  skillId: z.string().optional(), // Made optional for compatibility
   prompt: z.string(),
-  kind: z.enum(['short', 'mcq']),
+  kind: z.enum(['short', 'mcq', 'multiple_choice']), // Added multiple_choice alias
+  image: z.string().nullable().optional(),
+  choices: z.array(z.string()).optional(), // Alias for options
+  correct: z.number().optional(), // Index of correct choice
   options: z.array(z.string()).optional(),
   answer: z.string().optional(),
-  explanation: z.string().optional()
+  explanation: z.string().optional(),
+  // Enhanced fields for schema v2
+  band: z.enum(['easy', 'med', 'hard']).optional(),
+  tags: z.array(z.string()).optional(),
+  miscue_types: z.array(z.string()).optional(),
+  hint: z.string().optional()
 });
 
 export type JournalItem = z.infer<typeof journalItem>;
@@ -57,3 +65,6 @@ export type JournalHistoryEntry = z.infer<typeof journalHistoryEntry>;
 
 // Skill level enum for easier use
 export type SkillLevel = 'easy' | 'core' | 'stretch';
+
+// Band level for schema v2 items
+export type BandLevel = 'easy' | 'med' | 'hard';
