@@ -42,6 +42,7 @@ import { Classes } from '../guide/Classes';
 import { Dashboard } from '../guide/Dashboard';
 import { FeedbackPanel } from '../feedback/FeedbackPanel';
 import { useFlags, Flags } from '../config/flags';
+import { TeacherLayoutV2 } from '../guide/teacher/TeacherLayoutV2';
 
 // Lazy import Appearance settings
 const Appearance = lazy(() => import('../settings/Appearance'));
@@ -115,6 +116,7 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
   // Final Art toggle for DEV tab
   const flags = useFlags();
   const finalArtEnabled = flags.finalArt;
+  const teacherPanelV2Enabled = flags.teacherPanelV2;
   
   const handleFinalArtToggle = (enabled: boolean) => {
     Flags.set({ finalArt: enabled });
@@ -229,6 +231,47 @@ export function TeacherPanel({ open, onClose, frameworks, framework, setFramewor
       alert('Clipboard not available — please paste manually.');
     }
   };
+  // Extract content rendering logic
+  const renderTabContent = () => {
+    if (activeTab === 'overview') {
+      return (
+        <div className="space-y-4">
+          <div className="bg-gray-50 p-4 rounded-lg border">
+            <p className="text-sm font-medium text-stone-700 mb-2">🏠 Learning Overview</p>
+            <div className="grid grid-cols-2 gap-4 text-xs">
+              {Object.entries(SUBJECTS).map(([biome, subject]) => (
+                <div key={biome} className="space-y-1">
+                  <div className="flex items-center gap-1">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: subject.color }}
+                    />
+                    <span className="font-medium">{subject.label}</span>
+                  </div>
+                  <div className="text-stone-600">
+                    {done[biome as keyof typeof done]}/{totals[biome as keyof typeof totals]} completed
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )
+    }
+    // Add more tab content as needed...
+    return <div className="p-4 text-center text-gray-500">Tab content for {activeTab}</div>
+  }
+
+  // Use new layout when flag is enabled
+  if (teacherPanelV2Enabled && open) {
+    return <TeacherLayoutV2 
+      activeTab={activeTab} 
+      onTabChange={setActiveTab} 
+      onClose={onClose}
+      renderContent={renderTabContent} 
+    />
+  }
+
   return (
     <BottomSheet open={open} onClose={onClose}>
       <div className="text-stone-800 h-full flex flex-col">

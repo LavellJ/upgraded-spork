@@ -80,6 +80,7 @@ export function FeatureFlagsPanel() {
   // Final Art flag - use reactive hook instead of local state
   const flags = useFlags();
   const finalArtEnabled = flags.finalArt;
+  const teacherPanelV2Enabled = flags.teacherPanelV2;
 
   if (!isDev) return null;
 
@@ -198,6 +199,11 @@ export function FeatureFlagsPanel() {
 
   const handleFinalArtToggle = (enabled: boolean) => {
     Flags.set({ finalArt: enabled });
+    // Note: useFlags hook automatically handles reactivity, no event needed
+  };
+
+  const handleTeacherPanelV2Toggle = (enabled: boolean) => {
+    Flags.set({ teacherPanelV2: enabled });
     // Note: useFlags hook automatically handles reactivity, no event needed
   };
 
@@ -546,6 +552,32 @@ export function FeatureFlagsPanel() {
           />
         </div>
 
+        {/* Teacher Panel V2 */}
+        <div className="flex items-center justify-between p-3 rounded-lg bg-white border border-blue-200">
+          <div className="flex items-start gap-3">
+            <Monitor className="w-5 h-5 text-blue-600 mt-0.5" />
+            <div className="flex-1">
+              <Label className="text-sm font-medium">Teacher Panel v2 (sidebar layout)</Label>
+              <p className="text-xs text-gray-600 mt-1">
+                Use the new sidebar navigation layout for the Teacher Panel instead of the current tabs.
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant={teacherPanelV2Enabled ? "default" : "secondary"} className="text-xs">
+                  {teacherPanelV2Enabled ? 'Sidebar Layout' : 'Current Layout'}
+                </Badge>
+                {teacherPanelV2Enabled && (
+                  <span className="text-xs text-blue-600">Professional layout</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <Switch
+            checked={teacherPanelV2Enabled}
+            onCheckedChange={handleTeacherPanelV2Toggle}
+            data-testid="teacher-panel-v2-toggle"
+          />
+        </div>
+
         {/* Status Summary */}
         <div className="p-3 rounded-lg bg-gray-50 border-t">
           <div className="text-xs text-gray-600 space-y-1">
@@ -563,6 +595,7 @@ export function FeatureFlagsPanel() {
               <span>• Invites: {invitesEnabled ? 'Enabled' : 'Disabled'}</span>
               <span>• Referrals: {referralsEnabled ? 'Enabled' : 'Disabled'}</span>
               <span>• Final Art: {finalArtEnabled ? 'Enabled' : 'Disabled'}</span>
+              <span>• Teacher Panel: {teacherPanelV2Enabled ? 'v2 Layout' : 'Current Layout'}</span>
             </div>
           </div>
         </div>

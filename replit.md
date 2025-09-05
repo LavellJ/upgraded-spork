@@ -4,6 +4,16 @@ This is a full-stack educational web application called "LearnOz" that provides 
 
 # Recent Changes
 
+## TP1: Teacher Panel v2 Layout System (Completed)
+- **Feature Flag Integration**: Added teacherPanelV2 feature flag to config/flags.ts with FeatureFlagsPanel toggle
+- **Professional Sidebar Layout**: Created TeacherLayoutV2 with left navigation, replacing bottom sheet tabs with sidebar navigation
+- **Density Context System**: Implemented DensityProvider with cozy/compact modes, affects CSS --density variable for responsive spacing
+- **Accessibility Enhancement**: Added focus rings, skip links, ARIA landmarks, and proper keyboard navigation for sidebar
+- **Shared UI Components**: Built ui2/Card.tsx and ui2/StickyTable.tsx with design token integration and density-aware spacing
+- **Conditional Integration**: Modified existing TeacherPanel.tsx to conditionally use new layout when flag enabled, maintaining backward compatibility
+- **CSS Architecture**: Added focus-ring utility class, proper CSS custom properties for theming and density scaling
+- **Test Coverage**: Created teacher.layout.spec.tsx for feature flag conditional rendering and layout behavior testing
+
 ## Content Tuning Pipeline (Completed)
 - **TuningNote System**: Created comprehensive tuning notes schema with TuningNote type for difficulty adjustments, hint additions, and wording modifications without full content rewrites
 - **Content Studio Integration**: Enhanced Content Studio with dedicated Tuning tab panel for creating, managing, and applying tuning notes to lessons
