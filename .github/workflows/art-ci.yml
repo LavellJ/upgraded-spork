@@ -1,0 +1,29 @@
+name: Art & UI QA
+
+on:
+  pull_request:
+    paths:
+      - "public/art/**"
+      - "client/src/**"
+      - "docs/ART_GUIDE.md"
+  push:
+    branches: [ main ]
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - run: npm ci
+      - name: Art preflight
+        run: npm run art:preflight
+      - name: Unit tests
+        run: npm test --silent
+      - name: Build (ensures vite+pwa still compiles)
+        run: npm run build --silent
+      - name: E2E (UI snapshots)
+        run: |
+          npx playwright install --with-deps
+          npm run e2e:ci --silent

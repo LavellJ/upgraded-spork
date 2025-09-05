@@ -129,3 +129,19 @@ Use the `.art-shadow` class for consistent drop shadows across light/dark themes
 ## Biome Plates
 
 Each biome uses 3 WebP plates (far/mid/near), ≤300KB each. Avoid text; calm gradients/patterns only. Contrast scrim is applied by app; no baked shadows.
+
+### Pin interactions & states
+- **States:** base, next, assigned, due, overdue, done, locked.
+- **Sizes:** 16 / 24 / 48; min tap 44×44 (hit padding).
+- **Selection:** persistent brand ring (2px) + `aria-pressed="true"`.
+- **Projector:** bump one size; strokes +0.5px; parallax off.
+- **High-contrast:** solid fills, strong outlines; breadcrumbs use `fg.DEFAULT`.
+- **Never** bake text; overlays (check/lock/exclaim/dot) are separate symbols colored via tokens.
+
+### Biome plates
+- Three layered WebP plates per biome: `bg-far.webp`, `bg-mid.webp`, `bg-near.webp`; ≤300KB each.
+- No text/glows/filters; calm color fields; app applies scrim and parallax (disabled in HC/Projector/Reduced Motion).
+
+### Asset pipeline
+- Drop custom PNG/JPG/WebP into `public/art/inbox/` with matching names; run `npm run art:bootstrap`.
+- Preflight enforces file size & SVG hygiene on CI.
