@@ -44,6 +44,7 @@ import { parentSummaryRouter } from './routes/parentSummary';
 import { classesRouter } from './routes/classes';
 import invitesRouter from './routes/invites';
 import referralsRouter from './routes/referrals';
+import dsarRouter from './routes/dsar';
 import { syncBatchSLO, trackSLO } from './metrics/slo';
 import { asyncHandler, AppError, ValidationError, NotFoundError } from './middleware/errorHandler';
 import { log } from './log';
@@ -685,6 +686,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Mount referrals routes
   app.use('/api/referrals', referralsRouter);
+  
+  // Mount DSAR routes
+  app.use('/api/dsar', dsarRouter);
 
   console.log('🗄️  File-backed user storage initialized');
   console.log('📁  Data directory: .data/');

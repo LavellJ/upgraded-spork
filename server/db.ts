@@ -69,6 +69,19 @@ db.exec(`
     FOREIGN KEY (ownerEmail) REFERENCES users(email)
   );
 
+  -- DSAR (Data Subject Access Request) table for export requests
+  CREATE TABLE IF NOT EXISTS dsar_requests (
+    id TEXT PRIMARY KEY,              -- uuid
+    requesterEmail TEXT NOT NULL,
+    learnerIds TEXT NOT NULL,         -- JSON array string
+    status TEXT NOT NULL,             -- 'pending'|'ready'|'error'|'purged'
+    createdAt INTEGER NOT NULL,
+    readyAt INTEGER,
+    error TEXT,
+    artifactPath TEXT,                -- server fs path when ready
+    FOREIGN KEY (requesterEmail) REFERENCES users(email)
+  );
+
   -- Indexes for better query performance
   CREATE INDEX IF NOT EXISTS idx_user_docs_email ON user_docs(email);
   CREATE INDEX IF NOT EXISTS idx_user_docs_learner ON user_docs(email, learnerId);
@@ -78,6 +91,9 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_class_collaborators_class ON class_collaborators(classId);
   CREATE INDEX IF NOT EXISTS idx_referrals_owner ON referrals(ownerEmail);
   CREATE INDEX IF NOT EXISTS idx_referrals_created ON referrals(createdAt);
+  CREATE INDEX IF NOT EXISTS idx_dsar_requests_email ON dsar_requests(requesterEmail);
+  CREATE INDEX IF NOT EXISTS idx_dsar_requests_status ON dsar_requests(status);
+  CREATE INDEX IF NOT EXISTS idx_dsar_requests_created ON dsar_requests(createdAt);
 `);
 
 // Prepared statements for common operations
@@ -166,6 +182,36 @@ export const statements = {
   
   deleteReferral: db.prepare(`
     DELETE FROM referrals WHERE code = ? AND ownerEmail = ?
+  `),
+
+  // DSAR requests
+  insertDsarRequest: db.prepare(`
+    INSERT INTO dsar_requests (id, requesterEmail, learnerIds, status, createdAt, readyAt, error, artifactPath)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `),
+  
+  getDsarRequest: db.prepare(`
+    SELECT * FROM dsar_requests WHERE id = ?
+  `),
+  
+  getDsarRequestsByUser: db.prepare(`
+    SELECT * FROM dsar_requests WHERE requesterEmail = ? ORDER BY createdAt DESC
+  `),
+  
+  updateDsarRequestStatus: db.prepare(`
+    UPDATE dsar_requests SET status = ?, readyAt = ?, error = ?, artifactPath = ? WHERE id = ?
+  `),
+  
+  deleteDsarRequest: db.prepare(`
+    DELETE FROM dsar_requests WHERE id = ?
+  `),
+  
+  countActiveDsarRequests: db.prepare(`
+    SELECT COUNT(*) as count FROM dsar_requests WHERE requesterEmail = ? AND status IN ('pending', 'ready')
+  `),
+  
+  countRecentDsarRequests: db.prepare(`
+    SELECT COUNT(*) as count FROM dsar_requests WHERE requesterEmail = ? AND createdAt > ?
   `)
 };
 
@@ -200,6 +246,17 @@ export interface ReferralRow {
   createdAt: number;
   clicks: number;
   lastClickAt: number | null;
+}
+
+export interface DsarRequestRow {
+  id: string;
+  requesterEmail: string;
+  learnerIds: string; // JSON array string
+  status: 'pending' | 'ready' | 'error' | 'purged';
+  createdAt: number;
+  readyAt: number | null;
+  error: string | null;
+  artifactPath: string | null;
 }
 
 // Close database on process exit
