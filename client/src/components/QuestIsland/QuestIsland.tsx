@@ -10,6 +10,7 @@ import { getLearnerName } from "@/utils/learnerName";
 import { getAsset } from "../../lib/assetResolver";
 import { ShimmerImage } from "../ShimmerImage";
 import { schedulePrefetch } from "../../pwa/prefetch";
+import ArtPinsPreview from "../../map/ArtPinsPreview";
 
 export interface Collectible {
   id: string;
@@ -721,6 +722,9 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
 
       {/* Quest Island Map Container */}
       <div className="relative w-full h-full">
+        
+        {/* Sample pins preview (behind Final Art flag) */}
+        <ArtPinsPreview biome="beach" />
         
         {/* Island Base */}
         <div className="absolute inset-0 flex items-center justify-center">
