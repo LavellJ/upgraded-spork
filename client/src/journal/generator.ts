@@ -1,4 +1,4 @@
-import type { JournalItem, SkillLevel } from '../schema/journal';
+import type { JournalItem, SkillLevel, BandLevel } from '../schema/journal';
 import { nanoid } from 'nanoid';
 import { allBanks, getItemsForSkill, getAllAvailableSkills } from './banks';
 import { getAdjustedDifficultyLevel } from '../authoring/tuning';
@@ -27,7 +27,122 @@ export function mapMasteryToLevel(p: number, ageBand?: AgeBand): SkillLevel {
 // Generator interface for creating journal items
 export interface JournalGenerator {
   generate(skillId: string, level: SkillLevel, n: number): Promise<JournalItem[]>;
+  generateWithBands(skillTag: string, count: number, recentAccuracy?: number, recentMiscues?: Record<string, number>): Promise<JournalItem[]>;
   getAvailableSkills(): string[];
+}
+
+// Band weighting based on recent accuracy
+function getBandWeights(recentAccuracy?: number): Record<BandLevel, number> {
+  if (recentAccuracy === undefined) {
+    return { easy: 0.2, med: 0.6, hard: 0.2 }; // Default balanced
+  }
+  
+  if (recentAccuracy < 0.6) {
+    return { easy: 0.7, med: 0.3, hard: 0.0 }; // Bias toward easy
+  } else if (recentAccuracy > 0.85) {
+    return { easy: 0.1, med: 0.4, hard: 0.5 }; // Bias toward hard
+  } else {
+    return { easy: 0.2, med: 0.6, hard: 0.2 }; // Standard balanced
+  }
+}
+
+// Load schema v2 journal items from pack files
+export async function loadPackJournalItems(packPath: string): Promise<JournalItem[]> {
+  try {
+    const response = await fetch(packPath);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch pack: ${response.status}`);
+    }
+    const items = await response.json();
+    return Array.isArray(items) ? items : [];
+  } catch (error) {
+    console.warn(`Failed to load journal pack from ${packPath}:`, error);
+    return [];
+  }
+}
+
+// Convert band level to skill level for compatibility
+function bandToSkillLevel(band: BandLevel): SkillLevel {
+  switch (band) {
+    case 'easy': return 'easy';
+    case 'med': return 'core';
+    case 'hard': return 'stretch';
+    default: return 'core';
+  }
+}
+
+// Select items for a skill with band weighting and miscue targeting
+export async function selectItemsForSkill(
+  skillTag: string, 
+  count: number, 
+  recentMiscues?: Record<string, number>
+): Promise<JournalItem[]> {
+  // Try to load from pack files first
+  const packPath = `/src/data/packs/core-math-hero/journal/frac_nl.json`;
+  const packItems = await loadPackJournalItems(packPath);
+  
+  // Filter items by skill tag
+  const relevantItems = packItems.filter(item => 
+    item.tags?.includes(skillTag)
+  );
+  
+  if (relevantItems.length === 0) {
+    // Fallback to legacy generator with proper skill mapping
+    const generator = new LocalGenerator();
+    // Map M.FRAC.NL.3 to number.fractions or similar existing skill
+    const mappedSkill = skillTag.includes('FRAC') ? 'number.fractions' : skillTag;
+    return generator.generate(mappedSkill, 'core', count);
+  }
+  
+  // Score items based on miscue relevance
+  const scoredItems = relevantItems.map(item => {
+    let miscueScore = 1.0; // Base score
+    
+    if (recentMiscues && item.miscue_types) {
+      // Boost score for items that target recent miscues
+      const relevantMiscues = item.miscue_types.filter(miscue => 
+        recentMiscues[miscue] > 0
+      );
+      if (relevantMiscues.length > 0) {
+        miscueScore += relevantMiscues.length * 0.5; // Boost for targeting miscues
+      }
+    }
+    
+    return { item, score: miscueScore };
+  });
+  
+  // Sort by score (highest first) and select diverse items
+  scoredItems.sort((a, b) => b.score - a.score);
+  
+  const selectedItems: JournalItem[] = [];
+  const usedBands: Set<BandLevel> = new Set();
+  
+  // Select items ensuring band diversity
+  for (const { item } of scoredItems) {
+    if (selectedItems.length >= count) break;
+    
+    // Prioritize different bands for variety
+    if (item.band && !usedBands.has(item.band) || selectedItems.length < count) {
+      selectedItems.push({
+        ...item,
+        id: nanoid(), // Fresh ID
+        skillId: skillTag // Ensure skillId is set
+      });
+      if (item.band) usedBands.add(item.band);
+    }
+  }
+  
+  // If we need more items, cycle through the scored items
+  while (selectedItems.length < count && scoredItems.length > 0) {
+    const nextItem = scoredItems[selectedItems.length % scoredItems.length];
+    selectedItems.push({
+      ...nextItem.item,
+      id: nanoid(),
+      skillId: skillTag
+    });
+  }
+  
+  return selectedItems;
 }
 
 // Legacy inline banks - now using external bank files
@@ -199,6 +314,10 @@ const LEGACY_ITEM_BANKS: Record<string, Record<SkillLevel, Array<Omit<JournalIte
 
 // Local generator implementation
 class LocalGenerator implements JournalGenerator {
+  async generateWithBands(skillTag: string, count: number, recentAccuracy?: number, recentMiscues?: Record<string, number>): Promise<JournalItem[]> {
+    return selectItemsForSkill(skillTag, count, recentMiscues);
+  }
+
   async generate(skillId: string, level: SkillLevel, n: number): Promise<JournalItem[]> {
     // Apply tuning adjustments to the requested difficulty level
     const adjustedLevel = getAdjustedDifficultyLevel(skillId, level);
