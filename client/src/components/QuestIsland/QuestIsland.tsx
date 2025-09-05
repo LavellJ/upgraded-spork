@@ -819,6 +819,7 @@ export function QuestIsland({ onLessonSelect }: QuestIslandProps) {
                 key={node.id}
                 {...node}
                 onClick={() => handleLessonClick(node.id)}
+                allNodes={lessonNodes}
               />
             ))}
 
