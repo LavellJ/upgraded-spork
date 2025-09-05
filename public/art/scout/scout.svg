@@ -1,0 +1,41 @@
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Scout">
+  <g id="pose-neutral">
+    <circle cx="64" cy="64" r="44" fill="#F2F5F8" stroke="#1F2937" stroke-width="3"/>
+    <circle id="eyes" cx="48" cy="60" r="3" fill="#1F2937"/>
+    <circle cx="80" cy="60" r="3" fill="#1F2937"/>
+    <path id="mouth-neutral" d="M48 80 Q64 90 80 80" stroke="#1F2937" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </g>
+  <g id="pose-happy" style="display:none">
+    <circle cx="64" cy="64" r="44" fill="#F2F5F8" stroke="#1F2937" stroke-width="3"/>
+    <circle cx="48" cy="60" r="3" fill="#1F2937"/>
+    <circle cx="80" cy="60" r="3" fill="#1F2937"/>
+    <path id="mouth-smile" d="M48 78 Q64 95 80 78" stroke="#1F2937" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </g>
+  <g id="pose-thinking" style="display:none">
+    <circle cx="64" cy="64" r="44" fill="#F2F5F8" stroke="#1F2937" stroke-width="3"/>
+    <circle cx="52" cy="58" r="3" fill="#1F2937"/>
+    <circle cx="76" cy="62" r="3" fill="#1F2937"/>
+    <path d="M52 86 h24" stroke="#1F2937" stroke-width="3" fill="none" />
+  </g>
+  <g id="pose-encouraging" style="display:none">
+    <circle cx="64" cy="64" r="44" fill="#F2F5F8" stroke="#1F2937" stroke-width="3"/>
+    <circle cx="48" cy="58" r="3" fill="#1F2937"/>
+    <circle cx="80" cy="58" r="3" fill="#1F2937"/>
+    <path d="M50 82 Q64 92 78 82" stroke="#1F2937" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </g>
+  <g id="pose-alert" style="display:none">
+    <circle cx="64" cy="64" r="44" fill="#F2F5F8" stroke="#1F2937" stroke-width="3"/>
+    <circle cx="46" cy="58" r="4" fill="#1F2937"/>
+    <circle cx="82" cy="58" r="4" fill="#1F2937"/>
+    <circle cx="64" cy="82" r="2" fill="#1F2937"/>
+  </g>
+  <g id="pose-celebrate" style="display:none">
+    <circle cx="64" cy="64" r="44" fill="#F2F5F8" stroke="#1F2937" stroke-width="3"/>
+    <path d="M42 56 Q48 50 54 56" stroke="#1F2937" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M74 56 Q80 50 86 56" stroke="#1F2937" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M44 84 Q64 100 84 84" stroke="#1F2937" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </g>
+  <g id="eyes-blink" style="display:none">
+    <rect x="40" y="58" width="48" height="6" rx="3" fill="#1F2937"/>
+  </g>
+</svg>
