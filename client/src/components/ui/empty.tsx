@@ -1,10 +1,10 @@
 import { ReactNode } from 'react'
-import { Flags } from '../../config/flags'
+import { useFlags } from '@/config/flags'
 
 export function EmptyState({ icon, title, message, actionLabel, onAction }:{
   icon?: ReactNode; title: string; message?: string; actionLabel?: string; onAction?: () => void
 }) {
-  const { finalArt } = Flags.get()
+  const { finalArt } = useFlags()
   return (
     <div className="flex flex-col items-center text-center gap-2 p-8">
       {icon
@@ -15,7 +15,9 @@ export function EmptyState({ icon, title, message, actionLabel, onAction }:{
       }
       <h3 className="text-base font-semibold">{title}</h3>
       {message && <p className="subtle max-w-[48ch]">{message}</p>}
-      {actionLabel && <button type="button" onClick={onAction} className="mt-2 px-3 py-2 rounded-xl border border-brand text-[rgb(var(--fg-default))]">{actionLabel}</button>}
+      {actionLabel && <button type="button" onClick={onAction} className="mt-2 px-3 py-2 rounded-xl border border-brand">
+        {actionLabel}
+      </button>}
     </div>
   )
 }
