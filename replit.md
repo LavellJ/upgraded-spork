@@ -32,6 +32,15 @@ This is a full-stack educational web application called "LearnOz" that provides 
 - **Test Coverage**: Created comprehensive unit tests (scout-avatar.spec.tsx) and E2E tests (final-art.spec.ts)
 - **Accessibility**: Proper alt attributes for functional vs decorative images, screen reader compatibility
 
+## Art Pipeline & Pin UI System (Completed)
+- **Art Guide Documentation**: Created comprehensive ART_GUIDE.md with style pillars, file structure, and validation requirements
+- **Art Asset Preflight**: Implemented art-preflight.mts script with size limits, SVG validation, and forbidden effects detection
+- **Pin Component System**: Created tokenized Pin UI component with 7 states (base, next, assigned, due, overdue, done, locked)
+- **Scout Sprite Socket**: Enhanced ScoutSprite component ready for future SVG sprite expressions while maintaining current neutral raster
+- **AssignmentsManager Integration**: Replaced Chip components with Pin components in assignment status column
+- **Comprehensive Testing**: Added unit tests (pin.spec.tsx) and E2E tests (ui.pin.spec.ts) with 16 test cases covering all states
+- **CI Integration**: Art preflight validation integrated into development workflow with clear error reporting
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
