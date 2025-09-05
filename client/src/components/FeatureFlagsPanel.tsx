@@ -56,12 +56,17 @@ export function FeatureFlagsPanel() {
     return localStorage.getItem('qi.features.enableRatePrompt') === 'true';
   });
 
-  // Growth feature flags
-  const [coTeacherInvitesEnabled, setCoTeacherInvitesEnabled] = useState(() => {
+  // Privacy Strict Mode flag
+  const [privacyStrictModeEnabled, setPrivacyStrictModeEnabled] = useState(() => {
+    return localStorage.getItem('qi.features.privacyStrictMode') === 'true';
+  });
+
+  // Growth feature flags (using new naming convention)
+  const [invitesEnabled, setInvitesEnabled] = useState(() => {
     if (process.env.NODE_ENV !== 'development') {
-      return localStorage.getItem('qi.features.enableCoTeacherInvites') === 'true';
+      return localStorage.getItem('qi.features.enableInvites') === 'true';
     }
-    return localStorage.getItem('qi.features.enableCoTeacherInvites') !== 'false';
+    return localStorage.getItem('qi.features.enableInvites') !== 'false';
   });
 
   const [referralsEnabled, setReferralsEnabled] = useState(() => {
@@ -158,11 +163,21 @@ export function FeatureFlagsPanel() {
     }));
   };
 
-  const handleCoTeacherInvitesToggle = (enabled: boolean) => {
-    setCoTeacherInvitesEnabled(enabled);
-    localStorage.setItem('qi.features.enableCoTeacherInvites', enabled ? 'true' : 'false');
+  // Privacy Strict Mode handler
+  const handlePrivacyStrictModeToggle = (enabled: boolean) => {
+    setPrivacyStrictModeEnabled(enabled);
+    localStorage.setItem('qi.features.privacyStrictMode', enabled ? 'true' : 'false');
+    // Dispatch custom event to notify all privacy-sensitive components
+    window.dispatchEvent(new CustomEvent('privacy-strict-mode-toggle', { 
+      detail: { enabled } 
+    }));
+  };
+
+  const handleInvitesToggle = (enabled: boolean) => {
+    setInvitesEnabled(enabled);
+    localStorage.setItem('qi.features.enableInvites', enabled ? 'true' : 'false');
     // Dispatch custom event to notify growth components
-    window.dispatchEvent(new CustomEvent('co-teacher-invites-toggle', { 
+    window.dispatchEvent(new CustomEvent('invites-toggle', { 
       detail: { enabled } 
     }));
   };
@@ -411,28 +426,58 @@ export function FeatureFlagsPanel() {
         </div>
 
         {/* Growth Features */}
-        <div className="flex items-center justify-between p-3 rounded-lg bg-white border">
+        {/* Privacy Strict Mode */}
+        <div className="flex items-center justify-between p-3 rounded-lg bg-white border border-red-200">
           <div className="flex items-start gap-3">
-            <Share2 className="w-5 h-5 text-blue-600 mt-0.5" />
+            <Shield className="w-5 h-5 text-red-600 mt-0.5" />
             <div className="flex-1">
-              <Label className="text-sm font-medium">Co-teacher Invites</Label>
+              <Label className="text-sm font-medium">Privacy Strict Mode</Label>
               <p className="text-xs text-gray-600 mt-1">
-                Enable teachers to invite colleagues to collaborate on classes and share resources.
+                School deployment mode. Disables growth features, referrals, and limits analytics to essential events only.
               </p>
               <div className="flex items-center gap-2 mt-1">
-                <Badge variant={coTeacherInvitesEnabled ? "default" : "secondary"} className="text-xs">
-                  {coTeacherInvitesEnabled ? 'Enabled' : 'Disabled'}
+                <Badge variant={privacyStrictModeEnabled ? "destructive" : "secondary"} className="text-xs">
+                  {privacyStrictModeEnabled ? 'School Mode' : 'Standard'}
                 </Badge>
-                {coTeacherInvitesEnabled && (
-                  <span className="text-xs text-blue-600">Collaboration</span>
+                {privacyStrictModeEnabled && (
+                  <span className="text-xs text-red-600">Growth features disabled</span>
                 )}
               </div>
             </div>
           </div>
           <Switch
-            checked={coTeacherInvitesEnabled}
-            onCheckedChange={handleCoTeacherInvitesToggle}
-            data-testid="co-teacher-invites-toggle"
+            checked={privacyStrictModeEnabled}
+            onCheckedChange={handlePrivacyStrictModeToggle}
+            data-testid="privacy-strict-mode-toggle"
+          />
+        </div>
+
+        <div className="flex items-center justify-between p-3 rounded-lg bg-white border">
+          <div className="flex items-start gap-3">
+            <Share2 className="w-5 h-5 text-blue-600 mt-0.5" />
+            <div className="flex-1">
+              <Label className="text-sm font-medium">Invites (Co-teacher)</Label>
+              <p className="text-xs text-gray-600 mt-1">
+                Enable teachers to invite colleagues to collaborate on classes and share resources.
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant={invitesEnabled ? "default" : "secondary"} className="text-xs">
+                  {invitesEnabled ? 'Enabled' : 'Disabled'}
+                </Badge>
+                {invitesEnabled && (
+                  <span className="text-xs text-blue-600">Collaboration</span>
+                )}
+                {privacyStrictModeEnabled && (
+                  <span className="text-xs text-red-500">Overridden by strict mode</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <Switch
+            checked={invitesEnabled}
+            onCheckedChange={handleInvitesToggle}
+            data-testid="invites-toggle"
+            disabled={privacyStrictModeEnabled}
           />
         </div>
 
@@ -451,6 +496,9 @@ export function FeatureFlagsPanel() {
                 {referralsEnabled && (
                   <span className="text-xs text-purple-600">Growth tracking</span>
                 )}
+                {privacyStrictModeEnabled && (
+                  <span className="text-xs text-red-500">Overridden by strict mode</span>
+                )}
               </div>
             </div>
           </div>
@@ -458,6 +506,7 @@ export function FeatureFlagsPanel() {
             checked={referralsEnabled}
             onCheckedChange={handleReferralsToggle}
             data-testid="referrals-toggle"
+            disabled={privacyStrictModeEnabled}
           />
         </div>
 
@@ -474,7 +523,8 @@ export function FeatureFlagsPanel() {
               <span>• Issues: {issueReporterEnabled ? 'Enabled' : 'Disabled'}</span>
               <span>• Share: {sharePromptEnabled ? 'Enabled' : 'Disabled'}</span>
               <span>• Rate: {ratePromptEnabled ? 'Enabled' : 'Disabled'}</span>
-              <span>• Co-teacher: {coTeacherInvitesEnabled ? 'Enabled' : 'Disabled'}</span>
+              <span>• Privacy: {privacyStrictModeEnabled ? 'Strict Mode ON' : 'Standard Mode'}</span>
+              <span>• Invites: {invitesEnabled ? 'Enabled' : 'Disabled'}</span>
               <span>• Referrals: {referralsEnabled ? 'Enabled' : 'Disabled'}</span>
             </div>
           </div>

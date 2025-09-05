@@ -41,6 +41,11 @@ export function isIssueReporterEnabled(): boolean {
  * Check if share prompts are enabled
  */
 export function isSharePromptEnabled(): boolean {
+  // Disabled if privacy strict mode is enabled
+  if (isPrivacyStrictModeEnabled()) {
+    return false;
+  }
+  
   // Default to disabled for pilot
   return localStorage.getItem('qi.features.enableSharePrompt') === 'true';
 }
@@ -49,32 +54,61 @@ export function isSharePromptEnabled(): boolean {
  * Check if rate prompts are enabled
  */
 export function isRatePromptEnabled(): boolean {
+  // Disabled if privacy strict mode is enabled
+  if (isPrivacyStrictModeEnabled()) {
+    return false;
+  }
+  
   // Default to disabled for pilot
   return localStorage.getItem('qi.features.enableRatePrompt') === 'true';
 }
 
 /**
- * Check if co-teacher invites are enabled
+ * Check if privacy strict mode is enabled
+ * When enabled: disable referrals/prompts, restrict analytics to essential (auth, sync, dsar/erasure)
  */
-export function isCoTeacherInvitesEnabled(): boolean {
-  // Default to enabled in development, disabled in production unless explicitly enabled
-  if (process.env.NODE_ENV !== 'development') {
-    return localStorage.getItem('qi.features.enableCoTeacherInvites') === 'true';
+export function isPrivacyStrictModeEnabled(): boolean {
+  // Default to disabled
+  return localStorage.getItem('qi.features.privacyStrictMode') === 'true';
+}
+
+/**
+ * Check if invites are enabled (co-teacher invites)
+ */
+export function isInvitesEnabled(): boolean {
+  // Disabled if privacy strict mode is enabled
+  if (isPrivacyStrictModeEnabled()) {
+    return false;
   }
   
-  return localStorage.getItem('qi.features.enableCoTeacherInvites') !== 'false';
+  // Default to enabled in development, disabled in production unless explicitly enabled
+  if (process.env.NODE_ENV !== 'development') {
+    return localStorage.getItem('qi.features.enableInvites') === 'true';
+  }
+  
+  return localStorage.getItem('qi.features.enableInvites') !== 'false';
 }
 
 /**
  * Check if referral links are enabled
  */
 export function isReferralsEnabled(): boolean {
+  // Disabled if privacy strict mode is enabled
+  if (isPrivacyStrictModeEnabled()) {
+    return false;
+  }
+  
   // Default to enabled in development, disabled in production unless explicitly enabled
   if (process.env.NODE_ENV !== 'development') {
     return localStorage.getItem('qi.features.enableReferrals') === 'true';
   }
   
   return localStorage.getItem('qi.features.enableReferrals') !== 'false';
+}
+
+// Backwards compatibility - alias for invites
+export function isCoTeacherInvitesEnabled(): boolean {
+  return isInvitesEnabled();
 }
 
 /**
