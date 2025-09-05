@@ -1015,6 +1015,18 @@ function AppContent(){
           </div>
         )}
         
+        {/* Dev Mode Button (DEV only) */}
+        {process.env.NODE_ENV === 'development' && (
+          <button
+            onClick={() => setShowTeacher(true)}
+            className="fixed top-4 right-4 z-50 w-10 h-10 bg-gray-800 hover:bg-gray-700 text-white rounded-lg shadow-lg flex items-center justify-center transition-colors"
+            title="Open Developer Panel"
+            data-testid="dev-mode-button"
+          >
+            ⚙️
+          </button>
+        )}
+
         {/* Quest Island Map */}
         <main id="main" className="flex-1 relative p-8">
           <div className="max-w-6xl mx-auto h-full relative min-h-[560px]">
