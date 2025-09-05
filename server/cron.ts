@@ -4,6 +4,7 @@ import { runBackupRoutine } from './backup';
 import { dbUserStorage } from './dbStorage';
 import { statements } from './db';
 import { sendTeacherDigestToAll } from './analytics/teacherDigest';
+import { processDueErasures } from './routes/erasure';
 
 /**
  * Initialize all scheduled tasks
@@ -116,11 +117,32 @@ export function initializeCronJobs(): void {
     timezone: 'UTC' // Note: using UTC for consistency, adjust as needed
   });
   
+  // Hourly erasure processing - check for due deletion requests
+  cron.schedule('0 * * * *', async () => {
+    console.log('🗑️  Running hourly erasure processing...');
+    try {
+      const result = await processDueErasures();
+      if (result.processed > 0) {
+        console.log(`✅ Processed ${result.processed} due erasure requests`);
+      }
+      if (result.errors.length > 0) {
+        console.warn(`⚠️  Erasure processing errors: ${result.errors.length}`);
+        result.errors.forEach(error => console.warn(`  - ${error}`));
+      }
+    } catch (error) {
+      console.error('❌ Erasure processing failed:', error);
+    }
+  }, {
+    name: 'hourly-erasure-processing',
+    timezone: 'UTC'
+  });
+  
   console.log('✅ Scheduled tasks initialized:');
   console.log('  • Daily backup: 02:30 UTC');
   console.log('  • Daily retention: 03:00 UTC');
   console.log('  • Weekly audit cleanup: 04:00 UTC Sunday');
   console.log('  • Weekly teacher digest: 07:30 UTC Monday');
+  console.log('  • Hourly erasure processing: Every hour');
 }
 
 /**

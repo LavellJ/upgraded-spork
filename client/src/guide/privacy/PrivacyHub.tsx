@@ -15,6 +15,7 @@ import {
   Eye
 } from 'lucide-react';
 import { ExportData } from './ExportData';
+import { DeleteData } from './DeleteData';
 
 /**
  * Privacy & Data Hub - Central location for privacy documentation and data management
@@ -22,6 +23,7 @@ import { ExportData } from './ExportData';
  */
 export function PrivacyHub() {
   const [showExportPanel, setShowExportPanel] = useState(false);
+  const [showDeletePanel, setShowDeletePanel] = useState(false);
 
   const handleClearLocalData = () => {
     // Clear local storage data
@@ -210,10 +212,21 @@ export function PrivacyHub() {
                   className="text-orange-600 border-orange-200 hover:bg-orange-50"
                   data-testid="clear-local-data-button"
                 >
+                  <Trash2 className="h-4 w-4 mr-2" />
                   Clear Local Data
                 </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowDeletePanel(true)}
+                  className="text-red-600 border-red-200 hover:bg-red-50"
+                  data-testid="open-delete-panel-button"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Cloud Data
+                </Button>
                 <p className="text-xs text-gray-500">
-                  Clears all local learning progress and preferences
+                  Manage local browser data and cloud account deletion
                 </p>
               </div>
             </CardContent>
@@ -238,6 +251,28 @@ export function PrivacyHub() {
             </div>
             <div className="p-6">
               <ExportData />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Data Panel Modal/Overlay */}
+      {showDeletePanel && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Data Deletion Requests</h2>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowDeletePanel(false)}
+                data-testid="close-delete-panel-button"
+              >
+                Close
+              </Button>
+            </div>
+            <div className="p-6">
+              <DeleteData />
             </div>
           </div>
         </div>
