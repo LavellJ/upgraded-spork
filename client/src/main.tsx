@@ -22,6 +22,23 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// Dev console helper for art diagnostics (development only)
+if (import.meta.env.DEV) {
+  // @ts-ignore
+  window.qiArtCheck = async () => {
+    const urls = [
+      'art/ui/backpack.webp',
+      'art/spots/map-parchment.webp',
+      'art/scout/scout.svg',
+      'art/scout/scout-neutral.webp'
+    ].map(u => (import.meta.env.BASE_URL || '/') + u.replace(/^\//, ''))
+    const out = await Promise.all(urls.map(async u => {
+      try { const r = await fetch(u, { cache:'reload' }); return [u, r.status] } catch { return [u, 'ERR'] }
+    }))
+    console.table(out)
+  }
+}
+
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ToastProvider>

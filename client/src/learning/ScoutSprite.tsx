@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useFlags } from '@/config/flags'
 import { onScoutEvent } from '@/learning/scout'
+import { assetUrl } from '@/lib/assetUrl'
 
 type Expr = 'neutral'|'happy'|'thinking'|'encouraging'|'alert'|'celebrate'
 
@@ -26,7 +27,7 @@ export default function ScoutSprite({ size=96 }: { size?: number }) {
   useEffect(() => {
     let cancelled = false
     if (!finalArt) return
-    fetch('/art/scout/scout.svg', { cache: 'force-cache' })
+    fetch(assetUrl('art/scout/scout.svg'), { cache: 'force-cache' })
       .then(r => (r.ok ? r.text() : null))
       .then(txt => { if (!cancelled) setSvgMarkup(txt) })
       .catch(() => { /* keep raster fallback */ })
@@ -75,7 +76,7 @@ export default function ScoutSprite({ size=96 }: { size?: number }) {
   // Fallback — your canonical raster neutral pose
   return (
     <img
-      src="/art/scout/scout-neutral.webp"
+      src={assetUrl('art/scout/scout-neutral.webp')}
       width={size}
       height={size}
       alt="Scout"
