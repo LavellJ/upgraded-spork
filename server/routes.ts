@@ -46,6 +46,7 @@ import invitesRouter from './routes/invites';
 import referralsRouter from './routes/referrals';
 import dsarRouter from './routes/dsar';
 import erasureRouter from './routes/erasure';
+import retentionRouter from './routes/retention';
 import { syncBatchSLO, trackSLO } from './metrics/slo';
 import { asyncHandler, AppError, ValidationError, NotFoundError } from './middleware/errorHandler';
 import { log } from './log';
@@ -693,6 +694,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Mount erasure routes
   app.use('/api/erasure', erasureRouter);
+
+  // Mount retention routes
+  app.use('/api/retention', retentionRouter);
 
   // Mount audit routes (admin/dev only)
   const auditRouter = (await import('./routes/audit')).default;

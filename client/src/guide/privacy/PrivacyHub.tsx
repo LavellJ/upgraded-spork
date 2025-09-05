@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { ExportData } from './ExportData';
 import { DeleteData } from './DeleteData';
+import { RetentionSettings } from './RetentionSettings';
 
 /**
  * Privacy & Data Hub - Central location for privacy documentation and data management
@@ -24,6 +25,7 @@ import { DeleteData } from './DeleteData';
 export function PrivacyHub() {
   const [showExportPanel, setShowExportPanel] = useState(false);
   const [showDeletePanel, setShowDeletePanel] = useState(false);
+  const [showRetentionPanel, setShowRetentionPanel] = useState(false);
 
   const handleClearLocalData = () => {
     // Clear local storage data
@@ -192,6 +194,35 @@ export function PrivacyHub() {
             </CardContent>
           </Card>
 
+          {/* Retention Settings */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Database className="h-5 w-5 text-indigo-600" />
+                Retention Settings
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-gray-600">
+                Configure how long your data is stored and when it gets archived or deleted.
+              </p>
+              <div className="flex flex-col gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowRetentionPanel(true)}
+                  data-testid="open-retention-panel-button"
+                >
+                  <Database className="h-4 w-4 mr-2" />
+                  Manage Retention Policy
+                </Button>
+                <p className="text-xs text-gray-500">
+                  Set custom retention periods for learning data and security logs
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Delete Data */}
           <Card>
             <CardHeader>
@@ -273,6 +304,28 @@ export function PrivacyHub() {
             </div>
             <div className="p-6">
               <DeleteData />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Retention Settings Panel Modal/Overlay */}
+      {showRetentionPanel && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Data Retention Settings</h2>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowRetentionPanel(false)}
+                data-testid="close-retention-panel-button"
+              >
+                Close
+              </Button>
+            </div>
+            <div className="p-6">
+              <RetentionSettings />
             </div>
           </div>
         </div>

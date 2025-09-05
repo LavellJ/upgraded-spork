@@ -28,7 +28,9 @@ We never collect:
 - Data is encrypted and stored securely
 - Only accessible by your family/classroom
 - Can be disabled anytime
-- Deleted automatically after 1 year
+- **Configurable retention**: You choose how long data is kept (defaults: 90 days for learning data, 365 days for security logs)
+- Old learning data becomes daily summaries after your chosen time period
+- Security logs are permanently deleted after your audit period
 
 ## Your Rights
 
@@ -37,6 +39,7 @@ You can always:
 - **Delete** everything from your device
 - **Opt out** of cloud sync
 - **See exactly** what data we have
+- **Control retention**: Set custom periods for how long your data is stored (7-365 days for learning data, 30-2555 days for security logs)
 
 ## For Classroom Use
 

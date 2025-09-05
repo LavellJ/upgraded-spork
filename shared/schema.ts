@@ -423,3 +423,15 @@ export type InsertWorkbookProgress = z.infer<typeof insertWorkbookProgressSchema
 
 export type WorkbookAchievement = typeof workbookAchievements.$inferSelect;
 export type InsertWorkbookAchievement = z.infer<typeof insertWorkbookAchievementSchema>;
+
+// Retention policies for per-tenant data retention settings
+export const retentionPolicies = pgTable("retention_policies", {
+  email: text("email").primaryKey(), // user email (reference to parents.email)
+  eventsDays: integer("events_days").notNull().default(90), // keep detailed events for N days
+  auditDays: integer("audit_days").notNull().default(365), // keep audit logs for N days
+  updatedAt: timestamp("updated_at").notNull().defaultNow(), // when policy was last updated
+});
+
+export const insertRetentionPolicySchema = createInsertSchema(retentionPolicies);
+export type RetentionPolicy = typeof retentionPolicies.$inferSelect;
+export type InsertRetentionPolicy = z.infer<typeof insertRetentionPolicySchema>;
