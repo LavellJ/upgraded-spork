@@ -20,6 +20,7 @@ import { Toolbar } from '../components/ui/toolbar';
 import { Table, THead, TBody, TR, TH, TD } from '../components/ui/table';
 import { Chip } from '../components/ui/chip';
 import { Field, Input, Select } from '../components/ui/field';
+import { Pin, type PinState } from '../ui/Pin';
 import { Button } from '../components/ui/button';
 import { EmptyState } from '../components/ui/empty';
 import { Skeleton } from '../components/ui/skeleton';
@@ -349,16 +350,22 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
               filteredAssignments.map((assignment) => {
                 const status = assignment.archived ? 'archived' : 
                              (assignment.dueAt && assignment.dueAt < Date.now()) ? 'overdue' : 'assigned';
+                
+                // Map assignment status to pin state
+                const pinState: PinState = status === 'archived' ? 'locked' :
+                                         status === 'overdue' ? 'overdue' : 'assigned';
                              
                 return (
                   <TR key={assignment.id}>
                     <TD className="font-medium">{assignment.name}</TD>
                     <TD>
-                      <Chip variant={status}>
-                        {status === 'archived' ? 'Archived' : 
-                         status === 'overdue' ? 'Overdue' : 
-                         'Assigned'}
-                      </Chip>
+                      <Pin 
+                        state={pinState} 
+                        size={16} 
+                        ariaLabel={`Status: ${status === 'archived' ? 'Archived' : 
+                                               status === 'overdue' ? 'Overdue' : 
+                                               'Assigned'}`}
+                      />
                     </TD>
                     <TD>
                       <Chip variant={assignment.priority === 'high' ? 'overdue' : 
