@@ -8,16 +8,7 @@ export default function PrivacyList(){
   const { teacherPanelV2, teacherAppearanceV3 } = useFlags()
   
   // Only show list UI when both flags are enabled
-  if (!teacherPanelV2 || !teacherAppearanceV3) {
-    // Fallback to a simple message when flags are not enabled
-    return (
-      <div className="card p-4 md:p-6">
-        <h2 className="page-title mb-2">Privacy</h2>
-        <p className="subtle mb-4">Data protection settings.</p>
-        <p className="text-sm text-gray-600">Enable Teacher Panel v2 + Appearance v3 flags to see the new list UI.</p>
-      </div>
-    )
-  }
+  if (!teacherPanelV2 || !teacherAppearanceV3) return null
   
   const handleDataPolicy = () => {
     console.log('Open data policy')
