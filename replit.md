@@ -4,6 +4,18 @@ This is a full-stack educational web application called "LearnOz" that provides 
 
 # Recent Changes
 
+## TP6: Appearance polish (list-first settings UI, crisp surfaces) (Completed)
+- **Feature Flag**: Added `teacherAppearanceV3` toggle in DEV panel for list-first UI settings
+- **CSS List Helpers**: Added utility classes (.list-card, .list-row, .list-icon, .divider, etc.) for mobile-inspired list styling
+- **Icon System**: Created ui2/icons.tsx with ChevronRight and 9 common icons (profile, bank, dollar, bell, shield, doc, star, palette, layers)
+- **List Primitives**: Built ListCard, ListSection, ListRow components with theme token integration and accessibility
+- **Settings Pages Redesign**: Updated Appearance, Privacy, Consent, Reports, Dev pages with list UI when teacherAppearanceV3 enabled
+- **SimpleLayout Component**: Created layout wrapper for settings pages with themed title/subtitle support
+- **Mobile-First Design**: Android/iOS inspired list rows with left icons, titles, optional captions, trailing chevrons
+- **Neutral Surfaces**: Strong 1px dividers, neutral bg-card surfaces, no pastel tints for crisp professional appearance
+- **Test Coverage**: Added appearance-v3.spec.ts E2E tests and list-ui.spec.tsx unit tests for component behavior
+- **Flag Integration**: All new UI conditionally renders based on teacherAppearanceV3 flag, maintaining backward compatibility
+
 ## TP3: Teacher Panel Detail Drawers & Polish (Completed)
 - **DetailDrawer Component**: Accessible drawer pattern with focus trap, Esc key handling, and return focus management
 - **Enhanced UI Primitives**: ActionBar for consistent primary actions, StatusChip for status display, KV for key-value lists, MiniProgress bars

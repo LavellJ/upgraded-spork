@@ -82,6 +82,7 @@ export function FeatureFlagsPanel() {
   const finalArtEnabled = flags.finalArt;
   const teacherPanelV2Enabled = flags.teacherPanelV2;
   const teacherThemeV2Enabled = flags.teacherThemeV2;
+  const teacherAppearanceV3Enabled = flags.teacherAppearanceV3;
 
   if (!isDev) return null;
 
@@ -210,6 +211,11 @@ export function FeatureFlagsPanel() {
 
   const handleTeacherThemeV2Toggle = (enabled: boolean) => {
     Flags.set({ teacherThemeV2: enabled });
+    // Note: useFlags hook automatically handles reactivity, no event needed
+  };
+
+  const handleTeacherAppearanceV3Toggle = (enabled: boolean) => {
+    Flags.set({ teacherAppearanceV3: enabled });
     // Note: useFlags hook automatically handles reactivity, no event needed
   };
 
@@ -610,6 +616,32 @@ export function FeatureFlagsPanel() {
           />
         </div>
 
+        {/* Teacher Appearance V3 */}
+        <div className="flex items-center justify-between p-3 rounded-lg bg-white border border-indigo-200">
+          <div className="flex items-start gap-3">
+            <Palette className="w-5 h-5 text-indigo-600 mt-0.5" />
+            <div className="flex-1">
+              <Label className="text-sm font-medium">Teacher Panel appearance v3 (list UI)</Label>
+              <p className="text-xs text-gray-600 mt-1">
+                Modern list-first settings UI inspired by Android/iOS with crisp dividers.
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant={teacherAppearanceV3Enabled ? "default" : "secondary"} className="text-xs">
+                  {teacherAppearanceV3Enabled ? 'List UI' : 'Default'}
+                </Badge>
+                {teacherAppearanceV3Enabled && (
+                  <span className="text-xs text-indigo-600">Modern settings</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <Switch
+            checked={teacherAppearanceV3Enabled}
+            onCheckedChange={handleTeacherAppearanceV3Toggle}
+            data-testid="teacher-appearance-v3-toggle"
+          />
+        </div>
+
         {/* Status Summary */}
         <div className="p-3 rounded-lg bg-gray-50 border-t">
           <div className="text-xs text-gray-600 space-y-1">
@@ -629,6 +661,7 @@ export function FeatureFlagsPanel() {
               <span>• Final Art: {finalArtEnabled ? 'Enabled' : 'Disabled'}</span>
               <span>• Teacher Panel: {teacherPanelV2Enabled ? 'v2 Layout' : 'Current Layout'}</span>
               <span>• Teacher Theme: {teacherThemeV2Enabled ? 'v2 Themes' : 'Default'}</span>
+              <span>• Appearance: {teacherAppearanceV3Enabled ? 'v3 List UI' : 'Default'}</span>
             </div>
           </div>
         </div>
