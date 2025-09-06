@@ -7,6 +7,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TP6 List UI Helpers */
+.list-card   { @apply bg-bg-card border border-border rounded-2xl shadow-sm; }
+.list-row    { @apply flex items-center gap-3 px-4 py-4 hover:bg-bg-elev/40; }
+.list-icon   { @apply w-6 h-6 shrink-0 text-brand-600; }
+.list-title  { @apply text-[15px] font-medium text-fg-base; }
+.list-meta   { @apply text-[13px] text-fg-muted; }
+.list-value  { @apply ml-auto text-[13px] text-fg-muted; }
+.divider     { @apply h-px bg-border; }
+.chevron     { @apply w-4 h-4 text-fg-muted ml-2; }
+
 /* Color-scheme hint for form controls, etc. */
 :root {
   color-scheme: light dark;

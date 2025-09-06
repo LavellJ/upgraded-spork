@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { applyUiPrefs, loadUiPrefs, saveUiPrefs, type UiPrefs } from '../ui/theme'
+import { useFlags } from '../config/flags'
+import { useTheme } from '../theme/useTheme'
+import { SimpleLayout } from '../ui2/SimpleLayout'
+import { ListCard, ListRow, ListSection } from '../ui2/List'
+import { Ic } from '../ui2/icons'
 
-export default function AppearanceSettings() {
+function LegacyAppearance() {
   const [prefs, setPrefs] = useState<UiPrefs>(loadUiPrefs())
 
   useEffect(() => { applyUiPrefs(prefs); saveUiPrefs(prefs) }, [prefs])
@@ -61,5 +66,91 @@ export default function AppearanceSettings() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function Appearance(){
+  const { teacherPanelV2, teacherAppearanceV3 } = useFlags()
+  const { theme, setTheme, themes } = useTheme()
+  const [prefs, setPrefs] = useState<UiPrefs>(loadUiPrefs())
+  
+  // Legacy fallback
+  if (!teacherPanelV2 || !teacherAppearanceV3) return <LegacyAppearance/>
+  
+  const currentTheme = themes.find(t => t.id === theme) || themes[0]
+  const densityLabel = prefs.density === 'compact' ? 'Compact' : 'Cozy'
+  const calmOn = false // TODO: wire up actual calm mode state
+  const hcOn = prefs.contrast === 'high'
+  
+  const openTheme = () => {
+    // TODO: Open theme selector modal or drawer
+    console.log('Open theme selector')
+  }
+  
+  const toggleDensity = () => {
+    setPrefs(p => ({ ...p, density: p.density === 'compact' ? 'comfy' : 'compact' }))
+  }
+  
+  const toggleCalm = () => {
+    // TODO: wire up calm mode toggle
+    console.log('Toggle calm mode')
+  }
+  
+  const toggleHC = () => {
+    setPrefs(p => ({ ...p, contrast: p.contrast === 'high' ? 'normal' : 'high' }))
+  }
+  
+  useEffect(() => { applyUiPrefs(prefs); saveUiPrefs(prefs) }, [prefs])
+  
+  return (
+    <SimpleLayout title="Appearance" subtitle="Theme and layout preferences">
+      <div className="space-y-6">
+        <div>
+          <ListSection title="Display"/>
+          <ListCard>
+            <ListRow 
+              icon={<Ic.palette className="list-icon"/>} 
+              title="Theme" 
+              meta="Parchment, Dark, High Contrast" 
+              value={currentTheme.name} 
+              onClick={openTheme}
+              data-testid="appearance-theme-row"
+            />
+            <div className="divider" />
+            <ListRow 
+              icon={<Ic.layers className="list-icon"/>} 
+              title="Density" 
+              meta="Cozy or Compact" 
+              value={densityLabel} 
+              onClick={toggleDensity}
+              data-testid="appearance-density-row"
+            />
+          </ListCard>
+        </div>
+
+        <div>
+          <ListSection title="Map & UI"/>
+          <ListCard>
+            <ListRow 
+              icon={<Ic.star className="list-icon"/>} 
+              title="Calm Mode" 
+              meta="Reduce motion and effects" 
+              value={calmOn ? 'On' : 'Off'} 
+              onClick={toggleCalm}
+              data-testid="appearance-calm-row"
+            />
+            <div className="divider" />
+            <ListRow 
+              icon={<Ic.shield className="list-icon"/>} 
+              title="High contrast" 
+              meta="Stronger outlines for visibility" 
+              value={hcOn ? 'On' : 'Off'} 
+              onClick={toggleHC}
+              data-testid="appearance-hc-row"
+            />
+          </ListCard>
+        </div>
+      </div>
+    </SimpleLayout>
   )
 }
