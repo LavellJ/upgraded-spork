@@ -1,5 +1,5 @@
-import { useFlags } from '../../config/flags'
-import * as Flags from '../../config/flags'
+import React from 'react'
+import { useFlags, Flags } from '../../config/flags'
 import { SimpleLayout } from '../../ui2/SimpleLayout'
 import { ListCard, ListRow, ListSection } from '../../ui2/List'
 import { Ic } from '../../ui2/icons'
