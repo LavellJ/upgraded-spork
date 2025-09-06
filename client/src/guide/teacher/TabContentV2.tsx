@@ -15,12 +15,16 @@ import { Reports } from '../reports/Reports'                        // from guid
 import { QuickStart } from '../../teacher/QuickStart'               // from teacher/QuickStart.tsx
 import { AuditLogView } from '../../components/AuditLogView'         // from components/AuditLogView.tsx
 import { Consent } from '../../settings/Consent'                    // from settings/Consent.tsx
+import ConsentList from '../../settings/ConsentList'               // New list UI for consent
+import PrivacyList from '../../settings/PrivacyList'               // New list UI for privacy
+import ReportsListComponent from '../../settings/Reports'          // New list UI for reports
 import { FunnelViewer } from '../../debug/FunnelViewer'              // from debug/FunnelViewer.tsx
 import { QAPanel } from '../../components/QAPanel'                  // from components/QAPanel.tsx
 
 // Import pilot KPI functions
 import { buildPilotKPIs, getPilotKPIsWithDelta } from '../../progress/pilot'
 import { FeatureFlagsPanel } from '../../components/FeatureFlagsPanel'
+import { useFlags } from '../../config/flags'
 
 // Import dev tools
 import { TriageBoard } from '../dev/TriageBoard'                     // from guide/dev/TriageBoard.tsx
@@ -46,6 +50,8 @@ function Missing({ name }: { name: string }) {
 }
 
 export default function TabContentV2({ tab }: Props) {
+  const { teacherPanelV2, teacherAppearanceV3 } = useFlags()
+  const useListUI = teacherPanelV2 && teacherAppearanceV3
   
   const body = (() => {
     switch (tab) {
@@ -62,11 +68,11 @@ export default function TabContentV2({ tab }: Props) {
       case 'classes':      
         return <Classes />
       case 'privacy':      
-        return <PrivacyHub />
+        return useListUI ? <PrivacyList /> : <PrivacyHub />
       case 'appearance':   
         return <Appearance />
       case 'reports':      
-        return <Reports />
+        return useListUI ? <ReportsListComponent /> : <Reports />
       case 'insights':     
         return <InsightsCard timeRange={30} />
       case 'quickstart':   
@@ -74,7 +80,7 @@ export default function TabContentV2({ tab }: Props) {
       case 'audit':        
         return <AuditLogView />
       case 'consent':      
-        return <Consent open={true} onClose={() => {}} inline={true} />
+        return useListUI ? <ConsentList /> : <Consent open={true} onClose={() => {}} inline={true} />
       case 'test-appearance':
         return <TestAppearance />
       case 'funnel':       
