@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, ReactNode } from 'react'
 
 type Toast = { id: number; kind:'success'|'warn'|'error'; text: string }
 const Ctx = createContext<{ push:(t:Omit<Toast,'id'>)=>void }|null>(null)

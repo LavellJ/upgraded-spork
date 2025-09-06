@@ -49,24 +49,252 @@ function Missing({ name }: { name: string }) {
   )
 }
 
-// Note: We've restored the original working components
+// List-style components for tabs that need updating
+function TimelineList() {
+  return (
+    <SimpleLayout title="Timeline" subtitle="Learning activity and progress">
+      <ListSection title="View Options" />
+      <ListCard>
+        <ListRow 
+          icon={<Ic.calendar className="list-icon" />} 
+          title="Time Range"
+          meta="Show last 30 days"
+          value="30d"
+          onClick={() => console.log('Change time range')}
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<Ic.filter className="list-icon" />} 
+          title="Event Filter"
+          meta="Filter by all events"
+          value="all"
+          onClick={() => console.log('Change filter')}
+        />
+      </ListCard>
+      
+      <ListSection title="Recent Activity" />
+      <ListCard>
+        <ListRow 
+          icon={<Ic.book className="list-icon" />} 
+          title="Lesson Events"
+          meta="View completed lessons and progress"
+          onClick={() => console.log('View lesson events')}
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<Ic.profile className="list-icon" />} 
+          title="Journal Entries"
+          meta="Student reflection and writing"
+          onClick={() => console.log('View journal entries')}
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<Ic.star className="list-icon" />} 
+          title="Scout Interactions"
+          meta="AI tutor interventions and help"
+          onClick={() => console.log('View scout activity')}
+        />
+      </ListCard>
+    </SimpleLayout>
+  );
+}
+
+function ContentStudioList() {
+  return (
+    <SimpleLayout title="Content Studio" subtitle="Author and preview lessons">
+      <ListSection title="Authoring Tools" />
+      <ListCard>
+        <ListRow 
+          icon={<Ic.doc className="list-icon" />} 
+          title="Browse Lessons"
+          meta="View and edit existing content"
+          onClick={() => console.log('Browse lessons')}
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<Ic.plus className="list-icon" />} 
+          title="Create New Lesson"
+          meta="Start from template or blank"
+          onClick={() => console.log('Create lesson')}
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<Ic.star className="list-icon" />} 
+          title="Validation Tools"
+          meta="Check content quality and standards"
+          onClick={() => console.log('Validate content')}
+        />
+      </ListCard>
+      
+      <ListSection title="Tuning System" />
+      <ListCard>
+        <ListRow 
+          icon={<Ic.palette className="list-icon" />} 
+          title="Content Tuning"
+          meta="Adjust difficulty and hints"
+          onClick={() => console.log('Tune content')}
+        />
+      </ListCard>
+    </SimpleLayout>
+  );
+}
+
+function RosterList() {
+  return (
+    <SimpleLayout title="Roster" subtitle="Manage learners and groups">
+      <ListSection title="Learner Management" />
+      <ListCard>
+        <ListRow 
+          icon={<Ic.profile className="list-icon" />} 
+          title="Add Learner"
+          meta="Create new student profile"
+          onClick={() => console.log('Add learner')}
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<Ic.bank className="list-icon" />} 
+          title="Import from CSV"
+          meta="Bulk import student data"
+          onClick={() => console.log('Import CSV')}
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<Ic.layers className="list-icon" />} 
+          title="Group Management"
+          meta="Organize learners into classes"
+          onClick={() => console.log('Manage groups')}
+        />
+      </ListCard>
+      
+      <ListSection title="Data & Privacy" />
+      <ListCard>
+        <ListRow 
+          icon={<Ic.shield className="list-icon" />} 
+          title="Export Data"
+          meta="Download learner progress archive"
+          onClick={() => console.log('Export data')}
+        />
+      </ListCard>
+    </SimpleLayout>
+  );
+}
+
+function ClassesList() {
+  return (
+    <SimpleLayout title="Classes" subtitle="Manage class settings and projector">
+      <ListSection title="Class Management" />
+      <ListCard>
+        <ListRow 
+          icon={<Ic.plus className="list-icon" />} 
+          title="Create Class"
+          meta="Set up new classroom"
+          onClick={() => console.log('Create class')}
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<Ic.palette className="list-icon" />} 
+          title="Projector Settings"
+          meta="Configure display preferences"
+          onClick={() => console.log('Projector settings')}
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<Ic.star className="list-icon" />} 
+          title="Class Codes"
+          meta="View and manage join codes"
+          onClick={() => console.log('Class codes')}
+        />
+      </ListCard>
+    </SimpleLayout>
+  );
+}
+
+function InsightsList() {
+  return (
+    <SimpleLayout title="Insights" subtitle="Learning analytics and metrics">
+      <ListSection title="Engagement Analytics" />
+      <ListCard>
+        <ListRow 
+          icon={<Ic.star className="list-icon" />} 
+          title="Weekly Engagement"
+          meta="Time on task and return rates"
+          onClick={() => console.log('Weekly engagement')}
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<Ic.bell className="list-icon" />} 
+          title="Scout Interventions"
+          meta="AI tutor assistance patterns"
+          onClick={() => console.log('Scout interventions')}
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<Ic.layers className="list-icon" />} 
+          title="Progress Trends"
+          meta="Learning outcome tracking"
+          onClick={() => console.log('Progress trends')}
+        />
+      </ListCard>
+    </SimpleLayout>
+  );
+}
+
+function QuickStartList() {
+  return (
+    <SimpleLayout title="Quick Start" subtitle="Get started with LearnOz">
+      <ListSection title="Setup Steps" />
+      <ListCard>
+        <ListRow 
+          icon={<Ic.profile className="list-icon" />} 
+          title="Create Learner"
+          meta="Add your first student"
+          onClick={() => console.log('Create learner')}
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<Ic.book className="list-icon" />} 
+          title="Start Lesson"
+          meta="Launch any lesson to try the interface"
+          onClick={() => console.log('Start lesson')}
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<Ic.star className="list-icon" />} 
+          title="Explore Features"
+          meta="Tour the teacher panel capabilities"
+          onClick={() => console.log('Explore features')}
+        />
+      </ListCard>
+      
+      <ListSection title="Resources" />
+      <ListCard>
+        <ListRow 
+          icon={<Ic.doc className="list-icon" />} 
+          title="Download Guide"
+          meta="1-page PDF setup guide"
+          onClick={() => console.log('Download guide')}
+        />
+      </ListCard>
+    </SimpleLayout>
+  );
+}
 
 export default function TabContentV2({ tab }: Props) {
   
   const body = (() => {
     switch (tab) {
       case 'timeline':     
-        return <Timeline />
+        return <TimelineList />
       case 'assignments':  
         return <AssignmentsManager />
       case 'content':      
       case 'studio':       
-        return <ContentStudio />
+        return <ContentStudioList />
       case 'roster':       
       case 'learners':     
-        return <RosterManagement />
+        return <RosterList />
       case 'classes':      
-        return <Classes />
+        return <ClassesList />
       case 'privacy':      
         return <Privacy />
       case 'appearance':   
@@ -74,9 +302,9 @@ export default function TabContentV2({ tab }: Props) {
       case 'reports':      
         return <Reports />
       case 'insights':     
-        return <InsightsCard timeRange={30} />
+        return <InsightsList />
       case 'quickstart':   
-        return <QuickStart />
+        return <QuickStartList />
       case 'audit':        
         return <AuditViewerV3 />
       case 'consent':      
