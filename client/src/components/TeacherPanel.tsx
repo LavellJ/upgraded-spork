@@ -12,7 +12,7 @@ import type { AgeBand } from '../profile/model';
 import { Timeline } from '../guide/Timeline';
 import { Privacy } from '../settings/Privacy';
 // Import Consent component directly for now to debug
-import { Consent } from '../settings/Consent';
+import Consent from '../settings/Consent';
 import { QuickStart } from '../teacher/QuickStart';
 import { QAPanel } from './QAPanel';
 import { ReportsTab } from './ReportsTab';

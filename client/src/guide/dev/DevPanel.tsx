@@ -1,4 +1,5 @@
-import { useFlags, set as setFlags } from '../../config/flags'
+import { useFlags } from '../../config/flags'
+import * as Flags from '../../config/flags'
 import { SimpleLayout } from '../../ui2/SimpleLayout'
 import { ListCard, ListRow, ListSection } from '../../ui2/List'
 import { Ic } from '../../ui2/icons'
@@ -16,7 +17,7 @@ export default function DevPanel() {
   const f = useFlags()
   if (!f.teacherPanelV2 || !f.teacherAppearanceV3) return <LegacyDevPanel />
 
-  const set = (p: Partial<typeof f>) => setFlags(p)
+  const set = (p: Partial<typeof f>) => Flags.set(p)
 
   return (
     <SimpleLayout title="Dev" subtitle="Diagnostics & feature flags">
