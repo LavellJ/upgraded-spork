@@ -65,8 +65,7 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
   const [showArchived, setShowArchived] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const toast = useToast();
-  const toast2 = useToast2();
+  const toast = useToast2();
   
   // Form state
   const [formData, setFormData] = useState({
