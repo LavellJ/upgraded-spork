@@ -49,229 +49,24 @@ function Missing({ name }: { name: string }) {
   )
 }
 
-// List-style components for tabs that need updating
-function TimelineList() {
-  return (
-    <SimpleLayout title="Timeline" subtitle="Learning activity and progress">
-      <ListSection title="View Options" />
-      <ListCard>
-        <ListRow 
-          icon={<Ic.calendar className="list-icon" />} 
-          title="Time Range"
-          meta="Show last 30 days"
-          value="30d"
-        />
-        <div className="divider" />
-        <ListRow 
-          icon={<Ic.filter className="list-icon" />} 
-          title="Event Filter"
-          meta="Filter by all events"
-          value="all"
-        />
-      </ListCard>
-      
-      <ListSection title="Recent Activity" />
-      <ListCard>
-        <ListRow 
-          icon={<Ic.book className="list-icon" />} 
-          title="Lesson Events"
-          meta="View completed lessons and progress"
-        />
-        <div className="divider" />
-        <ListRow 
-          icon={<Ic.profile className="list-icon" />} 
-          title="Journal Entries"
-          meta="Student reflection and writing"
-        />
-        <div className="divider" />
-        <ListRow 
-          icon={<Ic.star className="list-icon" />} 
-          title="Scout Interactions"
-          meta="AI tutor interventions and help"
-        />
-      </ListCard>
-    </SimpleLayout>
-  );
-}
-
-function ContentStudioList() {
-  return (
-    <SimpleLayout title="Content Studio" subtitle="Author and preview lessons">
-      <ListSection title="Authoring Tools" />
-      <ListCard>
-        <ListRow 
-          icon={<Ic.doc className="list-icon" />} 
-          title="Browse Lessons"
-          meta="View and edit existing content"
-        />
-        <div className="divider" />
-        <ListRow 
-          icon={<Ic.plus className="list-icon" />} 
-          title="Create New Lesson"
-          meta="Start from template or blank"
-        />
-        <div className="divider" />
-        <ListRow 
-          icon={<Ic.star className="list-icon" />} 
-          title="Validation Tools"
-          meta="Check content quality and standards"
-        />
-      </ListCard>
-      
-      <ListSection title="Tuning System" />
-      <ListCard>
-        <ListRow 
-          icon={<Ic.palette className="list-icon" />} 
-          title="Content Tuning"
-          meta="Adjust difficulty and hints"
-        />
-      </ListCard>
-    </SimpleLayout>
-  );
-}
-
-function RosterList() {
-  return (
-    <SimpleLayout title="Roster" subtitle="Manage learners and groups">
-      <ListSection title="Learner Management" />
-      <ListCard>
-        <ListRow 
-          icon={<Ic.profile className="list-icon" />} 
-          title="Add Learner"
-          meta="Create new student profile"
-        />
-        <div className="divider" />
-        <ListRow 
-          icon={<Ic.bank className="list-icon" />} 
-          title="Import from CSV"
-          meta="Bulk import student data"
-        />
-        <div className="divider" />
-        <ListRow 
-          icon={<Ic.layers className="list-icon" />} 
-          title="Group Management"
-          meta="Organize learners into classes"
-        />
-      </ListCard>
-      
-      <ListSection title="Data & Privacy" />
-      <ListCard>
-        <ListRow 
-          icon={<Ic.shield className="list-icon" />} 
-          title="Export Data"
-          meta="Download learner progress archive"
-        />
-      </ListCard>
-    </SimpleLayout>
-  );
-}
-
-function ClassesList() {
-  return (
-    <SimpleLayout title="Classes" subtitle="Manage class settings and projector">
-      <ListSection title="Class Management" />
-      <ListCard>
-        <ListRow 
-          icon={<Ic.plus className="list-icon" />} 
-          title="Create Class"
-          meta="Set up new classroom"
-        />
-        <div className="divider" />
-        <ListRow 
-          icon={<Ic.palette className="list-icon" />} 
-          title="Projector Settings"
-          meta="Configure display preferences"
-        />
-        <div className="divider" />
-        <ListRow 
-          icon={<Ic.star className="list-icon" />} 
-          title="Class Codes"
-          meta="View and manage join codes"
-        />
-      </ListCard>
-    </SimpleLayout>
-  );
-}
-
-function InsightsList() {
-  return (
-    <SimpleLayout title="Insights" subtitle="Learning analytics and metrics">
-      <ListSection title="Engagement Analytics" />
-      <ListCard>
-        <ListRow 
-          icon={<Ic.star className="list-icon" />} 
-          title="Weekly Engagement"
-          meta="Time on task and return rates"
-        />
-        <div className="divider" />
-        <ListRow 
-          icon={<Ic.bell className="list-icon" />} 
-          title="Scout Interventions"
-          meta="AI tutor assistance patterns"
-        />
-        <div className="divider" />
-        <ListRow 
-          icon={<Ic.layers className="list-icon" />} 
-          title="Progress Trends"
-          meta="Learning outcome tracking"
-        />
-      </ListCard>
-    </SimpleLayout>
-  );
-}
-
-function QuickStartList() {
-  return (
-    <SimpleLayout title="Quick Start" subtitle="Get started with LearnOz">
-      <ListSection title="Setup Steps" />
-      <ListCard>
-        <ListRow 
-          icon={<Ic.profile className="list-icon" />} 
-          title="Create Learner"
-          meta="Add your first student"
-        />
-        <div className="divider" />
-        <ListRow 
-          icon={<Ic.book className="list-icon" />} 
-          title="Start Lesson"
-          meta="Launch any lesson to try the interface"
-        />
-        <div className="divider" />
-        <ListRow 
-          icon={<Ic.star className="list-icon" />} 
-          title="Explore Features"
-          meta="Tour the teacher panel capabilities"
-        />
-      </ListCard>
-      
-      <ListSection title="Resources" />
-      <ListCard>
-        <ListRow 
-          icon={<Ic.doc className="list-icon" />} 
-          title="Download Guide"
-          meta="1-page PDF setup guide"
-        />
-      </ListCard>
-    </SimpleLayout>
-  );
-}
+// Note: We've restored the original working components
 
 export default function TabContentV2({ tab }: Props) {
   
   const body = (() => {
     switch (tab) {
       case 'timeline':     
-        return <TimelineList />
+        return <Timeline />
       case 'assignments':  
         return <AssignmentsManager />
       case 'content':      
       case 'studio':       
-        return <ContentStudioList />
+        return <ContentStudio />
       case 'roster':       
       case 'learners':     
-        return <RosterList />
+        return <RosterManagement />
       case 'classes':      
-        return <ClassesList />
+        return <Classes />
       case 'privacy':      
         return <Privacy />
       case 'appearance':   
@@ -279,9 +74,9 @@ export default function TabContentV2({ tab }: Props) {
       case 'reports':      
         return <Reports />
       case 'insights':     
-        return <InsightsList />
+        return <InsightsCard timeRange={30} />
       case 'quickstart':   
-        return <QuickStartList />
+        return <QuickStart />
       case 'audit':        
         return <AuditViewerV3 />
       case 'consent':      
