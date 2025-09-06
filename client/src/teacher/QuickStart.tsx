@@ -74,12 +74,12 @@ export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: Qu
     return <QuickStartPrint onClose={() => setShowPrintPreview(false)} />;
   }
 
-  return (
+  const body = (
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-4 mb-4">
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
+          <h1 className="text-2xl font-bold text-fg-base flex items-center justify-center gap-2">
             <span className="text-2xl">🚀</span>
             Teacher Quick Start
           </h1>
@@ -94,19 +94,19 @@ export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: Qu
             Download 1-pager (PDF)
           </Button>
         </div>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <p className="text-fg-muted max-w-2xl mx-auto">
           Get started with LearnOz in 3 simple steps. Perfect for first-time presentations or new classroom setups.
         </p>
         
         {/* Progress Bar */}
         <div className="max-w-md mx-auto">
-          <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+          <div className="flex items-center justify-between text-sm text-fg-base mb-2">
             <span>Progress</span>
             <span>{completedCount} of {steps.length} complete</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-bg-card rounded-full h-2">
             <motion.div 
-              className="bg-green-500 h-2 rounded-full transition-all duration-500"
+              className="bg-brand-500 h-2 rounded-full transition-all duration-500"
               style={{ width: `${(completedCount / steps.length) * 100}%` }}
               initial={{ width: 0 }}
               animate={{ width: `${(completedCount / steps.length) * 100}%` }}
@@ -131,10 +131,10 @@ export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: Qu
               <Card className={`
                 transition-all duration-200 border-2
                 ${isCompleted 
-                  ? 'border-green-200 bg-green-50' 
+                  ? 'border-brand-200 bg-brand-50' 
                   : isNext 
-                    ? 'border-blue-200 bg-blue-50 shadow-md' 
-                    : 'border-gray-200 bg-gray-50'
+                    ? 'border-brand-200 bg-brand-50 shadow-md' 
+                    : 'border-border bg-bg-card'
                 }
               `}>
                 <CardContent className="p-6">
@@ -143,10 +143,10 @@ export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: Qu
                     <div className={`
                       flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center
                       ${isCompleted 
-                        ? 'bg-green-500 text-white' 
+                        ? 'bg-brand-500 text-white' 
                         : isNext 
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-gray-300 text-gray-600'
+                          ? 'bg-brand-500 text-white' 
+                          : 'bg-bg-card text-fg-muted'
                       }
                     `}>
                       {isCompleted ? (
@@ -159,22 +159,22 @@ export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: Qu
                     {/* Content */}
                     <div className="flex-grow">
                       <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-lg font-semibold text-fg-base">
                           Step {step.id}: {step.title}
                         </h3>
                         {isCompleted && (
-                          <Badge variant="default" className="bg-green-100 text-green-800">
+                          <Badge variant="default" className="bg-brand-50 text-brand-600">
                             Complete
                           </Badge>
                         )}
                         {isNext && !isCompleted && (
-                          <Badge variant="default" className="bg-blue-100 text-blue-800">
+                          <Badge variant="default" className="bg-brand-50 text-brand-600">
                             Next
                           </Badge>
                         )}
                       </div>
                       
-                      <p className="text-gray-600 mb-3">
+                      <p className="text-fg-muted mb-3">
                         {step.description}
                       </p>
 
@@ -189,10 +189,10 @@ export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: Qu
                           disabled={isCompleted}
                           className={`
                             ${isCompleted 
-                              ? 'bg-gray-400 cursor-not-allowed' 
+                              ? 'bg-bg-card cursor-not-allowed' 
                               : isNext 
-                                ? 'bg-blue-600 hover:bg-blue-700' 
-                                : 'bg-gray-400'
+                                ? 'bg-brand-500 hover:bg-brand-600' 
+                                : 'bg-bg-card'
                             }
                           `}
                           data-testid={`quickstart-step-${step.id}`}
@@ -215,13 +215,13 @@ export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: Qu
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center p-6 bg-green-50 rounded-lg border border-green-200"
+          className="text-center p-6 bg-bg-card rounded-lg border border-border shadow-sm"
         >
           <div className="text-4xl mb-2">🎉</div>
-          <h3 className="text-lg font-semibold text-green-900 mb-2">
+          <h3 className="text-lg font-semibold text-fg-base mb-2">
             Quick Start Complete!
           </h3>
-          <p className="text-green-700">
+          <p className="text-fg-muted">
             You're ready to use LearnOz with your students. 
             Check the Teacher Panel (press 'T') for advanced features and analytics.
           </p>
@@ -229,29 +229,29 @@ export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: Qu
       )}
 
       {/* Helpful Notes */}
-      <Card className="bg-blue-50 border-blue-200">
+      <Card className="bg-bg-card border border-border shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2 text-blue-900">
+          <CardTitle className="text-lg flex items-center gap-2 text-fg-base">
             <span className="text-lg">💡</span>
             Presentation Tips
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex items-start gap-3">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
-            <p className="text-blue-800">
+            <div className="w-2 h-2 bg-brand-500 rounded-full mt-2 flex-shrink-0" />
+            <p className="text-fg-muted">
               <strong>Projector-Safe Mode:</strong> Press '?' for help menu, then enable projector-safe mode to hide names and boost font sizes
             </p>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
-            <p className="text-blue-800">
+            <div className="w-2 h-2 bg-brand-500 rounded-full mt-2 flex-shrink-0" />
+            <p className="text-fg-muted">
               <strong>Keyboard Shortcuts:</strong> 'T' for Teacher Panel, 'C' for Compass, 'B' for Backpack, 'R' to resume last lesson
             </p>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
-            <p className="text-blue-800">
+            <div className="w-2 h-2 bg-brand-500 rounded-full mt-2 flex-shrink-0" />
+            <p className="text-fg-muted">
               <strong>Demo Mode:</strong> Create a practice learner to demonstrate features without affecting real student data
             </p>
           </div>
@@ -259,4 +259,8 @@ export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: Qu
       </Card>
     </div>
   );
+
+  return teacherPanelV2
+    ? <TeacherLayout title="Quick Start" subtitle="Get started in 3 steps">{body}</TeacherLayout>
+    : body;
 }
