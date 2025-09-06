@@ -1,4 +1,8 @@
 import React, { useState, useRef } from 'react';
+import { useFlags } from '../config/flags';
+import { SimpleLayout } from '../ui2/SimpleLayout';
+import { ListCard, ListRow, ListSection } from '../ui2/List';
+import { Ic } from '../ui2/icons';
 import { BottomSheet } from '../components/BottomSheet';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -30,7 +34,7 @@ interface PrivacyProps {
   onClose: () => void;
 }
 
-export function Privacy({ open, onClose }: PrivacyProps) {
+function LegacyPrivacy({ open, onClose }: PrivacyProps) {
   const [includeTelemetry, setIncludeTelemetry] = useState(false);
   const [clearConfirmText, setClearConfirmText] = useState('');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -641,4 +645,75 @@ export function Privacy({ open, onClose }: PrivacyProps) {
       </div>
     </BottomSheet>
   );
+}
+
+export function Privacy({ open, onClose }: PrivacyProps) {
+  const { teacherPanelV2, teacherAppearanceV3 } = useFlags()
+  
+  // Use legacy privacy when flags are disabled
+  if (!teacherPanelV2 || !teacherAppearanceV3) {
+    return <LegacyPrivacy open={open} onClose={onClose} />
+  }
+  
+  // List UI version for inline use (when both flags enabled)
+  if (open) {
+    return (
+      <SimpleLayout title="Privacy" subtitle="Data protection and consent management">
+        <div className="space-y-6">
+          <div>
+            <ListSection title="Data & Control"/>
+            <ListCard>
+              <ListRow 
+                icon={<Ic.shield className="list-icon"/>} 
+                title="Student data policy" 
+                meta="How we handle and store learning data" 
+                onClick={() => console.log('Open policy')}
+                data-testid="privacy-policy-row"
+              />
+              <div className="divider" />
+              <ListRow 
+                icon={<Ic.doc className="list-icon"/>} 
+                title="Download data" 
+                meta="Export archive for a learner or class" 
+                onClick={() => console.log('Export data')}
+                data-testid="privacy-download-row"
+              />
+              <div className="divider" />
+              <ListRow 
+                icon={<Ic.shield className="list-icon" style={{color: '#dc2626'}}/>} 
+                title="Delete learner" 
+                meta="Permanent removal (admin only)" 
+                onClick={() => console.log('Delete learner')}
+                data-testid="privacy-delete-row"
+              />
+            </ListCard>
+          </div>
+
+          <div>
+            <ListSection title="Consent"/>
+            <ListCard>
+              <ListRow 
+                icon={<Ic.star className="list-icon"/>} 
+                title="Consent status" 
+                meta="Check family approvals" 
+                value="12 of 15 signed"
+                onClick={() => console.log('Open consent')}
+                data-testid="privacy-consent-status-row"
+              />
+              <div className="divider" />
+              <ListRow 
+                icon={<Ic.bell className="list-icon"/>} 
+                title="Send consent link" 
+                meta="Invite families by email/QR" 
+                onClick={() => console.log('Send link')}
+                data-testid="privacy-send-consent-row"
+              />
+            </ListCard>
+          </div>
+        </div>
+      </SimpleLayout>
+    )
+  }
+  
+  return null
 }

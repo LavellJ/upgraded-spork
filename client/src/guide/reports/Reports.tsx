@@ -4,10 +4,18 @@ import { Growth } from './Growth';
 import { AuditViewer } from '../dev/AuditViewer';
 import SubTabs, { type TabItem } from '../layout/SubTabs';
 import { isPrivacyStrictModeEnabled } from '../../utils/featureFlags';
+import { ReportsV3 } from './ReportsV3';
+import { useFlags } from '../../config/flags';
 
 export function Reports() {
+  const { teacherPanelV2, teacherAppearanceV3 } = useFlags()
   const [activeTab, setActiveTab] = useState<string>('trends');
   const privacyStrictMode = isPrivacyStrictModeEnabled();
+  
+  // Use list UI when both flags are enabled
+  if (teacherPanelV2 && teacherAppearanceV3) {
+    return <ReportsV3 />
+  }
 
   // Filter Growth tab when privacy strict mode is enabled
   const REPORT_TABS: TabItem[] = [
