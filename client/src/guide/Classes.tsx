@@ -233,7 +233,7 @@ export function Classes() {
   };
 
   if (!activeLearner) {
-    return <div className="p-4 text-sm text-gray-500">Please select a learner to manage classes.</div>;
+    return <div className="p-4 text-sm text-fg-muted">Please select a learner to manage classes.</div>;
   }
 
   const activeClass = classes.find(c => c.id === activeClassId);

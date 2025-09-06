@@ -77,8 +77,8 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
     switch (priority) {
       case 'critical': return 'bg-red-100 text-red-800 border-red-200';
       case 'actionable': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'info': return 'bg-blue-100 text-blue-800 border-blue-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'info': return 'bg-brand-50 text-brand-600 border-brand-200';
+      default: return 'bg-bg-card text-fg-base border-border';
     }
   };
 
@@ -98,13 +98,13 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
       <Card className={className}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Activity className="w-5 h-5 text-blue-600" />
+            <Activity className="w-5 h-5 text-brand-600" />
             Learning Insights ({timeRange} days)
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-6 text-gray-500">
-            <Activity className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+          <div className="text-center py-6 text-fg-muted">
+            <Activity className="w-12 h-12 mx-auto mb-3 text-fg-muted" />
             <p className="text-sm">No learning activity in this period.</p>
             <p className="text-xs mt-1">Engagement metrics and Scout interventions will appear here.</p>
           </div>
@@ -117,17 +117,17 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
     <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Activity className="w-5 h-5 text-blue-600" />
+          <Activity className="w-5 h-5 text-brand-600" />
           Learning Insights ({timeRange} days)
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Engagement Section */}
         {hasEngagementData && (
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-100">
+          <div className="bg-bg-card rounded-lg p-4 border border-border shadow-sm">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-green-600" />
+              <h4 className="text-sm font-medium text-fg-base flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-brand-600" />
                 Engagement
               </h4>
             </div>
@@ -136,7 +136,7 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
               {/* On-task minutes with sparkline */}
               <div className="text-center">
                 <div className="flex flex-col items-center gap-1">
-                  <div className="text-lg font-bold text-green-700">
+                  <div className="text-lg font-bold text-brand-600">
                     {Math.round(engagementMetrics.totalMinutes)}m
                   </div>
                   <Sparkline 
@@ -147,35 +147,35 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
                     className="mb-1"
                   />
                 </div>
-                <div className="text-xs text-gray-600">On-task Time</div>
-                <div className="text-xs text-gray-500 mt-1" title="Active learning time excluding idle periods">
+                <div className="text-xs text-fg-base">On-task Time</div>
+                <div className="text-xs text-fg-muted mt-1" title="Active learning time excluding idle periods">
                   7-day total
                 </div>
               </div>
               
               {/* 7-day return */}
-              <div className="text-center border-l border-r border-green-200 px-2">
-                <div className="text-lg font-bold text-green-700 flex items-center justify-center gap-1">
+              <div className="text-center border-l border-r border-border px-2">
+                <div className="text-lg font-bold text-brand-600 flex items-center justify-center gap-1">
                   <Calendar className="w-3 h-3" />
                   {engagementMetrics.weeklyReturn.returnedWithin7d ? 'Yes' : 'No'}
                 </div>
-                <div className="text-xs text-gray-600">7-Day Return</div>
-                <div className="text-xs text-gray-500 mt-1" title={`Last active: ${engagementMetrics.weeklyReturn.lastActiveISO || 'Never'}`}>
+                <div className="text-xs text-fg-base">7-Day Return</div>
+                <div className="text-xs text-fg-muted mt-1" title={`Last active: ${engagementMetrics.weeklyReturn.lastActiveISO || 'Never'}`}>
                   Came back
                 </div>
               </div>
               
               {/* Session streak */}
               <div className="text-center">
-                <div className="text-lg font-bold text-green-700 flex items-center justify-center gap-1">
+                <div className="text-lg font-bold text-brand-600 flex items-center justify-center gap-1">
                   <Zap className="w-3 h-3" />
                   {engagementMetrics.streak.current}
                   {engagementMetrics.streak.best > engagementMetrics.streak.current && (
                     <span className="text-xs text-gray-500">/{engagementMetrics.streak.best}</span>
                   )}
                 </div>
-                <div className="text-xs text-gray-600">Session Streak</div>
-                <div className="text-xs text-gray-500 mt-1" title={`Best streak: ${engagementMetrics.streak.best} days`}>
+                <div className="text-xs text-fg-base">Session Streak</div>
+                <div className="text-xs text-fg-muted mt-1" title={`Best streak: ${engagementMetrics.streak.best} days`}>
                   Current/Best
                 </div>
               </div>
@@ -185,23 +185,23 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
 
         {/* Scout Interventions Section */}
         {hasData && (
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
+          <div className="bg-bg-card rounded-lg p-4 border border-border shadow-sm">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-blue-600" />
+              <h4 className="text-sm font-medium text-fg-base flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-brand-600" />
                 Scout Interventions
               </h4>
             </div>
             
             {/* Summary metrics */}
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-              <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+              <div className="bg-bg-card rounded-lg p-3 border border-border shadow-sm">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-blue-900">Total Shown</p>
-                    <p className="text-2xl font-bold text-blue-700">{summary.totalShown}</p>
+                    <p className="text-sm font-medium text-fg-base">Total Shown</p>
+                    <p className="text-2xl font-bold text-brand-600">{summary.totalShown}</p>
                   </div>
-                  <MessageSquare className="w-6 h-6 text-blue-600" />
+                  <MessageSquare className="w-6 h-6 text-brand-600" />
                 </div>
               </div>
               
@@ -215,33 +215,33 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
                 </div>
               </div>
               
-              <div className="bg-purple-50 rounded-lg p-3 border border-purple-100">
+              <div className="bg-bg-card rounded-lg p-3 border border-border shadow-sm">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-purple-900">Assignment</p>
-                    <p className="text-2xl font-bold text-purple-700">{analytics.assignmentNudges || 0}</p>
+                    <p className="text-sm font-medium text-fg-base">Assignment</p>
+                    <p className="text-2xl font-bold text-brand-600">{analytics.assignmentNudges || 0}</p>
                   </div>
-                  <Clock className="w-6 h-6 text-purple-600" />
+                  <Clock className="w-6 h-6 text-brand-600" />
                 </div>
               </div>
               
-              <div className="bg-green-50 rounded-lg p-3 border border-green-100">
+              <div className="bg-bg-card rounded-lg p-3 border border-border shadow-sm">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-green-900">CTA Clicks</p>
-                    <p className="text-2xl font-bold text-green-700">{summary.clickedCTAs}</p>
+                    <p className="text-sm font-medium text-fg-base">CTA Clicks</p>
+                    <p className="text-2xl font-bold text-brand-600">{summary.clickedCTAs}</p>
                   </div>
-                  <MousePointer className="w-6 h-6 text-green-600" />
+                  <MousePointer className="w-6 h-6 text-brand-600" />
                 </div>
               </div>
               
-              <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+              <div className="bg-bg-card rounded-lg p-3 border border-border shadow-sm">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Dismissals</p>
-                    <p className="text-2xl font-bold text-gray-700">{summary.dismissals}</p>
+                    <p className="text-sm font-medium text-fg-base">Dismissals</p>
+                    <p className="text-2xl font-bold text-fg-base">{summary.dismissals}</p>
                   </div>
-                  <X className="w-6 h-6 text-gray-600" />
+                  <X className="w-6 h-6 text-fg-base" />
                 </div>
               </div>
             </div>
@@ -295,7 +295,7 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
             {analytics.ctaCtr > 0 && (
               <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 border border-indigo-100 mt-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <h4 className="text-sm font-medium text-fg-base flex items-center gap-2">
                     <Activity className="w-4 h-4 text-indigo-600" />
                     Analytics
                   </h4>
@@ -312,8 +312,8 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
                     <div className="text-lg font-bold text-indigo-700">
                       {Math.round(analytics.ctaCtr * 100)}%
                     </div>
-                    <div className="text-xs text-gray-600">CTR</div>
-                    <div className="text-xs text-gray-500 mt-1" title="Click-through rate for actionable messages">
+                    <div className="text-xs text-fg-base">CTR</div>
+                    <div className="text-xs text-fg-muted mt-1" title="Click-through rate for actionable messages">
                       CTA clicks
                     </div>
                   </div>
@@ -323,8 +323,8 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
                       <Clock className="w-3 h-3" />
                       {Math.round(analytics.medianDwellMs / 1000)}s
                     </div>
-                    <div className="text-xs text-gray-600">Median Dwell</div>
-                    <div className="text-xs text-gray-500 mt-1" title="How long learners view messages before dismissing">
+                    <div className="text-xs text-fg-base">Median Dwell</div>
+                    <div className="text-xs text-fg-muted mt-1" title="How long learners view messages before dismissing">
                       Viewing time
                     </div>
                   </div>
@@ -333,8 +333,8 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
                     <div className="text-lg font-bold text-indigo-700">
                       {analytics.sessionDoseP95}
                     </div>
-                    <div className="text-xs text-gray-600">P95 Dose</div>
-                    <div className="text-xs text-gray-500 mt-1" title="95th percentile of messages shown per session">
+                    <div className="text-xs text-fg-base">P95 Dose</div>
+                    <div className="text-xs text-fg-muted mt-1" title="95th percentile of messages shown per session">
                       Session max
                     </div>
                   </div>
@@ -391,28 +391,28 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
                 <div className="text-sm font-bold text-purple-700">
                   {Math.round(lessonKPIs.hero.passRate * 100)}%
                 </div>
-                <div className="text-xs text-gray-600">Pass Rate</div>
+                <div className="text-xs text-fg-base">Pass Rate</div>
                 <span className="sr-only">Pass rate percentage for hero lesson</span>
               </div>
               <div className="bg-white rounded p-2 border border-purple-100">
                 <div className="text-sm font-bold text-purple-700">
                   {formatTimeOnTask(lessonKPIs.hero.medianTimeSec)}
                 </div>
-                <div className="text-xs text-gray-600">Time</div>
+                <div className="text-xs text-fg-base">Time</div>
                 <span className="sr-only">Median time on task in seconds</span>
               </div>
               <div className="bg-white rounded p-2 border border-purple-100">
                 <div className="text-sm font-bold text-purple-700">
                   {lessonKPIs.hero.hintUsagePct}%
                 </div>
-                <div className="text-xs text-gray-600">Hints</div>
+                <div className="text-xs text-fg-base">Hints</div>
                 <span className="sr-only">Hint usage percentage</span>
               </div>
               <div className="bg-white rounded p-2 border border-purple-100">
                 <div className="text-sm font-bold text-purple-700">
                   {lessonKPIs.hero.branchRate}%
                 </div>
-                <div className="text-xs text-gray-600">Branch</div>
+                <div className="text-xs text-fg-base">Branch</div>
                 <span className="sr-only">Remediation branch rate percentage</span>
               </div>
             </div>
@@ -431,28 +431,28 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
                 <div className="text-sm font-bold text-purple-700">
                   {Math.round(lessonKPIs.templates.passRate * 100)}%
                 </div>
-                <div className="text-xs text-gray-600">Pass Rate</div>
+                <div className="text-xs text-fg-base">Pass Rate</div>
                 <span className="sr-only">Pass rate percentage for template lessons</span>
               </div>
               <div className="bg-white rounded p-2 border border-purple-100">
                 <div className="text-sm font-bold text-purple-700">
                   {formatTimeOnTask(lessonKPIs.templates.medianTimeSec)}
                 </div>
-                <div className="text-xs text-gray-600">Time</div>
+                <div className="text-xs text-fg-base">Time</div>
                 <span className="sr-only">Median time on task in seconds</span>
               </div>
               <div className="bg-white rounded p-2 border border-purple-100">
                 <div className="text-sm font-bold text-purple-700">
                   {lessonKPIs.templates.hintUsagePct}%
                 </div>
-                <div className="text-xs text-gray-600">Hints</div>
+                <div className="text-xs text-fg-base">Hints</div>
                 <span className="sr-only">Hint usage percentage</span>
               </div>
               <div className="bg-white rounded p-2 border border-purple-100">
                 <div className="text-sm font-bold text-purple-700">
                   {lessonKPIs.templates.branchRate}%
                 </div>
-                <div className="text-xs text-gray-600">Branch</div>
+                <div className="text-xs text-fg-base">Branch</div>
                 <span className="sr-only">Remediation branch rate percentage</span>
               </div>
             </div>

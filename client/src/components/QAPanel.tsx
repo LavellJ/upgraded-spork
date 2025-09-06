@@ -174,10 +174,10 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
 
   const getSwStatusColor = () => {
     switch (swStatus) {
-      case 'active': return 'text-green-600';
+      case 'active': return 'text-brand-600';
       case 'installing': return 'text-yellow-600';
       case 'error': return 'text-red-600';
-      default: return 'text-gray-600';
+      default: return 'text-fg-base';
     }
   };
 
@@ -198,7 +198,7 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-fg-base flex items-center gap-2">
           <Smartphone className="w-5 h-5" />
           Device & Offline QA
         </h3>
@@ -217,7 +217,7 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Status</span>
+            <span className="text-sm text-fg-base">Status</span>
             <div className={`flex items-center gap-1 ${getSwStatusColor()}`}>
               {getSwStatusIcon()}
               <span className="text-sm font-medium capitalize">{swStatus}</span>
@@ -225,7 +225,7 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
           </div>
           
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Online</span>
+            <span className="text-sm text-fg-base">Online</span>
             <Badge variant={online ? "default" : "destructive"} className="text-xs">
               {online ? 'Connected' : 'Offline'}
             </Badge>
@@ -233,7 +233,7 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
 
           {connectionInfo.effectiveType && (
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Connection</span>
+              <span className="text-sm text-fg-base">Connection</span>
               <span className="text-xs font-mono">
                 {connectionInfo.effectiveType}
                 {connectionInfo.downlink && ` (${connectionInfo.downlink}Mbps)`}
@@ -255,7 +255,7 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
           {storageInfo.usage !== undefined && storageInfo.quota !== undefined && (
             <>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Used</span>
+                <span className="text-sm text-fg-base">Used</span>
                 <span className="text-xs font-mono">{formatBytes(storageInfo.usage)}</span>
               </div>
               
@@ -266,7 +266,7 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
 
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="bg-blue-500 h-2 rounded-full transition-all"
+                  className="bg-brand-500 h-2 rounded-full transition-all"
                   style={{ 
                     width: `${(storageInfo.usage / storageInfo.quota) * 100}%` 
                   }}
@@ -346,12 +346,12 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
       </Card>
 
       {/* Device Recommendations */}
-      <Card className="bg-blue-50 border-blue-200">
+      <Card className="bg-bg-card border border-border shadow-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm text-blue-900">Device Tips</CardTitle>
+          <CardTitle className="text-sm text-fg-base">Device Tips</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2 text-xs text-blue-800">
+          <div className="space-y-2 text-xs text-fg-base">
             {memoryInfo.isLowMemory && (
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-3 h-3 mt-0.5 text-amber-600" />
