@@ -14,6 +14,9 @@ import { getReflectionAt } from '../reflections/model';
 import { JournalReviewSheet } from '../journal/JournalReviewSheet';
 import TeacherLayout from './teacher/Layout';
 import { useFlags } from '../config/flags';
+import { SimpleLayout } from '../ui2/SimpleLayout';
+import { ListCard, ListRow, ListSection } from '../ui2/List';
+import { Ic } from '../ui2/icons';
 
 interface TimelineProps {
   selectedStandard?: string;
@@ -50,6 +53,7 @@ interface RegistryData {
 const registry = registryData as RegistryData;
 
 export function Timeline({ selectedStandard, onStandardChange, onStartJournal }: TimelineProps) {
+  const { teacherPanelV2 } = useFlags();
   const [kindFilter, setKindFilter] = useState<EventKind>('all');
   const [timeRange, setTimeRange] = useState<TimeRange>(30);
   const [reviewSessionId, setReviewSessionId] = useState<string | null>(null);
@@ -449,7 +453,6 @@ export function Timeline({ selectedStandard, onStandardChange, onStartJournal }:
     </Card>
   );
 
-  const { teacherPanelV2 } = useFlags();
   return teacherPanelV2
     ? <TeacherLayout title="Timeline" subtitle="Recent activity & notes">{body}</TeacherLayout>
     : body;
