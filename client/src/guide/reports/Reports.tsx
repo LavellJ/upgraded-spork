@@ -8,12 +8,12 @@ import { ReportsV3 } from './ReportsV3';
 import { useFlags } from '../../config/flags';
 
 export function Reports() {
-  const { teacherPanelV2, teacherAppearanceV3 } = useFlags()
+  const { teacherPanelV2 } = useFlags()
   const [activeTab, setActiveTab] = useState<string>('trends');
   const privacyStrictMode = isPrivacyStrictModeEnabled();
   
-  // Use list UI when both flags are enabled
-  if (teacherPanelV2 && teacherAppearanceV3) {
+  // Use list UI when v2 enabled
+  if (teacherPanelV2) {
     return <ReportsV3 />
   }
 

@@ -15,7 +15,6 @@ function LegacyDevPanel() {
 
 export default function DevPanel() {
   const f = useFlags()
-  if (!f.teacherPanelV2 || !f.teacherAppearanceV3) return <LegacyDevPanel />
 
   const set = (p: Partial<typeof f>) => Flags.set(p)
 
@@ -32,8 +31,8 @@ export default function DevPanel() {
                  onClick={() => set({ teacherThemeV2: !f.teacherThemeV2 })} />
         <div className="divider" />
         <ListRow icon={<Ic.star className="list-icon" />} title="Appearance v3"
-                 meta="List-first settings UI (TP6)" value={f.teacherAppearanceV3 ? 'On' : 'Off'}
-                 onClick={() => set({ teacherAppearanceV3: !f.teacherAppearanceV3 })} />
+                 meta="Removed in TP6 final" value="Retired"
+                 onClick={() => console.log('Appearance v3 permanently enabled')} />
       </ListCard>
     </SimpleLayout>
   )

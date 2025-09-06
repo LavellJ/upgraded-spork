@@ -13,10 +13,6 @@ function LegacyPrivacy() {
 }
 
 export default function Privacy() {
-  const { teacherPanelV2, teacherAppearanceV3 } = useFlags()
-
-  // Fallback to legacy screen if v2/v3 not enabled
-  if (!teacherPanelV2 || !teacherAppearanceV3) return <LegacyPrivacy />
 
   async function exportArchive() {
     console.log('Preparing export…')
