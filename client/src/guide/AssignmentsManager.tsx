@@ -31,7 +31,6 @@ import { Button as Button2 } from '../ui2/Button';
 import { useToast as useToast2 } from '../ui2/Toast';
 import { confirm } from '../ui2/Confirm';
 import { Empty } from '../ui2/States';
-import { TeacherLayoutV2 } from './teacher/TeacherLayoutV2';
 import { fmtRelative, fmtDate } from '../lib/fmt';
 import { copy } from '../copy';
 import { 

@@ -9,7 +9,6 @@ import { Classes } from '../Classes'                                // from guid
 import Privacy from '../../settings/Privacy'                       // from settings/Privacy.tsx
 import Appearance from '../../settings/Appearance'                  // from settings/Appearance.tsx
 import { InsightsCard } from '../InsightsCard'                      // from guide/InsightsCard.tsx
-import { InsightsV2 } from '../InsightsV2'                           // from guide/InsightsV2.tsx
 import { Reports } from '../reports/Reports'                        // from guide/reports/Reports.tsx
 
 // Import missing components for complete coverage
@@ -68,7 +67,7 @@ export default function TabContentV2({ tab }: Props) {
       case 'reports':      
         return <Reports />
       case 'insights':     
-        return <InsightsV2 timeRange={30} />
+        return <InsightsCard timeRange={30} />
       case 'quickstart':   
         return <QuickStart />
       case 'audit':        
@@ -87,7 +86,7 @@ export default function TabContentV2({ tab }: Props) {
       case 'dashboard':
       case '':
       case undefined:      
-        return <InsightsV2 timeRange={30} />
+        return <InsightsCard timeRange={30} />
       default:             
         return <Missing name={tab} />
     }
