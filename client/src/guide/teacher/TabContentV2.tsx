@@ -6,7 +6,7 @@ import { AssignmentsManager } from '../AssignmentsManager'          // from guid
 import { ContentStudio } from '../../authoring/Studio'              // from authoring/Studio.tsx
 import { RosterManagement } from '../../components/RosterManagement' // from components/RosterManagement.tsx
 import { Classes } from '../Classes'                                // from guide/Classes.tsx
-import { PrivacyHub } from '../privacy/PrivacyHub'                  // from guide/privacy/PrivacyHub.tsx
+import Privacy from '../../settings/Privacy'                       // from settings/Privacy.tsx
 import Appearance from '../../settings/Appearance'                  // from settings/Appearance.tsx
 import { InsightsCard } from '../InsightsCard'                      // from guide/InsightsCard.tsx
 import { Reports } from '../reports/Reports'                        // from guide/reports/Reports.tsx
@@ -28,6 +28,7 @@ import PinGallery from '../dev/PinGallery'                          // from guid
 import ScoutGallery from '../dev/ScoutGallery'                      // from guide/dev/ScoutGallery.tsx
 import ArtDiagnostics from '../dev/ArtDiagnostics'                  // from guide/dev/ArtDiagnostics.tsx
 import { ThemeSelector } from '../dev/ThemeSelector'                 // from guide/dev/ThemeSelector.tsx
+import DevPanel from '../dev/DevPanel'                               // from guide/dev/DevPanel.tsx
 
 // Providers your panels expect (so nothing is "empty"):
 import { RosterProvider } from '../../roster/context'
@@ -61,7 +62,7 @@ export default function TabContentV2({ tab }: Props) {
       case 'classes':      
         return <Classes />
       case 'privacy':      
-        return <PrivacyHub />
+        return <Privacy />
       case 'appearance':   
         return <Appearance />
       case 'reports':      
