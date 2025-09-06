@@ -1,103 +1,106 @@
-// client/src/guide/teacher/TabContentV2.tsx
-import { Suspense, useMemo } from 'react'
-import { useFlags } from '@/config/flags'
-import TeacherLayout from '@/guide/teacher/Layout'
+import React, { Suspense } from 'react'
 
-// DATA tabs (content only — do NOT wrap themselves)
-import Timeline from '@/guide/Timeline'
-import Assignments from '@/guide/Assignments'
-import ContentStudio from '@/studio/Studio'
-import Roster from '@/components/RosterManagement'
-import Classes from '@/guide/Classes'
-import Dashboard from '@/guide/Dashboard'
-import Overview from '@/guide/Overview'        // or InsightsV2 if that's your overview
-import QA from '@/guide/QA'
-import QuickStart from '@/guide/QuickStart'    // if you have one
+// Import main panels that exist in the codebase
+import { Timeline } from '../Timeline'                             // from guide/Timeline.tsx
+import { AssignmentsManager } from '../AssignmentsManager'          // from guide/AssignmentsManager.tsx  
+import { ContentStudio } from '../../authoring/Studio'              // from authoring/Studio.tsx
+import { RosterManagement } from '../../components/RosterManagement' // from components/RosterManagement.tsx
+import { Classes } from '../Classes'                                // from guide/Classes.tsx
+import Privacy from '../../settings/Privacy'                       // from settings/Privacy.tsx
+import Appearance from '../../settings/Appearance'                  // from settings/Appearance.tsx
+import { InsightsCard } from '../InsightsCard'                      // from guide/InsightsCard.tsx
+import { Reports } from '../reports/Reports'                        // from guide/reports/Reports.tsx
 
-// SETTINGS tabs (these pages ALREADY render TeacherLayout internally with the list UI)
-import Appearance from '@/settings/Appearance'
-import Privacy from '@/settings/Privacy'
-import Consent from '@/settings/Consent'
-import Reports from '@/guide/Reports'
-import DevPanel from '@/guide/dev/DevPanel'
-import Audit from '@/guide/Audit'
-import Pilot from '@/guide/Pilot'
-import Funnel from '@/guide/Funnel'
+// Import missing components for complete coverage
+import { QuickStart } from '../../teacher/QuickStart'               // from teacher/QuickStart.tsx
+import { AuditViewerV3 } from '../dev/AuditViewerV3'               // from guide/dev/AuditViewerV3.tsx
+import Consent from '../../settings/Consent'                        // from settings/Consent.tsx
+import { FunnelViewerV3 } from '../../debug/FunnelViewerV3'          // from debug/FunnelViewerV3.tsx
+import { QAPanel } from '../../components/QAPanel'                  // from components/QAPanel.tsx
+
+// Import pilot V3 component
+import { PilotV3 } from '../pilot/PilotV3'                           // from guide/pilot/PilotV3.tsx
+
+// Import dev tools
+import { TriageBoard } from '../dev/TriageBoard'                     // from guide/dev/TriageBoard.tsx
+import PinGallery from '../dev/PinGallery'                          // from guide/dev/PinGallery.tsx
+import ScoutGallery from '../dev/ScoutGallery'                      // from guide/dev/ScoutGallery.tsx
+import ArtDiagnostics from '../dev/ArtDiagnostics'                  // from guide/dev/ArtDiagnostics.tsx
+import { ThemeSelector } from '../dev/ThemeSelector'                 // from guide/dev/ThemeSelector.tsx
+import DevPanel from '../dev/DevPanel'                               // from guide/dev/DevPanel.tsx
+
+// Providers your panels expect (so nothing is "empty"):
+import { RosterProvider } from '../../roster/context'
+import { GuideNoticeProvider } from '../notices'
+import { ToastProvider } from '../../components/ui/toast'
 
 type Props = { tab: string }
 
-const TITLES: Record<string, { title: string; subtitle?: string }> = {
-  overview:   { title: 'Overview',   subtitle: 'Today at a glance' },
-  quickstart: { title: 'Quick start',subtitle: 'Fast setup' },
-  timeline:   { title: 'Timeline',   subtitle: 'Recent activity & notes' },
-  assignments:{ title: 'Assignments',subtitle: 'Create, manage and track' },
-  content:    { title: 'Content',    subtitle: 'Packs & authoring' },
-  roster:     { title: 'Learners',   subtitle: 'Students & groups' },
-  classes:    { title: 'Classes',    subtitle: 'Manage class lists' },
-  dashboard:  { title: 'Dashboard',  subtitle: 'Key metrics' },
-  studio:     { title: 'Studio',     subtitle: 'Authoring tools' },
-  qa:         { title: 'QA',         subtitle: 'Checks & experiments' },
-}
-
-const SETTINGS_TABS = new Set([
-  'appearance','privacy','consent','reports','dev','audit','pilot','funnel'
-])
-
-export default function TabContentV2({ tab }: Props) {
-  const { teacherPanelV2 } = useFlags()
-  const t = (tab || 'overview').toLowerCase()
-
-  // Old panel (pre-TP6): preserve legacy behavior if flag off
-  if (!teacherPanelV2) return <LegacyGuideRouter tab={t} />
-
-  const dataBody = (() => {
-    switch (t) {
-      case 'overview':   return <Overview />
-      case 'quickstart': return <QuickStart />
-      case 'timeline':   return <Timeline />
-      case 'assignments':return <Assignments />
-      case 'content':    return <ContentStudio />
-      case 'roster':     return <Roster />
-      case 'classes':    return <Classes />
-      case 'dashboard':  return <Dashboard />
-      case 'studio':     return <ContentStudio />
-      case 'qa':         return <QA />
-      default:           return <Overview />
-    }
-  })()
-
-  const settingsPage = (() => {
-    switch (t) {
-      case 'appearance': return <Appearance />
-      case 'privacy':    return <Privacy />
-      case 'consent':    return <Consent />
-      case 'reports':    return <Reports />
-      case 'dev':        return <DevPanel />
-      case 'audit':      return <Audit />
-      case 'pilot':      return <Pilot />
-      case 'funnel':     return <Funnel />
-      default:           return null
-    }
-  })()
-
-  // Settings tabs already render their own TeacherLayout (list UI)
-  if (SETTINGS_TABS.has(t)) {
-    return <Suspense fallback={<div className="p-6">Loading…</div>}>{settingsPage}</Suspense>
-  }
-
-  // All other tabs get the shell here (once!)
-  const meta = TITLES[t] ?? { title: 'Guide' }
+function Missing({ name }: { name: string }) {
   return (
-    <TeacherLayout title={meta.title} subtitle={meta.subtitle}>
-      <Suspense fallback={<div className="p-6">Loading…</div>}>
-        {dataBody}
-      </Suspense>
-    </TeacherLayout>
+    <div className="p-6 text-sm text-gray-600">
+      <b>{name}</b> panel not found. Check the import path or temporarily map it to another panel.
+    </div>
   )
 }
 
-// Keep whatever you had before for legacy fallback.
-function LegacyGuideRouter({ tab }: { tab: string }) {
-  // ... your pre-TP shells
-  return <Overview />
+export default function TabContentV2({ tab }: Props) {
+  
+  const body = (() => {
+    switch (tab) {
+      case 'timeline':     
+        return <Timeline />
+      case 'assignments':  
+        return <AssignmentsManager />
+      case 'content':      
+      case 'studio':       
+        return <ContentStudio />
+      case 'roster':       
+      case 'learners':     
+        return <RosterManagement />
+      case 'classes':      
+        return <Classes />
+      case 'privacy':      
+        return <Privacy />
+      case 'appearance':   
+        return <Appearance />
+      case 'reports':      
+        return <Reports />
+      case 'insights':     
+        return <InsightsCard timeRange={30} />
+      case 'quickstart':   
+        return <QuickStart />
+      case 'audit':        
+        return <AuditViewerV3 />
+      case 'consent':      
+        return <Consent />
+      case 'funnel':       
+        return <FunnelViewerV3 />
+      case 'qa':           
+        return <QAPanel />
+      case 'pilot':        
+        return <PilotV3 />
+      case 'dev':          
+        return <DevPanel />
+      case 'overview':
+      case 'dashboard':
+      case '':
+      case undefined:      
+        return <InsightsCard timeRange={30} />
+      default:             
+        return <Missing name={tab} />
+    }
+  })()
+
+  return (
+    <ToastProvider>
+      <RosterProvider>
+        <GuideNoticeProvider>
+          <Suspense fallback={<div className="p-6">Loading…</div>}>
+            {body}
+          </Suspense>
+        </GuideNoticeProvider>
+      </RosterProvider>
+    </ToastProvider>
+  )
 }
