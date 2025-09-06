@@ -22,8 +22,11 @@ import { EmptyState } from '../components/ui/empty';
 import { InlineError } from '../components/ui/inline-error';
 import { CollaboratorsCard } from '../components/CollaboratorsCard';
 import { useToast } from '../components/ui/toast';
+import { TeacherLayoutV2 } from './teacher/TeacherLayoutV2';
+import { useFlags } from '../config/flags';
 
 export function Classes() {
+  const { teacherPanelV2 } = useFlags();
   const rosterContext = useRosterOptional();
   const activeLearner = rosterContext?.activeLearner;
   
