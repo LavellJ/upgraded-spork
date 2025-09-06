@@ -21,6 +21,7 @@ import { Table, THead, TBody, TR, TH, TD } from '../components/ui/table';
 import { Chip } from '../components/ui/chip';
 import { Field, Input, Select } from '../components/ui/field';
 import { Pin, type PinState } from '../ui/Pin';
+import { StatusChip } from '../ui2/StatusChip';
 import { Button } from '../components/ui/button';
 import { EmptyState } from '../components/ui/empty';
 import { Skeleton } from '../components/ui/skeleton';
@@ -406,10 +407,10 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
                       />
                     </TD>
                     <TD>
-                      <Chip variant={assignment.priority === 'high' ? 'overdue' : 
-                                   assignment.priority === 'low' ? 'info' : 'assigned'}>
+                      <StatusChip kind={assignment.priority === 'high' ? 'overdue' : 
+                                       assignment.priority === 'low' ? 'info' : 'assigned'}>
                         {assignment.priority || 'normal'}
-                      </Chip>
+                      </StatusChip>
                     </TD>
                     <TD>{assignment.lessons.length} lessons</TD>
                     <TD>

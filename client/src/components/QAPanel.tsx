@@ -16,6 +16,7 @@ import { getMemoryInfo, getConnectionInfo } from '../device/memory';
 import { useOnline } from '../pwa/useOnline';
 import TeacherLayout from '../guide/teacher/Layout';
 import { useFlags } from '../config/flags';
+import { Card as UI2Card } from '../ui2/Card';
 
 interface QAPanelProps {
   currentBiome?: 'forest' | 'desert' | 'ocean' | 'night';
@@ -346,10 +347,7 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
       </Card>
 
       {/* Device Recommendations */}
-      <Card className="bg-bg-card border border-border shadow-sm">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm text-fg-base">Device Tips</CardTitle>
-        </CardHeader>
+      <UI2Card title="Device Tips" className="bg-bg-card border border-border shadow-sm">
         <CardContent>
           <div className="space-y-2 text-xs text-fg-base">
             {memoryInfo.isLowMemory && (
@@ -381,7 +379,7 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
             )}
           </div>
         </CardContent>
-      </Card>
+      </UI2Card>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card as UI2Card } from '../ui2/Card';
 import { Toolbar } from '../components/ui/toolbar';
 import { Field, Select } from '../components/ui/field';
 import { Button } from '../components/ui/button';
@@ -124,13 +125,7 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
       <CardContent className="space-y-6">
         {/* Engagement Section */}
         {hasEngagementData && (
-          <div className="bg-bg-card rounded-lg p-4 border border-border shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-medium text-fg-base flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-brand-600" />
-                Engagement
-              </h4>
-            </div>
+          <UI2Card title="Engagement" className="">
             
             <div className="grid grid-cols-3 gap-4">
               {/* On-task minutes with sparkline */}
@@ -180,18 +175,12 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
                 </div>
               </div>
             </div>
-          </div>
+          </UI2Card>
         )}
 
         {/* Scout Interventions Section */}
         {hasData && (
-          <div className="bg-bg-card rounded-lg p-4 border border-border shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-medium text-fg-base flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-brand-600" />
-                Scout Interventions
-              </h4>
-            </div>
+          <UI2Card title="Scout Interventions" className="">
             
             {/* Summary metrics */}
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
@@ -363,7 +352,7 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
                 </div>
               </div>
             )}
-          </div>
+          </UI2Card>
         )}
 
         {/* Lesson Quality Section */}
