@@ -37,9 +37,8 @@ interface TeacherLayoutV2Props {
 }
 
 export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent }: TeacherLayoutV2Props) {
-  const { teacherThemeV2, teacherAppearanceV3, teacherPanelV2 } = useFlags()
+  const { teacherThemeV2 } = useFlags()
   const { theme } = useTheme()
-  const useCleanMobile = teacherPanelV2 && teacherAppearanceV3
   
   // Apply theme on mount/update when feature is enabled
   useEffect(() => {
@@ -47,33 +46,6 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
       validateThemeContrast()
     }
   }, [teacherThemeV2, theme])
-  
-  // Apply clean mobile UI class to body when both flags enabled
-  useEffect(() => {
-    if (useCleanMobile) {
-      document.documentElement.classList.add('clean-mobile-ui')
-      document.body.classList.add('clean-mobile-ui')
-      // Also apply direct inline styles as fallback to test
-      document.body.style.backgroundColor = '#ffff00'
-      document.documentElement.style.backgroundColor = '#ffff00'
-      console.log('🎨 Clean mobile UI enabled - classes and inline styles applied')
-    } else {
-      document.documentElement.classList.remove('clean-mobile-ui')
-      document.body.classList.remove('clean-mobile-ui')
-      // Remove inline styles
-      document.body.style.backgroundColor = ''
-      document.documentElement.style.backgroundColor = ''
-      console.log('🎨 Clean mobile UI disabled - classes and styles removed')
-    }
-    
-    // Cleanup on unmount
-    return () => {
-      document.documentElement.classList.remove('clean-mobile-ui')
-      document.body.classList.remove('clean-mobile-ui')
-      document.body.style.backgroundColor = ''
-      document.documentElement.style.backgroundColor = ''
-    }
-  }, [useCleanMobile])
   
   const themeClasses = teacherThemeV2 
     ? "bg-bg-base text-fg-base" 
@@ -138,10 +110,10 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
 
         {/* Main content */}
         <main className={`flex-1 overflow-auto ${
-          useCleanMobile ? 'bg-white' : (teacherThemeV2 ? 'bg-bg-elev' : 'bg-gray-50')
+          teacherThemeV2 ? 'bg-bg-elev' : 'bg-gray-50'
         }`}>
           <ToastHost>
-            <div className={useCleanMobile ? 'p-0' : 'p-6'}>
+            <div className="p-6">
               {renderContent()}
             </div>
           </ToastHost>

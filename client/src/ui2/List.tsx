@@ -29,28 +29,28 @@ export function ListRow({ icon, title, meta, value, onClick, href, role='button'
   
   const rowClasses = teacherThemeV2
     ? 'w-full text-left list-row focus-ring'
-    : 'w-full text-left flex items-center px-4 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer border-b border-gray-100 last:border-b-0 min-h-[60px] focus-ring'
+    : 'w-full text-left flex items-center gap-3 px-4 py-4 hover:bg-gray-50 focus-ring'
   
   const titleClasses = teacherThemeV2 
-    ? 'list-title'
-    : 'text-base font-normal text-gray-900 leading-tight'
+    ? 'list-title truncate'
+    : 'text-[15px] font-medium text-gray-900 truncate'
   
   const metaClasses = teacherThemeV2
-    ? 'list-meta'
-    : 'text-sm text-gray-500 mt-1 leading-tight'
+    ? 'list-meta truncate'
+    : 'text-[13px] text-gray-600 truncate'
     
   const valueClasses = teacherThemeV2
     ? 'list-value'
-    : 'text-sm text-gray-600 mr-2'
+    : 'ml-auto text-[13px] text-gray-600'
   
   const chevronClasses = teacherThemeV2
     ? 'chevron'
-    : 'w-5 h-5 text-gray-400'
+    : 'w-4 h-4 text-gray-400 ml-2'
 
   return (
     <Cmp onClick={onClick} href={href} role={role} className={rowClasses} {...props}>
-      {icon && <div className={teacherThemeV2 ? '' : 'mr-4'}>{icon}</div>}
-      <div className={teacherThemeV2 ? 'list-content' : 'flex-1 min-w-0'}>
+      {icon && <div className={teacherThemeV2 ? '' : 'w-6 h-6 shrink-0 text-blue-600'}>{icon}</div>}
+      <div className="min-w-0">
         <div className={titleClasses}>{title}</div>
         {meta && <div className={metaClasses}>{meta}</div>}
       </div>
