@@ -24,11 +24,18 @@
 .list-section-title { @apply text-xs font-semibold text-gray-500 uppercase tracking-wider; }
 
 /* Clean mobile styling applied globally when both flags are enabled - using body class instead of data attribute */
-body.clean-mobile-ui {
+html.clean-mobile-ui,
+body.clean-mobile-ui,
+.clean-mobile-ui {
   --card-bg: 255, 255, 255;
   --card-border: 0;
   --card-shadow: none;
   --card-radius: 0;
+  background-color: #ffff00 !important; /* DEBUG: Yellow background to test if CSS is working */
+}
+
+/* Test with the highest specificity possible */
+html body.clean-mobile-ui {
   background-color: #ffff00 !important; /* DEBUG: Yellow background to test if CSS is working */
 }
 
