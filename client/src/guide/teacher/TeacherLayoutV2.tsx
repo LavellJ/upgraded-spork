@@ -5,26 +5,27 @@ import { ToastHost } from '../../ui2/Toast'
 import { useFlags } from '../../config/flags'
 import { useTheme, type Theme } from '../../theme/useTheme'
 import { validateThemeContrast } from '../../theme/contrast'
+import { Ic } from '../../ui2/icons'
 
 const TAB_CONFIG = {
-  overview: { icon: '🏠', label: 'Overview' },
-  quickstart: { icon: '🚀', label: 'Quick Start' },
-  timeline: { icon: '📅', label: 'Timeline' },
-  assignments: { icon: '📝', label: 'Assignments' },
-  content: { icon: '📚', label: 'Content' },
-  roster: { icon: '👥', label: 'Roster' },
-  classes: { icon: '🎓', label: 'Classes' },
-  dashboard: { icon: '📊', label: 'Dashboard' },
-  privacy: { icon: '🔒', label: 'Privacy' },
-  appearance: { icon: '🎨', label: 'Appearance' },
-  consent: { icon: '✅', label: 'Consent' },
-  audit: { icon: '🔍', label: 'Audit' },
-  studio: { icon: '🎬', label: 'Studio' },
-  pilot: { icon: '🧪', label: 'Pilot' },
-  funnel: { icon: '📈', label: 'Funnel' },
-  qa: { icon: '🔧', label: 'QA' },
-  reports: { icon: '📋', label: 'Reports' },
-  dev: { icon: '⚙️', label: 'Dev' },
+  overview: { icon: <Ic.star className="list-icon" />, label: 'Overview' },
+  quickstart: { icon: <Ic.star className="list-icon" />, label: 'Quick Start' },
+  timeline: { icon: <Ic.calendar className="list-icon" />, label: 'Timeline' },
+  assignments: { icon: <Ic.doc className="list-icon" />, label: 'Assignments' },
+  content: { icon: <Ic.book className="list-icon" />, label: 'Content' },
+  roster: { icon: <Ic.profile className="list-icon" />, label: 'Roster' },
+  classes: { icon: <Ic.layers className="list-icon" />, label: 'Classes' },
+  dashboard: { icon: <Ic.star className="list-icon" />, label: 'Dashboard' },
+  privacy: { icon: <Ic.shield className="list-icon" />, label: 'Privacy' },
+  appearance: { icon: <Ic.palette className="list-icon" />, label: 'Appearance' },
+  consent: { icon: <Ic.shield className="list-icon" />, label: 'Consent' },
+  audit: { icon: <Ic.doc className="list-icon" />, label: 'Audit' },
+  studio: { icon: <Ic.book className="list-icon" />, label: 'Studio' },
+  pilot: { icon: <Ic.star className="list-icon" />, label: 'Pilot' },
+  funnel: { icon: <Ic.filter className="list-icon" />, label: 'Funnel' },
+  qa: { icon: <Ic.star className="list-icon" />, label: 'QA' },
+  reports: { icon: <Ic.doc className="list-icon" />, label: 'Reports' },
+  dev: { icon: <Ic.palette className="list-icon" />, label: 'Dev' },
 }
 
 type Tab = keyof typeof TAB_CONFIG
@@ -48,11 +49,11 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
   }, [teacherThemeV2, theme])
   
   const themeClasses = teacherThemeV2 
-    ? "bg-bg-base text-fg-base" 
+    ? "bg-[rgb(var(--bg-base))] text-[rgb(var(--fg-base))]" 
     : "bg-black bg-opacity-50"
   
   const sidebarClasses = teacherThemeV2
-    ? "w-64 bg-bg-card border-r border-border flex flex-col"
+    ? "w-64 bg-[rgb(var(--bg-card))] border-r border-[rgb(var(--border))] flex flex-col"
     : "w-64 bg-white border-r border-gray-200 flex flex-col"
   
   return (
@@ -61,15 +62,15 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
         {/* Sidebar */}
         <aside className={sidebarClasses}>
           <div className={`p-4 flex items-center justify-between ${
-            teacherThemeV2 ? 'border-b border-border' : 'border-b border-gray-200'
+            teacherThemeV2 ? 'border-b border-[rgb(var(--border))]' : 'border-b border-gray-200'
           }`}>
             <h2 className={`text-lg font-semibold ${
-              teacherThemeV2 ? 'text-fg-base' : ''
+              teacherThemeV2 ? 'text-[rgb(var(--fg-base))]' : ''
             }`}>Teacher Panel</h2>
             <button 
               onClick={onClose}
               className={`p-1.5 rounded-lg focus-ring ${
-                teacherThemeV2 ? 'hover:bg-bg-elev/60' : 'hover:bg-gray-100'
+                teacherThemeV2 ? 'hover:bg-[rgb(var(--bg-elev))]/60' : 'hover:bg-gray-100'
               }`}
             >
               <X className="w-4 h-4" />
@@ -83,26 +84,26 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
                   key={tabKey}
                   onClick={() => onTabChange(tabKey)}
                   className={
-                    'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left focus-ring ' +
+                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left focus-ring transition-colors ' +
                     (teacherThemeV2 
                       ? (activeTab === tabKey
-                          ? 'bg-brand-500/10 text-brand-600'
-                          : 'text-fg-muted hover:bg-bg-elev/60 hover:text-fg-base')
+                          ? 'bg-[rgb(var(--brand-500))]/10 text-[rgb(var(--brand-600))] border-l-2 border-[rgb(var(--brand-500))]'
+                          : 'text-[rgb(var(--fg-muted))] hover:bg-[rgb(var(--bg-elev))]/60 hover:text-[rgb(var(--fg-base))]')
                       : (activeTab === tabKey
                           ? 'bg-blue-100 text-blue-900'
                           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'))
                   }
                   aria-current={activeTab === tabKey ? 'page' : undefined}
                 >
-                  <span aria-hidden>{config.icon}</span>
-                  <span className="truncate">{config.label}</span>
+                  {config.icon}
+                  <span className="truncate text-sm font-medium">{config.label}</span>
                 </button>
               ))}
             </div>
           </nav>
           
           <div className={`p-3 ${
-            teacherThemeV2 ? 'border-t border-border' : 'border-t border-gray-200'
+            teacherThemeV2 ? 'border-t border-[rgb(var(--border))]' : 'border-t border-gray-200'
           }`}>
             <DensityToggle />
           </div>
@@ -110,7 +111,7 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
 
         {/* Main content */}
         <main className={`flex-1 overflow-auto ${
-          teacherThemeV2 ? 'bg-bg-elev' : 'bg-gray-50'
+          teacherThemeV2 ? 'bg-[rgb(var(--bg-elev))]' : 'bg-gray-50'
         }`}>
           <ToastHost>
             <div className="p-6">
@@ -132,7 +133,7 @@ function DensityToggle() {
       onClick={toggle}
       className={`w-full px-3 py-2 text-sm rounded-lg focus-ring ${
         teacherThemeV2 
-          ? 'border border-border hover:bg-bg-base text-fg-muted'
+          ? 'border border-[rgb(var(--border))] hover:bg-[rgb(var(--bg-base))] text-[rgb(var(--fg-muted))]'
           : 'border border-gray-300 hover:bg-white'
       }`}
     >
