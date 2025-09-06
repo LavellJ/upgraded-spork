@@ -1,22 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { 
-  HardDrive, 
-  Wifi, 
-  Download, 
-  RefreshCw, 
-  Smartphone, 
-  CheckCircle, 
-  XCircle,
-  AlertTriangle
-} from 'lucide-react';
 import { getMemoryInfo, getConnectionInfo } from '../device/memory';
 import { useOnline } from '../pwa/useOnline';
-import TeacherLayout from '../guide/teacher/Layout';
 import { useFlags } from '../config/flags';
-import { Card as UI2Card } from '../ui2/Card';
+import { SimpleLayout } from '../ui2/SimpleLayout';
+import { ListCard, ListRow, ListSection } from '../ui2/List';
+import { Ic } from '../ui2/icons';
 
 interface QAPanelProps {
   currentBiome?: 'forest' | 'desert' | 'ocean' | 'night';
@@ -35,12 +23,13 @@ interface StorageEstimate {
 }
 
 export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
-  const { teacherPanelV2 } = useFlags();
+  const { teacherPanelV2, teacherAppearanceV3 } = useFlags();
   const [swStatus, setSwStatus] = useState<'unsupported' | 'installing' | 'active' | 'error'>('unsupported');
   const [cacheStatus, setCacheStatus] = useState<CacheStatus>({});
   const [storageInfo, setStorageInfo] = useState<StorageEstimate>({});
   const [isPreloading, setIsPreloading] = useState(false);
   const [lastPreload, setLastPreload] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   
   const { online } = useOnline();
   const memoryInfo = getMemoryInfo();
@@ -84,6 +73,7 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
   const refreshCacheStatus = async () => {
     if (!('serviceWorker' in navigator) || swStatus !== 'active') return;
 
+    setLoading(true);
     try {
       const registration = await navigator.serviceWorker.ready;
       if (registration.active) {
@@ -104,6 +94,9 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
       }
     } catch (error) {
       console.error('Failed to get cache status:', error);
+      alert('Error refreshing cache status');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -195,6 +188,145 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
     refreshCacheStatus();
   }, [swStatus]);
 
+  // Use list UI when both flags are enabled  
+  if (teacherPanelV2 && teacherAppearanceV3) {
+    return (
+      <SimpleLayout 
+        title="QA Panel" 
+        subtitle="Device & Offline Quality Assurance"
+      >
+        <div className="space-y-6">
+          {/* System Status */}
+          <div>
+            <ListSection title="System Status"/>
+            <ListCard>
+              <ListRow
+                icon={<Ic.shield className="list-icon"/>}
+                title="Service Worker"
+                meta="Offline functionality status"
+                value={swStatus === 'active' ? 'Active' : 
+                       swStatus === 'installing' ? 'Installing...' :
+                       swStatus === 'error' ? 'Error' : 'Unsupported'}
+                onClick={() => refreshCacheStatus()}
+                data-testid="qa-service-worker"
+              />
+              <div className="divider" />
+              <ListRow
+                icon={<Ic.layers className="list-icon"/>}
+                title="Connection"
+                meta={`${connectionInfo.effectiveType || 'Unknown'} ${connectionInfo.downlink ? `(${connectionInfo.downlink}Mbps)` : ''}`}
+                value={online ? 'Online' : 'Offline'}
+                data-testid="qa-connection"
+              />
+              <div className="divider" />
+              <ListRow
+                icon={<Ic.bank className="list-icon"/>}
+                title="Device Memory"
+                meta={memoryInfo.isLowMemory ? 'Low memory detected' : 'Memory status normal'}
+                value={`${memoryInfo.available || '?'}GB`}
+                data-testid="qa-memory"
+              />
+            </ListCard>
+          </div>
+
+          {/* Storage Information */}
+          <div>
+            <ListSection title="Storage & Cache"/>
+            <ListCard>
+              <ListRow
+                icon={<Ic.bank className="list-icon"/>}
+                title="Storage Used"
+                meta="Browser storage quota usage"
+                value={storageInfo.usage && storageInfo.quota ? 
+                  `${formatBytes(storageInfo.usage)} / ${formatBytes(storageInfo.quota)}` : 'Unknown'}
+                data-testid="qa-storage"
+              />
+              <div className="divider" />
+              <ListRow
+                icon={<Ic.layers className="list-icon"/>}
+                title="Cached Assets"
+                meta="Offline-ready resources"
+                value={`${getTotalAssets()} assets`}
+                onClick={refreshCacheStatus}
+                actionIcon={loading ? 'loading' : undefined}
+                data-testid="qa-cache"
+              />
+            </ListCard>
+          </div>
+
+          {/* QA Actions */}
+          <div>
+            <ListSection title="QA Actions"/>
+            <ListCard>
+              <ListRow
+                icon={<Ic.doc className="list-icon"/>}
+                title="Refresh Cache Status"
+                meta="Update cached asset counts"
+                onClick={refreshCacheStatus}
+                value={loading ? 'Refreshing...' : undefined}
+                data-testid="qa-refresh"
+              />
+              <div className="divider" />
+              <ListRow
+                icon={<Ic.star className="list-icon"/>}
+                title={`Preload ${currentBiome} Biome`}
+                meta="Cache biome assets for offline use"
+                onClick={() => preloadBiome()}
+                value={isPreloading ? 'Preloading...' : 
+                       lastPreload ? `Last: ${lastPreload}` : undefined}
+                data-testid="qa-preload"
+              />
+              <div className="divider" />
+              <ListRow
+                icon={<Ic.shield className="list-icon"/>}
+                title="Device Diagnostics"
+                meta="Run comprehensive system checks"
+                onClick={runDiagnostics}
+                value={loading ? 'Running...' : undefined}
+                data-testid="qa-diagnostics"
+              />
+            </ListCard>
+          </div>
+        </div>
+      </SimpleLayout>
+    );
+  }
+
+  // Helper function for running diagnostics
+  const runDiagnostics = async () => {
+    setLoading(true);
+    try {
+      const diagnostics = {
+        serviceWorker: swStatus,
+        online: online,
+        memory: memoryInfo,
+        connection: connectionInfo,
+        storage: storageInfo,
+        cachedAssets: getTotalAssets()
+      };
+      
+      console.log('QA Diagnostics:', diagnostics);
+      
+      const issues: string[] = [];
+      if (memoryInfo.isLowMemory) issues.push('Low memory detected');
+      if (!online) issues.push('Device is offline');  
+      if (swStatus !== 'active') issues.push('Service Worker not active');
+      if (getTotalAssets() === 0) issues.push('No cached assets');
+      
+      const result = issues.length === 0 ? 
+        'All systems operational!' : 
+        `Issues found: ${issues.join(', ')}`;
+        
+      alert(`Diagnostics Complete:\n${result}`);
+    } catch (error) {
+      console.error('Diagnostics failed:', error);
+      alert('Error running diagnostics');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fallback to legacy UI if flags not enabled
   return (
     <div className="space-y-4">
       {/* Header */}
