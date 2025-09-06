@@ -37,8 +37,9 @@ interface TeacherLayoutV2Props {
 }
 
 export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent }: TeacherLayoutV2Props) {
-  const { teacherThemeV2 } = useFlags()
+  const { teacherThemeV2, teacherAppearanceV3, teacherPanelV2 } = useFlags()
   const { theme } = useTheme()
+  const useCleanMobile = teacherPanelV2 && teacherAppearanceV3
   
   // Apply theme on mount/update when feature is enabled
   useEffect(() => {
@@ -57,7 +58,10 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
   
   return (
     <DensityProvider>
-      <div className={`fixed inset-0 z-50 flex ${themeClasses}`}>
+      <div 
+        className={`fixed inset-0 z-50 flex ${themeClasses}`}
+        data-teacher-appearance-v3={useCleanMobile}
+      >
         {/* Sidebar */}
         <aside className={sidebarClasses}>
           <div className={`p-4 flex items-center justify-between ${
