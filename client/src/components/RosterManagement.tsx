@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Users, Plus, Edit2, Trash2, User } from 'lucide-react';
 import type { LearnerProfile } from '../roster/model';
+import TeacherLayout from '../guide/teacher/Layout';
+import { useFlags } from '../config/flags';
 
 interface AddLearnerFormProps {
   onComplete: (learner: { name: string; avatarId: string; ageBand: LearnerProfile['ageBand'] }) => void;

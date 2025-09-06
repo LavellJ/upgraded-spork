@@ -12,6 +12,8 @@ import { onTaskMinutes, weeklyReturn, sessionStreak } from '../progress/metrics'
 import { loadEvents } from '../progress/events';
 import { Sparkline } from '../components/Sparkline';
 import { getHeroLessonKPIs, getTemplateLessonsKPIs, formatTimeOnTask, getLessonQualityTrend } from '../progress/kpi.lessons';
+import TeacherLayout from './teacher/Layout';
+import { useFlags } from '../config/flags';
 
 interface InsightsCardProps {
   timeRange?: 7 | 30 | 90;
@@ -19,6 +21,7 @@ interface InsightsCardProps {
 }
 
 export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProps) {
+  const { teacherPanelV2 } = useFlags();
   const events = getEventsRange(timeRange);
   
   const summary: ScoutSummary = useMemo(() => {

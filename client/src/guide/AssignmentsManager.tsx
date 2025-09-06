@@ -47,6 +47,7 @@ import { useRosterOptional } from '../roster';
 import registryData from '../data/registry.json';
 import loop1Data from '../data/loop1.json';
 import loop2Data from '../data/loop2.json';
+import TeacherLayout from './teacher/Layout';
 
 interface AssignmentsManagerProps {
   className?: string;
@@ -650,4 +651,8 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
       </AnimatePresence>
     </Card>
   );
+
+  return teacherPanelV2
+    ? <TeacherLayout title="Assignments" subtitle="Create, manage and track">{body}</TeacherLayout>
+    : body;
 }

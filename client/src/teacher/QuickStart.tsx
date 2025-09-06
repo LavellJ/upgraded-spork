@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { QuickStartPrint } from '../components/print/QuickStartPrint';
+import TeacherLayout from '../guide/teacher/Layout';
+import { useFlags } from '../config/flags';
 
 interface QuickStartProps {
   onCreateLearner?: () => void;
@@ -22,6 +24,7 @@ interface QuickStartProps {
 }
 
 export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: QuickStartProps) {
+  const { teacherPanelV2 } = useFlags();
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [showPrintPreview, setShowPrintPreview] = useState(false);
 
