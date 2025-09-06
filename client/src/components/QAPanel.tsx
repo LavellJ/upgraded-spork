@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { getMemoryInfo, getConnectionInfo } from '../device/memory';
 import { useOnline } from '../pwa/useOnline';
+import TeacherLayout from '../guide/teacher/Layout';
+import { useFlags } from '../config/flags';
 
 interface QAPanelProps {
   currentBiome?: 'forest' | 'desert' | 'ocean' | 'night';
@@ -32,6 +34,7 @@ interface StorageEstimate {
 }
 
 export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
+  const { teacherPanelV2 } = useFlags();
   const [swStatus, setSwStatus] = useState<'unsupported' | 'installing' | 'active' | 'error'>('unsupported');
   const [cacheStatus, setCacheStatus] = useState<CacheStatus>({});
   const [storageInfo, setStorageInfo] = useState<StorageEstimate>({});

@@ -42,6 +42,8 @@ import {
 import { TuningPanel } from './TuningPanel';
 import { makeLessonFromBlueprint, type LessonBlueprintInput } from './LessonBlueprint';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import TeacherLayout from '../guide/teacher/Layout';
+import { useFlags } from '../config/flags';
 
 interface ContentStudioProps {
   selectedLessonId?: string;

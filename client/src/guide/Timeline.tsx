@@ -12,6 +12,8 @@ import { STANDARDS } from '../data/meta';
 import { loadJournalHistory } from '../journal/JournalSheet';
 import { getReflectionAt } from '../reflections/model';
 import { JournalReviewSheet } from '../journal/JournalReviewSheet';
+import TeacherLayout from './teacher/Layout';
+import { useFlags } from '../config/flags';
 
 interface TimelineProps {
   selectedStandard?: string;
@@ -446,4 +448,9 @@ export function Timeline({ selectedStandard, onStandardChange, onStartJournal }:
       />
     </Card>
   );
+
+  const { teacherPanelV2 } = useFlags();
+  return teacherPanelV2
+    ? <TeacherLayout title="Timeline" subtitle="Recent activity & notes">{body}</TeacherLayout>
+    : body;
 }
