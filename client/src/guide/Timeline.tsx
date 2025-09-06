@@ -12,6 +12,8 @@ import { STANDARDS } from '../data/meta';
 import { loadJournalHistory } from '../journal/JournalSheet';
 import { getReflectionAt } from '../reflections/model';
 import { JournalReviewSheet } from '../journal/JournalReviewSheet';
+import { TeacherLayoutV2 } from './teacher/TeacherLayoutV2';
+import { useFlags } from '../config/flags';
 
 interface TimelineProps {
   selectedStandard?: string;
@@ -48,6 +50,7 @@ interface RegistryData {
 const registry = registryData as RegistryData;
 
 export function Timeline({ selectedStandard, onStandardChange, onStartJournal }: TimelineProps) {
+  const { teacherPanelV2 } = useFlags();
   const [kindFilter, setKindFilter] = useState<EventKind>('all');
   const [timeRange, setTimeRange] = useState<TimeRange>(30);
   const [reviewSessionId, setReviewSessionId] = useState<string | null>(null);
@@ -446,4 +449,21 @@ export function Timeline({ selectedStandard, onStandardChange, onStartJournal }:
       />
     </Card>
   );
+
+  return teacherPanelV2 ? (
+    <TeacherLayoutV2 
+      activeTab="timeline" 
+      onTabChange={() => {}} 
+      onClose={() => {}}
+      renderContent={() => (
+        <div className="p-6">
+          <div className="mb-6">
+            <h1 className="text-2xl font-semibold text-fg-base">Timeline</h1>
+            <p className="text-fg-muted">Recent activity & notes</p>
+          </div>
+          {body}
+        </div>
+      )}
+    />
+  ) : body;
 }
