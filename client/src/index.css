@@ -29,6 +29,7 @@ body.clean-mobile-ui {
   --card-border: 0;
   --card-shadow: none;
   --card-radius: 0;
+  background-color: #ffff00 !important; /* DEBUG: Yellow background to test if CSS is working */
 }
 
 body.clean-mobile-ui .card,

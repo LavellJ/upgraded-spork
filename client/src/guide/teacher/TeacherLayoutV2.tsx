@@ -52,8 +52,10 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
   useEffect(() => {
     if (useCleanMobile) {
       document.body.classList.add('clean-mobile-ui')
+      console.log('🎨 Clean mobile UI enabled - body class added')
     } else {
       document.body.classList.remove('clean-mobile-ui')
+      console.log('🎨 Clean mobile UI disabled - body class removed')
     }
     
     // Cleanup on unmount
