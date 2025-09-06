@@ -53,17 +53,25 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
     if (useCleanMobile) {
       document.documentElement.classList.add('clean-mobile-ui')
       document.body.classList.add('clean-mobile-ui')
-      console.log('🎨 Clean mobile UI enabled - both html and body class added')
+      // Also apply direct inline styles as fallback to test
+      document.body.style.backgroundColor = '#ffff00'
+      document.documentElement.style.backgroundColor = '#ffff00'
+      console.log('🎨 Clean mobile UI enabled - classes and inline styles applied')
     } else {
       document.documentElement.classList.remove('clean-mobile-ui')
       document.body.classList.remove('clean-mobile-ui')
-      console.log('🎨 Clean mobile UI disabled - both classes removed')
+      // Remove inline styles
+      document.body.style.backgroundColor = ''
+      document.documentElement.style.backgroundColor = ''
+      console.log('🎨 Clean mobile UI disabled - classes and styles removed')
     }
     
     // Cleanup on unmount
     return () => {
       document.documentElement.classList.remove('clean-mobile-ui')
       document.body.classList.remove('clean-mobile-ui')
+      document.body.style.backgroundColor = ''
+      document.documentElement.style.backgroundColor = ''
     }
   }, [useCleanMobile])
   
