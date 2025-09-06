@@ -14,7 +14,7 @@ import { Reports } from '../reports/Reports'                        // from guid
 // Import missing components for complete coverage
 import { QuickStart } from '../../teacher/QuickStart'               // from teacher/QuickStart.tsx
 import { AuditLogView } from '../../components/AuditLogView'         // from components/AuditLogView.tsx
-import { Consent } from '../../settings/Consent'                    // from settings/Consent.tsx
+import Consent from '../../settings/Consent'                        // from settings/Consent.tsx
 import { FunnelViewer } from '../../debug/FunnelViewer'              // from debug/FunnelViewer.tsx
 import { QAPanel } from '../../components/QAPanel'                  // from components/QAPanel.tsx
 
@@ -74,7 +74,7 @@ export default function TabContentV2({ tab }: Props) {
       case 'audit':        
         return <AuditLogView />
       case 'consent':      
-        return <Consent open={true} onClose={() => {}} inline={true} />
+        return <Consent />
       case 'funnel':       
         return <FunnelViewer />
       case 'qa':           
@@ -131,15 +131,7 @@ export default function TabContentV2({ tab }: Props) {
           </div>
         )
       case 'dev':          
-        return (
-          <div className="space-y-6">
-            <ThemeSelector />
-            <TriageBoard />
-            <PinGallery />
-            <ScoutGallery />
-            <ArtDiagnostics />
-          </div>
-        )
+        return <DevPanel />
       case 'overview':
       case 'dashboard':
       case '':
