@@ -13,14 +13,13 @@ import { Reports } from '../reports/Reports'                        // from guid
 
 // Import missing components for complete coverage
 import { QuickStart } from '../../teacher/QuickStart'               // from teacher/QuickStart.tsx
-import { AuditLogView } from '../../components/AuditLogView'         // from components/AuditLogView.tsx
+import { AuditViewerV3 } from '../dev/AuditViewerV3'               // from guide/dev/AuditViewerV3.tsx
 import Consent from '../../settings/Consent'                        // from settings/Consent.tsx
-import { FunnelViewer } from '../../debug/FunnelViewer'              // from debug/FunnelViewer.tsx
+import { FunnelViewerV3 } from '../../debug/FunnelViewerV3'          // from debug/FunnelViewerV3.tsx
 import { QAPanel } from '../../components/QAPanel'                  // from components/QAPanel.tsx
 
-// Import pilot KPI functions
-import { buildPilotKPIs, getPilotKPIsWithDelta } from '../../progress/pilot'
-import { FeatureFlagsPanel } from '../../components/FeatureFlagsPanel'
+// Import pilot V3 component
+import { PilotV3 } from '../pilot/PilotV3'                           // from guide/pilot/PilotV3.tsx
 
 // Import dev tools
 import { TriageBoard } from '../dev/TriageBoard'                     // from guide/dev/TriageBoard.tsx
@@ -72,64 +71,15 @@ export default function TabContentV2({ tab }: Props) {
       case 'quickstart':   
         return <QuickStart />
       case 'audit':        
-        return <AuditLogView />
+        return <AuditViewerV3 />
       case 'consent':      
         return <Consent />
       case 'funnel':       
-        return <FunnelViewer />
+        return <FunnelViewerV3 />
       case 'qa':           
         return <QAPanel />
       case 'pilot':        
-        return (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {(() => {
-                // Get current week pilot KPIs
-                const weekStart = new Date();
-                weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // Start of week
-                const weekStartISO = weekStart.toISOString().split('T')[0];
-                const currentKPIs = buildPilotKPIs(weekStartISO);
-                
-                return (
-                  <>
-                    <div className="bg-white p-4 rounded-lg border">
-                      <div className="text-2xl font-bold text-blue-600">{currentKPIs.learners}</div>
-                      <div className="text-sm text-gray-600">Active Learners</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg border">
-                      <div className="text-2xl font-bold text-green-600">{Math.round(currentKPIs.avgOnTaskMins)}</div>
-                      <div className="text-sm text-gray-600">Avg On-Task Minutes</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg border">
-                      <div className="text-2xl font-bold text-purple-600">{Math.round(currentKPIs.return7dPct)}%</div>
-                      <div className="text-sm text-gray-600">7-Day Return Rate</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg border">
-                      <div className="text-2xl font-bold text-orange-600">{Math.round(currentKPIs.assignCompletionPct)}%</div>
-                      <div className="text-sm text-gray-600">Assignment Completion</div>
-                    </div>
-                  </>
-                );
-              })()}
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg border">
-              <h3 className="text-lg font-semibold mb-4">Pilot Feature Controls</h3>
-              <FeatureFlagsPanel />
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg border">
-              <h3 className="text-lg font-semibold mb-4">Pilot Checklist</h3>
-              <div className="text-sm text-gray-600 space-y-2">
-                <p>• ✅ Configure Scout Guardrails for pilot deployment</p>
-                <p>• ✅ Set Assignment Nudges based on session type</p>
-                <p>• ✅ Enable Projector Mode for shared screens</p>
-                <p>• ✅ Monitor weekly KPI metrics above</p>
-                <p>• ✅ Collect feedback through regular check-ins</p>
-              </div>
-            </div>
-          </div>
-        )
+        return <PilotV3 />
       case 'dev':          
         return <DevPanel />
       case 'overview':

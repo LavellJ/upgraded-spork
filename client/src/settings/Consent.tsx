@@ -336,12 +336,6 @@ function LegacyConsent({ open, onClose, inline = false }: ConsentProps) {
 }
 
 function ConsentV3({ open = true, onClose = () => {}, inline = true }: ConsentProps) {
-  const { teacherPanelV2, teacherAppearanceV3 } = useFlags()
-  
-  // Use legacy consent when flags are disabled
-  if (!teacherPanelV2 || !teacherAppearanceV3) {
-    return <LegacyConsent open={open} onClose={onClose} inline={inline} />
-  }
   
   // List UI version
   const content = (
@@ -412,13 +406,6 @@ function ConsentV3({ open = true, onClose = () => {}, inline = true }: ConsentPr
   )
 }
 
-// Main component export that checks flags and renders appropriate version
 export default function Consent(props: ConsentProps) {
-  const { teacherPanelV2, teacherAppearanceV3 } = useFlags()
-  
-  if (teacherPanelV2 && teacherAppearanceV3) {
-    return <ConsentV3 {...props} />
-  }
-  
-  return <LegacyConsent {...props} />
+  return <ConsentV3 {...props} />
 }
