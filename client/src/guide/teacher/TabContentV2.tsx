@@ -28,6 +28,7 @@ import PinGallery from '../dev/PinGallery'                          // from guid
 import ScoutGallery from '../dev/ScoutGallery'                      // from guide/dev/ScoutGallery.tsx
 import ArtDiagnostics from '../dev/ArtDiagnostics'                  // from guide/dev/ArtDiagnostics.tsx
 import { ThemeSelector } from '../dev/ThemeSelector'                 // from guide/dev/ThemeSelector.tsx
+import TestAppearance from '../../settings/TestAppearance'          // Test component for appearance v3
 
 // Providers your panels expect (so nothing is "empty"):
 import { RosterProvider } from '../../roster/context'
@@ -74,6 +75,8 @@ export default function TabContentV2({ tab }: Props) {
         return <AuditLogView />
       case 'consent':      
         return <Consent open={true} onClose={() => {}} inline={true} />
+      case 'test-appearance':
+        return <TestAppearance />
       case 'funnel':       
         return <FunnelViewer />
       case 'qa':           
