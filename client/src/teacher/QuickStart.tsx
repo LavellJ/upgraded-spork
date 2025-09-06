@@ -14,8 +14,6 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { QuickStartPrint } from '../components/print/QuickStartPrint';
-import { TeacherLayoutV2 } from '../guide/teacher/TeacherLayoutV2';
-import { useFlags } from '../config/flags';
 
 interface QuickStartProps {
   onCreateLearner?: () => void;
@@ -24,7 +22,6 @@ interface QuickStartProps {
 }
 
 export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: QuickStartProps) {
-  const { teacherPanelV2 } = useFlags();
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [showPrintPreview, setShowPrintPreview] = useState(false);
 
@@ -74,7 +71,7 @@ export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: Qu
     return <QuickStartPrint onClose={() => setShowPrintPreview(false)} />;
   }
 
-  const body = (
+  return (
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
@@ -259,21 +256,4 @@ export function QuickStart({ onCreateLearner, onStartLesson, onOpenJournal }: Qu
       </Card>
     </div>
   );
-
-  return teacherPanelV2 ? (
-    <TeacherLayoutV2 
-      activeTab="quickstart" 
-      onTabChange={() => {}} 
-      onClose={() => {}}
-      renderContent={() => (
-        <div className="p-6">
-          <div className="mb-6">
-            <h1 className="text-2xl font-semibold text-fg-base">Quick start</h1>
-            <p className="text-fg-muted">Fast setup</p>
-          </div>
-          {body}
-        </div>
-      )}
-    />
-  ) : body;
 }
