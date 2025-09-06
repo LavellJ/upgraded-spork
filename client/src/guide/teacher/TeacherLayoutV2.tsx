@@ -48,6 +48,20 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
     }
   }, [teacherThemeV2, theme])
   
+  // Apply clean mobile UI class to body when both flags enabled
+  useEffect(() => {
+    if (useCleanMobile) {
+      document.body.classList.add('clean-mobile-ui')
+    } else {
+      document.body.classList.remove('clean-mobile-ui')
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('clean-mobile-ui')
+    }
+  }, [useCleanMobile])
+  
   const themeClasses = teacherThemeV2 
     ? "bg-bg-base text-fg-base" 
     : "bg-black bg-opacity-50"
@@ -58,10 +72,7 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
   
   return (
     <DensityProvider>
-      <div 
-        className={`fixed inset-0 z-50 flex ${themeClasses}`}
-        data-teacher-appearance-v3={useCleanMobile}
-      >
+      <div className={`fixed inset-0 z-50 flex ${themeClasses}`}>
         {/* Sidebar */}
         <aside className={sidebarClasses}>
           <div className={`p-4 flex items-center justify-between ${
@@ -114,10 +125,10 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
 
         {/* Main content */}
         <main className={`flex-1 overflow-auto ${
-          teacherThemeV2 ? 'bg-bg-elev' : 'bg-gray-50'
+          useCleanMobile ? 'bg-white' : (teacherThemeV2 ? 'bg-bg-elev' : 'bg-gray-50')
         }`}>
           <ToastHost>
-            <div className="p-6">
+            <div className={useCleanMobile ? 'p-0' : 'p-6'}>
               {renderContent()}
             </div>
           </ToastHost>
