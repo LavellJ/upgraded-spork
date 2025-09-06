@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import { useFlags } from '../config/flags';
+import { SimpleLayout } from '../ui2/SimpleLayout';
+import { ListCard, ListRow, ListSection } from '../ui2/List';
+import { Ic } from '../ui2/icons';
 import { BottomSheet } from '../components/BottomSheet';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -28,7 +32,7 @@ interface ConsentProps {
   inline?: boolean; // When true, renders content directly without BottomSheet
 }
 
-export function Consent({ open, onClose, inline = false }: ConsentProps) {
+function LegacyConsent({ open, onClose, inline = false }: ConsentProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -329,4 +333,81 @@ export function Consent({ open, onClose, inline = false }: ConsentProps) {
       </div>
     </BottomSheet>
   );
+}
+
+export function Consent({ open, onClose, inline = false }: ConsentProps) {
+  const { teacherPanelV2, teacherAppearanceV3 } = useFlags()
+  
+  // Use legacy consent when flags are disabled
+  if (!teacherPanelV2 || !teacherAppearanceV3) {
+    return <LegacyConsent open={open} onClose={onClose} inline={inline} />
+  }
+  
+  // List UI version
+  const content = (
+    <SimpleLayout title="Consent" subtitle="Family consent and permission management">
+      <div className="space-y-6">
+        <div>
+          <ListSection title="Family Consent"/>
+          <ListCard>
+            <ListRow 
+              icon={<Ic.shield className="list-icon"/>} 
+              title="Family consent status" 
+              meta="Review signed digital consent forms" 
+              value="12 of 15 signed"
+              onClick={() => console.log('Open consent status')}
+              data-testid="consent-status-row"
+            />
+            <div className="divider" />
+            <ListRow 
+              icon={<Ic.bell className="list-icon"/>} 
+              title="Send consent link" 
+              meta="Email parents for digital consent" 
+              onClick={() => console.log('Send consent link')}
+              data-testid="consent-send-row"
+            />
+            <div className="divider" />
+            <ListRow 
+              icon={<Ic.doc className="list-icon"/>} 
+              title="Consent history" 
+              meta="View timeline of consent actions" 
+              onClick={() => console.log('View history')}
+              data-testid="consent-history-row"
+            />
+          </ListCard>
+        </div>
+
+        <div>
+          <ListSection title="Compliance"/>
+          <ListCard>
+            <ListRow 
+              icon={<Ic.doc className="list-icon"/>} 
+              title="Audit log" 
+              meta="Data access and consent audit trail" 
+              onClick={() => console.log('Open audit')}
+              data-testid="consent-audit-row"
+            />
+            <div className="divider" />
+            <ListRow 
+              icon={<Ic.shield className="list-icon"/>} 
+              title="Consent settings" 
+              meta="Configure consent requirements" 
+              onClick={() => console.log('Open settings')}
+              data-testid="consent-settings-row"
+            />
+          </ListCard>
+        </div>
+      </div>
+    </SimpleLayout>
+  )
+  
+  if (inline) {
+    return content
+  }
+  
+  return (
+    <BottomSheet open={open} onClose={onClose}>
+      {content}
+    </BottomSheet>
+  )
 }

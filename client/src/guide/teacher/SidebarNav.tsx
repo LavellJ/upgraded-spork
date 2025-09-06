@@ -17,12 +17,7 @@ export function NavLink({ to, icon, children }:{
   return (
     <Link
       to={to}
-      className={
-        'flex items-center gap-2 px-3 py-2 rounded-lg focus-ring ' +
-        (active
-          ? 'bg-[rgb(var(--bg-base))] text-[rgb(var(--fg-default))]'
-          : 'text-[rgb(var(--fg-muted))] hover:bg-[rgb(var(--bg-base))] hover:text-[rgb(var(--fg-default))]')
-      }
+      className="flex items-center gap-2 px-3 py-2 rounded-lg w-full text-fg-muted hover:bg-bg-base hover:text-fg-base aria-[current=page]:bg-bg-base aria-[current=page]:text-fg-base focus-ring"
       aria-current={active ? 'page' : undefined}
     >
       {icon ? ICONS[icon] : null}
