@@ -1,10 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { 
+  HardDrive, 
+  Wifi, 
+  Download, 
+  RefreshCw, 
+  Smartphone, 
+  CheckCircle, 
+  XCircle,
+  AlertTriangle
+} from 'lucide-react';
 import { getMemoryInfo, getConnectionInfo } from '../device/memory';
 import { useOnline } from '../pwa/useOnline';
 import { useFlags } from '../config/flags';
 import { SimpleLayout } from '../ui2/SimpleLayout';
 import { ListCard, ListRow, ListSection } from '../ui2/List';
 import { Ic } from '../ui2/icons';
+import { Card as UI2Card } from '../ui2/Card';
 
 interface QAPanelProps {
   currentBiome?: 'forest' | 'desert' | 'ocean' | 'night';
@@ -86,7 +100,7 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
             resolve(event.data);
           };
 
-          registration.active.postMessage(
+          registration.active!.postMessage(
             { type: 'GET_CACHE_STATUS' },
             [messageChannel.port2]
           );
@@ -187,6 +201,40 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
   useEffect(() => {
     refreshCacheStatus();
   }, [swStatus]);
+
+  // Helper function for running diagnostics
+  const runDiagnostics = async () => {
+    setLoading(true);
+    try {
+      const diagnostics = {
+        serviceWorker: swStatus,
+        online: online,
+        memory: memoryInfo,
+        connection: connectionInfo,
+        storage: storageInfo,
+        cachedAssets: getTotalAssets()
+      };
+      
+      console.log('QA Diagnostics:', diagnostics);
+      
+      const issues: string[] = [];
+      if (memoryInfo.isLowMemory) issues.push('Low memory detected');
+      if (!online) issues.push('Device is offline');  
+      if (swStatus !== 'active') issues.push('Service Worker not active');
+      if (getTotalAssets() === 0) issues.push('No cached assets');
+      
+      const result = issues.length === 0 ? 
+        'All systems operational!' : 
+        `Issues found: ${issues.join(', ')}`;
+        
+      alert(`Diagnostics Complete:\n${result}`);
+    } catch (error) {
+      console.error('Diagnostics failed:', error);
+      alert('Error running diagnostics');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Use list UI when both flags are enabled  
   if (teacherPanelV2 && teacherAppearanceV3) {
@@ -291,40 +339,6 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
       </SimpleLayout>
     );
   }
-
-  // Helper function for running diagnostics
-  const runDiagnostics = async () => {
-    setLoading(true);
-    try {
-      const diagnostics = {
-        serviceWorker: swStatus,
-        online: online,
-        memory: memoryInfo,
-        connection: connectionInfo,
-        storage: storageInfo,
-        cachedAssets: getTotalAssets()
-      };
-      
-      console.log('QA Diagnostics:', diagnostics);
-      
-      const issues: string[] = [];
-      if (memoryInfo.isLowMemory) issues.push('Low memory detected');
-      if (!online) issues.push('Device is offline');  
-      if (swStatus !== 'active') issues.push('Service Worker not active');
-      if (getTotalAssets() === 0) issues.push('No cached assets');
-      
-      const result = issues.length === 0 ? 
-        'All systems operational!' : 
-        `Issues found: ${issues.join(', ')}`;
-        
-      alert(`Diagnostics Complete:\n${result}`);
-    } catch (error) {
-      console.error('Diagnostics failed:', error);
-      alert('Error running diagnostics');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Fallback to legacy UI if flags not enabled
   return (
