@@ -48,7 +48,7 @@ export default function QuestionCard({
     return (
       <div style={styles.card}>
         <div style={styles.q}>{q.q}</div>
-        <input style={styles.input} placeholder="Type your answer" />
+        <input style={styles.input} placeholder="Type your answer" aria-label="Type your answer to the question" />
         <button style={styles.choiceBtn} onClick={() => next(false)}>Next</button>
       </div>
     );
