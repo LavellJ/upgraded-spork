@@ -87,7 +87,7 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
                     'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left focus-ring transition-colors ' +
                     (teacherThemeV2 
                       ? (activeTab === tabKey
-                          ? 'bg-[rgb(var(--brand-500))]/10 text-[rgb(var(--brand-600))] border-l-2 border-[rgb(var(--brand-500))]'
+                          ? 'bg-[rgb(var(--bg-base))] text-[rgb(var(--fg-base))] border-l-2 border-[rgb(var(--brand-500))]'
                           : 'text-[rgb(var(--fg-muted))] hover:bg-[rgb(var(--bg-elev))]/60 hover:text-[rgb(var(--fg-base))]')
                       : (activeTab === tabKey
                           ? 'bg-blue-100 text-blue-900'
