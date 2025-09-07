@@ -347,6 +347,7 @@ export function ExitTicket({ activity, onComplete, onEvent }: ExitTicketProps) {
               value={currentAnswer as string}
               onChange={(e) => handleAnswerChange(e.target.value)}
               placeholder="Enter your response..."
+              aria-label="Enter your response to the question"
               className="w-full min-h-[120px] p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               data-testid="open-response-textarea"
             />

@@ -22,6 +22,14 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// Dev accessibility checks (development only)
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+  const axe = (await import('@axe-core/react')).default;
+  const React = await import('react');
+  const ReactDOM = await import('react-dom/client');
+  axe(React, ReactDOM, 1000);
+}
+
 // Dev console helper for art diagnostics (development only)
 if (import.meta.env.DEV) {
   // @ts-ignore

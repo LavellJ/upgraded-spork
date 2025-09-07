@@ -11,7 +11,9 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
+    "@axe-core/cli": "^4.10.2",
     "@axe-core/playwright": "^4.10.2",
+    "@axe-core/react": "^4.10.2",
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.25",
     "@neondatabase/serverless": "^0.10.4",

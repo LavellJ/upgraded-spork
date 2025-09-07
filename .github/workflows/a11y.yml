@@ -1,0 +1,13 @@
+name: a11y
+on: [push, pull_request]
+jobs:
+  axe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+      - run: npm run build
+      - run: npm run preview & npx wait-on http://localhost:4173
+      - run: npx axe --save --tags wcag2aa "http://localhost:4173/?tab=dev"
