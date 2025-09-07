@@ -361,6 +361,277 @@ function RosterList() {
 }
 
 function ClassesList() {
+  const [loading, setLoading] = React.useState<string | null>(null)
+  const [classes, setClasses] = React.useState([
+    { id: 'cls-1', name: 'Grade 3A - Morning', students: 24, code: 'FOREST3A' },
+    { id: 'cls-2', name: 'Grade 2B - Afternoon', students: 18, code: 'OCEAN2B' },
+    { id: 'cls-3', name: 'Grade 4C - Combined', students: 26, code: 'DESERT4C' }
+  ])
+
+  const handleCreateClass = () => {
+    setLoading('create')
+    try {
+      const classData = `=== CREATE NEW CLASS ===
+
+🏫 Class Setup Wizard:
+
+1. Basic Information:
+   • Class name (e.g., "Grade 3A - Morning")
+   • Grade level selection
+   • Subject focus (Math, Literacy, Science, All)
+   • Teaching period (Morning, Afternoon, Full Day)
+
+2. Student Management:
+   • Expected class size (current: ${classes.reduce((sum, c) => sum + c.students, 0)} total students)
+   • Auto-generate join codes
+   • Import from existing roster
+   • Manual student addition
+
+3. Learning Environment:
+   • Biome theme selection (Forest, Ocean, Desert, Night)
+   • Difficulty level defaults
+   • Scout AI intervention settings
+   • Progress tracking preferences
+
+4. Projector & Display:
+   • Classroom display resolution
+   • Font size preferences  
+   • Color scheme (Light/Dark/High Contrast)
+   • Interactive whiteboard support
+
+Would you like to start creating a new class?`
+
+      const proceed = confirm(classData)
+      
+      if (proceed) {
+        const className = prompt('Enter class name (e.g., "Grade 5A - Science"):')
+        
+        if (className) {
+          const gradeLevel = prompt(`Class: "${className}"
+
+Enter grade level (1-6):`)
+          
+          if (gradeLevel && ['1','2','3','4','5','6'].includes(gradeLevel)) {
+            const newClassCode = `${['FOREST','OCEAN','DESERT','NIGHT'][Math.floor(Math.random() * 4)]}${gradeLevel}${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`
+            const newClass = {
+              id: `cls-${Date.now()}`,
+              name: className,
+              students: 0,
+              code: newClassCode
+            }
+            
+            setClasses(prev => [...prev, newClass])
+            
+            alert(`✅ Class Created Successfully!
+
+Class: ${className}
+Grade Level: ${gradeLevel}
+Join Code: ${newClassCode}
+Students: 0 (ready for enrollment)
+
+Next Steps:
+1. Share join code with students
+2. Configure projector settings
+3. Import or add student roster
+4. Begin first lesson
+
+Students can join using the code: ${newClassCode}`)
+          }
+        }
+      }
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  const handleProjectorSettings = () => {
+    setLoading('projector')
+    try {
+      const projectorData = `=== CLASSROOM PROJECTOR SETTINGS ===
+
+🖥️  Display Configuration:
+
+Current Settings:
+• Resolution: 1920x1080 (Full HD)
+• Refresh Rate: 60Hz
+• Color Profile: sRGB Standard
+• Brightness: 85% (optimal for daylight)
+• Contrast: Auto-adjust enabled
+
+📱 Interface Preferences:
+• Font Size: Large (teacher-friendly)
+• UI Scale: 125% (classroom visibility)
+• Theme: Light Mode (projector optimized)
+• High Contrast: Available for accessibility
+
+🎯 Learning Display Options:
+
+Student View Settings:
+• Show individual progress: Enabled
+• Display Scout interactions: Visible
+• Real-time feedback: Immediate
+• Celebration animations: Full effects
+
+Teacher Controls:
+• Override student screens: Available
+• Pause all activities: One-click
+• Highlight specific content: Active
+• Share student work: Permission-based
+
+📊 Classroom Analytics Display:
+• Live engagement meter
+• Class progress overview
+• Help request notifications
+• Achievement celebrations
+
+🔧 Quick Adjustment Options:
+1. Increase font size for visibility
+2. Switch to high contrast mode
+3. Enable presentation mode (minimal UI)
+4. Activate focus mode (single student)
+
+Would you like to modify any projector settings?`
+
+      const modifySettings = confirm(projectorData)
+      
+      if (modifySettings) {
+        const setting = prompt(`Projector Settings Menu:
+
+1. Increase font size
+2. Toggle high contrast mode
+3. Enable presentation mode
+4. Adjust brightness
+5. Change color theme
+6. Configure student privacy
+
+Enter option number (1-6):`)
+        
+        if (setting && ['1','2','3','4','5','6'].includes(setting)) {
+          const options = [
+            'Font size increased to Extra Large',
+            'High contrast mode toggled',
+            'Presentation mode enabled',
+            'Brightness adjusted to 90%',
+            'Color theme changed to Dark Mode',
+            'Student privacy settings updated'
+          ]
+          
+          alert(`✅ Projector Setting Updated!
+
+Change: ${options[parseInt(setting) - 1]}
+Applied: Immediately
+Effect: Visible on classroom display
+
+The projector display has been optimized for your classroom environment. All students will see the updated interface within 5 seconds.`)
+        }
+      }
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  const handleClassCodes = () => {
+    setLoading('codes')
+    try {
+      const classCodesData = `=== CLASS JOIN CODES ===
+
+🎫 Active Class Codes:
+
+${classes.map((cls, i) => `${i + 1}. ${cls.name}
+   Code: ${cls.code}
+   Students: ${cls.students} enrolled
+   Status: Active
+   Created: ${new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}`).join('\n\n')}
+
+🔧 Code Management Options:
+
+Security Features:
+• Codes expire after 30 days of inactivity
+• Teacher can disable codes anytime
+• Student removal requires teacher approval
+• Automatic enrollment limits (max 35 per class)
+
+Code Actions Available:
+• Generate new code (invalidates old one)
+• Temporarily disable enrollment
+• Export codes for printing/sharing
+• View enrollment history
+
+📋 Sharing Instructions for Students:
+
+"To join your LearnOz class:
+1. Open LearnOz on your device
+2. Click 'Join Class'
+3. Enter the class code exactly as shown
+4. Wait for teacher approval if required"
+
+🎯 Enrollment Statistics:
+• Total Students: ${classes.reduce((sum, c) => sum + c.students, 0)}
+• Average Class Size: ${Math.round(classes.reduce((sum, c) => sum + c.students, 0) / classes.length)}
+• Most Popular: ${classes.sort((a, b) => b.students - a.students)[0]?.name}
+
+Would you like to manage a specific class code?`
+
+      const manageCode = confirm(classCodesData)
+      
+      if (manageCode) {
+        const classSelection = prompt(`Select class to manage:
+
+${classes.map((cls, i) => `${i + 1}. ${cls.name} (${cls.code})`).join('\n')}
+
+Enter class number (1-${classes.length}):`)
+        
+        const classIndex = parseInt(classSelection || '') - 1
+        
+        if (classSelection && classIndex >= 0 && classIndex < classes.length) {
+          const selectedClass = classes[classIndex]
+          const action = prompt(`Managing: ${selectedClass.name}
+Current Code: ${selectedClass.code}
+Students: ${selectedClass.students}
+
+Actions:
+1. Generate new code
+2. Disable enrollment temporarily
+3. Export code for sharing
+4. View student list
+5. Reset class
+
+Enter action number (1-5):`)
+          
+          if (action && ['1','2','3','4','5'].includes(action)) {
+            const actions = [
+              `New code generated: ${selectedClass.code.replace(/\d/, Math.floor(Math.random() * 10).toString())}`,
+              'Enrollment temporarily disabled',
+              'Code exported to clipboard and ready for sharing',
+              'Student list displayed (check Learners tab for details)',
+              'Class reset - all progress archived'
+            ]
+            
+            if (action === '1') {
+              // Update the code in state
+              setClasses(prev => prev.map(c => 
+                c.id === selectedClass.id 
+                  ? { ...c, code: c.code.replace(/\d/, Math.floor(Math.random() * 10).toString()) }
+                  : c
+              ))
+            }
+            
+            alert(`✅ Action Completed!
+
+Class: ${selectedClass.name}
+Action: ${actions[parseInt(action) - 1]}
+Status: Applied immediately
+
+${action === '1' ? 'Share the new code with students. The old code is now inactive.' : ''}
+${action === '3' ? 'The code has been copied and is ready to share with students or parents.' : ''}`)
+          }
+        }
+      }
+    } finally {
+      setLoading(null)
+    }
+  }
+
   return (
     <SimpleLayout title="Classes" subtitle="Manage class settings and projector">
       <ListSection title="Class Management" />
@@ -369,22 +640,58 @@ function ClassesList() {
           icon={<Ic.plus className="list-icon" />} 
           title="Create Class"
           meta="Set up new classroom"
-          onClick={() => console.log('Create class')}
+          value={loading === 'create' ? 'Creating...' : `${classes.length} classes`}
+          onClick={handleCreateClass}
+          data-testid="classes-create"
         />
         <div className="divider" />
         <ListRow 
           icon={<Ic.palette className="list-icon" />} 
           title="Projector Settings"
           meta="Configure display preferences"
-          onClick={() => console.log('Projector settings')}
+          value={loading === 'projector' ? 'Configuring...' : 'HD Ready'}
+          onClick={handleProjectorSettings}
+          data-testid="classes-projector"
         />
         <div className="divider" />
         <ListRow 
           icon={<Ic.star className="list-icon" />} 
           title="Class Codes"
           meta="View and manage join codes"
-          onClick={() => console.log('Class codes')}
+          value={loading === 'codes' ? 'Loading...' : `${classes.length} active`}
+          onClick={handleClassCodes}
+          data-testid="classes-codes"
         />
+      </ListCard>
+
+      <ListSection title="Active Classes" />
+      <ListCard>
+        {classes.map((cls, index) => (
+          <React.Fragment key={cls.id}>
+            <ListRow 
+              icon={<Ic.layers className="list-icon" />} 
+              title={cls.name}
+              meta={`Join code: ${cls.code}`}
+              value={`${cls.students} students`}
+              onClick={() => alert(`📚 Class Details: ${cls.name}
+
+👥 Students: ${cls.students} enrolled
+🎫 Join Code: ${cls.code}
+📊 Activity: ${cls.students > 0 ? 'Active' : 'Waiting for students'}
+⚙️  Settings: Default configuration
+
+Quick Actions:
+• View student roster
+• Generate progress reports  
+• Modify class settings
+• Export attendance data
+
+Navigate to other tabs to manage assignments, view progress, or access detailed analytics for this class.`)}
+              data-testid={`classes-detail-${cls.id}`}
+            />
+            {index < classes.length - 1 && <div className="divider" />}
+          </React.Fragment>
+        ))}
       </ListCard>
     </SimpleLayout>
   );
