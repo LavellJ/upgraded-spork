@@ -672,6 +672,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Simple ping endpoint for diagnostics
+  api.get('/api/ping', (req, res) => {
+    res.status(200).json({ 
+      ok: true, 
+      timestamp: new Date().toISOString(),
+      message: 'pong' 
+    });
+  });
+
   app.use(api);
   
   // Mount metrics routes
