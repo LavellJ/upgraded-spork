@@ -184,6 +184,7 @@ export function FeedbackWidget({ devMode = false, cloudEnabled = false }: Feedba
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder="Describe your idea, bug, or what's confusing..."
+                  aria-label="Tell us more about your feedback"
                   className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   rows={3}
                   required

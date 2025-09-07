@@ -396,6 +396,7 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
                 value={responses[currentPrompt.id] || ""}
                 onChange={(e) => handleResponse(currentPrompt.id, e.target.value)}
                 placeholder={ageGroup === "pre-primary" ? "Tell me what you think..." : "Share your thoughts..."}
+                aria-label="Enter your reflection response"
                 className="w-full h-32 bg-white/10 border border-white/30 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:border-purple-400 focus:outline-none resize-none"
                 data-testid="text-response"
               />
