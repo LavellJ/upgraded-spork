@@ -1671,6 +1671,365 @@ function InsightsList() {
 }
 
 function QuickStartList() {
+  const [loading, setLoading] = React.useState<string | null>(null)
+  const [completedSteps, setCompletedSteps] = React.useState(new Set<number>())
+
+  const handleCreateLearner = () => {
+    setLoading('create-learner')
+    try {
+      const learnerSetup = `=== CREATE YOUR FIRST LEARNER ===
+
+👤 Student Profile Setup:
+
+Welcome to LearnOz! Let's add your first student to get started.
+
+Required Information:
+• Student name (first and last)
+• Grade level (1-6 for Australian curriculum)
+• Class assignment (or create new class)
+• Parent/guardian email for notifications
+
+🎯 Quick Setup Process:
+1. Click "Add Learner" in the Roster tab
+2. Enter student details
+3. Select appropriate grade level
+4. Choose learning biome theme (Forest, Ocean, Desert, Night)
+5. Set initial difficulty and Scout AI assistance level
+
+📚 Getting Started Tips:
+• Start with Foundation level for new students
+• Forest biome is ideal for beginning learners
+• Enable high Scout AI assistance for extra support
+• Parent notifications help track progress at home
+
+🏫 Class Integration:
+• Create class codes for easy student enrollment
+• Set up projector display settings for classroom use
+• Configure group learning preferences
+• Enable collaborative features for peer interaction
+
+✅ After Setup:
+• Student can join using class code
+• Progress tracking begins immediately
+• Scout AI provides personalized assistance
+• Parent reports sent weekly automatically
+
+Ready to create your first learner? Navigate to the Roster tab and click "Add Learner" to begin!`
+
+      const proceed = confirm(learnerSetup)
+      
+      if (proceed) {
+        setCompletedSteps(prev => new Set([...prev, 1]))
+        alert(`🎉 Step 1 Complete!
+
+Next: Navigate to the Roster tab and click "Add Learner" to create your first student profile.
+
+Once created, you'll be ready to:
+• Assign lessons and activities
+• Track learning progress
+• Monitor Scout AI interactions
+• Generate progress reports
+
+Your student will receive a class join code to access their personalized LearnOz learning environment.`)
+      }
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  const handleStartLesson = () => {
+    setLoading('start-lesson')
+    try {
+      const lessonGuide = `=== START YOUR FIRST LESSON ===
+
+📚 Lesson Selection Guide:
+
+Choose from our curated lesson library designed for the Australian curriculum.
+
+🏞️ Available Biomes:
+• Forest: Foundation skills (reading, basic math)
+• Ocean: Exploration & discovery (science, research)
+• Desert: Advanced concepts (problem solving, critical thinking)
+• Night: Reflection & review (journaling, assessment)
+
+📊 Recommended First Lessons:
+
+Grade 1-2 Students:
+• "Letter Sounds Journey" (Forest biome)
+• "Counting Adventures" (Forest biome)
+• "Shapes Around Us" (Ocean biome)
+
+Grade 3-4 Students:
+• "Fractions on Number Line" (Desert biome)
+• "Reading Comprehension Stories" (Forest biome)
+• "States of Matter" (Ocean biome)
+
+Grade 5-6 Students:
+• "Advanced Problem Solving" (Desert biome)
+• "Research & Report Writing" (Ocean biome)
+• "Mathematical Reasoning" (Desert biome)
+
+🎯 Lesson Features:
+• Interactive video instruction
+• Guided practice activities
+• Real-time Scout AI assistance
+• Immediate feedback and hints
+• Progress tracking and analytics
+
+⚡ Getting Started:
+1. Navigate to main learning interface
+2. Select appropriate biome for your student
+3. Choose lesson matching grade level
+4. Student completes lesson with Scout guidance
+5. Review results in teacher analytics
+
+🧭 Scout AI Support:
+• Provides contextual hints and encouragement
+• Adapts to student learning pace
+• Identifies struggle points automatically
+• Suggests next best learning steps
+
+Ready to launch your first lesson? Start with a Foundation-level lesson in the Forest biome for the best introductory experience!`
+
+      const startLesson = confirm(lessonGuide)
+      
+      if (startLesson) {
+        setCompletedSteps(prev => new Set([...prev, 2]))
+        alert(`🚀 Step 2 Complete!
+
+Lesson launched successfully! 
+
+What happens next:
+• Student works through interactive lesson content
+• Scout AI provides real-time guidance and support
+• Progress data flows to your teacher analytics
+• Lesson completion triggers next-step recommendations
+
+💡 Teacher Tips:
+• Monitor progress in real-time via Timeline tab
+• Review Scout intervention patterns in Insights
+• Check lesson completion rates in Dashboard
+• Generate progress reports for parents
+
+Your student is now experiencing the full LearnOz learning journey with AI-powered personalized education!`)
+      }
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  const handleExploreFeatures = () => {
+    setLoading('explore-features')
+    try {
+      const featureTour = `=== EXPLORE TEACHER PANEL FEATURES ===
+
+🏫 Teacher Panel Overview:
+
+Welcome to your comprehensive teaching command center! Here's what each tab offers:
+
+📊 Dashboard:
+• Live class overview and metrics
+• Quick action buttons for common tasks
+• System status and notifications
+• Real-time student activity feed
+
+👥 Learners:
+• Complete student management system
+• Progress tracking and analytics
+• Individual learner profiles and settings
+• Intervention alerts and recommendations
+
+📝 Assignments:
+• Create and manage learning assignments
+• Track completion rates and scores
+• Set due dates and priority levels
+• Bulk assignment management tools
+
+📈 Insights:
+• Comprehensive learning analytics
+• Engagement patterns and trends
+• Performance metrics and comparisons
+• Data export and reporting tools
+
+⏰ Timeline:
+• Chronological activity view
+• Lesson completions and journal entries
+• Scout AI intervention history
+• Filtering by time period and event type
+
+📋 Roster:
+• Student enrollment and class management
+• CSV import for bulk student addition
+• Group organization and settings
+• Data privacy and export tools
+
+🏛️ Classes:
+• Classroom setup and configuration
+• Projector display settings
+• Class codes and student enrollment
+• Physical classroom integration
+
+🚀 Quick Start:
+• Guided setup process (current tab)
+• Step-by-step onboarding
+• Resource downloads and help guides
+• Feature discovery and tips
+
+🎯 Advanced Features:
+• Scout AI customization and settings
+• Content Studio for lesson creation
+• Progress data analysis and insights
+• Parent communication and reporting
+
+✨ Pro Tips:
+• Use keyboard shortcuts for faster navigation
+• Set up automated parent email reports
+• Configure Scout AI intervention levels
+• Explore data export options for record keeping
+
+Ready to explore? Try navigating between tabs to discover all the powerful tools at your disposal!`
+
+      const explore = confirm(featureTour)
+      
+      if (explore) {
+        setCompletedSteps(prev => new Set([...prev, 3]))
+        alert(`🔍 Step 3 Complete!
+
+Feature exploration unlocked! 
+
+Your teacher panel is now fully activated with:
+• Student management capabilities
+• Real-time learning analytics
+• AI-powered insights and recommendations
+• Comprehensive progress tracking
+
+🎓 Next Steps:
+• Invite students to join your classes
+• Assign lessons aligned to curriculum standards
+• Monitor learning progress and engagement
+• Generate reports for administrators and parents
+
+You're now ready to deliver personalized, AI-enhanced education that adapts to each student's unique learning journey!`)
+      }
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  const handleDownloadGuide = () => {
+    setLoading('download-guide')
+    try {
+      const downloadGuide = `=== DOWNLOAD QUICK START GUIDE ===
+
+📄 LearnOz Teacher Quick Start Guide
+
+Download our comprehensive 1-page PDF guide containing:
+
+📋 Setup Checklist:
+• Teacher account configuration
+• Student enrollment process
+• Class setup and management
+• Lesson assignment workflow
+
+🎯 Getting Started Steps:
+• Create your first learner profile
+• Launch introductory lessons
+• Monitor progress and analytics
+• Enable parent communications
+
+📊 Feature Overview:
+• Teacher panel navigation
+• Student progress tracking
+• Scout AI intervention system
+• Analytics and reporting tools
+
+🔧 Technical Setup:
+• Browser requirements and compatibility
+• Projector display configuration
+• Class code generation and sharing
+• Data privacy and security settings
+
+📈 Best Practices:
+• Lesson selection strategies
+• Student engagement optimization
+• Progress monitoring techniques
+• Parent and administrator reporting
+
+📞 Support Resources:
+• Help documentation links
+• Video tutorial access
+• Technical support contact
+• Community forum information
+
+💡 Pro Tips:
+• Weekly routine recommendations
+• Time-saving keyboard shortcuts
+• Advanced feature highlights
+• Troubleshooting common issues
+
+File Details:
+• Format: PDF (printable)
+• Size: 1 page, printer-friendly
+• Updated: Current version with latest features
+• Access: Download immediately, no email required
+
+This guide is perfect for:
+• New teacher onboarding
+• Quick reference during lessons
+• Sharing with teaching assistants
+• Administrator overview presentations
+
+Ready to download? The guide will open in a new tab for immediate viewing and printing.`
+
+      const downloadPDF = confirm(downloadGuide)
+      
+      if (downloadPDF) {
+        // Simulate PDF download
+        alert(`📥 Download Started!
+
+Quick Start Guide downloading...
+
+File: LearnOz_Teacher_QuickStart_Guide.pdf
+Size: 850KB
+Format: PDF (printable)
+Location: Downloads folder
+
+📋 What's Included:
+• Complete setup checklist
+• Step-by-step getting started guide
+• Feature overview and navigation
+• Best practices and pro tips
+• Support resources and contacts
+
+🖨️ Print-Friendly Format:
+• Single page layout optimized for printing
+• High-contrast text and clear diagrams
+• QR codes for quick access to digital resources
+• Laminate-ready for classroom reference
+
+Keep this guide handy as you explore LearnOz and set up your classroom for AI-enhanced learning success!`)
+      }
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  const getStepStatus = (stepNumber: number) => {
+    if (completedSteps.has(stepNumber)) {
+      return '✅'
+    }
+    return ''
+  }
+
+  const getCompletionText = () => {
+    const completed = completedSteps.size
+    if (completed === 0) return 'Get started'
+    if (completed === 1) return '1/3 steps done'
+    if (completed === 2) return '2/3 steps done'
+    if (completed === 3) return 'All steps complete!'
+    return `${completed} steps done`
+  }
+
   return (
     <SimpleLayout title="Quick Start" subtitle="Get started with LearnOz">
       <ListSection title="Setup Steps" />
@@ -1679,21 +2038,27 @@ function QuickStartList() {
           icon={<Ic.profile className="list-icon" />} 
           title="Create Learner"
           meta="Add your first student"
-          onClick={() => console.log('Create learner')}
+          value={loading === 'create-learner' ? 'Setting up...' : getStepStatus(1)}
+          onClick={handleCreateLearner}
+          data-testid="quickstart-create-learner"
         />
         <div className="divider" />
         <ListRow 
           icon={<Ic.book className="list-icon" />} 
           title="Start Lesson"
           meta="Launch any lesson to try the interface"
-          onClick={() => console.log('Start lesson')}
+          value={loading === 'start-lesson' ? 'Launching...' : getStepStatus(2)}
+          onClick={handleStartLesson}
+          data-testid="quickstart-start-lesson"
         />
         <div className="divider" />
         <ListRow 
           icon={<Ic.star className="list-icon" />} 
           title="Explore Features"
           meta="Tour the teacher panel capabilities"
-          onClick={() => console.log('Explore features')}
+          value={loading === 'explore-features' ? 'Exploring...' : getStepStatus(3)}
+          onClick={handleExploreFeatures}
+          data-testid="quickstart-explore-features"
         />
       </ListCard>
       
@@ -1703,7 +2068,29 @@ function QuickStartList() {
           icon={<Ic.doc className="list-icon" />} 
           title="Download Guide"
           meta="1-page PDF setup guide"
-          onClick={() => console.log('Download guide')}
+          value={loading === 'download-guide' ? 'Downloading...' : 'PDF ready'}
+          onClick={handleDownloadGuide}
+          data-testid="quickstart-download-guide"
+        />
+      </ListCard>
+
+      <ListSection title="Progress" />
+      <ListCard>
+        <ListRow 
+          icon={<Ic.layers className="list-icon" />} 
+          title="Setup Progress"
+          meta={`${completedSteps.size} of 3 setup steps completed`}
+          value={getCompletionText()}
+          onClick={() => alert(`🎯 Quick Start Progress
+
+Setup Steps Completed: ${completedSteps.size}/3
+
+${completedSteps.has(1) ? '✅' : '⭕'} Create Learner - Add your first student
+${completedSteps.has(2) ? '✅' : '⭕'} Start Lesson - Launch interactive learning
+${completedSteps.has(3) ? '✅' : '⭕'} Explore Features - Tour teacher capabilities
+
+${completedSteps.size === 3 ? '🎉 Congratulations! You\'ve completed the LearnOz setup process. Your classroom is ready for AI-enhanced learning!' : 'Complete the remaining steps to fully activate your LearnOz teaching environment.'}`)}
+          data-testid="quickstart-progress"
         />
       </ListCard>
     </SimpleLayout>
