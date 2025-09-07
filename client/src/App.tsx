@@ -961,7 +961,7 @@ function AppContent(){
         <header className="flex items-center justify-between p-4 bg-white/20 backdrop-blur-sm border-b border-white/30">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-extrabold text-stone-900">Quest Island — Loop {loop}</h1>
-            {last&&<button onClick={resumeLesson} className="px-3 py-2 rounded-full bg-[rgb(var(--brand-700))] text-white hover:bg-[rgb(var(--brand-800))] font-medium transition ease-out">Resume: {findLesson(last.biome,last.id,LESSONS)?.title}</button>}
+            {last&&<button onClick={resumeLesson} className="px-3 py-2 rounded-full bg-[rgb(var(--brand-700))] text-black hover:bg-[rgb(var(--brand-800))] font-medium transition ease-out">Resume: {findLesson(last.biome,last.id,LESSONS)?.title}</button>}
           </div>
           <div className="flex items-center gap-2">
             <button onClick={()=>setCalm(p=>!p)} className={cx("w-10 h-10 rounded-full border transition ease-out", calm?"bg-blue-100 border-blue-300":"bg-white/50 border-white/70")} title={calm?"Disable calm mode":"Enable calm mode"}>😌</button>
