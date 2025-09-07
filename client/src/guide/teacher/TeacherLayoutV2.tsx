@@ -65,7 +65,7 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
           <div className={`p-4 flex items-center justify-between ${
             teacherThemeV2 ? 'border-b border-[rgb(var(--border))]' : 'border-b border-gray-200'
           }`}>
-            <h2 className={`text-lg font-semibold ${
+            <h2 id="tp-title" className={`text-lg font-semibold ${
               teacherThemeV2 ? 'text-[rgb(var(--fg-base))]' : ''
             }`}>Teacher Panel</h2>
             <IconButton 
@@ -110,7 +110,7 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
         </aside>
 
         {/* Main content */}
-        <section role="main" aria-labelledby="tp-title" className={`flex-1 overflow-auto ${
+        <section role="region" aria-labelledby="tp-title" className={`flex-1 overflow-auto ${
           teacherThemeV2 ? 'bg-[rgb(var(--bg-elev))]' : 'bg-gray-50'
         }`}>
           <ToastHost>
