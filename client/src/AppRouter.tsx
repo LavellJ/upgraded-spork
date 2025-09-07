@@ -63,7 +63,7 @@ function AppWithHeroAccess({ navigate }: { navigate: (route: string) => void }) 
         <div className="fixed bottom-4 right-4 z-40">
           <div className="bg-blue-700 rounded-lg p-2 shadow-xl border border-white/20 max-w-xs">
             <div className="flex items-center gap-2">
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0" role="region" aria-label="Hero demo button content">
                 <div className="text-white font-medium text-xs truncate">🎯 Hero Demo</div>
                 <div className="text-blue-100 text-[10px] truncate">Try lesson system</div>
               </div>
