@@ -31,7 +31,7 @@ export default function TeacherLayout({ title, subtitle, actions, children }:{
             <div className="px-3 py-3 text-xs text-[rgb(var(--fg-muted))]">v2 layout</div>
           </aside>
 
-          <main id="main" className="flex-1 min-w-0">
+          <main id="main" className="flex-1 min-w-0" role="region" aria-label="Primary content">
             <PageHeader title={title} subtitle={subtitle} actions={actions} />
             <div className="p-4 md:p-6 space-y-4">
               {children}
