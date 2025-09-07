@@ -511,6 +511,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
                       value={textContent}
                       onChange={(e) => setTextContent(e.target.value)}
                       placeholder="Write your response here..."
+                      aria-label="Write your creative response"
                       className="w-full h-32 bg-white/10 border border-white/30 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:border-orange-400 focus:outline-none resize-none mb-4"
                       data-testid="text-creation-input"
                     />
