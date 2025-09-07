@@ -303,7 +303,7 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
     switch (priority) {
       case 'high': return 'text-red-600 bg-red-50 border-red-200';
       case 'low': return 'text-fg-base bg-bg-card border-border';
-      default: return 'text-brand-600 bg-brand-50 border-brand-200';
+      default: return 'text-brand-700 bg-brand-50 border-brand-200';
     }
   };
 
@@ -637,7 +637,7 @@ export function AssignmentsManager({ className = '' }: AssignmentsManagerProps) 
                 <button
                   onClick={handleSave}
                   disabled={!formData.name.trim() || formData.lessons.length === 0}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-brand-500 text-white rounded hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="flex items-center gap-1 px-3 py-1.5 bg-brand-700 text-white rounded hover:bg-brand-800 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   <Save className="w-4 h-4" />
                   {editingId ? 'Update' : 'Create'}

@@ -78,7 +78,7 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
     switch (priority) {
       case 'critical': return 'bg-red-100 text-red-800 border-red-200';
       case 'actionable': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'info': return 'bg-brand-50 text-brand-600 border-brand-200';
+      case 'info': return 'bg-brand-50 text-brand-700 border-brand-200';
       default: return 'bg-bg-card text-fg-base border-border';
     }
   };
@@ -99,7 +99,7 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
       <Card className={className}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Activity className="w-5 h-5 text-brand-600" />
+            <Activity className="w-5 h-5 text-brand-700" />
             Learning Insights ({timeRange} days)
           </CardTitle>
         </CardHeader>
@@ -118,7 +118,7 @@ export function InsightsCard({ timeRange = 7, className = '' }: InsightsCardProp
     <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Activity className="w-5 h-5 text-brand-600" />
+          <Activity className="w-5 h-5 text-brand-700" />
           Learning Insights ({timeRange} days)
         </CardTitle>
       </CardHeader>

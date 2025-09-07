@@ -182,7 +182,7 @@ export function QAPanel({ currentBiome = 'forest' }: QAPanelProps) {
 
   const getSwStatusColor = () => {
     switch (swStatus) {
-      case 'active': return 'text-brand-600';
+      case 'active': return 'text-brand-700';
       case 'installing': return 'text-yellow-600';
       case 'error': return 'text-red-600';
       default: return 'text-fg-base';
