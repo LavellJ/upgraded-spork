@@ -43,10 +43,10 @@ export default {
         },
         brand: {
           DEFAULT: 'rgb(var(--brand))',
-          600: 'rgb(var(--brand-600))',
-          700: 'rgb(var(--brand-700))',
-          // TP5 theme tokens
           500: 'rgb(var(--brand-500) / <alpha-value>)',
+          600: 'rgb(var(--brand-600) / <alpha-value>)',
+          700: 'rgb(var(--brand-700) / <alpha-value>)',
+          800: 'rgb(var(--brand-800) / <alpha-value>)',
         },
         border: 'rgb(var(--border) / <alpha-value>)',
         positive: 'rgb(var(--positive))',
