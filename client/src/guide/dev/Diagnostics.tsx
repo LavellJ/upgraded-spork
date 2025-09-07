@@ -4,6 +4,20 @@ import { ListCard, ListRow, ListSection } from '../../ui2/List'
 import { Ic } from '../../ui2/icons'
 import { useFlags } from '../../config/flags'
 
+// Dev-only imports (will be tree-shaken in production)
+let runA11yScan: (() => Promise<any>) | undefined
+let startVitals: ((cb: (v: any) => void) => void) | undefined
+
+if (import.meta.env?.DEV) {
+  try {
+    const diagnostics = await import('../../dev/diagnostics')
+    runA11yScan = diagnostics.runA11yScan
+    startVitals = diagnostics.startVitals
+  } catch (error) {
+    console.warn('Failed to load dev diagnostics:', error)
+  }
+}
+
 interface DiagnosticCheck {
   id: string
   label: string
@@ -11,6 +25,23 @@ interface DiagnosticCheck {
   details?: string
   fixTip?: string
   value?: string | number
+}
+
+interface A11yViolation {
+  id: string
+  impact: string
+  description: string
+  nodes: { target: string[] }[]
+}
+
+interface A11yResult {
+  violations: A11yViolation[]
+}
+
+type WebVitals = {
+  LCP?: number
+  CLS?: number  
+  INP?: number
 }
 
 interface DiagnosticReport {
@@ -29,7 +60,19 @@ export default function Diagnostics() {
   const [checks, setChecks] = useState<DiagnosticCheck[]>([])
   const [loading, setLoading] = useState(false)
   const [lastRun, setLastRun] = useState<Date | null>(null)
+  const [a11yResults, setA11yResults] = useState<A11yResult | null>(null)
+  const [a11yLoading, setA11yLoading] = useState(false)
+  const [webVitals, setWebVitals] = useState<WebVitals>({})
   const flags = useFlags()
+
+  // Start web vitals monitoring on mount (dev only)
+  useEffect(() => {
+    if (import.meta.env?.DEV && startVitals) {
+      startVitals((vitals: WebVitals) => {
+        setWebVitals(prev => ({ ...prev, ...vitals }))
+      })
+    }
+  }, [])
 
   const initializeChecks = (): DiagnosticCheck[] => [
     { id: 'sw', label: 'Service Worker', status: 'pending' },
@@ -542,6 +585,72 @@ export default function Diagnostics() {
     }
   }
 
+  const runA11yDiagnostics = async () => {
+    if (!import.meta.env?.DEV) {
+      alert('Accessibility diagnostics available in dev builds only')
+      return
+    }
+
+    setA11yLoading(true)
+    try {
+      if (!runA11yScan) {
+        throw new Error('A11y scan function not available')
+      }
+      const results = await runA11yScan()
+      setA11yResults(results)
+    } catch (error) {
+      console.error('A11y scan failed:', error)
+      alert('❌ Accessibility scan failed: ' + String(error))
+    } finally {
+      setA11yLoading(false)
+    }
+  }
+
+  const copyA11yReport = async () => {
+    if (!a11yResults) {
+      alert('No accessibility results to copy')
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(a11yResults, null, 2))
+      alert('✅ Accessibility report copied to clipboard!')
+    } catch (error) {
+      console.error('Failed to copy a11y report:', error)
+      alert('❌ Failed to copy accessibility report')
+    }
+  }
+
+  const getVitalStatus = (metric: 'LCP' | 'CLS' | 'INP', value?: number) => {
+    if (value === undefined) return { status: 'pending', color: 'text-gray-500' }
+    
+    switch (metric) {
+      case 'LCP':
+        return value <= 2500 ? { status: '✅', color: 'text-green-600' } :
+               value <= 4000 ? { status: '⚠️', color: 'text-orange-600' } :
+               { status: '❌', color: 'text-red-600' }
+      case 'CLS':
+        return value <= 0.1 ? { status: '✅', color: 'text-green-600' } :
+               value <= 0.25 ? { status: '⚠️', color: 'text-orange-600' } :
+               { status: '❌', color: 'text-red-600' }
+      case 'INP':
+        return value <= 200 ? { status: '✅', color: 'text-green-600' } :
+               value <= 500 ? { status: '⚠️', color: 'text-orange-600' } :
+               { status: '❌', color: 'text-red-600' }
+      default:
+        return { status: '❓', color: 'text-gray-500' }
+    }
+  }
+
+  const getA11yImprovementTips = () => [
+    'Add alt attributes to images',
+    'Ensure proper heading hierarchy (h1 → h2 → h3)',
+    'Use sufficient color contrast (4.5:1 for normal text)',
+    'Add labels to form inputs',
+    'Ensure focusable elements are keyboard accessible',
+    'Use semantic HTML elements (nav, main, article, etc.)'
+  ]
+
   const getStatusIcon = (status: DiagnosticCheck['status']) => {
     switch (status) {
       case 'success': return '✅'
@@ -577,6 +686,23 @@ export default function Diagnostics() {
     { passed: 0, failed: 0, warnings: 0 }
   )
 
+  if (!import.meta.env?.DEV) {
+    return (
+      <SimpleLayout title="System Diagnostics" subtitle="Development diagnostics">
+        <ListSection title="Development Only" />
+        <ListCard>
+          <ListRow 
+            icon={<Ic.layers className="list-icon" />}
+            title="Diagnostics Available in Dev Builds"
+            meta="Accessibility and performance diagnostics are available in development mode only"
+            value="Dev Only"
+            onClick={() => {}}
+          />
+        </ListCard>
+      </SimpleLayout>
+    )
+  }
+
   return (
     <SimpleLayout title="System Diagnostics" subtitle="Runtime checks and health monitoring">
       <ListSection title="System Status" />
@@ -608,6 +734,86 @@ export default function Diagnostics() {
         />
       </ListCard>
 
+      <ListSection title="Accessibility" />
+      <ListCard>
+        <ListRow 
+          icon={<span className="list-icon text-lg">{a11yResults ? (a11yResults.violations.length === 0 ? '✅' : '❌') : '🔍'}</span>}
+          title="Run A11y Scan"
+          meta={a11yResults ? 
+            `${a11yResults.violations.length} violations found` : 
+            'Scan current page for accessibility issues'
+          }
+          value={a11yLoading ? 'Scanning...' : 'Scan'}
+          onClick={runA11yDiagnostics}
+          data-testid="run-a11y-scan"
+        />
+        {a11yResults && (
+          <>
+            <div className="divider" />
+            <ListRow 
+              icon={<Ic.doc className="list-icon" />}
+              title="Copy A11y Report"
+              meta="Export accessibility findings to clipboard"
+              value="JSON"
+              onClick={copyA11yReport}
+              data-testid="copy-a11y-report"
+            />
+          </>
+        )}
+        {a11yResults && a11yResults.violations.length > 0 && (
+          <>
+            <div className="divider" />
+            <div className="px-4 py-2">
+              <div className="text-sm font-medium text-gray-900 mb-2">Top Issues:</div>
+              {a11yResults.violations.slice(0, 3).map((violation, index) => (
+                <div key={violation.id} className="text-xs text-gray-600 mb-1">
+                  {index + 1}. {violation.description} ({violation.impact})
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+        <div className="divider" />
+        <div className="px-4 py-2">
+          <div className="text-sm font-medium text-gray-900 mb-2">How to improve:</div>
+          {getA11yImprovementTips().slice(0, 3).map((tip, index) => (
+            <div key={index} className="text-xs text-gray-600 mb-1">
+              • {tip}
+            </div>
+          ))}
+        </div>
+      </ListCard>
+
+      <ListSection title="Performance" />
+      <ListCard>
+        <ListRow 
+          icon={<span className="list-icon text-lg">{getVitalStatus('LCP', webVitals.LCP).status}</span>}
+          title="Largest Contentful Paint (LCP)"
+          meta={`Target: ≤ 2.5s (good), ≤ 4.0s (needs improvement)`}
+          value={webVitals.LCP ? `${Math.round(webVitals.LCP)}ms` : 'Measuring...'}
+          onClick={() => alert('LCP measures loading performance. To improve: optimize images, remove unused CSS, and improve server response times.')}
+          data-testid="lcp-metric"
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<span className="list-icon text-lg">{getVitalStatus('CLS', webVitals.CLS).status}</span>}
+          title="Cumulative Layout Shift (CLS)"
+          meta={`Target: ≤ 0.1 (good), ≤ 0.25 (needs improvement)`}
+          value={webVitals.CLS ? webVitals.CLS.toFixed(3) : 'Measuring...'}
+          onClick={() => alert('CLS measures visual stability. To improve: set size attributes on images and videos, avoid inserting content above existing content.')}
+          data-testid="cls-metric"
+        />
+        <div className="divider" />
+        <ListRow 
+          icon={<span className="list-icon text-lg">{getVitalStatus('INP', webVitals.INP).status}</span>}
+          title="Interaction to Next Paint (INP)"
+          meta={`Target: ≤ 200ms (good), ≤ 500ms (needs improvement)`}
+          value={webVitals.INP ? `${Math.round(webVitals.INP)}ms` : 'Measuring...'}
+          onClick={() => alert('INP measures responsiveness. To improve: break up long tasks, avoid large DOM updates, and optimize JavaScript execution.')}
+          data-testid="inp-metric"
+        />
+      </ListCard>
+
       <ListSection title="Runtime Checks" />
       <ListCard>
         {checks.map((check, index) => (
@@ -616,7 +822,7 @@ export default function Diagnostics() {
               icon={<span className="list-icon text-lg">{getStatusIcon(check.status)}</span>}
               title={check.label}
               meta={check.details || 'No details available'}
-              value={check.value || check.status}
+              value={check.value?.toString() || check.status}
               onClick={() => {
                 if (check.fixTip && check.status !== 'success') {
                   alert(`🔧 How to fix: ${check.fixTip}`)
