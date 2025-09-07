@@ -79,10 +79,11 @@ function AppWithHeroAccess({ navigate }: { navigate: (route: string) => void }) 
                 
                 <button
                   onClick={() => setShowHeroButton(false)}
+                  aria-label="Close"
                   className="text-white/70 hover:text-white text-xs px-1 leading-none"
                   title="Hide demo button"
                 >
-                  ✕
+                  <span aria-hidden="true">✕</span>
                 </button>
               </div>
             </div>
