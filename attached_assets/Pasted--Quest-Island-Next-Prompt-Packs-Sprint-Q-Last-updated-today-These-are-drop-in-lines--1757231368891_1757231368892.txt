@@ -1,0 +1,253 @@
+# Quest Island — Next Prompt Packs (Sprint Q)
+
+*Last updated: today*
+
+> These are drop‑in lines and items for **Scout** (bubbles/sheet) and **Journal** (adaptive micro‑Q\&A). All lines follow Calm‑first tone, age buckets, and short (≤80 chars) bubble length where marked.
+
+---
+
+## 1) Scout Lines Pack v1.7
+
+**Tokens you can use:** `{learnerName}`, `{biomeName}`, `{lessonTitle}`, `{dueIn}`, `{streakDays}`
+
+### 1.1 Resume suggestions (info → bubble)
+
+* **7–9**
+
+  * "Want to hop back in? {lessonTitle} is ready."
+  * "Your path is still warm. Resume {lessonTitle}?"
+  * "{learnerName}, your map pin is waiting."
+  * "Let’s keep the trail going in {biomeName}."
+* **10–12**
+
+  * "Pick up where you left off: {lessonTitle}."
+  * "Back to it? Your {biomeName} path is open."
+  * "Ready to continue that step you started?"
+  * "Resume now, then we’ll check your streak."
+
+**No CTA** (tap pin). **A11y label hint:** "Resume {lessonTitle}"
+
+---
+
+### 1.2 Assignment due soon (actionable → bubble + CTA)
+
+* **7–9**
+
+  * "Due soon: {lessonTitle}. Want to start now?"
+  * "Timer’s gentle: {dueIn} left on this one."
+  * "Let’s get a head start on {lessonTitle}."
+* **10–12**
+
+  * "Heads‑up: {lessonTitle} is due {dueIn}."
+  * "Due soon. A quick start now helps later."
+  * "You can chip away at {lessonTitle} now."
+
+**CTA:** "Open assignment" → routes to pin. **Guardrails:** once per session window.
+
+---
+
+### 1.3 Assignment overdue (actionable → bubble + CTA; guardrail‑aware)
+
+* **7–9**
+
+  * "This one is late: {lessonTitle}. Want to try a bit now?"
+  * "We can catch up together."
+* **10–12**
+
+  * "Overdue: {lessonTitle}. A few minutes moves you forward."
+  * "Let’s clear this from your list today."
+
+**CTA:** "Start now" → pin; **Alt CTA:** "See all due"
+
+---
+
+### 1.4 Start lesson (info → bubble)
+
+* **7–9**
+
+  * "Nice choice. I’ll be nearby if you need me."
+  * "Tap the steps one by one."
+* **10–12**
+
+  * "Good pick. Try your idea first; I’ll nudge if needed."
+  * "You’ve got this. Pace it out."
+
+---
+
+### 1.5 Stuck hint (actionable → bubble + CTA to Journal)
+
+* **7–9**
+
+  * "Want a quick hint? We can try a tiny practice."
+  * "Let’s peek at one like it."
+* **10–12**
+
+  * "Try a 2‑minute checkup for this skill?"
+  * "A mini practice could unlock the next step."
+
+**CTA:** "Open Journal"
+
+---
+
+### 1.6 Finish lesson (info → bubble)
+
+* **7–9**
+
+  * "All done! Want to see what’s next?"
+  * "Nice work. The map just changed."
+* **10–12**
+
+  * "Finished. Take a breath, then pick your next step."
+  * "Saved. Your progress bar just moved."
+
+---
+
+### 1.7 Streak milestones (info → bubble)
+
+* **7–9**
+
+  * "{streakDays} days in a row! High‑five."
+  * "Trail kept: {streakDays} day streak."
+* **10–12**
+
+  * "{streakDays}‑day streak. Consistency pays off."
+  * "Streak saved. Small steps add up."
+
+---
+
+### 1.8 Journal nudge after bubble click‑through (info)
+
+* **7–9**
+
+  * "That tiny practice helped. Want one more?"
+  * "Good try. We’ll revisit this skill later."
+* **10–12**
+
+  * "Checkpoint done. Next time will feel easier."
+  * "Logged. I’ll surface a review when it helps."
+
+---
+
+### 1.9 Adult‑only (Require Ack → alertdialog on Guide)
+
+* **Privacy reset**
+
+  * "Privacy notice: This clears local data for this learner." (Ack button: "I understand")
+* **Cloud sync enable**
+
+  * "Cloud sync saves progress across devices. Review policy before enabling." (Ack: "Enable sync")
+
+> **Roles:** `role="status" aria-live="polite"` for bubbles; `alertdialog` + "Require Ack" only on Guide.
+
+---
+
+## 2) Journal Bank Additions (targets: `data.reading`, `problem.multi`)
+
+Format matches MVP quiz items:
+
+```json
+{
+  "id": "jr_xxx",
+  "kind": "quiz",
+  "prompt": "…",
+  "options": ["A","B","C","D"],
+  "answer": "B"
+}
+```
+
+Include tags in your data layer as needed (e.g., `skill`, `difficulty`).
+
+### 2.1 data.reading (charts & tables)
+
+**Set A — pictograph (easy)**
+
+1. {id: "jr\_dr\_a1", prompt: "Each 🐟 means 2 fish. How many fish? 🐟🐟🐟", options: \["4","5","6","8"], answer: "6"}
+2. {id: "jr\_dr\_a2", prompt: "Each 🍎 = 5 apples. 🍎🍎🍎 = ?", options: \["10","15","20","25"], answer: "15"}
+3. {id: "jr\_dr\_a3", prompt: "Two more 🐦 join 6 birds. Total?", options: \["6","7","8","9"], answer: "8"}
+
+**Set B — bar chart (medium)**
+4\. {id: "jr\_dr\_b1", prompt: "Bar chart shows 12, 8, 5 for A/B/C. Which is tallest?", options: \["A","B","C","Same"], answer: "A"}
+5\. {id: "jr\_dr\_b2", prompt: "A=12, B=8. How many more is A than B?", options: \["2","3","4","5"], answer: "4"}
+6\. {id: "jr\_dr\_b3", prompt: "C=5. A is how many times C?", options: \["2×","2.4×","2.5×","3×"], answer: "2.4×"}
+
+**Set C — line graph (medium)**
+7\. {id: "jr\_dr\_c1", prompt: "Line rises from 3→7. Change?", options: \["+3","+4","+5","+7"], answer: "+4"}
+8\. {id: "jr\_dr\_c2", prompt: "Peak at day 4. Which day had the lowest?", options: \["1","2","3","5"], answer: "1"}
+9\. {id: "jr\_dr\_c3", prompt: "Drops 9→6 then 6→6. Net change?", options: \["-1","-2","-3","0"], answer: "-3"}
+
+**Set D — table read (medium→hard)**
+10\. {id: "jr\_dr\_d1", prompt: "Table: Red=14, Blue=9, Green=9. Which are tied?", options: \["Red/Blue","Blue/Green","Red/Green","None"], answer: "Blue/Green"}
+11\. {id: "jr\_dr\_d2", prompt: "Avg of 10, 12, 8?", options: \["9","10","11","12"], answer: "10"}
+12\. {id: "jr\_dr\_d3", prompt: "If Blue +2, new total vs Red?", options: \["Still less","Equal","More","Not enough info"], answer: "Equal"}
+
+---
+
+### 2.2 problem.multi (multi‑step word problems)
+
+**Set A — time & distance (medium)**
+
+1. {id: "jr\_pm\_a1", prompt: "Walk 200 m, rest, then 300 m. Total?", options: \["300 m","400 m","500 m","600 m"], answer: "500 m"}
+2. {id: "jr\_pm\_a2", prompt: "Bus leaves 3:10, ride 25 min. Arrival?", options: \["3:25","3:30","3:35","3:45"], answer: "3:35"}
+3. {id: "jr\_pm\_a3", prompt: "Paddle 2 km out, 1 km back, then 2 km out. How far total?", options: \["3 km","4 km","5 km","6 km"], answer: "5 km"}
+
+**Set B — money & change (medium)**
+4\. {id: "jr\_pm\_b1", prompt: "Price 7. You have 10. Change?", options: \["1","2","3","4"], answer: "3"}
+5\. {id: "jr\_pm\_b2", prompt: "Two stickers 4 each + pen 3. Total?", options: \["10","11","12","13"], answer: "11"}
+6\. {id: "jr\_pm\_b3", prompt: "Sale 20% off 25. New price?", options: \["5","15","20","22"], answer: "20"}
+
+**Set C — area & perimeter (medium→hard)**
+7\. {id: "jr\_pm\_c1", prompt: "Rect 5×3. Perimeter?", options: \["8","15","16","20"], answer: "16"}
+8\. {id: "jr\_pm\_c2", prompt: "Rect 6×4. Area then +4 to one side (6×8). New area?", options: \["24","32","40","48"], answer: "48"}
+9\. {id: "jr\_pm\_c3", prompt: "Square side 7. Perimeter?", options: \["14","21","28","49"], answer: "28"}
+
+**Set D — ratios & recipes (hard)**
+10\. {id: "jr\_pm\_d1", prompt: "Mix 2:3 (juice\:water). 10 cups total. Juice?", options: \["3","4","5","6"], answer: "4"}
+11\. {id: "jr\_pm\_d2", prompt: "Recipe 3 eggs for 6 muffins. For 12 muffins?", options: \["4","5","6","9"], answer: "6"}
+12\. {id: "jr\_pm\_d3", prompt: "Class 12 bikes, 9 scooters. What fraction are bikes?", options: \["1/3","3/4","4/7","4/5"], answer: "4/7"}
+
+> **Difficulty tags** (suggested): A=easy, B=med, C=med‑hard, D=hard. Cooldowns applied by Journal policy.
+
+---
+
+## 3) Microcopy for UI & Feedback Widget
+
+* **Feedback launcher (student):** "Something feel off? Tell us."
+* **Feedback form intro (student):** "Share what felt slow, confusing, or broken."
+* **Bug hint (auto‑filled):** "We’ll include your device info to help fix it."
+* **Submit button:** "Send feedback"
+* **Guide‑only bug reporter:** "Include logs and service worker status"
+
+---
+
+## 4) Import notes
+
+* **Scout lines** → `data/scout_lines.json` (add `priority`, `ageBucket`, optional `cta` route key)
+* **Journal items** → `data/journal_bank.json` (include `skill`, `difficulty`)
+* Keep strings in plain text; icons (like 🐟) are optional and should have text equivalents in a11y labels.
+
+---
+
+### Appendix — Example JSON entries
+
+```json
+{
+  "id": "sc_resume_01",
+  "priority": "info",
+  "ageBucket": "7-9",
+  "text": "Want to hop back in? {lessonTitle} is ready.",
+  "a11yLabel": "Resume {lessonTitle}",
+  "cooldownSec": 180
+}
+```
+
+```json
+{
+  "id": "jr_dr_b2",
+  "skill": "data.reading",
+  "difficulty": "B",
+  "kind": "quiz",
+  "prompt": "A=12, B=8. How many more is A than B?",
+  "options": ["2","3","4","5"],
+  "answer": "4"
+}
+```
