@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useFlags, Flags } from '../../config/flags'
 import { SimpleLayout } from '../../ui2/SimpleLayout'
 import { ListCard, ListRow, ListSection } from '../../ui2/List'
 import { Ic } from '../../ui2/icons'
+import Diagnostics from './Diagnostics'
 
 function LegacyDevPanel() {
   return (
@@ -15,12 +16,29 @@ function LegacyDevPanel() {
 
 export default function DevPanel() {
   const f = useFlags()
+  const [showDiagnostics, setShowDiagnostics] = useState(false)
 
   const set = (p: Partial<typeof f>) => Flags.set(p)
 
+  if (showDiagnostics) {
+    return <Diagnostics />
+  }
+
   return (
     <SimpleLayout title="Dev" subtitle="Diagnostics & feature flags">
-      <ListSection title="Feature flags" />
+      <ListSection title="System Diagnostics" />
+      <ListCard>
+        <ListRow 
+          icon={<Ic.shield className="list-icon" />} 
+          title="System Diagnostics"
+          meta="Runtime checks and health monitoring"
+          value="View"
+          onClick={() => setShowDiagnostics(true)}
+          data-testid="open-diagnostics"
+        />
+      </ListCard>
+
+      <ListSection title="Feature Flags" />
       <ListCard>
         <ListRow icon={<Ic.star className="list-icon" />} title="Final Art"
                  meta="Swap to final assets" value={f.finalArt ? 'On' : 'Off'}
