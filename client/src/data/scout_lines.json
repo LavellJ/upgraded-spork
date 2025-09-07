@@ -118,5 +118,47 @@
         { "id": "achieve_6", "priority": "actionable", "text": "Milestone reached! Your dedication is paying off!", "cta": "Continue Learning" }
       ]
     }
-  }
+  },
+  "lines": [
+    {"id":"sc_resume_7_1","priority":"info","ageBucket":"7-9","text":"Want to hop back in? {lessonTitle} is ready.","a11yLabel":"Resume {lessonTitle}","cooldownSec":180},
+    {"id":"sc_resume_7_2","priority":"info","ageBucket":"7-9","text":"Your path is still warm. Resume {lessonTitle}?","a11yLabel":"Resume {lessonTitle}","cooldownSec":180},
+    {"id":"sc_resume_7_3","priority":"info","ageBucket":"7-9","text":"{learnerName}, your map pin is waiting.","a11yLabel":"Resume {lessonTitle}","cooldownSec":180},
+    {"id":"sc_resume_7_4","priority":"info","ageBucket":"7-9","text":"Let's keep the trail going in {biomeName}.","a11yLabel":"Resume {lessonTitle}","cooldownSec":180},
+    {"id":"sc_resume_10_1","priority":"info","ageBucket":"10-12","text":"Pick up where you left off: {lessonTitle}.","a11yLabel":"Resume {lessonTitle}","cooldownSec":180},
+    {"id":"sc_resume_10_2","priority":"info","ageBucket":"10-12","text":"Back to it? Your {biomeName} path is open.","a11yLabel":"Resume {lessonTitle}","cooldownSec":180},
+    {"id":"sc_resume_10_3","priority":"info","ageBucket":"10-12","text":"Ready to continue that step you started?","a11yLabel":"Resume {lessonTitle}","cooldownSec":180},
+    {"id":"sc_resume_10_4","priority":"info","ageBucket":"10-12","text":"Resume now, then we'll check your streak.","a11yLabel":"Resume {lessonTitle}","cooldownSec":180},
+    {"id":"sc_due_7_1","priority":"action","ageBucket":"7-9","text":"Due soon: {lessonTitle}. Want to start now?","a11yLabel":"Assignment due soon: {lessonTitle}","cta":"pin","cooldownSec":600},
+    {"id":"sc_due_7_2","priority":"action","ageBucket":"7-9","text":"Timer's gentle: {dueIn} left on this one.","a11yLabel":"Assignment due soon: {lessonTitle}","cta":"pin","cooldownSec":600},
+    {"id":"sc_due_7_3","priority":"action","ageBucket":"7-9","text":"Let's get a head start on {lessonTitle}.","a11yLabel":"Open assignment {lessonTitle}","cta":"pin","cooldownSec":600},
+    {"id":"sc_due_10_1","priority":"action","ageBucket":"10-12","text":"Heads‑up: {lessonTitle} is due {dueIn}.","a11yLabel":"Assignment due soon: {lessonTitle}","cta":"pin","cooldownSec":600},
+    {"id":"sc_due_10_2","priority":"action","ageBucket":"10-12","text":"Due soon. A quick start now helps later.","a11yLabel":"Open assignment {lessonTitle}","cta":"pin","cooldownSec":600},
+    {"id":"sc_due_10_3","priority":"action","ageBucket":"10-12","text":"You can chip away at {lessonTitle} now.","a11yLabel":"Open assignment {lessonTitle}","cta":"pin","cooldownSec":600},
+    {"id":"sc_overdue_7_1","priority":"action","ageBucket":"7-9","text":"This one is late: {lessonTitle}. Want to try a bit now?","a11yLabel":"Overdue assignment: {lessonTitle}","cta":"pin","cooldownSec":900},
+    {"id":"sc_overdue_7_2","priority":"action","ageBucket":"7-9","text":"We can catch up together.","a11yLabel":"Open overdue assignment","cta":"pin","cooldownSec":900},
+    {"id":"sc_overdue_10_1","priority":"action","ageBucket":"10-12","text":"Overdue: {lessonTitle}. A few minutes moves you forward.","a11yLabel":"Overdue assignment: {lessonTitle}","cta":"pin","cooldownSec":900},
+    {"id":"sc_overdue_10_2","priority":"action","ageBucket":"10-12","text":"Let's clear this from your list today.","a11yLabel":"Open overdue items","cta":"pin","cooldownSec":900},
+    {"id":"sc_start_7_1","priority":"info","ageBucket":"7-9","text":"Nice choice. I'll be nearby if you need me.","a11yLabel":"Lesson started"},
+    {"id":"sc_start_7_2","priority":"info","ageBucket":"7-9","text":"Tap the steps one by one.","a11yLabel":"Follow the steps"},
+    {"id":"sc_start_10_1","priority":"info","ageBucket":"10-12","text":"Good pick. Try your idea first; I'll nudge if needed.","a11yLabel":"Lesson started"},
+    {"id":"sc_start_10_2","priority":"info","ageBucket":"10-12","text":"You've got this. Pace it out.","a11yLabel":"Lesson started"},
+    {"id":"sc_hint_7_1","priority":"action","ageBucket":"7-9","text":"Want a quick hint? We can try a tiny practice.","a11yLabel":"Open a hint in Journal","cta":"journal","cooldownSec":180},
+    {"id":"sc_hint_7_2","priority":"action","ageBucket":"7-9","text":"Let's peek at one like it.","a11yLabel":"Open a similar practice in Journal","cta":"journal","cooldownSec":180},
+    {"id":"sc_hint_10_1","priority":"action","ageBucket":"10-12","text":"Try a 2‑minute checkup for this skill?","a11yLabel":"Open Journal checkup","cta":"journal","cooldownSec":180},
+    {"id":"sc_hint_10_2","priority":"action","ageBucket":"10-12","text":"A mini practice could unlock the next step.","a11yLabel":"Open Journal mini practice","cta":"journal","cooldownSec":180},
+    {"id":"sc_finish_7_1","priority":"info","ageBucket":"7-9","text":"All done! Want to see what's next?","a11yLabel":"Lesson finished"},
+    {"id":"sc_finish_7_2","priority":"info","ageBucket":"7-9","text":"Nice work. The map just changed.","a11yLabel":"Lesson finished"},
+    {"id":"sc_finish_10_1","priority":"info","ageBucket":"10-12","text":"Finished. Take a breath, then pick your next step.","a11yLabel":"Lesson finished"},
+    {"id":"sc_finish_10_2","priority":"info","ageBucket":"10-12","text":"Saved. Your progress bar just moved.","a11yLabel":"Lesson finished"},
+    {"id":"sc_streak_7_1","priority":"info","ageBucket":"7-9","text":"{streakDays} days in a row! High‑five.","a11yLabel":"Streak {streakDays} days","cooldownSec":300},
+    {"id":"sc_streak_7_2","priority":"info","ageBucket":"7-9","text":"Trail kept: {streakDays} day streak.","a11yLabel":"Streak {streakDays} days","cooldownSec":300},
+    {"id":"sc_streak_10_1","priority":"info","ageBucket":"10-12","text":"{streakDays}‑day streak. Consistency pays off.","a11yLabel":"Streak {streakDays} days","cooldownSec":300},
+    {"id":"sc_streak_10_2","priority":"info","ageBucket":"10-12","text":"Streak saved. Small steps add up.","a11yLabel":"Streak {streakDays} days","cooldownSec":300},
+    {"id":"sc_journal_nudge_7_1","priority":"info","ageBucket":"7-9","text":"That tiny practice helped. Want one more?","a11yLabel":"Practice complete"},
+    {"id":"sc_journal_nudge_7_2","priority":"info","ageBucket":"7-9","text":"Good try. We'll revisit this skill later.","a11yLabel":"Practice logged"},
+    {"id":"sc_journal_nudge_10_1","priority":"info","ageBucket":"10-12","text":"Checkpoint done. Next time will feel easier.","a11yLabel":"Practice complete"},
+    {"id":"sc_journal_nudge_10_2","priority":"info","ageBucket":"10-12","text":"Logged. I'll surface a review when it helps.","a11yLabel":"Practice logged"},
+    {"id":"sc_privacy_reset","priority":"action","ageBucket":"guide","text":"Privacy notice: This clears local data for this learner.","a11yLabel":"Privacy reset requires acknowledgement","cta":"ack","requireAck":true},
+    {"id":"sc_cloud_sync_enable","priority":"action","ageBucket":"guide","text":"Cloud sync saves progress across devices. Review policy before enabling.","a11yLabel":"Enable cloud sync requires acknowledgement","cta":"enableSync","requireAck":true}
+  ]
 }
