@@ -787,7 +787,7 @@ export default function Diagnostics() {
       <ListSection title="Performance" />
       <ListCard>
         <ListRow 
-          icon={<span className="list-icon text-lg">{getVitalStatus('LCP', webVitals.LCP).status}</span>}
+          icon={<span className="list-icon text-lg text-fg-muted">{getVitalStatus('LCP', webVitals.LCP).status}</span>}
           title="Largest Contentful Paint (LCP)"
           meta={`Target: ≤ 2.5s (good), ≤ 4.0s (needs improvement)`}
           value={webVitals.LCP ? `${Math.round(webVitals.LCP)}ms` : 'Measuring...'}
@@ -796,7 +796,7 @@ export default function Diagnostics() {
         />
         <div className="divider" />
         <ListRow 
-          icon={<span className="list-icon text-lg">{getVitalStatus('CLS', webVitals.CLS).status}</span>}
+          icon={<span className="list-icon text-lg text-fg-muted">{getVitalStatus('CLS', webVitals.CLS).status}</span>}
           title="Cumulative Layout Shift (CLS)"
           meta={`Target: ≤ 0.1 (good), ≤ 0.25 (needs improvement)`}
           value={webVitals.CLS ? webVitals.CLS.toFixed(3) : 'Measuring...'}
@@ -805,7 +805,7 @@ export default function Diagnostics() {
         />
         <div className="divider" />
         <ListRow 
-          icon={<span className="list-icon text-lg">{getVitalStatus('INP', webVitals.INP).status}</span>}
+          icon={<span className="list-icon text-lg text-fg-muted">{getVitalStatus('INP', webVitals.INP).status}</span>}
           title="Interaction to Next Paint (INP)"
           meta={`Target: ≤ 200ms (good), ≤ 500ms (needs improvement)`}
           value={webVitals.INP ? `${Math.round(webVitals.INP)}ms` : 'Measuring...'}

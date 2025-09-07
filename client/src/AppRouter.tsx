@@ -61,7 +61,7 @@ function AppWithHeroAccess({ navigate }: { navigate: (route: string) => void }) 
       {/* Hero Lesson Access Button - moved to bottom-right to avoid blocking teacher panel */}
       {showHeroButton && (
         <div className="fixed bottom-4 right-4 z-40">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-2 shadow-xl border border-white/20 max-w-xs">
+          <div className="bg-blue-700 rounded-lg p-2 shadow-xl border border-white/20 max-w-xs">
             <div className="flex items-center gap-2">
               <div className="flex-1 min-w-0">
                 <div className="text-white font-medium text-xs truncate">🎯 Hero Demo</div>
