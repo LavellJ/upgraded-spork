@@ -30,11 +30,9 @@
   --fg-subtle: 107, 114, 128;   /* slate-500 */
   --fg-inverse: 255, 255, 255;
 
-  --brand-500: 14, 165, 233;
-  --brand-600: 22, 163, 74;     /* emerald-600 (still available if needed) */
-  --brand-700: 21, 128, 61;     /* emerald-700 – use for buttons */
-  --brand-800: 22, 101, 52;     /* emerald-800 – use for hover/focus */
   --brand: 34, 197, 94;         /* emerald-500 */
+  --brand-600: 22, 163, 74;
+  --brand-700: 21, 128, 61;
 
   --border: 226, 232, 240;      /* slate-200 */
 
