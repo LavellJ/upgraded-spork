@@ -100,6 +100,7 @@
     "vite-bundle-analyzer": "^1.2.3",
     "vite-plugin-pwa": "^1.0.3",
     "vitest": "^3.2.4",
+    "web-vitals": "^5.1.0",
     "wouter": "^3.3.5",
     "ws": "^8.18.0",
     "zod": "^3.25.76",
