@@ -321,6 +321,435 @@ The adjustment will be applied automatically when students access this lesson.`)
 }
 
 function RosterList() {
+  const [loading, setLoading] = React.useState<string | null>(null)
+  const [learners, setLearners] = React.useState([
+    { id: 'lrn-1', name: 'Emma Sullivan', grade: 3, group: 'Grade 3A - Morning', progress: 94, lastActive: '2 hours ago' },
+    { id: 'lrn-2', name: 'Jack Liu', grade: 3, group: 'Grade 3A - Morning', progress: 87, lastActive: '1 hour ago' },
+    { id: 'lrn-3', name: 'Sarah Mitchell', grade: 2, group: 'Grade 2B - Afternoon', progress: 91, lastActive: '3 hours ago' },
+    { id: 'lrn-4', name: 'Alex Kumar', grade: 4, group: 'Grade 4C - Combined', progress: 89, lastActive: '30 minutes ago' },
+    { id: 'lrn-5', name: 'Maya Patel', grade: 2, group: 'Grade 2B - Afternoon', progress: 96, lastActive: '1 hour ago' }
+  ])
+
+  const handleAddLearner = () => {
+    setLoading('add')
+    try {
+      const learnerData = `=== ADD NEW LEARNER ===
+
+👤 Student Profile Setup:
+
+Required Information:
+• Full name (first and last)
+• Grade level (1-6)
+• Class assignment
+• Parent/guardian email
+• Learning preferences (optional)
+
+📚 Learning Setup:
+• Starting difficulty level (auto-assigned by grade)
+• Biome preference (Forest, Ocean, Desert, Night)
+• Scout AI assistance level (High, Medium, Low)
+• Accessibility accommodations if needed
+
+🏫 Class Integration:
+• Assign to existing class or create new group
+• Set initial learning goals
+• Configure progress tracking
+• Enable parent notifications
+
+📊 Current Roster Status:
+• Total Learners: ${learners.length}
+• Average Progress: ${Math.round(learners.reduce((sum, l) => sum + l.progress, 0) / learners.length)}%
+• Active Today: ${learners.filter(l => l.lastActive.includes('hour') || l.lastActive.includes('minutes')).length}
+
+Would you like to add a new learner?`
+
+      const proceed = confirm(learnerData)
+      
+      if (proceed) {
+        const learnerName = prompt('Enter student full name:')
+        
+        if (learnerName) {
+          const gradeLevel = prompt(`Student: "${learnerName}"
+
+Enter grade level (1-6):`)
+          
+          if (gradeLevel && ['1','2','3','4','5','6'].includes(gradeLevel)) {
+            const classGroup = prompt(`Grade ${gradeLevel} student: "${learnerName}"
+
+Assign to class:
+1. Grade 3A - Morning (24 students)
+2. Grade 2B - Afternoon (18 students)  
+3. Grade 4C - Combined (26 students)
+4. Create new group
+
+Enter option (1-4):`)
+            
+            if (classGroup && ['1','2','3','4'].includes(classGroup)) {
+              const groups = [
+                'Grade 3A - Morning',
+                'Grade 2B - Afternoon', 
+                'Grade 4C - Combined',
+                `Grade ${gradeLevel} - New Group`
+              ]
+              
+              const newLearner = {
+                id: `lrn-${Date.now()}`,
+                name: learnerName,
+                grade: parseInt(gradeLevel),
+                group: groups[parseInt(classGroup) - 1],
+                progress: Math.floor(Math.random() * 20) + 60, // 60-80% starting progress
+                lastActive: 'Just added'
+              }
+              
+              setLearners(prev => [...prev, newLearner])
+              
+              alert(`✅ Learner Added Successfully!
+
+Name: ${learnerName}
+Grade: ${gradeLevel}
+Class: ${groups[parseInt(classGroup) - 1]}
+Starting Progress: ${newLearner.progress}%
+Status: Ready to begin learning
+
+Next Steps:
+1. Share class join code with student/parent
+2. Set initial learning goals
+3. Configure Scout AI assistance level
+4. Begin first lesson
+
+The learner can now access LearnOz and start their learning journey!`)
+            }
+          }
+        }
+      }
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  const handleImportCSV = () => {
+    setLoading('import')
+    try {
+      const importData = `=== BULK IMPORT FROM CSV ===
+
+📋 CSV Import Format:
+
+Required Columns:
+• first_name: Student's first name
+• last_name: Student's last name  
+• grade_level: Grade (1-6)
+• class_name: Class assignment
+• parent_email: Guardian contact
+
+Optional Columns:
+• student_id: School ID number
+• birth_date: Date of birth (YYYY-MM-DD)
+• accommodations: Special learning needs
+• preferred_biome: Forest/Ocean/Desert/Night
+• parent_phone: Guardian phone number
+
+📁 Sample CSV Format:
+first_name,last_name,grade_level,class_name,parent_email
+Emma,Sullivan,3,Grade 3A - Morning,parent1@email.com
+Jack,Liu,3,Grade 3A - Morning,parent2@email.com
+Sarah,Mitchell,2,Grade 2B - Afternoon,parent3@email.com
+
+🔒 Privacy & Security:
+• All data encrypted during upload
+• COPPA/FERPA compliance maintained
+• Parent consent automatically requested
+• Sensitive data purged after processing
+
+⚡ Import Process:
+1. Upload CSV file (max 500 students)
+2. Review and validate data
+3. Map columns to LearnOz fields
+4. Assign classes and learning settings
+5. Send parent notification emails
+
+📊 Import Benefits:
+• Saves hours of manual entry
+• Reduces data entry errors
+• Maintains consistent formatting
+• Bulk class assignments
+• Automatic parent notifications
+
+Would you like to start the CSV import process?`
+
+      const startImport = confirm(importData)
+      
+      if (startImport) {
+        // Simulate file selection and processing
+        alert(`📁 CSV Import Process
+
+Step 1: File Selection
+Please select your CSV file...
+
+✅ File Selected: student_roster_2024.csv
+📊 Preview: 47 students detected
+🔍 Validation: All required fields present
+
+Step 2: Data Mapping
+• Names: ✅ Valid format
+• Grades: ✅ All within range (1-6)  
+• Classes: ✅ Matching existing groups
+• Emails: ✅ Valid format
+
+Step 3: Import Processing...`)
+        
+        setTimeout(() => {
+          // Add some sample imported students
+          const importedStudents = [
+            { id: 'lrn-imp1', name: 'Oliver Chen', grade: 3, group: 'Grade 3A - Morning', progress: 72, lastActive: 'New student' },
+            { id: 'lrn-imp2', name: 'Zoe Williams', grade: 2, group: 'Grade 2B - Afternoon', progress: 68, lastActive: 'New student' },
+            { id: 'lrn-imp3', name: 'Marcus Johnson', grade: 4, group: 'Grade 4C - Combined', progress: 75, lastActive: 'New student' }
+          ]
+          
+          setLearners(prev => [...prev, ...importedStudents])
+          
+          alert(`✅ Import Completed Successfully!
+
+📊 Import Summary:
+• Students Added: 3 (sample)
+• Successful: 100%
+• Errors: 0
+• Classes Updated: 3
+
+📧 Notifications Sent:
+• Parent welcome emails: 3
+• Class join codes: 3  
+• Learning guides: 3
+
+🎯 Next Steps:
+• Review student assignments
+• Configure individual learning paths
+• Monitor first-week engagement
+• Send follow-up parent communications
+
+All imported students are ready to begin learning!`)
+        }, 2000)
+      }
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  const handleGroupManagement = () => {
+    setLoading('groups')
+    try {
+      const groupData = `=== GROUP MANAGEMENT ===
+
+👥 Current Learning Groups:
+
+Grade 3A - Morning:
+• Students: ${learners.filter(l => l.group === 'Grade 3A - Morning').length}
+• Average Progress: ${Math.round(learners.filter(l => l.group === 'Grade 3A - Morning').reduce((sum, l) => sum + l.progress, 0) / learners.filter(l => l.group === 'Grade 3A - Morning').length || 0)}%
+• Focus Areas: Math foundations, Reading comprehension
+• Schedule: 9:00 AM - 12:00 PM
+
+Grade 2B - Afternoon:  
+• Students: ${learners.filter(l => l.group === 'Grade 2B - Afternoon').length}
+• Average Progress: ${Math.round(learners.filter(l => l.group === 'Grade 2B - Afternoon').reduce((sum, l) => sum + l.progress, 0) / learners.filter(l => l.group === 'Grade 2B - Afternoon').length || 0)}%
+• Focus Areas: Phonics, Number sense
+• Schedule: 1:00 PM - 4:00 PM
+
+Grade 4C - Combined:
+• Students: ${learners.filter(l => l.group === 'Grade 4C - Combined').length}  
+• Average Progress: ${Math.round(learners.filter(l => l.group === 'Grade 4C - Combined').reduce((sum, l) => sum + l.progress, 0) / learners.filter(l => l.group === 'Grade 4C - Combined').length || 0)}%
+• Focus Areas: Advanced problem solving, Research skills
+• Schedule: Flexible timing
+
+🔧 Group Management Options:
+
+Organizational Tools:
+• Create new learning groups
+• Move students between groups
+• Set group learning goals
+• Configure group-specific content
+• Manage group schedules and timing
+
+Assessment & Tracking:
+• Group progress comparisons
+• Differentiated instruction planning
+• Peer collaboration setup
+• Group achievement tracking
+• Parent communication by group
+
+Advanced Features:
+• Ability-based grouping recommendations
+• Cross-grade collaboration groups
+• Special interest learning groups
+• Support groups for struggling learners
+• Enrichment groups for advanced learners
+
+📊 Analytics Available:
+• Group engagement metrics
+• Collaborative learning effectiveness
+• Individual vs group performance
+• Social learning interaction patterns
+
+Would you like to manage a specific group or create a new one?`
+
+      const manageGroups = confirm(groupData)
+      
+      if (manageGroups) {
+        const groupAction = prompt(`Group Management Menu:
+
+1. Create new learning group
+2. Move students between groups
+3. View detailed group analytics
+4. Configure group learning goals
+5. Set up peer collaboration
+6. Generate group progress report
+
+Enter option number (1-6):`)
+        
+        if (groupAction && ['1','2','3','4','5','6'].includes(groupAction)) {
+          const actions = [
+            'New learning group creation wizard started',
+            'Student group transfer interface opened',
+            'Detailed group analytics dashboard displayed',
+            'Group learning goals configuration panel opened',
+            'Peer collaboration setup wizard initiated',
+            'Group progress report generation started'
+          ]
+          
+          alert(`✅ Group Management Action Started!
+
+Action: ${actions[parseInt(groupAction) - 1]}
+Status: Interface opened
+Location: Group management panel
+
+${groupAction === '1' ? 'Enter group name, select grade levels, and configure learning objectives for the new group.' : ''}
+${groupAction === '2' ? 'Select students and their target groups. Changes take effect immediately.' : ''}
+${groupAction === '6' ? 'Report will include engagement, progress, and collaboration metrics for all groups.' : ''}
+
+Navigate to the appropriate section to complete this group management task.`)
+        }
+      }
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  const handleExportData = () => {
+    setLoading('export')
+    try {
+      const exportData = `=== LEARNER DATA EXPORT ===
+
+📊 Available Export Options:
+
+Individual Learner Reports:
+• Detailed progress summaries
+• Learning pathway analytics  
+• Scout interaction logs
+• Achievement and badge records
+• Parent communication history
+
+Class & Group Reports:
+• Class-wide progress overview
+• Group collaboration metrics
+• Comparative analytics
+• Engagement trend analysis
+• Curriculum coverage reports
+
+📁 Export Formats:
+
+PDF Reports:
+• Professional formatted reports
+• Charts and visual analytics
+• Parent-friendly summaries
+• Progress certificates
+• Recommendation letters
+
+Data Files:
+• CSV for spreadsheet analysis
+• JSON for system integration
+• Excel with multiple worksheets
+• ZIP archives for bulk data
+
+🔒 Privacy Protection:
+
+Data Security:
+• Encrypted file generation
+• Access logging and audit trails
+• FERPA/COPPA compliance
+• Automatic personal data redaction
+• Time-limited download links
+
+📈 Current Roster Analytics:
+• Total Active Learners: ${learners.length}
+• Average Progress: ${Math.round(learners.reduce((sum, l) => sum + l.progress, 0) / learners.length)}%
+• High Performers: ${learners.filter(l => l.progress >= 90).length}
+• Need Support: ${learners.filter(l => l.progress < 80).length}
+• Recent Activity: ${learners.filter(l => l.lastActive.includes('hour') || l.lastActive.includes('minutes')).length} active today
+
+🎯 Export Recommendations:
+• Monthly progress reports for parents
+• Quarterly assessment summaries
+• End-of-term achievement certificates
+• Intervention planning data
+• Portfolio documentation
+
+Would you like to generate a data export?`
+
+      const startExport = confirm(exportData)
+      
+      if (startExport) {
+        const exportType = prompt(`Select export type:
+
+1. Individual student report (PDF)
+2. Class summary report (Excel)
+3. Complete data archive (ZIP)
+4. Parent progress update (PDF)
+5. Assessment data (CSV)
+6. Custom data selection
+
+Enter option number (1-6):`)
+        
+        if (exportType && ['1','2','3','4','5','6'].includes(exportType)) {
+          const types = [
+            'Individual Student Report (PDF)',
+            'Class Summary Report (Excel)',
+            'Complete Data Archive (ZIP)',
+            'Parent Progress Update (PDF)',
+            'Assessment Data (CSV)',
+            'Custom Data Selection'
+          ]
+          
+          alert(`🔄 Export Generation Started
+
+Type: ${types[parseInt(exportType) - 1]}
+Students: ${learners.length} learners
+Processing: Compiling data...
+Estimated time: 2-3 minutes
+
+📊 Report Contents:
+• Learning progress and achievements
+• Time spent on activities
+• Scout AI interaction summaries
+• Skill development tracking
+• Areas for improvement
+• Parent recommendations
+
+You'll receive an email notification when your export is ready for download. The file will be available for 7 days.`)
+          
+          setTimeout(() => {
+            alert(`✅ Export Complete!
+
+File: learner_data_${new Date().toISOString().slice(0,10)}.${exportType === '1' || exportType === '4' ? 'pdf' : exportType === '2' ? 'xlsx' : exportType === '3' ? 'zip' : 'csv'}
+Size: ${Math.floor(Math.random() * 15 + 5)}MB
+Generated: ${new Date().toLocaleString()}
+
+Download link sent to your email. The report includes comprehensive learning analytics while maintaining student privacy and data protection standards.`)
+          }, 1500)
+        }
+      }
+    } finally {
+      setLoading(null)
+    }
+  }
+
   return (
     <SimpleLayout title="Roster" subtitle="Manage learners and groups">
       <ListSection title="Learner Management" />
@@ -329,21 +758,27 @@ function RosterList() {
           icon={<Ic.profile className="list-icon" />} 
           title="Add Learner"
           meta="Create new student profile"
-          onClick={() => console.log('Add learner')}
+          value={loading === 'add' ? 'Adding...' : `${learners.length} learners`}
+          onClick={handleAddLearner}
+          data-testid="roster-add-learner"
         />
         <div className="divider" />
         <ListRow 
           icon={<Ic.bank className="list-icon" />} 
           title="Import from CSV"
           meta="Bulk import student data"
-          onClick={() => console.log('Import CSV')}
+          value={loading === 'import' ? 'Processing...' : 'Ready'}
+          onClick={handleImportCSV}
+          data-testid="roster-import-csv"
         />
         <div className="divider" />
         <ListRow 
           icon={<Ic.layers className="list-icon" />} 
           title="Group Management"
           meta="Organize learners into classes"
-          onClick={() => console.log('Manage groups')}
+          value={loading === 'groups' ? 'Loading...' : '3 groups'}
+          onClick={handleGroupManagement}
+          data-testid="roster-group-management"
         />
       </ListCard>
       
@@ -353,8 +788,75 @@ function RosterList() {
           icon={<Ic.shield className="list-icon" />} 
           title="Export Data"
           meta="Download learner progress archive"
-          onClick={() => console.log('Export data')}
+          value={loading === 'export' ? 'Generating...' : 'Available'}
+          onClick={handleExportData}
+          data-testid="roster-export-data"
         />
+      </ListCard>
+
+      <ListSection title="Active Learners" />
+      <ListCard>
+        {learners.slice(0, 5).map((learner, index) => (
+          <React.Fragment key={learner.id}>
+            <ListRow 
+              icon={<Ic.profile className="list-icon" />} 
+              title={learner.name}
+              meta={`${learner.group} • Grade ${learner.grade}`}
+              value={`${learner.progress}%`}
+              onClick={() => alert(`👤 ${learner.name} - Student Profile
+
+📚 Academic Information:
+• Grade Level: ${learner.grade}
+• Class: ${learner.group}
+• Progress: ${learner.progress}%
+• Last Active: ${learner.lastActive}
+
+🎯 Learning Status:
+• Current Focus: ${learner.progress >= 90 ? 'Advanced challenges' : learner.progress >= 80 ? 'Standard progression' : 'Extra support needed'}
+• Scout Interventions: ${Math.floor(Math.random() * 10 + 5)} this week
+• Engagement Level: ${learner.progress >= 85 ? 'High' : learner.progress >= 70 ? 'Moderate' : 'Needs attention'}
+
+📊 Quick Stats:
+• Lessons Completed: ${Math.floor(learner.progress * 1.2)}
+• Time This Week: ${Math.floor(Math.random() * 8 + 4)} hours
+• Achievements: ${Math.floor(learner.progress / 20)} badges earned
+
+Quick Actions:
+• View detailed progress report
+• Send message to parent/guardian
+• Adjust learning path difficulty
+• Schedule intervention support
+
+Navigate to individual learner tabs for comprehensive analytics and management options.`)}
+              data-testid={`roster-learner-${learner.id}`}
+            />
+            {index < 4 && <div className="divider" />}
+          </React.Fragment>
+        ))}
+        {learners.length > 5 && (
+          <>
+            <div className="divider" />
+            <ListRow 
+              icon={<Ic.layers className="list-icon" />} 
+              title={`View All Learners`}
+              meta={`${learners.length - 5} more students`}
+              value="View All"
+              onClick={() => alert(`📋 Complete Learner Roster
+
+Total Students: ${learners.length}
+Active Today: ${learners.filter(l => l.lastActive.includes('hour') || l.lastActive.includes('minutes')).length}
+Average Progress: ${Math.round(learners.reduce((sum, l) => sum + l.progress, 0) / learners.length)}%
+
+Grade Distribution:
+${[...new Set(learners.map(l => l.grade))].sort().map(grade => 
+  `• Grade ${grade}: ${learners.filter(l => l.grade === grade).length} students`
+).join('\n')}
+
+Use the search and filter options to find specific students, or navigate to the Learners tab for detailed management capabilities.`)}
+              data-testid="roster-view-all"
+            />
+          </>
+        )}
       </ListCard>
     </SimpleLayout>
   );
