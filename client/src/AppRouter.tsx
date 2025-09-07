@@ -58,27 +58,29 @@ function AppWithHeroAccess({ navigate }: { navigate: (route: string) => void }) 
 
   return (
     <div className="relative">
-      {/* Hero Lesson Access Button */}
+      {/* Hero Lesson Access Button - moved to bottom-right to avoid blocking teacher panel */}
       {showHeroButton && (
-        <div className="fixed top-4 right-4 z-50">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-3 shadow-2xl border-2 border-white/20">
-            <div className="flex items-center gap-3">
-              <div>
-                <div className="text-white font-bold text-sm">🎯 Hero Lesson Demo</div>
-                <div className="text-blue-100 text-xs">Production-ready lesson system</div>
+        <div className="fixed bottom-4 right-4 z-40">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-2 shadow-xl border border-white/20 max-w-xs">
+            <div className="flex items-center gap-2">
+              <div className="flex-1 min-w-0">
+                <div className="text-white font-medium text-xs truncate">🎯 Hero Demo</div>
+                <div className="text-blue-100 text-[10px] truncate">Try lesson system</div>
               </div>
               
-              <div className="flex gap-2">
+              <div className="flex gap-1 flex-shrink-0">
                 <button
                   onClick={() => navigate('hero-demo')}
-                  className="bg-white text-blue-600 px-3 py-1 rounded text-xs font-medium hover:bg-blue-50 transition-colors"
+                  className="bg-white text-blue-600 px-2 py-1 rounded text-[10px] font-medium hover:bg-blue-50 transition-colors"
+                  title="Try Hero Lesson Demo"
                 >
-                  Try It
+                  Try
                 </button>
                 
                 <button
                   onClick={() => setShowHeroButton(false)}
-                  className="text-white/70 hover:text-white text-xs px-2"
+                  className="text-white/70 hover:text-white text-xs px-1 leading-none"
+                  title="Hide demo button"
                 >
                   ✕
                 </button>
