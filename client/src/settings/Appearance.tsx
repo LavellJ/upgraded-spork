@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { applyUiPrefs, loadUiPrefs, saveUiPrefs, type UiPrefs } from '../ui/theme'
 import { useFlags } from '../config/flags'
 import { useTheme } from '../theme/useTheme'
+import { useProfile } from '../profile/context'
 import { SimpleLayout } from '../ui2/SimpleLayout'
 import { ListCard, ListRow, ListSection } from '../ui2/List'
 import { Ic } from '../ui2/icons'
@@ -72,19 +73,41 @@ function LegacyAppearance() {
 export default function Appearance(){
   const { teacherPanelV2, teacherAppearanceV3 } = useFlags()
   const { theme, setTheme, themes } = useTheme()
+  const { profile, toggleCalmMode } = useProfile()
   const [prefs, setPrefs] = useState<UiPrefs>(loadUiPrefs())
   
   // Legacy fallback
   if (!teacherPanelV2 || !teacherAppearanceV3) return <LegacyAppearance/>
   
-  const currentTheme = themes.find(t => t.id === theme) || themes[0]
+  const currentTheme = themes.find(t => t.value === theme) || themes[0]
   const densityLabel = prefs.density === 'compact' ? 'Compact' : 'Cozy'
-  const calmOn = false // TODO: wire up actual calm mode state
+  const calmOn = profile?.calmMode || false
   const hcOn = prefs.contrast === 'high'
   
   const openTheme = () => {
-    // TODO: Open theme selector modal or drawer
-    console.log('Open theme selector')
+    // Show theme selection dialog
+    const themeOptions = `=== THEME SELECTION ===
+
+🎨 Available Themes:
+
+${themes.map((t, i) => `${i + 1}. ${t.label}${t.value === theme ? ' (current)' : ''}`).join('\n')}
+
+Choose a theme (1-${themes.length}):`
+
+    const choice = prompt(themeOptions)
+    const index = parseInt(choice || '') - 1
+    
+    if (choice && index >= 0 && index < themes.length) {
+      const selectedTheme = themes[index]
+      setTheme(selectedTheme.value as any)
+      
+      alert(`✅ Theme Updated!
+
+New Theme: ${selectedTheme.label}
+Applied: Immediately
+
+Your interface theme has been changed and will persist across sessions.`)
+    }
   }
   
   const toggleDensity = () => {
@@ -92,8 +115,27 @@ export default function Appearance(){
   }
   
   const toggleCalm = () => {
-    // TODO: wire up calm mode toggle
-    console.log('Toggle calm mode')
+    // Use the actual calm mode toggle from profile context
+    toggleCalmMode()
+    
+    const newState = !calmOn
+    
+    // Show feedback about what calm mode does
+    alert(`${newState ? '🧘' : '🎬'} Calm Mode ${newState ? 'Enabled' : 'Disabled'}
+
+${newState 
+  ? `Calm mode reduces motion and visual effects:
+• Slower animations and transitions
+• Reduced particle effects
+• Gentler UI feedback
+• More accessible for sensitive users`
+  : `Standard mode enables full visual experience:
+• Normal animation speed
+• Full particle effects
+• Dynamic UI feedback
+• Rich visual interactions`}
+
+This setting applies immediately and is saved to your profile.`)
   }
   
   const toggleHC = () => {
