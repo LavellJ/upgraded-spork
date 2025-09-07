@@ -1,0 +1,9 @@
+[
+  {"id":"jr_dr_a1","skill":"data.reading","difficulty":"A","kind":"quiz","prompt":"Each 🐟 means 2 fish. How many fish? 🐟🐟🐟","options":["4","5","6","8"],"answer":"6"},
+  {"id":"jr_dr_a2","skill":"data.reading","difficulty":"A","kind":"quiz","prompt":"Each 🍎 = 5 apples. 🍎🍎🍎 = ?","options":["10","15","20","25"],"answer":"15"},
+  {"id":"jr_dr_a3","skill":"data.reading","difficulty":"A","kind":"quiz","prompt":"Two more 🐦 join 6 birds. Total?","options":["6","7","8","9"],"answer":"8"},
+  {"id":"jr_dr_b1","skill":"data.reading","difficulty":"B","kind":"quiz","prompt":"Bar chart shows 12, 8, 5 for A/B/C. Which is tallest?","options":["A","B","C","Same"],"answer":"A"},
+  {"id":"jr_dr_b2","skill":"data.reading","difficulty":"B","kind":"quiz","prompt":"A=12, B=8. How many more is A than B?","options":["2","3","4","5"],"answer":"4"},
+  {"id":"jr_dr_b3","skill":"data.reading","difficulty":"B","kind":"quiz","prompt":"C=5. A is how many times C?","options":["2×","2.4×","2.5×","3×"],"answer":"2.4×"},
+  {"id":"jr_dr_c1","skill":"data.reading","difficulty":"C","kind":"quiz","prompt":"Line rises from 3→7. Change?","options":["+3","+4","+5","+7"],"answer":"+4"}
+]
