@@ -6,6 +6,7 @@ import { useFlags } from '../../config/flags'
 import { useTheme, type Theme } from '../../theme/useTheme'
 import { validateThemeContrast } from '../../theme/contrast'
 import { Ic } from '../../ui2/icons'
+import IconButton from '../../ui2/IconButton'
 
 const TAB_CONFIG = {
   overview: { icon: <Ic.star className="list-icon" />, label: 'Overview' },
@@ -67,14 +68,13 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
             <h2 className={`text-lg font-semibold ${
               teacherThemeV2 ? 'text-[rgb(var(--fg-base))]' : ''
             }`}>Teacher Panel</h2>
-            <button 
+            <IconButton 
               onClick={onClose}
-              className={`p-1.5 rounded-lg focus-ring ${
-                teacherThemeV2 ? 'hover:bg-[rgb(var(--bg-elev))]/60' : 'hover:bg-gray-100'
-              }`}
+              aria-label="Close teacher panel"
+              className={teacherThemeV2 ? '' : 'hover:bg-gray-100'}
             >
               <X className="w-4 h-4" />
-            </button>
+            </IconButton>
           </div>
           
           <nav className="flex-1 p-2 overflow-y-auto">
