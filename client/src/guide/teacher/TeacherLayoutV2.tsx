@@ -77,7 +77,7 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
             </IconButton>
           </div>
           
-          <nav className="flex-1 p-2 overflow-y-auto">
+          <nav className="flex-1 p-2 overflow-y-auto" tabIndex={0} aria-label="Teacher navigation">
             <div className="space-y-1">
               {Object.entries(TAB_CONFIG).map(([tabKey, config]) => (
                 <button
@@ -110,7 +110,7 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
         </aside>
 
         {/* Main content */}
-        <main className={`flex-1 overflow-auto ${
+        <section role="main" aria-labelledby="tp-title" className={`flex-1 overflow-auto ${
           teacherThemeV2 ? 'bg-[rgb(var(--bg-elev))]' : 'bg-gray-50'
         }`}>
           <ToastHost>
@@ -118,7 +118,7 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
               {renderContent()}
             </div>
           </ToastHost>
-        </main>
+        </section>
       </div>
     </DensityProvider>
   )
