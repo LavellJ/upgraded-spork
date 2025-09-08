@@ -53,10 +53,28 @@ import { SharePrompt } from "./components/SharePrompt";
 //   • Works across refreshes via localStorage.
 
 // --------------------------------------
+// Types
+// --------------------------------------
+type Lesson = {
+  id: string;
+  title: string;
+};
+
+type BiomeName = 'forest' | 'desert' | 'ocean' | 'night';
+
+type LessonsData = {
+  [K in BiomeName]: Lesson[];
+};
+
+type CompletionData = {
+  [K in BiomeName]: Set<string>;
+};
+
+// --------------------------------------
 // Generic utilities & small UI primitives
 // --------------------------------------
 const KEYS = { loop:'qi_loop', comp:'qi_comp', bpItems:'qi_bp_items', bpEq:'qi_bp_equipped', teacher:'qi_teacher', framework:'qi_framework', calm:'qi_calm', proto:'qi_proto_only', last:'qi_last', pins:'qi_teacher_pins' };
-const cx = (...s) => s.filter(Boolean).join(" ");
+const cx = (...s: any[]) => s.filter(Boolean).join(" ");
 
 // Components extracted to separate files
 
@@ -149,7 +167,7 @@ const registryEntry = (biome, lessonId) => {
   return null;
 };
 
-const findLesson = (biome,id,lessons)=> (lessons[biome]||[]).find(l=>l.id===id)||null;
+const findLesson = (biome: BiomeName, id: string, lessons: LessonsData): Lesson | null => (lessons[biome]||[]).find(l=>l.id===id)||null;
 
 // Time of day background
 const BG_BY_TOD = {
@@ -399,8 +417,8 @@ function AppContent(){
   CURRENT_LOOP = loop as any;
 
   // select lessons by active loop
-  const LESSONS: any = loop === 2 ? LOOP2 : LOOP1;
-  const [comp,setComp]=useState(()=>{ try{const raw=JSON.parse(localStorage.getItem(KEYS.comp)||'{}'); return { forest: new Set(raw.forest||[]), desert: new Set(raw.desert||[]), ocean: new Set(raw.ocean||[]), night: new Set(raw.night||[]) };}catch{return { forest: new Set(), desert: new Set(), ocean: new Set(), night: new Set() };} });
+  const LESSONS: LessonsData = loop === 2 ? LOOP2 : LOOP1;
+  const [comp,setComp]=useState<CompletionData>(()=>{ try{const raw=JSON.parse(localStorage.getItem(KEYS.comp)||'{}'); return { forest: new Set<string>(raw.forest||[]), desert: new Set<string>(raw.desert||[]), ocean: new Set<string>(raw.ocean||[]), night: new Set<string>(raw.night||[]) };}catch{return { forest: new Set<string>(), desert: new Set<string>(), ocean: new Set<string>(), night: new Set<string>() };} });
   const [teacherMode,setTeacherMode]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.teacher)||'false');}catch{return false;} });
   const [teacherPins,setTeacherPins]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.pins)||'false');}catch{return false;} });
   const [framework,setFramework]=useState(()=>{ try{return localStorage.getItem(KEYS.framework)||'Generic';}catch{return 'Generic';} });
@@ -964,7 +982,7 @@ function AppContent(){
             {last&&<button onClick={resumeLesson} className="px-3 py-2 rounded-full bg-[rgb(var(--brand-700))] text-black hover:bg-[rgb(var(--brand-800))] font-medium transition ease-out">Resume: {findLesson(last.biome,last.id,LESSONS)?.title}</button>}
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={()=>setCalm(p=>!p)} className={cx("w-10 h-10 rounded-full border transition ease-out", calm?"bg-blue-100 border-blue-300":"bg-white/50 border-white/70")} title={calm?"Disable calm mode":"Enable calm mode"}>😌</button>
+            <button onClick={()=>setCalm((p: boolean)=>!p)} className={cx("w-10 h-10 rounded-full border transition ease-out", calm?"bg-blue-100 border-blue-300":"bg-white/50 border-white/70")} title={calm?"Disable calm mode":"Enable calm mode"}>😌</button>
             <button onClick={()=>{ setShowBP(true); sfx.play('ui_open'); }} className="w-10 h-10 rounded-full bg-amber-100 hover:bg-amber-200 border border-amber-300 flex items-center justify-center transition ease-out">🎒</button>
             <button onClick={()=>setTeacherMode(p=>!p)} className={cx("px-3 py-2 rounded-full border transition ease-out", teacherMode?"bg-emerald-100 border-emerald-300 text-emerald-800":"bg-white/50 border-white/70 hover:bg-white/70")}>{teacherMode?'Teacher ✓':'Teacher'}</button>
             {teacherMode&&<button onClick={()=>{ setShowTeacher(true); sfx.play('ui_open'); }} className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 flex items-center justify-center transition ease-out">⚙️</button>}
