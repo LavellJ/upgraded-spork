@@ -982,7 +982,7 @@ function AppContent(){
             {last&&<button onClick={resumeLesson} className="px-3 py-2 rounded-full bg-[rgb(var(--brand-700))] text-black hover:bg-[rgb(var(--brand-800))] font-medium transition ease-out">Resume: {findLesson(last.biome,last.id,LESSONS)?.title}</button>}
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={()=>setCalm((p: boolean)=>!p)} className={cx("w-10 h-10 rounded-full border transition ease-out", calm?"bg-blue-100 border-blue-300":"bg-white/50 border-white/70")} title={calm?"Disable calm mode":"Enable calm mode"}>😌</button>
+            <button onClick={()=>setCalm(!calm)} className={cx("w-10 h-10 rounded-full border transition ease-out", calm?"bg-blue-100 border-blue-300":"bg-white/50 border-white/70")} title={calm?"Disable calm mode":"Enable calm mode"}>😌</button>
             <button onClick={()=>{ setShowBP(true); sfx.play('ui_open'); }} className="w-10 h-10 rounded-full bg-amber-100 hover:bg-amber-200 border border-amber-300 flex items-center justify-center transition ease-out">🎒</button>
             <button onClick={()=>setTeacherMode(p=>!p)} className={cx("px-3 py-2 rounded-full border transition ease-out", teacherMode?"bg-emerald-100 border-emerald-300 text-emerald-800":"bg-white/50 border-white/70 hover:bg-white/70")}>{teacherMode?'Teacher ✓':'Teacher'}</button>
             {teacherMode&&<button onClick={()=>{ setShowTeacher(true); sfx.play('ui_open'); }} className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 flex items-center justify-center transition ease-out">⚙️</button>}
