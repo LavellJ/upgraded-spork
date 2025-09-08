@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import App from './App';
 import { HeroLessonDemo, HeroLessonDemoIndex } from './pages/HeroLessonDemo';
+import { PromptRunner } from './pages/PromptRunner';
 
 /**
  * Simple routing system to showcase the hero lesson alongside the main app
@@ -18,6 +19,8 @@ export function AppRouter() {
         setCurrentRoute('hero-demo');
       } else if (path === '/hero-demo/lesson' || search.includes('hero-lesson')) {
         setCurrentRoute('hero-lesson');
+      } else if (path === '/tools/prompts') {
+        setCurrentRoute('tools/prompts');
       } else {
         setCurrentRoute('main');
       }
@@ -45,6 +48,8 @@ export function AppRouter() {
       return <HeroLessonDemoIndex />;
     case 'hero-lesson':
       return <HeroLessonDemo />;
+    case 'tools/prompts':
+      return <PromptRunner />;
     default:
       return <AppWithHeroAccess navigate={navigate} />;
   }
