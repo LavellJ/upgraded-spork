@@ -7,3 +7,7 @@ vite.config.ts.*
 # Local runtime data
 .data/
 .backups/
+
+# Database files
+data/*.db
+data/*.sqlite
