@@ -18,8 +18,11 @@
     "allowJs": true,
     "resolveJsonModule": true,
 
-    // Vite/React globals
-    "types": ["vite/client"]
+    // Vite/React globals and path mapping
+    "types": ["vite/client"],
+    "paths": {
+      "@/*": ["client/src/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["client/src", "shared", "prompts"]
 }

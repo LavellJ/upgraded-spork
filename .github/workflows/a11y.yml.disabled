@@ -1,0 +1,38 @@
+name: a11y
+
+on:
+  pull_request:
+  push:
+    branches: [ main, sprint-q-prompts ]
+
+jobs:
+  axe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build (Vite)
+        run: npm run build
+
+      - name: Serve dist on 4173
+        run: |
+          npx http-server ./dist -p 4173 --silent &
+          npx wait-on --timeout 60000 http://127.0.0.1:4173
+
+      - name: Run axe (WCAG 2.1 AA)
+        run: npx axe --save --exit --tags wcag2aa "http://127.0.0.1:4173/?tab=dev"
+
+      - name: Upload axe report
+        uses: actions/upload-artifact@v4
+        with:
+          name: axe-report
+          path: .axe-results.json
