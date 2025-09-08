@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import App from './App';
 import { HeroLessonDemo, HeroLessonDemoIndex } from './pages/HeroLessonDemo';
 import { PromptRunner } from './pages/PromptRunner';
+import DebugDashboard from './pages/DebugDashboard';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 /**
  * Simple routing system to showcase the hero lesson alongside the main app
@@ -21,6 +23,8 @@ export function AppRouter() {
         setCurrentRoute('hero-lesson');
       } else if (path === '/tools/prompts') {
         setCurrentRoute('tools/prompts');
+      } else if (path === '/debug') {
+        setCurrentRoute('debug');
       } else {
         setCurrentRoute('main');
       }
@@ -43,16 +47,24 @@ export function AppRouter() {
   };
 
   // Render the appropriate component based on route
-  switch (currentRoute) {
-    case 'hero-demo':
-      return <HeroLessonDemoIndex />;
-    case 'hero-lesson':
-      return <HeroLessonDemo />;
-    case 'tools/prompts':
-      return <PromptRunner />;
-    default:
-      return <AppWithHeroAccess navigate={navigate} />;
-  }
+  return (
+    <ErrorBoundary>
+      {(() => {
+        switch (currentRoute) {
+          case 'hero-demo':
+            return <HeroLessonDemoIndex />;
+          case 'hero-lesson':
+            return <HeroLessonDemo />;
+          case 'tools/prompts':
+            return <PromptRunner />;
+          case 'debug':
+            return <DebugDashboard />;
+          default:
+            return <AppWithHeroAccess navigate={navigate} />;
+        }
+      })()}
+    </ErrorBoundary>
+  );
 }
 
 /**

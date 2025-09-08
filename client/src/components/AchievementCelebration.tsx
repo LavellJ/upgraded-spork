@@ -5,6 +5,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Trophy, Star, Sparkles, Award, Target, Zap, Heart, Crown, Medal, Gift } from "lucide-react";
 import { StarIcon, TrophyIcon, SparkleIcon } from "@/components/GeometricIcons";
+import { useEffect, useState } from "react";
+import { pingHealth } from "@/lib/api";
+
+export default function HealthDebug() {
+  const [msg, setMsg] = useState<string>("checking…");
+  useEffect(() => {
+    pingHealth()
+      .then(d => setMsg(`ok:${d.ok} ts:${d.ts}`))
+      .catch(e => setMsg(`error: ${String(e.message || e)}`));
+  }, []);
+  return <div className="text-xs opacity-70">Health: {msg}</div>;
+}
 
 interface Achievement {
   id: string;
