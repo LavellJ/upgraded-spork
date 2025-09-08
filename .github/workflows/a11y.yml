@@ -1,27 +1,38 @@
-LavellJ commented 21 minutes ago
-.github/workflows/a11y.yml
-      - run: npm ci
-      - run: npm run build
-      - run: npm run preview & npx wait-on http://localhost:4173
-      - run: npx axe --save --tags wcag2aa "http://localhost:4173/?tab=dev"
-Owner
-Author
-@LavellJ LavellJ 21 minutes ago
-  - name: Upload axe report
-    uses: actions/upload-artifact@v4
-    with:
-      name: axe-report
-      path: .axe-results.json
-@LavellJ	Reply...
-Merge info
-Some checks were not successful
-3 failing checks
+name: a11y
 
+on:
+  push:
+    branches: [ main, sprint-q-prompts ]
+  pull_request:
 
-failing checks
-a11y / axe (pull_request)
-a11y / axe (pull_request)Failing after 45s
-a11y / axe (push)
-a11y / axe (push)Failing after 55s
-Art & UI QA / qa (pull_request)
-Art & UI QA / qa (pull_request)Failing after 24s
+jobs:
+  axe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build (Vite)
+        run: npm run build
+
+      - name: Preview server (Vite) on :4173
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 &
+          npx wait-on --timeout 60000 http://127.0.0.1:4173
+
+      - name: Run axe (WCAG 2.1 AA)
+        run: npx @axe-core/cli --save --exit --tags wcag2aa "http://127.0.0.1:4173/?tab=dev"
+
+      - name: Upload axe report
+        uses: actions/upload-artifact@v4
+        with:
+          name: axe-report
+          path: .axe-results.json
