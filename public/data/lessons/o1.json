@@ -1,0 +1,20 @@
+{
+  "id": "o1",
+  "title": "Push vs Pull",
+  "version": 2,
+  "subject": "science",
+  "framework": "ACARA",
+  "ageGroup": "pre-primary",
+  "estimatedDuration": "5-7 min",
+  "objectives": ["Observe forces", "Use simple terms", "Predict outcomes"],
+  "standard": "ACARA F–2: Physical sciences",
+  "content": {
+    "type": "prototype",
+    "template": "forces",
+    "config": {
+      "question": "Push or pull opens a door?",
+      "options": ["push", "pull", "neither"],
+      "correct": 1
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "d1",
+  "title": "Add within 5",
+  "version": 2,
+  "subject": "mathematics",
+  "framework": "ACARA",
+  "ageGroup": "pre-primary",
+  "estimatedDuration": "5-7 min",
+  "objectives": ["Add within 10", "Use number bonds", "Apply to word problems"],
+  "standard": "ACARA F–2: Number (add within 10)",
+  "content": {
+    "type": "prototype",
+    "template": "addition",
+    "config": {
+      "question": "Which makes 5?",
+      "options": ["2+3", "1+1", "4+4"],
+      "correct": 0
+    }
+  }
+}

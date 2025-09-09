@@ -1,0 +1,19 @@
+{
+  "name": "Built-in Australian Content",
+  "id": "base-au",
+  "version": "1.0.0",
+  "locale": "en-AU",
+  "description": "Core educational content for Australian curriculum",
+  "author": "LearnOz Education Team",
+  "frameworks": ["ACARA", "Generic"],
+  "lessons": ["lessons/*.json"],
+  "questionSets": [],
+  "assets": [],
+  "dependencies": {},
+  "meta": {
+    "ageRange": "5-10",
+    "subjects": ["literacy", "mathematics", "science", "hass"],
+    "difficulty": "beginner",
+    "estimatedHours": 12
+  }
+}
