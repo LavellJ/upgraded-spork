@@ -1,17 +1,18 @@
 // shared/schema.ts
-import { integer, sqliteTable, text, real } from "drizzle-orm/sqlite-core";
+import { serial, pgTable, text, timestamp, varchar, integer } from "drizzle-orm/pg-core";
 import { InferInsertModel, InferSelectModel } from "drizzle-orm";
+import { createInsertSchema } from "drizzle-zod";
 
-export const lessons = sqliteTable("lessons", {
-  id: integer("id").primaryKey(),
+export const lessons = pgTable("lessons", {
+  id: serial("id").primaryKey(),
   biome: text("biome").notNull(),               // 'forest' | 'desert' | 'ocean' | 'night'
   title: text("title").notNull(),
   ageGroup: text("age_group").notNull(),        // 'pre-primary' | 'primary' | 'upper-primary'
   content: text("content").notNull()            // JSON string if needed
 });
 
-export const achievements = sqliteTable("achievements", {
-  id: integer("id").primaryKey(),
+export const achievements = pgTable("achievements", {
+  id: serial("id").primaryKey(),
   studentId: text("student_id").notNull(),
   badgeId: text("badge_id"),
   name: text("name").notNull(),
@@ -20,22 +21,22 @@ export const achievements = sqliteTable("achievements", {
   category: text("category"),
   rarity: text("rarity"),
   ageGroups: text("age_groups"),
-  earnedAt: integer("earned_at", { mode: 'timestamp' })
+  earnedAt: timestamp("earned_at")
 });
 
-export const lessonCompletions = sqliteTable("lesson_completions", {
-  id: integer("id").primaryKey(),
+export const lessonCompletions = pgTable("lesson_completions", {
+  id: serial("id").primaryKey(),
   studentId: text("student_id").notNull(),
   lessonId: text("lesson_id").notNull(),
-  completedAt: integer("completed_at", { mode: 'timestamp' }),
+  completedAt: timestamp("completed_at"),
   challengeType: text("challenge_type"),
   result: text("result"),
   durationSec: integer("duration_sec"),
   biomeId: text("biome_id")
 });
 
-export const assets = sqliteTable("assets", {
-  id: integer("id").primaryKey(),
+export const assets = pgTable("assets", {
+  id: serial("id").primaryKey(),
   assetId: text("asset_id").notNull(),
   name: text("name").notNull(),
   description: text("description"),
@@ -45,7 +46,7 @@ export const assets = sqliteTable("assets", {
   subject: text("subject"),
   ageGroup: text("age_group"),
   tags: text("tags"),
-  createdAt: integer("created_at", { mode: 'timestamp' })
+  createdAt: timestamp("created_at")
 });
 
 export type Lesson = InferSelectModel<typeof lessons>;
