@@ -9,6 +9,7 @@ import { JWT_SECRET, ENCRYPTION_ENABLED, RETAIN_DAYS } from './config';
 // User document structure
 export interface UserDoc {
   email: string;
+  role: string;
   roster: {
     learners: Array<{
       id: string;
