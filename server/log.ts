@@ -33,6 +33,13 @@ export interface LogContext {
   duration?: number;
   statusCode?: number;
   method?: string;
+  feedbackId?: string;
+  kind?: string;
+  textLength?: number;
+  hasEmail?: boolean;
+  userAgent?: string;
+  classActive?: boolean;
+  timestamp?: string;
 }
 
 /**
