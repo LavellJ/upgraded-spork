@@ -15,6 +15,11 @@ app.get("/api/health", (_req, res) => {
   res.json({ ok: true, ts: Date.now() });
 });
 
+// Debug endpoint to verify everything works
+app.get("/debug", (_req, res) => {
+  res.json({ ok: true, message: "Debug endpoint working" });
+});
+
 // --- serve frontend from /dist ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,8 +31,8 @@ app.get("*", (_req, res) => {
 });
 
 // --- listen ---
-const PORT = Number(process.env.PORT) || 3001;
 const HOST = "0.0.0.0";
+const PORT = Number(process.env.PORT) || 5000;
 app.listen(PORT, HOST, () => {
-  console.info(`Backend API server listening on ${HOST}:${PORT}`);
+  console.info(`Server (API + static) listening on ${HOST}:${PORT}`);
 });
