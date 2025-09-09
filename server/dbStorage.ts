@@ -219,7 +219,7 @@ export class DatabaseUserStorage {
   async getAuditLog(email: string, limit: number = 100): Promise<any[]> {
     try {
       const rows = statements.getAuditLog.all(email, limit);
-      return rows.map(row => ({
+      return rows.map((row: any) => ({
         ...row,
         meta: row.meta ? JSON.parse(row.meta) : null
       }));

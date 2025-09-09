@@ -40,6 +40,11 @@ export interface LogContext {
   userAgent?: string;
   classActive?: boolean;
   timestamp?: string;
+  event?: string;
+  metric?: any;
+  sync?: any;
+  auth?: any;
+  [key: string]: any; // Allow any additional properties
 }
 
 /**
