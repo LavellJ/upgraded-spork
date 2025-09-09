@@ -215,8 +215,9 @@ export function searchLessons(query: string): LessonV2[] {
 // ---- Initialization ----
 
 // Auto-initialize when module loads
-if (typeof window !== 'undefined') {
-  initializeRegistry().catch(error => {
-    console.error('Failed to initialize registry:', error);
-  });
-}
+// Temporarily disabled to fix console errors - the app has built-in content in App.tsx
+// if (typeof window !== 'undefined') {
+//   initializeRegistry().catch(error => {
+//     console.error('Failed to initialize registry:', error);
+//   });
+// }
