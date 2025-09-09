@@ -233,6 +233,7 @@ export class FileUserStorage {
         // File doesn't exist, create new user doc
         const newDoc: UserDoc = {
           email,
+          role: 'guide', // Default role
           roster: { learners: [] },
           data: {},
           updatedAt: Date.now(),
