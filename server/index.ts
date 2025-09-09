@@ -1,26 +1,33 @@
-// server/index.ts
 import express from "express";
 import cors from "cors";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-// Ensure schema loads and DB is ready (side-effect import is OK)
+// init DB (side-effect import is fine)
 import "../shared/db.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// --- API routes ---
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, ts: Date.now() });
 });
 
-const PORT = Number(process.env.PORT) || 5000;
+// --- serve frontend from /dist ---
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const distDir = path.resolve(__dirname, "../dist/public");
 
-if (process.env.START_SERVER === "true") {
-  app.listen(PORT, () => {
-    console.info(`Backend listening on :${PORT}`);
-  });
-} else {
-  console.info("Backend disabled (START_SERVER not set)");
-}
+app.use(express.static(distDir));
+app.get("*", (_req, res) => {
+  res.sendFile(path.join(distDir, "index.html"));
+});
 
-export default app;
+// --- listen ---
+const PORT = Number(process.env.PORT) || 3001;
+const HOST = "0.0.0.0";
+app.listen(PORT, HOST, () => {
+  console.info(`Backend API server listening on ${HOST}:${PORT}`);
+});

@@ -1,6 +1,6 @@
-// client/src/lib/api.ts
-const API_BASE =
-  import.meta.env.VITE_API_URL?.replace(/\/$/, "") || "http://localhost:5000";
+// Prefer same-origin if VITE_API_URL is not set
+const base = (import.meta.env.VITE_API_URL ?? "").trim();
+const API_BASE = base ? base.replace(/\/$/, "") : ""; // "" => same-origin
 
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const url = `${API_BASE}${path.startsWith("/") ? path : `/${path}`}`;
@@ -15,5 +15,4 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-// convenience example
 export const pingHealth = () => api<{ ok: boolean; ts: number }>("/api/health");
