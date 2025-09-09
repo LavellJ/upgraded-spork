@@ -49,6 +49,7 @@ export const assets = pgTable("assets", {
   createdAt: timestamp("created_at")
 });
 
+// Type exports
 export type Lesson = InferSelectModel<typeof lessons>;
 export type NewLesson = InferInsertModel<typeof lessons>;
 
@@ -60,3 +61,9 @@ export type InsertLessonCompletion = InferInsertModel<typeof lessonCompletions>;
 
 export type Asset = InferSelectModel<typeof assets>;
 export type InsertAsset = InferInsertModel<typeof assets>;
+
+// Zod schemas for validation
+export const insertAchievementSchema = createInsertSchema(achievements);
+export const insertLessonCompletionSchema = createInsertSchema(lessonCompletions);
+export const insertAssetSchema = createInsertSchema(assets);
+export const insertLessonSchema = createInsertSchema(lessons);
