@@ -1,6 +1,6 @@
-#!/bin/bash
-# Replit development startup script
-echo "Building frontend..."
-npm run build
-echo "Starting unified Express server..."
-npx tsx server/index.ts
+#!/usr/bin/env bash
+set -euo pipefail
+export PORT="${PORT:-5000}"
+export HOST="0.0.0.0"
+echo "[start.sh] Starting server on $HOST:$PORT ..."
+exec npx tsx server/index.ts
