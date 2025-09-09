@@ -55,12 +55,14 @@ import { SharePrompt } from "./components/SharePrompt";
 // --------------------------------------
 // Types
 // --------------------------------------
+type AgeGroup = "pre-primary" | "primary" | "upper-primary";
+type Biome = "forest" | "desert" | "ocean" | "night";
+type BiomeName = Biome; // Keep for backward compatibility
+
 type Lesson = {
   id: string;
   title: string;
 };
-
-type BiomeName = 'forest' | 'desert' | 'ocean' | 'night';
 
 type LessonsData = {
   [K in BiomeName]: Lesson[];
@@ -69,6 +71,8 @@ type LessonsData = {
 type CompletionData = {
   [K in BiomeName]: Set<string>;
 };
+
+type CompletionState = Record<string, boolean>;
 
 // --------------------------------------
 // Generic utilities & small UI primitives
@@ -156,7 +160,7 @@ const REGISTRY = {
 
 
 let CURRENT_LOOP = 1;
-const registryEntry = (biome, lessonId) => {
+const registryEntry = (biome: Biome, lessonId: string) => {
   const current = REGISTRY?.[CURRENT_LOOP]?.[biome]?.[lessonId];
   if (current) return current;
   const loops = Object.keys(REGISTRY || {}).map(Number).sort((a,b)=>b-a);
@@ -192,7 +196,7 @@ const DustMotes = () => { const dots = Array.from({length:12},(_,i)=>({l:`${(i*7
 const Fireflies = () => { const dots = Array.from({length:10},(_,i)=>({l:`${(i*11)%100}%`,t:`${10+(i*7)%60}%`,d:`${i*.4}s`,u:`${2+(i%4)*.5}s`})); return <div aria-hidden className="absolute inset-0">{dots.map((d,i)=><span key={i} className="fly" style={{left:d.l,top:d.t,animation:`firefly ${d.u} ease-in-out ${d.d} infinite`}}/>)}</div>; };
 const HeatHaze = ({calm=false}) => <div aria-hidden className="haze" style={{animation: calm? 'none' : 'shimmer 5s ease-in-out infinite'}}/>;
 const CampfireGlow = ({intensity=.75, calm=false}) => <div aria-hidden className="glow" style={{opacity:intensity,animation: calm? 'none' : 'campGlow 3s ease-in-out infinite'}}/>;
-const AmbientLayer = ({tod, calm=false}) => (
+const AmbientLayer = ({tod, calm=false}: {tod: string, calm?: boolean}) => (
   <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
     {tod==='morning'&&!calm&&<DustMotes/>}
     {tod==='afternoon'&&!calm&&<HeatHaze calm={calm}/>}
@@ -204,7 +208,7 @@ const AmbientLayer = ({tod, calm=false}) => (
 );
 
 // Meta helpers
-function getLessonMeta(biome, id, framework = 'Generic') {
+function getLessonMeta(biome: Biome, id: string, framework: string = 'Generic') {
   const base = {
     forest:{icon:"📘",est:"5–7 min",objectives:["Identify sounds","Blend simple words","Read aloud"],standard:"Foundational phonics & fluency"},
     desert:{icon:"➕",est:"6–8 min",objectives:["Add within 10","Use number bonds","Apply to word problems"],standard:"Number sense & operations"},
@@ -230,7 +234,7 @@ function getLessonMeta(biome, id, framework = 'Generic') {
   };
 }
 // Activity URL (respects Prototype-only mode)
-const resolveActivityUrl = (biome,lessonId, protoOnly) => {
+const resolveActivityUrl = (biome: Biome, lessonId: string, protoOnly: boolean) => {
   if (protoOnly) return `https://player.example/${biome}/${lessonId}`;
   const reg = registryEntry(biome,lessonId);
   const url = (reg && typeof reg.url==='string' && reg.url.trim().length>0) ? reg.url : `https://player.example/${biome}/${lessonId}`;
@@ -238,9 +242,9 @@ const resolveActivityUrl = (biome,lessonId, protoOnly) => {
 };
 
 // Progress encode/decode helpers (URL-safe Base64)
-const b64urlEncode = (s)=>{ const bytes=new TextEncoder().encode(s); let bin=''; bytes.forEach(b=>bin+=String.fromCharCode(b)); return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); };
-const b64urlDecode = (s)=>{ const n=s.replace(/-/g,'+').replace(/_/g,'/'); const pad = n.length%4? '='.repeat(4-(n.length%4)) : ''; const str=atob(n+pad); const bytes=new Uint8Array(str.length); for(let i=0;i<str.length;i++) bytes[i]=str.charCodeAt(i); return new TextDecoder().decode(bytes); };
-const buildProgressPayload = (loop,comp,bp,framework,protoOnly)=> ({
+const b64urlEncode = (s: string)=>{ const bytes=new TextEncoder().encode(s); let bin=''; bytes.forEach(b=>bin+=String.fromCharCode(b)); return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); };
+const b64urlDecode = (s: string)=>{ const n=s.replace(/-/g,'+').replace(/_/g,'/'); const pad = n.length%4? '='.repeat(4-(n.length%4)) : ''; const str=atob(n+pad); const bytes=new Uint8Array(str.length); for(let i=0;i<str.length;i++) bytes[i]=str.charCodeAt(i); return new TextDecoder().decode(bytes); };
+const buildProgressPayload = (loop: number, comp: any, bp: any, framework: string, protoOnly: boolean)=> ({
   v:1,
   loop,
   comp:{
@@ -252,8 +256,8 @@ const buildProgressPayload = (loop,comp,bp,framework,protoOnly)=> ({
   bp:{ items: bp.items||[], equipped: bp.equipped||[] },
   framework, protoOnly
 });
-const makeProgressLink = (payload)=>{ const base=(typeof window!=='undefined')?(window.location.origin+window.location.pathname):'https://example.com/quest'; const token=b64urlEncode(JSON.stringify(payload)); return `${base}?qi=${token}`; };
-const extractQiFromInput = (input)=>{ try{ const url=new URL(input); const q=url.searchParams.get('qi'); if(q) return q; }catch{} const m=String(input||'').match(/[?&#]qi=([A-Za-z0-9_-]+)/); return m? m[1] : String(input||'').trim(); };
+const makeProgressLink = (payload: any)=>{ const base=(typeof window!=='undefined')?(window.location.origin+window.location.pathname):'https://example.com/quest'; const token=b64urlEncode(JSON.stringify(payload)); return `${base}?qi=${token}`; };
+const extractQiFromInput = (input: string)=>{ try{ const url=new URL(input); const q=url.searchParams.get('qi'); if(q) return q; }catch{} const m=String(input||'').match(/[?&#]qi=([A-Za-z0-9_-]+)/); return m? m[1] : String(input||'').trim(); };
 
 // --------------------------------------
 // Prototype Activities (per-lesson templates)
@@ -288,7 +292,7 @@ const TEMPLATES={
     n5:{q:"Which is water on a map?",options:["lake","forest","mountain"],correct:0,explain:"A lake is water"}
   }
 };
-const getTemplate=(biome,id)=> TEMPLATES[biome]?.[id] || {q:"Prototype — placeholder:",options:["Option A","Option B"],correct:0,explain:"We'll replace this later."};
+const getTemplate=(biome: Biome, id: string)=> TEMPLATES[biome]?.[id] || {q:"Prototype — placeholder:",options:["Option A","Option B"],correct:0,explain:"We'll replace this later."};
 
 // MCActivity component moved to ActivityPlayer.tsx
 
@@ -301,7 +305,7 @@ const getTemplate=(biome,id)=> TEMPLATES[biome]?.[id] || {q:"Prototype — place
 
 // LessonSheet component moved to separate file
 
-function Node({biome,status,onClick,count,total,calm=false}){
+function Node({biome,status,onClick,count,total,calm=false}: {biome: Biome, status: string, onClick: () => void, count: number, total: number, calm?: boolean}){
   const subject=SUBJECTS[biome];
   const base={forest:"from-green-200 to-green-300",desert:"from-orange-200 to-amber-300",ocean:"from-cyan-200 to-sky-300",night:"from-indigo-300 to-slate-400"}[biome];
   const ringUnlocked = 'ring-2 ring-amber-200/60';
@@ -340,7 +344,7 @@ function Node({biome,status,onClick,count,total,calm=false}){
   );
 }
 
-function LessonNode({biome,lesson,completed,onSelect,pos,locked,isNext,onLocked}){
+function LessonNode({biome,lesson,completed,onSelect,pos,locked,isNext,onLocked}: {biome: Biome, lesson: Lesson, completed: Set<string>, onSelect: (biome: Biome, lesson: Lesson) => void, pos: {x: number, y: number}, locked: boolean, isNext: boolean, onLocked?: () => void}){
   const {label,color}=SUBJECTS[biome]; const isDone= completed?.has?.(lesson.id)||false; const accent=color;
   const ariaLabel = locked 
     ? `${lesson.title} lesson is locked - complete the previous lesson first`
@@ -353,7 +357,7 @@ function LessonNode({biome,lesson,completed,onSelect,pos,locked,isNext,onLocked}
     onSelect(biome,lesson);
   };
   
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       handleClick();
