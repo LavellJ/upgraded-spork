@@ -139,5 +139,15 @@ export const auditLog = {
       details,
       ip
     });
+  },
+
+  // Admin actions
+  adminAction: (email: string, action: string, ip?: string) => {
+    logAuditEvent({
+      action: 'admin_action',
+      actor: email,
+      details: { admin_action: action },
+      ip
+    });
   }
 };
