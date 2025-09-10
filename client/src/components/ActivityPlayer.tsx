@@ -45,11 +45,11 @@ const REGISTRY = {
 
 let CURRENT_LOOP = 1;
 const registryEntry = (biome: string, lessonId: string) => {
-  const current = REGISTRY?.[CURRENT_LOOP]?.[biome]?.[lessonId];
+  const current = (REGISTRY as any)?.[CURRENT_LOOP]?.[biome]?.[lessonId];
   if (current) return current;
   const loops = Object.keys(REGISTRY || {}).map(Number).sort((a, b) => b - a);
   for (const L of loops) {
-    const e = REGISTRY?.[L]?.[biome]?.[lessonId];
+    const e = (REGISTRY as any)?.[L]?.[biome]?.[lessonId];
     if (e) return e;
   }
   return null;
@@ -86,7 +86,7 @@ const TEMPLATES = {
   }
 };
 
-const getTemplate = (biome: string, id: string) => TEMPLATES[biome]?.[id] || { q: "Prototype — placeholder:", options: ["Option A", "Option B"], correct: 0, explain: "We'll replace this later." };
+const getTemplate = (biome: string, id: string) => (TEMPLATES as any)[biome]?.[id] || { q: "Prototype — placeholder:", options: ["Option A", "Option B"], correct: 0, explain: "We'll replace this later." };
 
 // Activity URL (respects Prototype-only mode)
 const resolveActivityUrl = (biome: string, lessonId: string, protoOnly: boolean) => {
@@ -104,11 +104,9 @@ interface MCActivityProps {
 }
 
 function MCActivity({ biome, lesson, onSolved, onAttempt }: MCActivityProps) {
-  // TEMP: commenting out during context debugging
-  // const { profile } = useProfile();
-  const profile = { name: 'Explorer', calmMode: true };
+  const { profile } = useProfile();
   const { enqueue } = useScoutQueue();
-  const accent = SUBJECTS[biome].color;
+  const accent = (SUBJECTS as any)[biome]?.color || '#000';
   const tpl = getTemplate(biome, lesson.id);
   const [sel, setSel] = useState(-1);
   const [checked, setChecked] = useState(false);
@@ -163,7 +161,7 @@ function MCActivity({ biome, lesson, onSolved, onAttempt }: MCActivityProps) {
     <div className="p-3">
       <div className="text-sm text-stone-700 mb-2">Prototype activity</div>
       <div className="text-lg font-bold mb-3" style={{ color: accent }}>{tpl.q}</div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">{tpl.options.map((opt, i) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">{tpl.options.map((opt: string, i: number) => (
         <button key={i} onClick={() => { setSel(i); setChecked(false); }} className={cx("text-left px-3 py-2 rounded-xl border bg-white hover:bg-stone-50 transition ease-out", sel === i && "ring-2 ring-amber-500")}>{String.fromCharCode(65 + i)}. {opt}</button>
       ))}</div>
       <div className="mt-3 flex items-center gap-2">
@@ -188,9 +186,7 @@ interface ActivityPlayerProps {
 }
 
 export function ActivityPlayer({ open, onClose, biome, lesson, activity, onMarkComplete, protoOnly }: ActivityPlayerProps) {
-  // TEMP: commenting out during context debugging
-  // const { profile } = useProfile();
-  const profile = { calmMode: true };
+  const { profile } = useProfile();
   const { enqueue, flushInfoMessages } = useScoutQueue();
   const startTimeRef = useRef<number | null>(null);
   const rosterContext = useRosterOptional();
@@ -227,7 +223,7 @@ export function ActivityPlayer({ open, onClose, biome, lesson, activity, onMarkC
   
   if (!open || !lesson) return null;
   const url = resolveActivityUrl(biome!, lesson.id, protoOnly);
-  const accent = SUBJECTS[biome!].color;
+  const accent = (SUBJECTS as any)[biome!]?.color || '#000';
   const external = !protoOnly && typeof url === 'string' && !url.includes('player.example');
   return (
     <BottomSheet open={open} onClose={onClose} titleId="activity-title">

@@ -83,7 +83,7 @@ export function ClassModeCTA({ onStartActivity, onFocusLesson, onDismiss }: Clas
           // Trigger assignment nudge system to focus on next lesson
           checkAssignmentNudges(
             userId,
-            () => ({ queued: false }), // Return ScoutEnqueueResult
+            () => ({ queued: false, shown: false }), // Return ScoutEnqueueResult
             (lessonId: string) => {
               if (onFocusLesson) {
                 onFocusLesson(lessonId);
