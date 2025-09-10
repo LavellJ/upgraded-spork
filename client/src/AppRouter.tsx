@@ -4,6 +4,7 @@ import { HeroLessonDemo, HeroLessonDemoIndex } from './pages/HeroLessonDemo';
 import { PromptRunner } from './pages/PromptRunner';
 import DebugDashboard from './pages/DebugDashboard';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import Providers from './Providers';
 
 /**
  * Simple routing system to showcase the hero lesson alongside the main app
@@ -109,7 +110,9 @@ function AppWithHeroAccess({ navigate }: { navigate: (route: string) => void }) 
       )}
       
       {/* Main App */}
-      <App />
+      <Providers>
+        <App />
+      </Providers>
     </div>
   );
 }
