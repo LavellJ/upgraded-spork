@@ -10,6 +10,7 @@ import Privacy from '../../settings/Privacy'                       // from setti
 import Appearance from '../../settings/Appearance'                  // from settings/Appearance.tsx
 import { InsightsCard } from '../InsightsCard'                      // from guide/InsightsCard.tsx
 import { Reports } from '../reports/Reports'                        // from guide/reports/Reports.tsx
+import { ReferralsPage } from '../../pages/ReferralsPage'           // from pages/ReferralsPage.tsx
 
 // Import missing components for complete coverage
 import { QuickStart } from '../../teacher/QuickStart'               // from teacher/QuickStart.tsx
@@ -2434,6 +2435,8 @@ export default function TabContentV2({ tab }: Props) {
         return <RosterList />
       case 'classes':      
         return <ClassesList />
+      case 'referrals':    
+        return <ReferralsPage />
       case 'privacy':      
         return <Privacy />
       case 'appearance':   
