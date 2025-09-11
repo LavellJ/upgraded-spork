@@ -3,6 +3,8 @@ import App from './App';
 import { HeroLessonDemo, HeroLessonDemoIndex } from './pages/HeroLessonDemo';
 import { PromptRunner } from './pages/PromptRunner';
 import DebugDashboard from './pages/DebugDashboard';
+import { ReferralsPage } from './pages/ReferralsPage';
+import { HealthBadge } from './components/HealthBadge';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import Providers from './Providers';
 
@@ -26,6 +28,8 @@ export function AppRouter() {
         setCurrentRoute('tools/prompts');
       } else if (path === '/debug') {
         setCurrentRoute('debug');
+      } else if (path === '/referrals') {
+        setCurrentRoute('referrals');
       } else {
         setCurrentRoute('main');
       }
@@ -60,6 +64,8 @@ export function AppRouter() {
             return <PromptRunner />;
           case 'debug':
             return <DebugDashboard />;
+          case 'referrals':
+            return <ReferralsPage />;
           default:
             return <AppWithHeroAccess navigate={navigate} />;
         }
@@ -76,6 +82,29 @@ function AppWithHeroAccess({ navigate }: { navigate: (route: string) => void }) 
 
   return (
     <div className="relative">
+      {/* Top Navigation Bar */}
+      <div className="fixed top-4 left-4 z-40">
+        <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg border border-gray-200">
+          <HealthBadge />
+          <span className="text-gray-300">|</span>
+          <button
+            onClick={() => navigate('referrals')}
+            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+            data-testid="nav-referrals-main"
+          >
+            Referrals
+          </button>
+          <span className="text-gray-300">|</span>
+          <button
+            onClick={() => navigate('debug')}
+            className="text-sm text-gray-600 hover:text-gray-800"
+            data-testid="nav-debug-main"
+          >
+            Debug
+          </button>
+        </div>
+      </div>
+
       {/* Hero Lesson Access Button - moved to bottom-right to avoid blocking teacher panel */}
       {showHeroButton && (
         <div className="fixed bottom-4 right-4 z-40">
