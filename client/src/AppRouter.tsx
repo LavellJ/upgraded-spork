@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Route, Link, Switch } from 'wouter';
+import { Route, Link } from 'wouter';
 import App from './App';
 import { HeroLessonDemo, HeroLessonDemoIndex } from './pages/HeroLessonDemo';
 import { PromptRunner } from './pages/PromptRunner';
@@ -16,14 +16,12 @@ export function AppRouter() {
   return (
     <ErrorBoundary>
       <Providers>
-        <Switch>
-          <Route path="/hero-demo" component={HeroLessonDemoIndex} />
-          <Route path="/hero-demo/lesson" component={HeroLessonDemo} />
-          <Route path="/tools/prompts" component={PromptRunner} />
-          <Route path="/debug" component={DebugDashboard} />
-          <Route path="/referrals" component={ReferralsPage} />
-          <Route path="/" component={AppWithHeroAccess} />
-        </Switch>
+        <Route path="/hero-demo" component={HeroLessonDemoIndex} />
+        <Route path="/hero-demo/lesson" component={HeroLessonDemo} />
+        <Route path="/tools/prompts" component={PromptRunner} />
+        <Route path="/debug" component={DebugDashboard} />
+        <Route path="/referrals" component={ReferralsPage} />
+        <Route path="/" component={AppWithHeroAccess} />
       </Providers>
     </ErrorBoundary>
   );
