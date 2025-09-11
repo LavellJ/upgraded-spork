@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Route, Link, Switch } from 'wouter';
 import App from './App';
 import { HeroLessonDemo, HeroLessonDemoIndex } from './pages/HeroLessonDemo';
 import { PromptRunner } from './pages/PromptRunner';
@@ -9,67 +10,21 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import Providers from './Providers';
 
 /**
- * Simple routing system to showcase the hero lesson alongside the main app
+ * URL routing system using wouter for direct navigation
  */
 export function AppRouter() {
-  const [currentRoute, setCurrentRoute] = useState<string>('');
-
-  useEffect(() => {
-    // Check current URL path and query params
-    const updateRoute = () => {
-      const path = window.location.pathname;
-      const search = window.location.search;
-      
-      if (path === '/hero-demo' || search.includes('hero-demo')) {
-        setCurrentRoute('hero-demo');
-      } else if (path === '/hero-demo/lesson' || search.includes('hero-lesson')) {
-        setCurrentRoute('hero-lesson');
-      } else if (path === '/tools/prompts') {
-        setCurrentRoute('tools/prompts');
-      } else if (path === '/debug') {
-        setCurrentRoute('debug');
-      } else if (path === '/referrals') {
-        setCurrentRoute('referrals');
-      } else {
-        setCurrentRoute('main');
-      }
-    };
-
-    updateRoute();
-
-    // Listen for URL changes
-    const handlePopState = () => updateRoute();
-    window.addEventListener('popstate', handlePopState);
-    
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
-  // Simple navigation helper
-  const navigate = (route: string) => {
-    const newPath = route === 'main' ? '/' : `/${route}`;
-    window.history.pushState({}, '', newPath);
-    setCurrentRoute(route);
-  };
-
-  // Render the appropriate component based on route
   return (
     <ErrorBoundary>
-      {(() => {
-        switch (currentRoute) {
-          case 'hero-demo':
-            return <HeroLessonDemoIndex />;
-          case 'hero-lesson':
-            return <HeroLessonDemo />;
-          case 'tools/prompts':
-            return <PromptRunner />;
-          case 'debug':
-            return <DebugDashboard />;
-          case 'referrals':
-            return <ReferralsPage />;
-          default:
-            return <AppWithHeroAccess navigate={navigate} />;
-        }
-      })()}
+      <Providers>
+        <Switch>
+          <Route path="/hero-demo" component={HeroLessonDemoIndex} />
+          <Route path="/hero-demo/lesson" component={HeroLessonDemo} />
+          <Route path="/tools/prompts" component={PromptRunner} />
+          <Route path="/debug" component={DebugDashboard} />
+          <Route path="/referrals" component={ReferralsPage} />
+          <Route path="/" component={AppWithHeroAccess} />
+        </Switch>
+      </Providers>
     </ErrorBoundary>
   );
 }
@@ -77,7 +32,7 @@ export function AppRouter() {
 /**
  * Main App component with hero lesson access button
  */
-function AppWithHeroAccess({ navigate }: { navigate: (route: string) => void }) {
+function AppWithHeroAccess() {
   const [showHeroButton, setShowHeroButton] = useState(true);
 
   return (
@@ -87,21 +42,13 @@ function AppWithHeroAccess({ navigate }: { navigate: (route: string) => void }) 
         <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg border border-gray-200">
           <HealthBadge />
           <span className="text-gray-300">|</span>
-          <button
-            onClick={() => navigate('referrals')}
-            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-            data-testid="nav-referrals-main"
-          >
+          <Link href="/referrals" className="text-sm text-blue-600 hover:text-blue-800 font-medium" data-testid="nav-referrals-main">
             Referrals
-          </button>
+          </Link>
           <span className="text-gray-300">|</span>
-          <button
-            onClick={() => navigate('debug')}
-            className="text-sm text-gray-600 hover:text-gray-800"
-            data-testid="nav-debug-main"
-          >
+          <Link href="/debug" className="text-sm text-gray-600 hover:text-gray-800" data-testid="nav-debug-main">
             Debug
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -116,13 +63,9 @@ function AppWithHeroAccess({ navigate }: { navigate: (route: string) => void }) 
               </div>
               
               <div className="flex gap-1 flex-shrink-0">
-                <button
-                  onClick={() => navigate('hero-demo')}
-                  className="bg-white text-blue-600 px-2 py-1 rounded text-[10px] font-medium hover:bg-blue-50 transition-colors"
-                  title="Try Hero Lesson Demo"
-                >
+                <Link href="/hero-demo" className="bg-white text-blue-600 px-2 py-1 rounded text-[10px] font-medium hover:bg-blue-50 transition-colors" title="Try Hero Lesson Demo">
                   Try
-                </button>
+                </Link>
                 
                 <button
                   onClick={() => setShowHeroButton(false)}
@@ -139,9 +82,7 @@ function AppWithHeroAccess({ navigate }: { navigate: (route: string) => void }) 
       )}
       
       {/* Main App */}
-      <Providers>
-        <App />
-      </Providers>
+      <App />
     </div>
   );
 }
