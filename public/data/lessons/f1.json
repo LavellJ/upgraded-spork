@@ -1,0 +1,20 @@
+{
+  "id": "f1",
+  "title": "First sounds (phonemic)",
+  "version": 2,
+  "subject": "literacy",
+  "framework": "ACARA",
+  "ageGroup": "pre-primary",
+  "estimatedDuration": "5-7 min",
+  "objectives": ["Identify sounds", "Blend simple words", "Read aloud"],
+  "standard": "ACARA F–2: Phonics & Fluency",
+  "content": {
+    "type": "prototype",
+    "template": "phonics-sounds",
+    "config": {
+      "focus": "/m/",
+      "examples": ["mat", "sun", "dog"],
+      "correct": 0
+    }
+  }
+}

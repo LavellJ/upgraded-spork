@@ -16,6 +16,7 @@ const TAB_CONFIG = {
   content: { icon: <Ic.book className="list-icon" />, label: 'Content' },
   roster: { icon: <Ic.profile className="list-icon" />, label: 'Roster' },
   classes: { icon: <Ic.layers className="list-icon" />, label: 'Classes' },
+  referrals: { icon: <Ic.profile className="list-icon" />, label: 'Referrals' },
   dashboard: { icon: <Ic.star className="list-icon" />, label: 'Dashboard' },
   privacy: { icon: <Ic.shield className="list-icon" />, label: 'Privacy' },
   appearance: { icon: <Ic.palette className="list-icon" />, label: 'Appearance' },

@@ -318,7 +318,7 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
           {language.title}
         </h2>
         <p className="text-white/80 text-lg">
-          {reflectContent.title}
+          {legacyContent?.title || "Reflection"}
         </p>
         <p className="text-white/60 mt-2">
           {language.instruction}
@@ -327,12 +327,12 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
         {/* Progress Indicator */}
         <div className="flex justify-center items-center gap-4 mt-4">
           <span className="text-white/60">
-            Question {currentPromptIndex + 1} of {reflectContent.metacognitionPrompts.length}
+            Question {currentPromptIndex + 1} of {legacyContent?.metacognitionPrompts?.length || 0}
           </span>
           <div className="w-32 bg-white/20 rounded-full h-2">
             <div 
               className="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full transition-all"
-              style={{ width: `${((currentPromptIndex + 1) / reflectContent.metacognitionPrompts.length) * 100}%` }}
+              style={{ width: `${((currentPromptIndex + 1) / (legacyContent?.metacognitionPrompts?.length || 1)) * 100}%` }}
             />
           </div>
         </div>
@@ -395,7 +395,7 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
               <textarea
                 value={responses[currentPrompt.id] || ""}
                 onChange={(e) => handleResponse(currentPrompt.id, e.target.value)}
-                placeholder={ageGroup === "pre-primary" ? "Tell me what you think..." : "Share your thoughts..."}
+                placeholder={(ageGroup as string) === "pre-primary" ? "Tell me what you think..." : "Share your thoughts..."}
                 aria-label="Enter your reflection response"
                 className="w-full h-32 bg-white/10 border border-white/30 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:border-purple-400 focus:outline-none resize-none"
                 data-testid="text-response"
@@ -415,7 +415,7 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
                 className="bg-gradient-to-r from-purple-400 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300 flex items-center gap-2"
                 data-testid="button-continue-prompt"
               >
-                {currentPromptIndex < reflectContent.metacognitionPrompts.length - 1 ? 
+                {currentPromptIndex < (legacyContent?.metacognitionPrompts?.length || 0) - 1 ? 
                   language.continueButton : "Review my learning"
                 }
                 <ArrowRight className="w-5 h-5" />
@@ -479,7 +479,7 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
               One Final Thought
             </h3>
             <p className="text-white/70 mb-4">
-              {ageGroup === "pre-primary" ? 
+              {(ageGroup as string) === "pre-primary" ? 
                 "What was the best part of learning this?" :
                 "What's one thing you'll remember from this lesson?"
               }
@@ -487,7 +487,7 @@ export function ReflectPhase({ content, ageGroup, sessionData, onPhaseComplete, 
             <textarea
               value={overallReflection}
               onChange={(e) => setOverallReflection(e.target.value)}
-              placeholder={ageGroup === "pre-primary" ? "I liked..." : "I learned that..."}
+              placeholder={(ageGroup as string) === "pre-primary" ? "I liked..." : "I learned that..."}
               className="w-full h-24 bg-white/10 border border-white/30 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:border-purple-400 focus:outline-none resize-none mb-6"
               data-testid="overall-reflection-input"
             />

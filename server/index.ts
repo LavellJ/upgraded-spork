@@ -1,91 +1,39 @@
-// Server with cloud-style API endpoints for development
-// Start with: npm run dev
-// Endpoints available:
-// - POST /api/sync/batch (with Authorization: Bearer <token>)
-// - GET /api/roster?userId=... (with Authorization: Bearer <token>)
-// - POST /api/roster (with Authorization: Bearer <token>)
-// Data persisted to .devdb.json automatically every 10 seconds
-
-import express, { type Request, Response, NextFunction } from "express";
+import express from "express";
 import cors from "cors";
-import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log as viteLog } from "./vite";
-import { requestTrackingMiddleware, userContextMiddleware } from "./middleware/requestTracking";
-import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
-import { log } from "./log";
-import path from "path";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+// init DB (side-effect import is fine)
+import "../shared/db.js";
+
+// Import the routes registration function
+import { registerRoutes } from "./routes.js";
 
 const app = express();
-
-// Request tracking middleware (must be first)
-app.use(requestTrackingMiddleware);
-
-// Add CORS - tighter security for development
-if (app.get("env") === "development") {
-  app.use(cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5000', 'http://127.0.0.1:5000'],
-    credentials: true
-  }));
-}
-
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
-// User context middleware for authenticated requests
-app.use(userContextMiddleware);
+// --- start server ---
+const HOST = "0.0.0.0";
+const PORT = Number(process.env.PORT) || 5000;
 
-(async () => {
-  // Serve attached assets as static files
-  app.use('/attached_assets', express.static(path.resolve(import.meta.dirname, '..', 'attached_assets')));
+// --- serve frontend from /dist ---
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const distDir = path.resolve(__dirname, "../dist/public");
 
-  const server = await registerRoutes(app);
-  
-  // Initialize cron jobs
-  const { initializeCronJobs, startCronJobs, destroyCronJobs } = await import('./cron');
-  initializeCronJobs();
-  startCronJobs();
-  
-  // Graceful shutdown
-  process.on('SIGINT', () => {
-    console.log('📡 Received SIGINT, shutting down gracefully...');
-    destroyCronJobs();
-    process.exit(0);
-  });
-  
-  process.on('SIGTERM', () => {
-    console.log('📡 Received SIGTERM, shutting down gracefully...');
-    destroyCronJobs();
-    process.exit(0);
+// Register all API routes and start the server
+registerRoutes(app).then((server) => {
+  // Mount static assets and SPA fallback AFTER API routes
+  app.use(express.static(distDir));
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(distDir, "index.html"));
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
-  }
-
-  // Add 404 handler for undefined routes (AFTER vite setup)
-  app.use(notFoundHandler);
-  
-  // Global error handler (must be last middleware)
-  app.use(errorHandler);
-
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log.info(`Server running on port ${port}`, {
-      environment: process.env.NODE_ENV || 'development',
-      port,
-    });
+  server.listen(PORT, HOST, () => {
+    console.info(`Server (API + static) listening on ${HOST}:${PORT}`);
   });
-})();
+}).catch((error) => {
+  console.error("Failed to start server:", error);
+  process.exit(1);
+});

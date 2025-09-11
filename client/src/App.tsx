@@ -53,10 +53,32 @@ import { SharePrompt } from "./components/SharePrompt";
 //   • Works across refreshes via localStorage.
 
 // --------------------------------------
+// Types
+// --------------------------------------
+type AgeGroup = "pre-primary" | "primary" | "upper-primary";
+type Biome = "forest" | "desert" | "ocean" | "night";
+type BiomeName = Biome; // Keep for backward compatibility
+
+type Lesson = {
+  id: string;
+  title: string;
+};
+
+type LessonsData = {
+  [K in BiomeName]: Lesson[];
+};
+
+type CompletionData = {
+  [K in BiomeName]: Set<string>;
+};
+
+type CompletionState = Record<string, boolean>;
+
+// --------------------------------------
 // Generic utilities & small UI primitives
 // --------------------------------------
 const KEYS = { loop:'qi_loop', comp:'qi_comp', bpItems:'qi_bp_items', bpEq:'qi_bp_equipped', teacher:'qi_teacher', framework:'qi_framework', calm:'qi_calm', proto:'qi_proto_only', last:'qi_last', pins:'qi_teacher_pins' };
-const cx = (...s) => s.filter(Boolean).join(" ");
+const cx = (...s: any[]) => s.filter(Boolean).join(" ");
 
 // Components extracted to separate files
 
@@ -138,18 +160,18 @@ const REGISTRY = {
 
 
 let CURRENT_LOOP = 1;
-const registryEntry = (biome, lessonId) => {
-  const current = REGISTRY?.[CURRENT_LOOP]?.[biome]?.[lessonId];
+const registryEntry = (biome: Biome, lessonId: string) => {
+  const current = (REGISTRY as any)?.[CURRENT_LOOP]?.[biome]?.[lessonId];
   if (current) return current;
   const loops = Object.keys(REGISTRY || {}).map(Number).sort((a,b)=>b-a);
   for (const L of loops) {
-    const e = REGISTRY?.[L]?.[biome]?.[lessonId];
+    const e = (REGISTRY as any)?.[L]?.[biome]?.[lessonId];
     if (e) return e;
   }
   return null;
 };
 
-const findLesson = (biome,id,lessons)=> (lessons[biome]||[]).find(l=>l.id===id)||null;
+const findLesson = (biome: BiomeName, id: string, lessons: LessonsData): Lesson | null => (lessons[biome]||[]).find(l=>l.id===id)||null;
 
 // Time of day background
 const BG_BY_TOD = {
@@ -174,7 +196,7 @@ const DustMotes = () => { const dots = Array.from({length:12},(_,i)=>({l:`${(i*7
 const Fireflies = () => { const dots = Array.from({length:10},(_,i)=>({l:`${(i*11)%100}%`,t:`${10+(i*7)%60}%`,d:`${i*.4}s`,u:`${2+(i%4)*.5}s`})); return <div aria-hidden className="absolute inset-0">{dots.map((d,i)=><span key={i} className="fly" style={{left:d.l,top:d.t,animation:`firefly ${d.u} ease-in-out ${d.d} infinite`}}/>)}</div>; };
 const HeatHaze = ({calm=false}) => <div aria-hidden className="haze" style={{animation: calm? 'none' : 'shimmer 5s ease-in-out infinite'}}/>;
 const CampfireGlow = ({intensity=.75, calm=false}) => <div aria-hidden className="glow" style={{opacity:intensity,animation: calm? 'none' : 'campGlow 3s ease-in-out infinite'}}/>;
-const AmbientLayer = ({tod, calm=false}) => (
+const AmbientLayer = ({tod, calm=false}: {tod: string, calm?: boolean}) => (
   <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
     {tod==='morning'&&!calm&&<DustMotes/>}
     {tod==='afternoon'&&!calm&&<HeatHaze calm={calm}/>}
@@ -186,7 +208,7 @@ const AmbientLayer = ({tod, calm=false}) => (
 );
 
 // Meta helpers
-function getLessonMeta(biome, id, framework = 'Generic') {
+function getLessonMeta(biome: Biome, id: string, framework: string = 'Generic') {
   const base = {
     forest:{icon:"📘",est:"5–7 min",objectives:["Identify sounds","Blend simple words","Read aloud"],standard:"Foundational phonics & fluency"},
     desert:{icon:"➕",est:"6–8 min",objectives:["Add within 10","Use number bonds","Apply to word problems"],standard:"Number sense & operations"},
@@ -198,9 +220,9 @@ function getLessonMeta(biome, id, framework = 'Generic') {
   
   // Get the mapped standard based on selected framework
   const mappedStd = 
-    (reg?.standards && framework && reg.standards[framework]) ||
+    (reg?.standards && framework && (reg.standards as any)[framework]) ||
     (reg?.standards?.Generic) ||
-    (STANDARDS[framework]?.[biome]) ||
+    ((STANDARDS as any)[framework]?.[biome]) ||
     base.standard;
 
   return {
@@ -212,7 +234,7 @@ function getLessonMeta(biome, id, framework = 'Generic') {
   };
 }
 // Activity URL (respects Prototype-only mode)
-const resolveActivityUrl = (biome,lessonId, protoOnly) => {
+const resolveActivityUrl = (biome: Biome, lessonId: string, protoOnly: boolean) => {
   if (protoOnly) return `https://player.example/${biome}/${lessonId}`;
   const reg = registryEntry(biome,lessonId);
   const url = (reg && typeof reg.url==='string' && reg.url.trim().length>0) ? reg.url : `https://player.example/${biome}/${lessonId}`;
@@ -220,9 +242,9 @@ const resolveActivityUrl = (biome,lessonId, protoOnly) => {
 };
 
 // Progress encode/decode helpers (URL-safe Base64)
-const b64urlEncode = (s)=>{ const bytes=new TextEncoder().encode(s); let bin=''; bytes.forEach(b=>bin+=String.fromCharCode(b)); return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); };
-const b64urlDecode = (s)=>{ const n=s.replace(/-/g,'+').replace(/_/g,'/'); const pad = n.length%4? '='.repeat(4-(n.length%4)) : ''; const str=atob(n+pad); const bytes=new Uint8Array(str.length); for(let i=0;i<str.length;i++) bytes[i]=str.charCodeAt(i); return new TextDecoder().decode(bytes); };
-const buildProgressPayload = (loop,comp,bp,framework,protoOnly)=> ({
+const b64urlEncode = (s: string)=>{ const bytes=new TextEncoder().encode(s); let bin=''; bytes.forEach(b=>bin+=String.fromCharCode(b)); return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); };
+const b64urlDecode = (s: string)=>{ const n=s.replace(/-/g,'+').replace(/_/g,'/'); const pad = n.length%4? '='.repeat(4-(n.length%4)) : ''; const str=atob(n+pad); const bytes=new Uint8Array(str.length); for(let i=0;i<str.length;i++) bytes[i]=str.charCodeAt(i); return new TextDecoder().decode(bytes); };
+const buildProgressPayload = (loop: number, comp: any, bp: any, framework: string, protoOnly: boolean)=> ({
   v:1,
   loop,
   comp:{
@@ -234,8 +256,8 @@ const buildProgressPayload = (loop,comp,bp,framework,protoOnly)=> ({
   bp:{ items: bp.items||[], equipped: bp.equipped||[] },
   framework, protoOnly
 });
-const makeProgressLink = (payload)=>{ const base=(typeof window!=='undefined')?(window.location.origin+window.location.pathname):'https://example.com/quest'; const token=b64urlEncode(JSON.stringify(payload)); return `${base}?qi=${token}`; };
-const extractQiFromInput = (input)=>{ try{ const url=new URL(input); const q=url.searchParams.get('qi'); if(q) return q; }catch{} const m=String(input||'').match(/[?&#]qi=([A-Za-z0-9_-]+)/); return m? m[1] : String(input||'').trim(); };
+const makeProgressLink = (payload: any)=>{ const base=(typeof window!=='undefined')?(window.location.origin+window.location.pathname):'https://example.com/quest'; const token=b64urlEncode(JSON.stringify(payload)); return `${base}?qi=${token}`; };
+const extractQiFromInput = (input: string)=>{ try{ const url=new URL(input); const q=url.searchParams.get('qi'); if(q) return q; }catch{} const m=String(input||'').match(/[?&#]qi=([A-Za-z0-9_-]+)/); return m? m[1] : String(input||'').trim(); };
 
 // --------------------------------------
 // Prototype Activities (per-lesson templates)
@@ -270,7 +292,7 @@ const TEMPLATES={
     n5:{q:"Which is water on a map?",options:["lake","forest","mountain"],correct:0,explain:"A lake is water"}
   }
 };
-const getTemplate=(biome,id)=> TEMPLATES[biome]?.[id] || {q:"Prototype — placeholder:",options:["Option A","Option B"],correct:0,explain:"We'll replace this later."};
+const getTemplate=(biome: Biome, id: string)=> (TEMPLATES as any)[biome]?.[id] || {q:"Prototype — placeholder:",options:["Option A","Option B"],correct:0,explain:"We'll replace this later."};
 
 // MCActivity component moved to ActivityPlayer.tsx
 
@@ -283,7 +305,7 @@ const getTemplate=(biome,id)=> TEMPLATES[biome]?.[id] || {q:"Prototype — place
 
 // LessonSheet component moved to separate file
 
-function Node({biome,status,onClick,count,total,calm=false}){
+function Node({biome,status,onClick,count,total,calm=false}: {biome: Biome, status: string, onClick: () => void, count: number, total: number, calm?: boolean}){
   const subject=SUBJECTS[biome];
   const base={forest:"from-green-200 to-green-300",desert:"from-orange-200 to-amber-300",ocean:"from-cyan-200 to-sky-300",night:"from-indigo-300 to-slate-400"}[biome];
   const ringUnlocked = 'ring-2 ring-amber-200/60';
@@ -322,7 +344,7 @@ function Node({biome,status,onClick,count,total,calm=false}){
   );
 }
 
-function LessonNode({biome,lesson,completed,onSelect,pos,locked,isNext,onLocked}){
+function LessonNode({biome,lesson,completed,onSelect,pos,locked,isNext,onLocked}: {biome: Biome, lesson: Lesson, completed: Set<string>, onSelect: (biome: Biome, lesson: Lesson) => void, pos: {x: number, y: number}, locked: boolean, isNext: boolean, onLocked?: () => void}){
   const {label,color}=SUBJECTS[biome]; const isDone= completed?.has?.(lesson.id)||false; const accent=color;
   const ariaLabel = locked 
     ? `${lesson.title} lesson is locked - complete the previous lesson first`
@@ -335,7 +357,7 @@ function LessonNode({biome,lesson,completed,onSelect,pos,locked,isNext,onLocked}
     onSelect(biome,lesson);
   };
   
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       handleClick();
@@ -399,8 +421,8 @@ function AppContent(){
   CURRENT_LOOP = loop as any;
 
   // select lessons by active loop
-  const LESSONS: any = loop === 2 ? LOOP2 : LOOP1;
-  const [comp,setComp]=useState(()=>{ try{const raw=JSON.parse(localStorage.getItem(KEYS.comp)||'{}'); return { forest: new Set(raw.forest||[]), desert: new Set(raw.desert||[]), ocean: new Set(raw.ocean||[]), night: new Set(raw.night||[]) };}catch{return { forest: new Set(), desert: new Set(), ocean: new Set(), night: new Set() };} });
+  const LESSONS: LessonsData = loop === 2 ? LOOP2 : LOOP1;
+  const [comp,setComp]=useState<CompletionData>(()=>{ try{const raw=JSON.parse(localStorage.getItem(KEYS.comp)||'{}'); return { forest: new Set<string>(raw.forest||[]), desert: new Set<string>(raw.desert||[]), ocean: new Set<string>(raw.ocean||[]), night: new Set<string>(raw.night||[]) };}catch{return { forest: new Set<string>(), desert: new Set<string>(), ocean: new Set<string>(), night: new Set<string>() };} });
   const [teacherMode,setTeacherMode]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.teacher)||'false');}catch{return false;} });
   const [teacherPins,setTeacherPins]=useState(()=>{ try{return JSON.parse(localStorage.getItem(KEYS.pins)||'false');}catch{return false;} });
   const [framework,setFramework]=useState(()=>{ try{return localStorage.getItem(KEYS.framework)||'Generic';}catch{return 'Generic';} });
@@ -437,7 +459,7 @@ function AppContent(){
       // Delay to allow everything to load
       setTimeout(() => {
         checkAssignmentNudges(
-          rosterContext.activeLearner.id,
+          rosterContext.activeLearner?.id || '',
           enqueue,
           (lessonId: string) => {
             // Focus pin functionality
@@ -607,7 +629,7 @@ function AppContent(){
   };
 
   // ---- Dynamic biome status computation ----
-  function computeStatuses(c){
+  function computeStatuses(c: CompletionData){
     const lenF=(LESSONS.forest||[]).length||5;
     const lenD=(LESSONS.desert||[]).length||5;
     const lenO=(LESSONS.ocean||[]).length||5;
@@ -723,7 +745,7 @@ function AppContent(){
       }
       if (e.key === 't' || e.key === 'T') {
         e.preventDefault();
-        setTeacherMode(v => !v);
+        setTeacherMode((v: boolean) => !v);
         flash(`Teacher mode ${!teacherMode ? 'on' : 'off'}`);
         return;
       }
@@ -732,7 +754,7 @@ function AppContent(){
           e.preventDefault();
           const l = last as any;
           setOpenBiome?.(l.biome);
-          const lesson = (LESSONS[l.biome] || []).find((x:any)=>x.id=== l.id);
+          const lesson = ((LESSONS as any)[l.biome] || []).find((x:any)=>x.id=== l.id);
           if (lesson) {
             logEvent({ ts: new Date().toISOString(), loop, biome: l.biome, lessonId: l.id, action: 'resume' });
             launchLesson(lesson, l.biome);
@@ -763,7 +785,7 @@ function AppContent(){
       night:  (LESSONS.night ||[]).length || 5,
     };
     const doneCounts={forest:comp.forest.size,desert:comp.desert.size,ocean:comp.ocean.size,night:comp.night.size};
-    const allDone = ['forest','desert','ocean','night'].every(b => doneCounts[b] >= totals[b]);
+    const allDone = ['forest','desert','ocean','night'].every(b => (doneCounts as any)[b] >= (totals as any)[b]);
 
     if (allDone) {
       setCelebrate(true);
@@ -791,7 +813,7 @@ function AppContent(){
 
   // ---- Import/Export helpers ----
   const exportProgress = ()=> { const link = makeProgressLink(buildProgressPayload(loop,comp,bp,framework,protoOnly)); logEvent({ ts: new Date().toISOString(), loop, action: 'export' }); return link; };
-  const importFromToken = (token)=>{ try{ const payload=JSON.parse(b64urlDecode(token)); if(payload.v!==1) return; setLoop(payload.loop||1); setComp({ forest: new Set(payload.comp?.forest||[]), desert: new Set(payload.comp?.desert||[]), ocean: new Set(payload.comp?.ocean||[]), night: new Set(payload.comp?.night||[]) }); if(payload.bp){ bp.setItems(payload.bp.items||[]); bp.setEquipped(payload.bp.equipped||[]); } if(payload.framework) setFramework(payload.framework); if(typeof payload.protoOnly==='boolean') setProtoOnly(payload.protoOnly); logEvent({ ts: new Date().toISOString(), loop: payload.loop ?? loop, action: 'import' }); }catch{} };
+  const importFromToken = (token: string)=>{ try{ const payload=JSON.parse(b64urlDecode(token)); if(payload.v!==1) return; setLoop(payload.loop||1); setComp({ forest: new Set(payload.comp?.forest||[]), desert: new Set(payload.comp?.desert||[]), ocean: new Set(payload.comp?.ocean||[]), night: new Set(payload.comp?.night||[]) }); if(payload.bp){ bp.setItems(payload.bp.items||[]); bp.setEquipped(payload.bp.equipped||[]); } if(payload.framework) setFramework(payload.framework); if(typeof payload.protoOnly==='boolean') setProtoOnly(payload.protoOnly); logEvent({ ts: new Date().toISOString(), loop: payload.loop ?? loop, action: 'import' }); }catch{} };
 
   // ---- Ping helper for external URLs ----
   async function pingUrl(url: string, timeoutMs = 2000): Promise<boolean> {
@@ -805,7 +827,7 @@ function AppContent(){
   }
 
   // ---- Event handlers ----
-  const markComplete = (biome,lessonId)=>{ const collectibles = ['🧰','🏅','🖋️','🎨','🔍']; const items = ['Field Kit','Merit Badge','Quill Pen','Sketch Pad','Looking Glass']; const kinds = ['tool','badge','tool','tool','tool'] as const; const rnd = Math.floor(Math.random()*collectibles.length); const awardId = `${biome}-${lessonId}`; setComp(p=>({...p,[biome]:new Set([...p[biome],lessonId])})); bp.award({id:awardId,name:items[rnd],kind:kinds[rnd],icon:collectibles[rnd]}); sfx.play('award_get'); logEvent({ ts: new Date().toISOString(), loop, biome, lessonId, action: 'award', meta: { awardId, name: items[rnd] } }); setToast(`Collected ${items[rnd]}!`); setTimeout(()=>setToast(null),2000); };
+  const markComplete = (biome: Biome, lessonId: string)=>{ const collectibles = ['🧰','🏅','🖋️','🎨','🔍']; const items = ['Field Kit','Merit Badge','Quill Pen','Sketch Pad','Looking Glass']; const kinds = ['tool','badge','tool','tool','tool'] as const; const rnd = Math.floor(Math.random()*collectibles.length); const awardId = `${biome}-${lessonId}`; setComp(p=>({...p,[biome]:new Set([...p[biome],lessonId])})); bp.award({id:awardId,name:items[rnd],kind:kinds[rnd],icon:collectibles[rnd]}); sfx.play('award_get'); logEvent({ ts: new Date().toISOString(), loop, biome, lessonId, action: 'award', meta: { awardId, name: items[rnd] } }); setToast(`Collected ${items[rnd]}!`); setTimeout(()=>setToast(null),2000); };
   // Is this lesson locked (sequential gating)?
   const isLessonLocked = (biome: string, lessonId: string) => {
     if (teacherMode) return false; // override
@@ -813,13 +835,13 @@ function AppContent(){
     const idx = arr.findIndex((l: any) => l.id === lessonId);
     if (idx <= 0) return false; // first lesson in biome is always unlocked
     const prevId = arr[idx - 1].id;
-    return !(comp[biome as keyof typeof comp] as Set<string>).has(prevId);
+    return !((comp as any)[biome] as Set<string>).has(prevId);
   };
   
-  const openLessonSheet = (biome)=> setOpenBiome(biome);
+  const openLessonSheet = (biome: Biome)=> setOpenBiome(biome);
   
   // ---- External activity launcher with fallback ----
-  async function launchLesson(lesson: any, biome: string) {
+  async function launchLesson(lesson: Lesson, biome: Biome) {
     if (isLessonLocked(biome, lesson.id)) {
       flash('Finish the previous lesson to unlock this one');
       return;
@@ -833,7 +855,7 @@ function AppContent(){
     }
 
     // Check registry for a real URL
-    const url = registryEntry(biome, lesson.id)?.url?.trim();
+    const url = registryEntry(biome as Biome, lesson.id)?.url?.trim();
     if (url) {
       const ok = await pingUrl(url, 2000);
       if (ok) {
@@ -850,7 +872,7 @@ function AppContent(){
     setPlayer({ biome, lesson });
   }
   
-  const startLesson = (lesson,biome)=>{ 
+  const startLesson = (lesson: Lesson, biome: Biome)=>{ 
     launchLesson(lesson, biome);
   };
   const resumeLesson = ()=>{ if(last) { const lesson = findLesson(last.biome,last.id,LESSONS); if(lesson) { logEvent({ ts: new Date().toISOString(), loop, biome: last.biome, lessonId: last.id, action: 'resume' }); launchLesson(lesson,last.biome); } } };
@@ -861,7 +883,7 @@ function AppContent(){
   
   // ---- Pin visibility helpers ----
   const nextUnfinishedId = (biome: string, done: Set<string>) =>
-    (LESSONS[biome] || []).find((l:any) => !done.has(l.id))?.id ?? null;
+    ((LESSONS as any)[biome] || []).find((l:any) => !done.has(l.id))?.id ?? null;
 
   // ---- Adaptive lesson selection ----
   const getAdaptiveNextLesson = (currentBiome?: string): { lessonId: string | null; reasoning?: string } => {
@@ -874,8 +896,8 @@ function AppContent(){
     const biomesToCheck = currentBiome ? [currentBiome] : Object.keys(LESSONS);
     
     for (const biome of biomesToCheck) {
-      const lessons = LESSONS[biome] || [];
-      const doneSet = comp[biome] as Set<string>;
+      const lessons = (LESSONS as any)[biome] || [];
+      const doneSet = (comp as any)[biome] as Set<string>;
       
       for (let i = 0; i < lessons.length; i++) {
         const lesson = lessons[i];
@@ -964,9 +986,9 @@ function AppContent(){
             {last&&<button onClick={resumeLesson} className="px-3 py-2 rounded-full bg-[rgb(var(--brand-700))] text-black hover:bg-[rgb(var(--brand-800))] font-medium transition ease-out">Resume: {findLesson(last.biome,last.id,LESSONS)?.title}</button>}
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={()=>setCalm(p=>!p)} className={cx("w-10 h-10 rounded-full border transition ease-out", calm?"bg-blue-100 border-blue-300":"bg-white/50 border-white/70")} title={calm?"Disable calm mode":"Enable calm mode"}>😌</button>
+            <button onClick={()=>setCalm(!calm)} className={cx("w-10 h-10 rounded-full border transition ease-out", calm?"bg-blue-100 border-blue-300":"bg-white/50 border-white/70")} title={calm?"Disable calm mode":"Enable calm mode"}>😌</button>
             <button onClick={()=>{ setShowBP(true); sfx.play('ui_open'); }} className="w-10 h-10 rounded-full bg-amber-100 hover:bg-amber-200 border border-amber-300 flex items-center justify-center transition ease-out">🎒</button>
-            <button onClick={()=>setTeacherMode(p=>!p)} className={cx("px-3 py-2 rounded-full border transition ease-out", teacherMode?"bg-emerald-100 border-emerald-300 text-emerald-800":"bg-white/50 border-white/70 hover:bg-white/70")}>{teacherMode?'Teacher ✓':'Teacher'}</button>
+            <button onClick={()=>setTeacherMode((p: boolean)=>!p)} className={cx("px-3 py-2 rounded-full border transition ease-out", teacherMode?"bg-emerald-100 border-emerald-300 text-emerald-800":"bg-white/50 border-white/70 hover:bg-white/70")}>{teacherMode?'Teacher ✓':'Teacher'}</button>
             {teacherMode&&<button onClick={()=>{ setShowTeacher(true); sfx.play('ui_open'); }} className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 flex items-center justify-center transition ease-out">⚙️</button>}
           </div>
         </header>
@@ -1028,26 +1050,26 @@ function AppContent(){
 
             {/* Biome Regions */}
             {Object.entries(biomePos).map(([biome,pos])=>{
-              const count = comp[biome].size;
-              const status = biomeStatuses[biome];
-              const total = (LESSONS[biome] || []).length;
+              const count = (comp as any)[biome].size;
+              const status = (biomeStatuses as any)[biome];
+              const total = ((LESSONS as any)[biome] || []).length;
               return (
                 <div key={biome} className="absolute z-20" style={{left:pos.x+'%',top:pos.y+'%'}}>
-                  <Node biome={biome} status={status} onClick={()=>openLessonSheet(biome)} count={count} total={total} calm={calm}/>
+                  <Node biome={biome as Biome} status={status} onClick={()=>openLessonSheet(biome as Biome)} count={count} total={total} calm={calm}/>
                 </div>
               );
             })}
 
             {/* Lesson Pins on Map (guarded) */}
             {showAnyPins && Object.entries(lessonPos).map(([biome, positions]) => {
-              const lessons = LESSONS[biome] || [];
-              const doneSet = comp[biome] as Set<string>;
+              const lessons = (LESSONS as any)[biome] || [];
+              const doneSet = (comp as any)[biome] as Set<string>;
               
               // Use adaptive selection when compass is equipped
               const adaptiveResult = hasEquipped(bp, 'tool_compass') ? getAdaptiveNextLesson(biome) : { lessonId: null };
               const nextId = adaptiveResult.lessonId;
 
-              return lessons.map((lesson, i) => {
+              return lessons.map((lesson: Lesson, i: number) => {
                 // If compass is the only reason pins are visible, show *only* the next unfinished pin.
                 if (!teacherMode || !teacherPins) {
                   if (nextId == null || lesson.id !== nextId) return null;
@@ -1060,7 +1082,7 @@ function AppContent(){
                        style={{ left: pos.x + '%', top: pos.y + '%' }}>
                     <div className="pointer-events-auto">
                       <LessonNode
-                        biome={biome}
+                        biome={biome as Biome}
                         lesson={lesson}
                         completed={doneSet}
                         locked={locked}
@@ -1164,7 +1186,7 @@ function AppContent(){
             );
           }
           
-          launchLesson(lesson, openBiome);
+          launchLesson(lesson, openBiome as Biome);
         }}
         protoOnly={protoOnly}
         calmTip={hasEquipped(bp, 'charm_feather')}
@@ -1206,7 +1228,7 @@ function AppContent(){
             if (wasEmptyBefore(prev, 'ocean'))   { bp.award({ id:'charm_feather', name:'Feather',    kind:'charm', icon:'🪶' }); sfx.play('pin_unlock'); }
             
             // pick the next unfinished lesson in this biome
-            const nextLesson = (LESSONS[biome] || []).find(l => !nextSet.has(l.id));
+            const nextLesson = ((LESSONS as any)[biome] || []).find((l: Lesson) => !nextSet.has(l.id));
             setLast(nextLesson ? { biome, id: nextLesson.id } : null);
             return { ...prev, [biome]: nextSet };
           });
@@ -1215,7 +1237,7 @@ function AppContent(){
           if (rosterContext?.activeLearner?.id) {
             setTimeout(() => {
               checkAssignmentNudges(
-                rosterContext.activeLearner.id,
+                rosterContext.activeLearner?.id || '',
                 enqueue,
                 (lessonId: string) => {
                   // Focus pin functionality
