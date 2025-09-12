@@ -1,13 +1,28 @@
 import React, { useState } from 'react';
-import { Route, Link } from 'wouter';
+import { Route, Link, Redirect } from 'wouter';
 import App from './App';
 import { HeroLessonDemo, HeroLessonDemoIndex } from './pages/HeroLessonDemo';
 import { PromptRunner } from './pages/PromptRunner';
-import DebugDashboard from './pages/DebugDashboard';
-import { ReferralsPage } from './pages/ReferralsPage';
 import { HealthBadge } from './components/HealthBadge';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import Providers from './Providers';
+import { TeacherLayoutV2 } from './guide/teacher/TeacherLayoutV2';
+import TabContentV2 from './guide/teacher/TabContentV2';
+import { useFlags } from './config/flags';
+
+/**
+ * Teacher Panel Entry Point
+ */
+function TeacherPanelEntry() {
+  return (
+    <TeacherLayoutV2
+      activeTab="" // Will be determined by URL routing inside layout
+      onTabChange={() => {}} // URL-controlled, no tab state changes
+      onClose={() => window.history.back()}
+      renderContent={() => <TabContentV2 tab="overview" />} // Default content for non-routed tabs
+    />
+  );
+}
 
 /**
  * URL routing system using wouter for direct navigation
@@ -19,8 +34,14 @@ export function AppRouter() {
         <Route path="/hero-demo" component={HeroLessonDemoIndex} />
         <Route path="/hero-demo/lesson" component={HeroLessonDemo} />
         <Route path="/tools/prompts" component={PromptRunner} />
-        <Route path="/debug" component={DebugDashboard} />
-        <Route path="/referrals" component={ReferralsPage} />
+        
+        {/* Teacher Panel Routes - nested routing handled inside TeacherLayoutV2 */}
+        <Route path="/teacher/:sub*" component={TeacherPanelEntry} />
+        
+        {/* Redirect legacy routes to teacher panel */}
+        <Route path="/referrals" component={() => <Redirect to="/teacher/referrals" />} />
+        <Route path="/debug" component={() => <Redirect to="/teacher/debug" />} />
+        
         <Route path="/" component={AppWithHeroAccess} />
       </Providers>
     </ErrorBoundary>
@@ -40,11 +61,11 @@ function AppWithHeroAccess() {
         <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg border border-gray-200">
           <HealthBadge />
           <span className="text-gray-300">|</span>
-          <Link href="/referrals" className="text-sm text-blue-600 hover:text-blue-800 font-medium" data-testid="nav-referrals-main">
+          <Link href="/teacher/referrals" className="text-sm text-blue-600 hover:text-blue-800 font-medium" data-testid="nav-referrals-main">
             Referrals
           </Link>
           <span className="text-gray-300">|</span>
-          <Link href="/debug" className="text-sm text-gray-600 hover:text-gray-800" data-testid="nav-debug-main">
+          <Link href="/teacher/debug" className="text-sm text-gray-600 hover:text-gray-800" data-testid="nav-debug-main">
             Debug
           </Link>
         </div>

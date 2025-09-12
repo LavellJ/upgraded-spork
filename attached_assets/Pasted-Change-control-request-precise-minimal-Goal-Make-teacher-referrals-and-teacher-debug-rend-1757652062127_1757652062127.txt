@@ -1,0 +1,51 @@
+Change-control request (precise, minimal):
+
+Goal:
+Make /teacher/referrals and /teacher/debug render INSIDE the Teacher panel (no map, no popup), and ensure the teacher routes are not preempted by a catch-all.
+
+Plan:
+1) Routing order (AppRouter or equivalent):
+   - Ensure the teacher routes are declared BEFORE any catch-all / overview / map routes.
+   - Using wouter v3:
+     * Place <Route path="/teacher/:sub*"> ... </Route> ABOVE the default/home route.
+     * Keep /referrals and /debug top-level routes as simple redirects to /teacher/referrals and /teacher/debug.
+
+2) Teacher layout outlet:
+   - In the Teacher layout component (e.g., client/src/guide/TeacherLayout.tsx or similar), render a nested router OUTLET where page content goes.
+   - For wouter, implement a nested <Switch> based on the current location under /teacher/*, e.g.:
+     ```tsx
+     import { Switch, Route, useLocation } from "wouter";
+     export function TeacherLayout() {
+       const [loc] = useLocation();
+       return (
+         <div className="teacher-layout">
+           <SidePanel /> {/* tabs */}
+           <main className="teacher-content">
+             <Switch>
+               <Route path="/teacher/referrals" component={ReferralsPage} />
+               <Route path="/teacher/debug" component={DebugDashboard} />
+               <Route> <TeacherHome /> </Route> {/* default inside teacher */}
+             </Switch>
+           </main>
+         </div>
+       );
+     }
+     ```
+     (If you already split routes, ensure the nested switch actually mounts inside the Teacher layout content area, not outside.)
+
+3) Links:
+   - Replace any remaining `navigate('referrals')` / `navigate('debug')` in teacher panel tab code with:
+     `<Link href="/teacher/referrals">Referrals</Link>` and `<Link href="/teacher/debug">Debug</Link>`.
+   - Remove any window.alert / placeholder modal calls still reachable from those tabs.
+
+4) Build & restart:
+   - npm run build
+   - Restart "Unified Server"
+
+5) Validation to report:
+   - Exact file diffs for the router order and Teacher layout outlet.
+   - Grep output shows NO remaining navigate('referrals'|'debug').
+   - Browser:
+     * Visiting /teacher/referrals shows the page IN-PANEL (no redirect to map, no popup).
+     * Top-level /referrals → redirects to /teacher/referrals and renders in-panel.
+     * /teacher/debug renders the debug page inside the panel.
