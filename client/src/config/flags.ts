@@ -14,11 +14,11 @@ function load(): FeatureFlags {
   try{ 
     const raw=localStorage.getItem(KEY); 
     if(raw) {
-      cachedFlags = { finalArt:false, teacherPanelV2:false, teacherThemeV2:false, teacherAppearanceV3:false, ...JSON.parse(raw) }
+      cachedFlags = { finalArt:false, teacherPanelV2:true, teacherThemeV2:true, teacherAppearanceV3:false, ...JSON.parse(raw) }
       return cachedFlags
     }
   }catch{}; 
-  cachedFlags = { finalArt:false, teacherPanelV2:false, teacherThemeV2:false, teacherAppearanceV3:false }
+  cachedFlags = { finalArt:false, teacherPanelV2:true, teacherThemeV2:false, teacherAppearanceV3:false }
   return cachedFlags
 }
 function save(next: FeatureFlags){ 
