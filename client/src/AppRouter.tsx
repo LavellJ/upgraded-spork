@@ -3,39 +3,24 @@ import { Route, Link, Redirect } from 'wouter';
 import App from './App';
 import { HeroLessonDemo, HeroLessonDemoIndex } from './pages/HeroLessonDemo';
 import { PromptRunner } from './pages/PromptRunner';
-import DebugDashboard from './pages/DebugDashboard';
-import { ReferralsPage } from './pages/ReferralsPage';
 import { HealthBadge } from './components/HealthBadge';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import Providers from './Providers';
-import TeacherLayout from './guide/teacher/Layout';
 import { TeacherLayoutV2 } from './guide/teacher/TeacherLayoutV2';
 import TabContentV2 from './guide/teacher/TabContentV2';
-import DevPanel from './guide/dev/DevPanel';
 import { useFlags } from './config/flags';
 
 /**
- * Teacher Panel Page Wrapper
+ * Teacher Panel Entry Point
  */
-function TeacherPanelPage({ tab }: { tab: string }) {
-  const { teacherPanelV2 } = useFlags();
-  
-  if (teacherPanelV2) {
-    return (
-      <TeacherLayoutV2
-        activeTab={tab}
-        onTabChange={() => {}} // URL-controlled, no tab state changes
-        onClose={() => window.history.back()}
-        renderContent={() => <TabContentV2 tab={tab} />}
-      />
-    );
-  }
-  
-  // Legacy fallback - render content directly in teacher layout
+function TeacherPanelEntry() {
   return (
-    <TeacherLayout title={tab === 'referrals' ? 'Referrals' : 'Debug'} subtitle="Teacher panel">
-      {tab === 'referrals' ? <ReferralsPage /> : <DevPanel />}
-    </TeacherLayout>
+    <TeacherLayoutV2
+      activeTab="" // Will be determined by URL routing inside layout
+      onTabChange={() => {}} // URL-controlled, no tab state changes
+      onClose={() => window.history.back()}
+      renderContent={() => <TabContentV2 tab="overview" />} // Default content for non-routed tabs
+    />
   );
 }
 
@@ -50,9 +35,8 @@ export function AppRouter() {
         <Route path="/hero-demo/lesson" component={HeroLessonDemo} />
         <Route path="/tools/prompts" component={PromptRunner} />
         
-        {/* Teacher Panel Routes */}
-        <Route path="/teacher/referrals" component={() => <TeacherPanelPage tab="referrals" />} />
-        <Route path="/teacher/debug" component={() => <TeacherPanelPage tab="dev" />} />
+        {/* Teacher Panel Routes - nested routing handled inside TeacherLayoutV2 */}
+        <Route path="/teacher/:sub*" component={TeacherPanelEntry} />
         
         {/* Redirect legacy routes to teacher panel */}
         <Route path="/referrals" component={() => <Redirect to="/teacher/referrals" />} />

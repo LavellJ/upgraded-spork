@@ -83,22 +83,19 @@ function TimelineList() {
 
   const handleViewLessonEvents = () => {
     setLoading('lessons')
-    // Navigate to assignments panel instead of popup
-    window.location.href = '/teacher/assignments'
+    // Navigation handled by Link component, not window.location
     setLoading(null)
   }
 
   const handleViewJournalEntries = () => {
     setLoading('journals')
-    // Navigate to reports panel instead of popup
-    window.location.href = '/teacher/reports'
+    // Navigation handled by Link component, not window.location
     setLoading(null)
   }
 
   const handleViewScoutActivity = () => {
     setLoading('scout')
-    // Navigate to insights panel instead of popup
-    window.location.href = '/teacher/insights'
+    // Navigation handled by Link component, not window.location
     setLoading(null)
   }
 
@@ -193,44 +190,9 @@ function ContentStudioList() {
 
   const handleCreateLesson = () => {
     setLoading('create')
-    try {
-      // Interactive lesson creation dialog
-      const lessonType = prompt(`=== CREATE NEW LESSON ===
-
-Choose lesson type:
-
-1. Math Problem Solving
-2. Reading Comprehension  
-3. Science Experiment
-4. Creative Writing
-5. Critical Thinking
-6. Blank Template
-
-Enter number (1-6):`)
-      
-      if (lessonType && ['1','2','3','4','5','6'].includes(lessonType)) {
-        const types = ['Math Problem Solving', 'Reading Comprehension', 'Science Experiment', 'Creative Writing', 'Critical Thinking', 'Blank Template']
-        const selectedType = types[parseInt(lessonType) - 1]
-        
-        const lessonName = prompt(`Create ${selectedType} lesson:
-
-Enter lesson title:`)
-        
-        if (lessonName) {
-          setLessonCount(prev => prev + 1)
-          alert(`✨ New Lesson Created!
-
-Title: "${lessonName}"
-Type: ${selectedType}
-Status: Draft
-ID: lesson-${Date.now()}
-
-Your lesson has been added to the content library. You can now add activities, questions, and media assets.`)
-        }
-      }
-    } finally {
-      setLoading(null)
-    }
+    // Increment lesson count without popup
+    setLessonCount(prev => prev + 1)
+    setLoading(null)
   }
 
   const handleValidateContent = () => {
