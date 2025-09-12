@@ -1,5 +1,6 @@
 import React, { ReactNode, useEffect } from 'react'
 import { X } from 'lucide-react'
+import { Switch, Route, Link, useLocation } from 'wouter'
 import { DensityProvider, useDensity } from './density'
 import { ToastHost } from '../../ui2/Toast'
 import { useFlags } from '../../config/flags'
@@ -7,6 +8,9 @@ import { useTheme, type Theme } from '../../theme/useTheme'
 import { validateThemeContrast } from '../../theme/contrast'
 import { Ic } from '../../ui2/icons'
 import IconButton from '../../ui2/IconButton'
+import { ReferralsPage } from '../../pages/ReferralsPage'
+import DebugDashboard from '../../pages/DebugDashboard'
+import TabContentV2 from './TabContentV2'
 
 const TAB_CONFIG = {
   overview: { icon: <Ic.star className="list-icon" />, label: 'Overview' },
@@ -80,26 +84,49 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
           
           <nav className="flex-1 p-2 overflow-y-auto" tabIndex={0} aria-label="Teacher navigation">
             <div className="space-y-1">
-              {Object.entries(TAB_CONFIG).map(([tabKey, config]) => (
-                <button
-                  key={tabKey}
-                  onClick={() => onTabChange(tabKey)}
-                  className={
-                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left focus-ring transition-colors ' +
-                    (teacherThemeV2 
-                      ? (activeTab === tabKey
-                          ? 'bg-[rgb(var(--bg-base))] text-[rgb(var(--fg-base))] border-l-2 border-[rgb(var(--brand-500))]'
-                          : 'text-[rgb(var(--fg-muted))] hover:bg-[rgb(var(--bg-elev))]/60 hover:text-[rgb(var(--fg-base))]')
-                      : (activeTab === tabKey
-                          ? 'bg-blue-100 text-blue-900'
-                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'))
-                  }
-                  aria-current={activeTab === tabKey ? 'page' : undefined}
-                >
-                  {config.icon}
-                  <span className="truncate text-sm font-medium">{config.label}</span>
-                </button>
-              ))}
+              {Object.entries(TAB_CONFIG).map(([tabKey, config]) => {
+                // Use Link for routed tabs, button for others
+                const isRoutedTab = tabKey === 'referrals' || tabKey === 'dev';
+                const href = tabKey === 'referrals' ? '/teacher/referrals' : 
+                             tabKey === 'dev' ? '/teacher/debug' : undefined;
+                
+                const className = 'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left focus-ring transition-colors ' +
+                  (teacherThemeV2 
+                    ? (activeTab === tabKey
+                        ? 'bg-[rgb(var(--bg-base))] text-[rgb(var(--fg-base))] border-l-2 border-[rgb(var(--brand-500))]'
+                        : 'text-[rgb(var(--fg-muted))] hover:bg-[rgb(var(--bg-elev))]/60 hover:text-[rgb(var(--fg-base))]')
+                    : (activeTab === tabKey
+                        ? 'bg-blue-100 text-blue-900'
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'));
+                
+                if (isRoutedTab && href) {
+                  return (
+                    <Link
+                      key={tabKey}
+                      href={href}
+                      className={className}
+                      aria-current={activeTab === tabKey ? 'page' : undefined}
+                      data-testid={`nav-${tabKey}`}
+                    >
+                      {config.icon}
+                      <span className="truncate text-sm font-medium">{config.label}</span>
+                    </Link>
+                  );
+                }
+                
+                return (
+                  <button
+                    key={tabKey}
+                    onClick={() => onTabChange(tabKey)}
+                    className={className}
+                    aria-current={activeTab === tabKey ? 'page' : undefined}
+                    data-testid={`tab-${tabKey}`}
+                  >
+                    {config.icon}
+                    <span className="truncate text-sm font-medium">{config.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </nav>
           
@@ -116,7 +143,13 @@ export function TeacherLayoutV2({ activeTab, onTabChange, onClose, renderContent
         }`}>
           <ToastHost>
             <div className="p-6">
-              {renderContent()}
+              <Switch>
+                <Route path="/teacher/referrals" component={() => <ReferralsPage />} />
+                <Route path="/teacher/debug" component={() => <DebugDashboard />} />
+                <Route>
+                  {renderContent()}
+                </Route>
+              </Switch>
             </div>
           </ToastHost>
         </section>
