@@ -23,10 +23,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    // Force the port on CI and local
-    command: 'PORT=5000 npm run build && PORT=5000 npm run start',
-    port: 5000,
-    timeout: 300000, // 5 mins for slow CI builds
-    reuseExistingServer: false,
-  },
+  command: 'npm run dev',      // not used if the port is already up
+  port: 5000,
+  timeout: 300000,
+  reuseExistingServer: true,   // <-- important
+},
 });
