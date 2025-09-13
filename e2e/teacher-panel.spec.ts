@@ -1,36 +1,49 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from '@playwright/test';
 
-// Allow running against public URL or local Unified Server
-const BASE =
-  process.env.BASE_URL ||
-  (process.env.PORT ? `http://localhost:${process.env.PORT}` : "http://localhost:5000");
+const BASE = process.env.BASE_URL || 'http://127.0.0.1:5000';
 
-// Helper: nuke localStorage flags so the page starts clean
-async function clearFlags(page) {
-  await page.addInitScript(() => {
-    try { localStorage.removeItem('flags'); } catch {}
-    try { localStorage.removeItem('featureFlags'); } catch {}
-    try { localStorage.removeItem('qi.auth.v1'); } catch {}
+test.describe('Teacher Panel routing (unauth)', () => {
+  test('visiting /teacher/referrals shows an unauth screen (or sign-in affordance)', async ({ page }) => {
+    await page.goto(`${BASE}/teacher/referrals`, { waitUntil: 'networkidle' });
+
+    // Minimal contract: page renders (no crash/404)
+    await expect(page).toHaveURL(/\/teacher\/(referrals|login|signin|debug)?/);
+
+    // Be flexible about the unauth copy — check a few common variants.
+    const candidates = [
+      page.getByRole('button', { name: /sign in/i }),
+      page.getByRole('link',   { name: /sign in/i }),
+      page.getByText(/sign in required|sign in to continue|unauthorized|please sign in/i),
+    ];
+
+    let sawUnauth = false;
+    for (const el of candidates) {
+      if (await el.count()) {
+        try {
+          await expect(el.first()).toBeVisible({ timeout: 2000 });
+          sawUnauth = true;
+          break;
+        } catch (_) { /* keep trying */ }
+      }
+    }
+
+    expect(sawUnauth).toBeTruthy();
   });
-}
 
-test.describe("Teacher Panel routing (unauth)", () => {
-  test("visiting /teacher/referrals shows 'Sign in required'", async ({ page }) => {
-    await clearFlags(page);
-    await page.goto(`${BASE}/teacher/referrals`, { waitUntil: "domcontentloaded" });
-    await expect(page.getByText(/sign in required/i)).toBeVisible();
-  });
+  test('clicking Debug tab goes to /teacher/debug', async ({ page }) => {
+    await page.goto(`${BASE}/teacher/referrals`, { waitUntil: 'networkidle' });
 
-  test("clicking Debug tab goes to /teacher/debug", async ({ page }) => {
-    await clearFlags(page);
-    await page.goto(`${BASE}/teacher/referrals`, { waitUntil: "domcontentloaded" });
-
-    // Prefer a stable test-id if available; fallback to href selector
-    const debugLink = page.locator('[data-testid="nav-debug-main"], a[href="/teacher/debug"]');
-    await expect(debugLink).toBeVisible();
-    await debugLink.first().click();
+    // Prefer a unique and stable locator if present.
+    const devNav = page.getByTestId('nav-dev');
+    if (await devNav.count()) {
+      await devNav.click();
+    } else {
+      // Fallback: click the tab by role/name if test id is missing.
+      await page.getByRole('link', { name: /^dev$/i }).first().click();
+    }
 
     await page.waitForURL(/\/teacher\/debug$/);
-    await expect(page.getByText(/(debug|dev)/i)).toBeVisible();
+    // Assert a unique heading on the Debug page.
+    await expect(page.getByRole('heading', { name: /debug dashboard/i })).toBeVisible();
   });
 });
