@@ -1,4 +1,6 @@
-name: e2e-smoke
+mkdir -p .github/workflows
+cat > .github/workflows/e2e-smoke.yml <<'EOF'
+name: E2E Smoke (Teacher Panel)
 
 on:
   pull_request:
@@ -7,20 +9,25 @@ on:
 jobs:
   smoke:
     runs-on: ubuntu-latest
+    env:
+      CI: true
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
+          cache: 'npm'
 
-      - name: Install deps
+      - name: Install deps (clean)
         run: npm ci
 
-      # Install Playwright browsers + **system** dependencies (works on GitHub runners)
-      - name: Install Playwright (with system deps)
+      # Install browsers AND the system packages they need (fixes the "missing deps" error)
+      - name: Install Playwright browsers with system deps
         run: npx playwright install --with-deps
 
-      # Run only the teacher-panel smoke spec; the webServer is defined in playwright.config.ts
-      - name: Run smoke test
+      - name: Run smoke tests
         run: npx playwright test e2e/teacher-panel.spec.ts --project=chromium --reporter=line
+EOF
