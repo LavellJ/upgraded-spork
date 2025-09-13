@@ -1,0 +1,31 @@
+name: E2E Smoke (Teacher Panel)
+
+on:
+  pull_request:
+  push:
+    branches: [ replit-agent, feat/**, chore/**, test/** ]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    env:
+      # Use your Replit public URL so CI doesn't have to start a server
+      BASE_URL: https://a768ca91-c7e6-49cf-a30a-2576933558d3-00-3qj9ly64wghzy.kirk.replit.dev
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright Browsers + OS deps
+        run: npx playwright install --with-deps
+
+      - name: Run only teacher-panel smoke tests
+        run: npx playwright test e2e/teacher-panel.spec.ts -c playwright.config.ts --reporter=line
