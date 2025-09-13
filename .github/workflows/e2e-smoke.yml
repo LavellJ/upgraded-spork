@@ -1,4 +1,3 @@
-mkdir -p .github/workflows
 cat > .github/workflows/e2e-smoke.yml <<'EOF'
 name: E2E Smoke (Teacher Panel)
 
@@ -24,7 +23,6 @@ jobs:
       - name: Install deps (clean)
         run: npm ci
 
-      # Install browsers AND the system packages they need (fixes the "missing deps" error)
       - name: Install Playwright browsers with system deps
         run: npx playwright install --with-deps
 
