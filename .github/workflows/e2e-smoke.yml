@@ -1,9 +1,5 @@
-cat > .github/workflows/e2e-smoke.yml <<'EOF'
-name: E2E Smoke (Teacher Panel)
-
-on:
-  pull_request:
-  workflow_dispatch:
+name: e2e-smoke
+on: [pull_request, workflow_dispatch]
 
 jobs:
   smoke:
@@ -23,9 +19,28 @@ jobs:
       - name: Install deps (clean)
         run: npm ci
 
-      - name: Install Playwright browsers with system deps
+      - name: Install Playwright (browsers + system deps)
         run: npx playwright install --with-deps
+
+      # Start your dev server first (fast) and wait for it
+      - name: Start dev server
+        run: |
+          nohup npm run dev >/tmp/server.log 2>&1 &
+          echo $! > server.pid
+
+      - name: Wait for server to be ready
+        run: npx wait-on http://127.0.0.1:5000
 
       - name: Run smoke tests
         run: npx playwright test e2e/teacher-panel.spec.ts --project=chromium --reporter=line
-EOF
+
+      - name: Upload server log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-log
+          path: /tmp/server.log
+
+      - name: Stop dev server
+        if: always()
+        run: kill $(cat server.pid) || true
