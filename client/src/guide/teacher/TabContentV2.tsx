@@ -1,4 +1,7 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, lazy } from 'react'
+
+// Import DebugDashboard lazily for debug tab
+const DebugDashboard = lazy(() => import('@/pages/DebugDashboard'))
 
 // Import main panels that exist in the codebase
 import { Timeline } from '../Timeline'                             // from guide/Timeline.tsx
@@ -1998,8 +2001,11 @@ Last updated: ${new Date().toLocaleString()}`)}
 
 export default function TabContentV2({ tab }: Props) {
   
+  // Normalize legacy "dev" → "debug" for routing compatibility
+  const key = tab === "dev" ? "debug" : tab;
+  
   const body = (() => {
-    switch (tab) {
+    switch (key) {
       case 'timeline':     
         return <TimelineList />
       case 'assignments':  
@@ -2034,6 +2040,12 @@ export default function TabContentV2({ tab }: Props) {
         return <QAPanel />
       case 'pilot':        
         return <PilotV3 />
+      case 'debug':
+        return (
+          <Suspense fallback={<div className="p-4 text-sm text-gray-500">Loading…</div>}>
+            <DebugDashboard />
+          </Suspense>
+        );
       case 'dev':          
         return <DevPanel />
       case 'overview':
@@ -2042,7 +2054,7 @@ export default function TabContentV2({ tab }: Props) {
       case undefined:      
         return <DashboardList />
       default:             
-        return <Missing name={tab} />
+        return <Missing name={key} />
     }
   })()
 

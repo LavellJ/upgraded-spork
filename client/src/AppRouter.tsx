@@ -1,56 +1,46 @@
-import React, { useState } from 'react';
-import { Route, Link, Redirect } from 'wouter';
-import App from './App';
-import { HeroLessonDemo, HeroLessonDemoIndex } from './pages/HeroLessonDemo';
-import { PromptRunner } from './pages/PromptRunner';
-import { HealthBadge } from './components/HealthBadge';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import Providers from './Providers';
-import { TeacherLayoutV2 } from './guide/teacher/TeacherLayoutV2';
-import TabContentV2 from './guide/teacher/TabContentV2';
-import { useFlags } from './config/flags';
+// client/src/AppRouter.tsx
+import React, { useState } from "react";
+import { Route, Link, Redirect, useLocation, useRoute } from "wouter";
+import App from "./App";
+import { HeroLessonDemo, HeroLessonDemoIndex } from "./pages/HeroLessonDemo";
+import { PromptRunner } from "./pages/PromptRunner";
+import { HealthBadge } from "./components/HealthBadge";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import Providers from "./Providers";
+import { TeacherLayoutV2 } from "./guide/teacher/TeacherLayoutV2";
+import TabContentV2 from "./guide/teacher/TabContentV2";
 
-/**
- * Teacher Panel Entry Point
- */
+/** Normalize legacy/alt tab keys coming from URLs or old code */
+function normalizeTab(t?: string): string {
+  if (!t) return "referrals";
+  const key = t.split("/")[0].trim().toLowerCase();
+  if (key === "" || key === "home" || key === "index") return "referrals";
+  if (key === "dev") return "debug"; // legacy alias
+  return key;
+}
+
+/** Teacher Panel Entry — derives tab from the URL and updates URL on tab clicks */
 function TeacherPanelEntry() {
+  const [, setLocation] = useLocation();
+  const [, params] = useRoute("/teacher/:sub*");
+  const tab = normalizeTab(params?.sub);
+
+  const handleTabChange = (next: string) => {
+    const nextNorm = normalizeTab(next);
+    if (nextNorm !== tab) setLocation(`/teacher/${nextNorm}`);
+  };
+
   return (
     <TeacherLayoutV2
-      activeTab="" // Will be determined by URL routing inside layout
-      onTabChange={() => {}} // URL-controlled, no tab state changes
+      activeTab={tab}
+      onTabChange={handleTabChange}
       onClose={() => window.history.back()}
-      renderContent={() => <TabContentV2 tab="overview" />} // Default content for non-routed tabs
+      renderContent={() => <TabContentV2 tab={tab} />}
     />
   );
 }
 
-/**
- * URL routing system using wouter for direct navigation
- */
-export function AppRouter() {
-  return (
-    <ErrorBoundary>
-      <Providers>
-        <Route path="/hero-demo" component={HeroLessonDemoIndex} />
-        <Route path="/hero-demo/lesson" component={HeroLessonDemo} />
-        <Route path="/tools/prompts" component={PromptRunner} />
-        
-        {/* Teacher Panel Routes - nested routing handled inside TeacherLayoutV2 */}
-        <Route path="/teacher/:sub*" component={TeacherPanelEntry} />
-        
-        {/* Redirect legacy routes to teacher panel */}
-        <Route path="/referrals" component={() => <Redirect to="/teacher/referrals" />} />
-        <Route path="/debug" component={() => <Redirect to="/teacher/debug" />} />
-        
-        <Route path="/" component={AppWithHeroAccess} />
-      </Providers>
-    </ErrorBoundary>
-  );
-}
-
-/**
- * Main App component with hero lesson access button
- */
+/** Main App component with hero lesson access button & top-left nav */
 function AppWithHeroAccess() {
   const [showHeroButton, setShowHeroButton] = useState(true);
 
@@ -61,17 +51,25 @@ function AppWithHeroAccess() {
         <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg border border-gray-200">
           <HealthBadge />
           <span className="text-gray-300">|</span>
-          <Link href="/teacher/referrals" className="text-sm text-blue-600 hover:text-blue-800 font-medium" data-testid="nav-referrals-main">
+          <Link
+            href="/teacher/referrals"
+            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+            data-testid="nav-referrals-main"
+          >
             Referrals
           </Link>
           <span className="text-gray-300">|</span>
-          <Link href="/teacher/debug" className="text-sm text-gray-600 hover:text-gray-800" data-testid="nav-debug-main">
+          <Link
+            href="/teacher/debug"
+            className="text-sm text-gray-600 hover:text-gray-800"
+            data-testid="nav-debug-main"
+          >
             Debug
           </Link>
         </div>
       </div>
 
-      {/* Hero Lesson Access Button - moved to bottom-right to avoid blocking teacher panel */}
+      {/* Hero Lesson Access Button */}
       {showHeroButton && (
         <div className="fixed bottom-4 right-4 z-40">
           <div className="bg-blue-700 rounded-lg p-2 shadow-xl border border-white/20 max-w-xs">
@@ -80,12 +78,16 @@ function AppWithHeroAccess() {
                 <div className="text-white font-medium text-xs truncate">🎯 Hero Demo</div>
                 <div className="text-blue-100 text-[10px] truncate">Try lesson system</div>
               </div>
-              
+
               <div className="flex gap-1 flex-shrink-0">
-                <Link href="/hero-demo" className="bg-white text-blue-600 px-2 py-1 rounded text-[10px] font-medium hover:bg-blue-50 transition-colors" title="Try Hero Lesson Demo">
+                <Link
+                  href="/hero-demo"
+                  className="bg-white text-blue-600 px-2 py-1 rounded text-[10px] font-medium hover:bg-blue-50 transition-colors"
+                  title="Try Hero Lesson Demo"
+                >
                   Try
                 </Link>
-                
+
                 <button
                   onClick={() => setShowHeroButton(false)}
                   aria-label="Close"
@@ -99,9 +101,37 @@ function AppWithHeroAccess() {
           </div>
         </div>
       )}
-      
+
       {/* Main App */}
       <App />
     </div>
+  );
+}
+
+/** URL routing system using wouter for direct navigation */
+export function AppRouter() {
+  return (
+    <ErrorBoundary>
+      <Providers>
+        {/* Hero lesson demo */}
+        <Route path="/hero-demo" component={HeroLessonDemoIndex} />
+        <Route path="/hero-demo/lesson" component={HeroLessonDemo} />
+
+        {/* Prompt tools */}
+        <Route path="/tools/prompts" component={PromptRunner} />
+
+        {/* Teacher panel: redirect bare /teacher to a real tab */}
+        <Route path="/teacher" component={() => <Redirect to="/teacher/referrals" />} />
+        <Route path="/teacher/:sub*" component={TeacherPanelEntry} />
+
+        {/* Legacy redirects */}
+        <Route path="/referrals" component={() => <Redirect to="/teacher/referrals" />} />
+        <Route path="/debug" component={() => <Redirect to="/teacher/debug" />} />
+        <Route path="/dev" component={() => <Redirect to="/teacher/debug" />} /> {/* legacy alias */}
+
+        {/* App home */}
+        <Route path="/" component={AppWithHeroAccess} />
+      </Providers>
+    </ErrorBoundary>
   );
 }
