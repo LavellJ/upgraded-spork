@@ -1,5 +1,5 @@
 // client/src/AppRouter.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Route, Link, Redirect, useLocation, useRoute } from "wouter";
 import App from "./App";
 import { HeroLessonDemo, HeroLessonDemoIndex } from "./pages/HeroLessonDemo";
@@ -11,19 +11,36 @@ import { TeacherLayoutV2 } from "./guide/teacher/TeacherLayoutV2";
 import TabContentV2 from "./guide/teacher/TabContentV2";
 
 /** Normalize legacy/alt tab keys coming from URLs or old code */
-function normalizeTab(t?: string): string {
-  if (!t) return "referrals";
+function normalizeTab(t?: string | null): string {
+  if (!t) return "overview";
   const key = t.split("/")[0].trim().toLowerCase();
-  if (key === "" || key === "home" || key === "index") return "referrals";
+  if (key === "" || key === "home" || key === "index") return "overview";
   if (key === "dev") return "debug"; // legacy alias
   return key;
 }
 
 /** Teacher Panel Entry — derives tab from the URL and updates URL on tab clicks */
-function TeacherPanelEntry() {
-  const [, setLocation] = useLocation();
-  const [, params] = useRoute("/teacher/:sub*");
-  const tab = normalizeTab(params?.sub);
+function TeacherPanelEntry({ params }: { params?: { "sub*"?: string } }) {
+  const [location, setLocation] = useLocation();
+  
+  // Get tab from path segment or query param fallback
+  const fromPath = (params?.["sub*"] || "").split("/")[0] || "";
+  const qp = typeof window !== "undefined" 
+    ? new URLSearchParams(window.location.search).get("tab")
+    : null;
+  const tab = normalizeTab(fromPath || qp);
+
+  // Optional: keep ?tab synchronized for back-compat
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.get("tab") !== tab) {
+      sp.set("tab", tab);
+      const base = location.split("?")[0];
+      window.history.replaceState(null, "", `${base}?${sp.toString()}`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
 
   const handleTabChange = (next: string) => {
     const nextNorm = normalizeTab(next);
@@ -120,9 +137,9 @@ export function AppRouter() {
         {/* Prompt tools */}
         <Route path="/tools/prompts" component={PromptRunner} />
 
-        {/* Teacher panel: redirect bare /teacher to a real tab */}
-        <Route path="/teacher" component={() => <Redirect to="/teacher/referrals" />} />
+        {/* Teacher panel: support both /teacher and /teacher/:sub* */}
         <Route path="/teacher/:sub*" component={TeacherPanelEntry} />
+        <Route path="/teacher" component={TeacherPanelEntry} />
 
         {/* Legacy redirects */}
         <Route path="/referrals" component={() => <Redirect to="/teacher/referrals" />} />
