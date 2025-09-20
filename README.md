@@ -3,12 +3,12 @@
 
 **Smoke tests (default on PRs):**
 ```bash
-npm run test:e2e:smoke
+npx playwright test --project=chromium --reporter=line
 ```
 
 **Full suite (manual / on-demand):**
 ```bash
-npm run test:e2e:full
+FULL_E2E=1 npx playwright test --project=chromium --reporter=line
 ```
 
 The full suite includes a11y, visual, offline, and large-flow tests. Set FULL_E2E=1 to include these in a local run or trigger the E2E Full (manual) workflow in GitHub Actions.
