@@ -1,81 +1,91 @@
+// playwright.config.ts
 import { defineConfig, devices } from '@playwright/test';
+import fs from 'node:fs';
+import path from 'node:path';
 
-const PORT = 5000;
-const LOCAL_URL = `http://localhost:${PORT}`;
-const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || LOCAL_URL;
-
-// Run full suite only when FULL_E2E=1; otherwise skip heavy specs in CI.
+const isCI = !!process.env.CI;
 const isFull = process.env.FULL_E2E === '1';
 
-const HEAVY_SPECS = [
-  'a11y.reports.spec.ts',
-  'a11y.spec.ts',
-  'art.*.spec.ts',
-  'ui.pin.spec.ts',
-  'visual.*.spec.ts',
-  'offline*.spec.ts',
-  'hero-full.spec.ts',
-  'content_packs.spec.ts',
-  'pack_toggles.spec.ts',
-  'student.flow.spec.ts',
-  'reports*.spec.ts',
-  'settings.list.spec.ts',
-  'teacher.settings.spec.ts',
-  'keyboard.*.spec.ts',
-  'template-lesson.spec.ts',
-  'classmode*.spec.ts',
-  'gov.spec.ts',
-  'final-art.spec.ts',
+// 🟥 Specs we don't want on every PR (big / visual / offline / a11y / art etc.)
+const HEAVY_SPECS: string[] = [
+  // accessibility + visual
+  'e2e/a11y.reports.spec.ts',
+  'e2e/a11y.spec.ts',
+  'e2e/visual.*.spec.ts',
+
+  // art & pins
+  'e2e/art.*.spec.ts',
+  'e2e/ui.pin.spec.ts',
+
+  // offline / projector
+  'e2e/offline*.spec.ts',
+  'e2e/art.projector-hc.spec.ts',
+
+  // big flows
+  'e2e/hero-full.spec.ts',
+  'e2e/student.flow.spec.ts',
+
+  // content packs, reports, class mode, etc.
+  'e2e/content_packs.spec.ts',
+  'e2e/reports.spec.ts',
+  'e2e/classmode.spec.ts',
+  'e2e/profile.spec.ts',
+  'e2e/teacher.shell.*.spec.ts',
+  'e2e/template-lesson.spec.ts',
+  'e2e/keyboard.*.spec.ts',
+  'e2e/pack_toggles.spec.ts',
 ];
 
-const webServer = process.env.PLAYWRIGHT_BASE_URL
-  ? undefined
-  : {
-      command: [
-        "bash -lc '",
-        'mkdir -p .data .backups && ',
-        'JWT_SECRET=ci_jwt_secret_please_rotate_123456 ',
-        `APP_BASE_URL=${LOCAL_URL} `,
-        'DATABASE_URL=file:.data/qi.db ',
-        'NODE_ENV=test ',
-        'FINAL_ART=false ',
-        'PRIVACY_STRICT=false ',
-        'TEACHER_PANEL_V2=true ',
-        'npx tsx server/index.ts',
-        "'",
-      ].join(''),
-      url: LOCAL_URL,
-      timeout: 240_000,
-      reuseExistingServer: !process.env.CI,
-    };
+// 🟨 Optional quarantine list (one glob per line)
+const quarantineFile = path.join(process.cwd(), '.ci', 'quarantine.txt');
+let quarantineGlobs: string[] = [];
+if (fs.existsSync(quarantineFile)) {
+  quarantineGlobs = fs
+    .readFileSync(quarantineFile, 'utf-8')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
+}
+
+const testIgnore: (string | RegExp)[] = [];
+if (!isFull) testIgnore.push(...HEAVY_SPECS);
+testIgnore.push(...quarantineGlobs);
 
 export default defineConfig({
   testDir: 'e2e',
-  timeout: 30_000,
-  expect: { timeout: 10_000 },
   fullyParallel: true,
-  retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  reporter: isCI ? [['line']] : [['list']],
 
-  testIgnore: isFull ? [] : HEAVY_SPECS,
-
-  reporter: process.env.CI
-    ? [['line']]
-    : [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
+  retries: isCI ? 1 : 0,
+  workers: isCI ? 2 : undefined,
 
   use: {
-    baseURL: BASE_URL,
-    headless: true,
-    trace: 'on-first-retry',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5000',
+    trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
-    viewport: { width: 1280, height: 800 },
-    ignoreHTTPSErrors: true,
+    video: 'off',
   },
 
-  projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-  ],
+  // Start the unified server locally for tests
+  webServer: {
+    command: `bash -lc 'mkdir -p .data .backups && \\
+      JWT_SECRET=ci_jwt_secret_please_rotate \\
+      DATABASE_URL=file:.data/qi.db \\
+      APP_BASE_URL=http://localhost:5000 \\
+      npx tsx server/index.ts'`,
+    url: 'http://localhost:5000',
+    timeout: 240_000,
+    reuseExistingServer: !isCI,
+  },
 
-  webServer,
+  // Only include heavy specs when FULL_E2E=1
+  testIgnore,
+
+  // Single project (expand later if needed)
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ],
 });

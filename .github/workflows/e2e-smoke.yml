@@ -1,18 +1,28 @@
-name: E2E Smoke (Teacher Panel)
+name: E2E Smoke
+
 on:
   pull_request:
   push:
-    branches: [ replit-agent, feat/**, chore/**, test/**, sprint-q-prompts ]
+    branches: [ main, sprint-**, feat/**, chore/**, test/**, sprint-q-prompts ]
+
 jobs:
   e2e-smoke:
     runs-on: ubuntu-latest
-    env:
-      PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_BASE_URL }}
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20' }
-      - run: npm ci
-      - run: npx playwright install --with-deps
-      - name: Run smoke tests
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright (browsers + OS deps)
+        run: npx playwright install --with-deps
+
+      - name: Run smoke tests (chromium)
         run: npx playwright test --project=chromium --reporter=line

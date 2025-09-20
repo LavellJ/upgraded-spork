@@ -1,0 +1,5 @@
+# .ci/quarantine.txt
+# Add spec globs here (one per line) to skip in all runs.
+# Examples:
+# e2e/hero-full.spec.ts
+# e2e/art.pins.spec.ts
