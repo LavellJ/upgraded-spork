@@ -1,54 +1,34 @@
 // playwright.config.ts
-import { defineConfig, devices } from '@playwright/test';
-
-const isFull = process.env.FULL_E2E === '1';
+import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './e2e',
-  timeout: 30_000,
-  expect: { timeout: 5_000 },
-  fullyParallel: true,
-  retries: process.env.CI ? 1 : 0,
-  reporter: process.env.CI ? [['line']] : [['html'], ['line']],
+  testDir: './e2e',                       // location of your e2e tests
+  fullyParallel: true,                    // run in parallel
+  forbidOnly: !!process.env.CI,           // fail CI if .only is left in
+  retries: process.env.CI ? 2 : 0,        // retry on CI, not locally
+  workers: process.env.CI ? 1 : undefined,
 
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5000',
-    trace: 'on-first-retry',
-    video: 'retain-on-failure',
+    trace: 'on-first-retry',              // helpful for debugging
     screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
 
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-  ],
-
-  // ✅ Build first so /dist/public/index.html exists, then start the unified server
   webServer: {
-    command: `bash -lc 'set -euo pipefail
-      mkdir -p .data .backups
-      # Build client → emits dist/public/*
-      npm run build
-      # Start server with required env
-      JWT_SECRET=ci_jwt_secret_please_rotate_xxxx \\
-      DATABASE_URL=file:.data/qi.db \\
-      APP_BASE_URL=http://localhost:5000 \\
-      node --loader tsx server/index.ts
-    '`,
+    // Build static assets and start server with correct env
+    command: `bash -lc 'set -euo pipefail; mkdir -p .data .backups; npm run build; \
+      JWT_SECRET=ci_jwt_secret_please_rotate \
+      DATABASE_URL=file:.data/qi.db \
+      APP_BASE_URL=http://localhost:5000 \
+      npx tsx server/index.ts'`,
     url: 'http://localhost:5000',
-    timeout: 300_000,               // allow extra time in cold CI
-    reuseExistingServer: !process.env.CI,
+    timeout: 300_000,                     // allow up to 5 minutes in CI
+    reuseExistingServer: !process.env.CI, // reuse when running locally
   },
 
-  // Optional: keep your HEAVY_SPECS/quarantine filtering if you already added it
-  // testIgnore: isFull ? [] : [
-  //   'e2e/a11y*.spec.ts',
-  //   'e2e/art.*.spec.ts',
-  //   'e2e/visual.*.spec.ts',
-  //   'e2e/offline*.spec.ts',
-  //   'e2e/hero-full.spec.ts',
-  //   // ...etc
-  // ],
+  reporter: [
+    ['line'],                             // simple output in CI
+    ['html', { open: 'never' }],          // keep HTML report artifacts
+  ],
 });
