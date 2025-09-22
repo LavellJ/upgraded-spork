@@ -1,6 +1,7 @@
 // client/src/AppRouter.tsx
 import React, { useState, useEffect } from "react";
-import { Route, Link, Redirect, useLocation, useRoute } from "wouter";
+import { Route, Link, Redirect, useLocation } from "wouter";
+
 import App from "./App";
 import { HeroLessonDemo, HeroLessonDemoIndex } from "./pages/HeroLessonDemo";
 import { PromptRunner } from "./pages/PromptRunner";
@@ -9,6 +10,8 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import Providers from "./Providers";
 import { TeacherLayoutV2 } from "./guide/teacher/TeacherLayoutV2";
 import TabContentV2 from "./guide/teacher/TabContentV2";
+
+/* ---------------------------------- utils --------------------------------- */
 
 /** Normalize legacy/alt tab keys coming from URLs or old code */
 function normalizeTab(t?: string | null): string {
@@ -19,18 +22,50 @@ function normalizeTab(t?: string | null): string {
   return key;
 }
 
+/** Legacy hash → clean /teacher/<tab> redirect (e.g. /#/?guide&tab=classes) */
+function useLegacyHashRedirect() {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const hash = window.location.hash || "";
+    if (!hash) return;
+
+    // Remove "#/" or "#" then split on "?"
+    const afterHash = hash.replace(/^#\/?/, "");
+    const [maybePath, maybeQuery] = afterHash.split("?");
+
+    // Old links often looked like "#/?guide&tab=classes" or "#/guide?tab=classes"
+    const indicatesGuide =
+      (maybePath && /(^|\/)guide(\/|$)/i.test(maybePath)) ||
+      (maybeQuery && /(^|&)guide(&|=|$)/i.test(maybeQuery));
+
+    if (!indicatesGuide) return;
+
+    const sp = new URLSearchParams(maybeQuery || "");
+    const tab = normalizeTab(sp.get("tab"));
+
+    // Avoid loops: only redirect if we’re not already on /teacher/<tab>
+    if (!window.location.pathname.startsWith("/teacher/")) {
+      window.location.replace(`/teacher/${tab}`);
+    }
+  }, []);
+}
+
+/* ---------------------------- routed entry point --------------------------- */
+
 /** Teacher Panel Entry — derives tab from the URL and updates URL on tab clicks */
 function TeacherPanelEntry({ params }: { params?: { "sub*"?: string } }) {
   const [location, setLocation] = useLocation();
-  
-  // Get tab from path segment or query param fallback
+
+  // Read tab from segment first, then fallback to query param (?tab=)
   const fromPath = (params?.["sub*"] || "").split("/")[0] || "";
-  const qp = typeof window !== "undefined" 
-    ? new URLSearchParams(window.location.search).get("tab")
-    : null;
+  const qp =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("tab")
+      : null;
   const tab = normalizeTab(fromPath || qp);
 
-  // Optional: keep ?tab synchronized for back-compat
+  // Keep ?tab synchronized for back-compat (so old links still see a tab=…)
   useEffect(() => {
     if (typeof window === "undefined") return;
     const sp = new URLSearchParams(window.location.search);
@@ -56,6 +91,8 @@ function TeacherPanelEntry({ params }: { params?: { "sub*"?: string } }) {
     />
   );
 }
+
+/* ------------------------------- app chrome ------------------------------- */
 
 /** Main App component with hero lesson access button & top-left nav */
 function AppWithHeroAccess() {
@@ -91,9 +128,17 @@ function AppWithHeroAccess() {
         <div className="fixed bottom-4 right-4 z-40">
           <div className="bg-blue-700 rounded-lg p-2 shadow-xl border border-white/20 max-w-xs">
             <div className="flex items-center gap-2">
-              <div className="flex-1 min-w-0" role="region" aria-label="Hero demo button content">
-                <div className="text-white font-medium text-xs truncate">🎯 Hero Demo</div>
-                <div className="text-blue-100 text-[10px] truncate">Try lesson system</div>
+              <div
+                className="flex-1 min-w-0"
+                role="region"
+                aria-label="Hero demo button content"
+              >
+                <div className="text-white font-medium text-xs truncate">
+                  🎯 Hero Demo
+                </div>
+                <div className="text-blue-100 text-[10px] truncate">
+                  Try lesson system
+                </div>
               </div>
 
               <div className="flex gap-1 flex-shrink-0">
@@ -125,8 +170,12 @@ function AppWithHeroAccess() {
   );
 }
 
-/** URL routing system using wouter for direct navigation */
+/* ---------------------------------- router -------------------------------- */
+
 export function AppRouter() {
+  // Back-compat for legacy hash URLs used by older tests/links
+  useLegacyHashRedirect();
+
   return (
     <ErrorBoundary>
       <Providers>
@@ -142,9 +191,19 @@ export function AppRouter() {
         <Route path="/teacher" component={TeacherPanelEntry} />
 
         {/* Legacy redirects */}
-        <Route path="/referrals" component={() => <Redirect to="/teacher/referrals" />} />
-        <Route path="/debug" component={() => <Redirect to="/teacher/debug" />} />
-        <Route path="/dev" component={() => <Redirect to="/teacher/debug" />} /> {/* legacy alias */}
+        <Route
+          path="/referrals"
+          component={() => <Redirect to="/teacher/referrals" />}
+        />
+        <Route
+          path="/debug"
+          component={() => <Redirect to="/teacher/debug" />}
+        />
+        {/* explicit legacy alias */}
+        <Route
+          path="/dev"
+          component={() => <Redirect to="/teacher/debug" />}
+        />
 
         {/* App home */}
         <Route path="/" component={AppWithHeroAccess} />
@@ -152,3 +211,5 @@ export function AppRouter() {
     </ErrorBoundary>
   );
 }
+
+export default AppRouter;
