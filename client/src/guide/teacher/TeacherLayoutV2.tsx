@@ -146,7 +146,8 @@ export function TeacherLayoutV2({
 
         {/* Main content */}
         <section
-          role="region"
+          role="main"
+          data-testid="teacher-main"
           aria-labelledby="tp-title"
           className={`flex-1 overflow-auto ${teacherThemeV2 ? "bg-[rgb(var(--bg-elev))]" : "bg-gray-50"}`}
         >
