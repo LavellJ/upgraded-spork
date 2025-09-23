@@ -11,6 +11,15 @@ import Providers from "./Providers";
 import { TeacherLayoutV2 } from "./guide/teacher/TeacherLayoutV2";
 import TabContentV2 from "./guide/teacher/TabContentV2";
 
+function BootMarker() {
+  useEffect(() => {
+    const root = document.getElementById('root');
+    if (root) root.setAttribute('data-testid', 'app-loaded');
+    document.body.setAttribute('data-app-loaded', '1');
+  }, []);
+  return null;
+}
+
 /* ---------------------------------- utils --------------------------------- */
 
 /** Normalize legacy/alt tab keys coming from URLs or old code */
@@ -179,6 +188,7 @@ export function AppRouter() {
   return (
     <ErrorBoundary>
       <Providers>
+        <BootMarker />
         {/* Hero lesson demo */}
         <Route path="/hero-demo" component={HeroLessonDemoIndex} />
         <Route path="/hero-demo/lesson" component={HeroLessonDemo} />
