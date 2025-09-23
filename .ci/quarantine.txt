@@ -16,4 +16,6 @@ e2e/template-lesson.spec.ts
 e2e/teacher.settings.spec.ts
 e2e/teacher.shell*.spec.ts
 e2e/final-art.spec.ts
-e2e/gov.spec.ts
+e2e/gov.spec.tse2e/feedback.spec.ts
+e2e/onboarding.spec.ts
+e2e/settings.list.spec.ts
