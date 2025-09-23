@@ -1,5 +1,20 @@
 // playwright.config.ts
 import { defineConfig, devices } from '@playwright/test';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const isFull = process.env.FULL_E2E === '1';
+
+// Load quarantine list (optional)
+const quarantineFile = path.join(process.cwd(), '.ci', 'quarantine.txt');
+let quarantineGlobs: string[] = [];
+if (fs.existsSync(quarantineFile)) {
+  quarantineGlobs = fs
+    .readFileSync(quarantineFile, 'utf-8')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
+}
 
 export default defineConfig({
   testDir: './e2e',
@@ -33,6 +48,9 @@ export default defineConfig({
     // { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
     // { name: 'webkit',  use: { ...devices['Desktop Safari'] } },
   ],
+
+  // Skip quarantine specs when not running full E2E
+  testIgnore: isFull ? [] : quarantineGlobs,
 
   webServer: {
     // Build and start the server with required env

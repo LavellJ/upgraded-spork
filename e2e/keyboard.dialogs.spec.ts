@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 test('Feedback dialog traps focus and returns to opener', async ({ page }) => {
-  await page.goto('/#/?guide&tab=insights&dev=1')
+  await page.goto('/teacher/insights?dev=1')
   const openBtn = page.getByRole('button', { name: /feedback/i })
   await openBtn.click()
   const dialog = page.getByRole('dialog')

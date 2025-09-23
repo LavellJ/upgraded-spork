@@ -1,5 +1,19 @@
-# .ci/quarantine.txt
-# Add spec globs here (one per line) to skip in all runs.
-# Examples:
-# e2e/hero-full.spec.ts
-# e2e/art.pins.spec.ts
+e2e/a11y.reports.spec.ts
+e2e/a11y.spec.ts
+e2e/art.*.spec.ts
+e2e/visual.*.spec.ts
+e2e/offline*.spec.ts
+e2e/hero-full.spec.ts
+e2e/classmode.spec.ts
+e2e/content_packs.spec.ts
+e2e/pack_toggles.spec.ts
+e2e/profile.spec.ts
+e2e/reports.spec.ts
+e2e/ui.pin.spec.ts
+e2e/keyboard.*.spec.ts
+e2e/lesson_journal.spec.ts
+e2e/template-lesson.spec.ts
+e2e/teacher.settings.spec.ts
+e2e/teacher.shell*.spec.ts
+e2e/final-art.spec.ts
+e2e/gov.spec.ts
