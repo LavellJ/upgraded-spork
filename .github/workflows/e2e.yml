@@ -45,6 +45,10 @@ jobs:
           echo "ELEVENLABS_API_KEY=dummy" >> .env
           echo "VITE_APP_BASE_URL=${{ secrets.APP_BASE_URL }}" >> .env
           echo "VITE_CLOUD_ENDPOINT=${{ secrets.APP_BASE_URL }}/api" >> .env
+ 
+      - name: Build app
+        run: npm run build
+
 
       - name: Run Playwright tests (Chromium)
         run: npx playwright test --project=chromium --reporter=line
