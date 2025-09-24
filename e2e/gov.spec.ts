@@ -1,6 +1,5 @@
 
-const IS_UNSUPPORTED_ENV = Boolean(process.env.REPLIT || process.env.REPLIT_PROJECT_ID || process.env.REPL_SLUG || process.env.CODESPACES);
-test.skip(IS_UNSUPPORTED_ENV, 'Skip E2E in Replit dev environment (missing browser deps)');
+import { test, expect, type Page } from '@playwright/test';
 
 // --- BEGIN: resilient helpers ---
 async function waitForApp(page: Page, timeout = 20000) {
@@ -499,9 +498,7 @@ await page.click('[data-testid="toggle-enable-share-prompt"]');
   });
 
   test.afterEach(async () => {
-    // Playwright manages the page fixture; don't close it manually.
-    // // Playwright manages the page fixture; do not close it manually.
-    // await page.close();
+    // Playwright manages the page fixture; no cleanup needed
   });
 });
 
