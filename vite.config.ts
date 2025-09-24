@@ -25,6 +25,8 @@ export default defineConfig({
   },
   root: path.resolve(import.meta.dirname, "client"),
   build: {
+    target: 'es2022',
+    cssTarget: 'es2022',
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
   },
