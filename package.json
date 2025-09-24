@@ -11,8 +11,6 @@
     "test": "echo \"no test checks yet\"",
     "art:preflight": "echo \"(stub) art/UI preflight not wired yet\"",
     "a11y:ci": "http-server ./dist -p 4173 --silent & wait-on http://127.0.0.1:4173 && axe --save --exit --tags wcag2aa http://127.0.0.1:4173/?tab=dev",
-
-    // --- E2E & CI helpers ---
     "e2e": "playwright test",
     "e2e:chromium": "playwright test --project=chromium",
     "e2e:headed": "playwright test --project=chromium --headed",
