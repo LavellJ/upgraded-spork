@@ -18,7 +18,8 @@ export default defineConfig({
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
   ],
   webServer: {
-    command: 'bash -lc "npm run build command: 'npm run preview',command: 'npm run preview', npm run preview"'
+    // Build the app, then serve the built assets
+    command: 'bash -lc "npm run build && npm run preview"',
     port: PORT,
     timeout: 120_000,
     reuseExistingServer: !process.env.CI,
