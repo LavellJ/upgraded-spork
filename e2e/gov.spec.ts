@@ -1,5 +1,4 @@
 import { test, expect, Page } from '@playwright/test';
-import { test, expect, Page } from "@playwright/test";
 
 // --- BEGIN: CI/Replit guard ---
 const IS_REPLIT = !!(process.env.REPLIT || process.env.REPLIT_PROJECT_ID);
