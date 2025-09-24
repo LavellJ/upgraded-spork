@@ -27,9 +27,7 @@ export default defineConfig({
   root: 'client',
   plugins: [ignoreTestsPlugin()],
   resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./client/src', import.meta.url)),
-    },
+    alias: { '@': fileURLToPath(new URL('./client/src', import.meta.url)) },
   },
   build: {
     target: 'es2022',
@@ -37,5 +35,11 @@ export default defineConfig({
     outDir: '../dist/public',
     sourcemap: false,
     emptyOutDir: true,
+  },
+  // ⬇️ Override PostCSS so Vite does NOT load postcss.config.js in CI
+  css: {
+    postcss: {
+      plugins: [], // no external plugins needed for e2e smoke
+    },
   },
 })
