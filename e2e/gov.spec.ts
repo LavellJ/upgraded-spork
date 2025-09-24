@@ -1,7 +1,6 @@
-import { test, expect, Page } from '@playwright/test';
-const IS_UNSUPPORTED_ENV = npx playwright test e2e/gov.spec.ts --project=chromium --headed --trace=on(process.env.REPLIT || process.env.REPLIT_PROJECT_ID || process.env.REPL_SLUG || process.env.CODESPACES);
- test.skip(IS_UNSUPPORTED_ENV, 'Skip E2E in Replit dev environment (missing browser deps)');
 
+const IS_UNSUPPORTED_ENV = Boolean(process.env.REPLIT || process.env.REPLIT_PROJECT_ID || process.env.REPL_SLUG || process.env.CODESPACES);
+test.skip(IS_UNSUPPORTED_ENV, 'Skip E2E in Replit dev environment (missing browser deps)');
 // --- BEGIN: CI/Replit guard ---
 const IS_REPLIT = !!(process.env.REPLIT || process.env.REPLIT_PROJECT_ID);
 // Skip in Replit local sandboxes; these tests are intended for CI with browsers installed.
@@ -511,6 +510,7 @@ await page.click('[data-testid="toggle-enable-share-prompt"]');
 
   test.afterEach(async () => {
     // Playwright manages the page fixture; don't close it manually.
+    // // Playwright manages the page fixture; do not close it manually.
     // await page.close();
   });
 });
