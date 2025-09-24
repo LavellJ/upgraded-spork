@@ -11,3 +11,7 @@ vite.config.ts.*
 # Database files
 data/*.db
 data/*.sqlite
+
+# Playwright artifacts
+playwright-report/
+test-results/
