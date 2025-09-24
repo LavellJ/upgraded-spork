@@ -1,3 +1,4 @@
+import { test, expect, Page } from '@playwright/test';
 import { test, expect, Page } from "@playwright/test";
 
 // --- BEGIN: CI/Replit guard ---
@@ -403,9 +404,8 @@ test.describe("Governance Features", () => {
   test.describe("Feature Flag Kill-Switches", () => {
     test("should disable growth features with kill-switches", async () => {
       // Access development panel
-      await gotoTeacherTab(page, "debug");
-
-      // Disable invite features
+      await openDebugTab(page);
+// Disable invite features
       await page.click('[data-testid="toggle-enable-invites"]');
       await page.click('[data-testid="toggle-enable-referrals"]');
 
@@ -422,8 +422,8 @@ test.describe("Governance Features", () => {
 
     test("should disable share/rate prompts with kill-switches", async () => {
       // Disable share and rate prompts
-      await gotoTeacherTab(page, "debug");
-      await page.click('[data-testid="toggle-enable-share-prompt"]');
+      await openDebugTab(page);
+await page.click('[data-testid="toggle-enable-share-prompt"]');
       await page.click('[data-testid="toggle-enable-rate-prompt"]');
 
       // Trigger conditions that would normally show prompts
@@ -514,6 +514,16 @@ test.describe("Governance Features", () => {
 });
 
 /**
+
+test.beforeEach(async ({ page }) => {
+  await blockWindowClose(page);
+  await primeE2EFlags(page);
+  await page.goto('/');
+  await waitForApp(page);
+  await restabilizeApp(page);
+});
+
+
  * Helper function to simulate user interactions that generate events
  */
 async function simulateUserActivity(page: Page) {
@@ -525,7 +535,7 @@ async function simulateUserActivity(page: Page) {
   await page.click('[data-testid="button-complete-lesson"]', { timeout: 5000 });
 
   // Use scout features
-  await page.click('[data-testid="button-scout-help"]', { timeout: 5000 });
+  await safeClickByTestId(page, 'debug', 'button-scout-help', { timeout: 5000 });
   await page.waitForTimeout(500);
 
   // Navigate between sections
