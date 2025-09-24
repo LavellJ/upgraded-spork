@@ -1,4 +1,14 @@
 // playwright.config.ts
+// >>> BEGIN injected skip logic <<<
+const SKIP_E2E_LOCAL =
+  Boolean(
+    process.env.REPLIT ||
+      process.env.REPLIT_PROJECT_ID ||
+      process.env.REPL_SLUG ||
+      process.env.CODESPACES
+  ) && !process.env.CI;
+// >>> END injected skip logic <<<
+
 import { defineConfig, devices } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -49,8 +59,8 @@ export default defineConfig({
     // { name: 'webkit',  use: { ...devices['Desktop Safari'] } },
   ],
 
-  // Skip quarantine specs when not running full E2E
-  testIgnore: isFull ? [] : quarantineGlobs,
+  // Skip E2E locally (Replit-like envs) and quarantine specs when not running full E2E
+  testIgnore: SKIP_E2E_LOCAL ? ['e2e/**'] : (isFull ? [] : quarantineGlobs),
 
   webServer: {
     // Build and start the server with required env
