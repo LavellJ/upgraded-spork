@@ -20,16 +20,29 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Sanitize package.json (strip comments/trailing commas)
+        run: |
+          node -e "const fs=require('fs');
+          let s=fs.readFileSync('package.json','utf8');
+          s=s.replace(/\/\*[\s\S]*?\*\//g,'');
+          s=s.replace(/(^|\s)\/\/.*$/gm,'');
+          s=s.replace(/,\s*([}\]])/g,'$1');
+          const obj=JSON.parse(s);
+          fs.writeFileSync('package.json', JSON.stringify(obj, null, 2)+'\n');
+          console.log('sanitized ✅');
+          "
+
       - name: Install deps
         run: npm ci
 
       - name: Install Playwright browsers & OS deps
         run: npx playwright install --with-deps
 
-      - name: Create .env for preview
+      - name: Create .env for build & preview
         run: |
           echo "NODE_ENV=development" >> .env
           echo "PORT=4173" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "TOKEN_TTL_DAYS=30" >> .env
           echo "DATABASE_URL=file:./qi.db" >> .env
           echo "APP_BASE_URL=${{ secrets.APP_BASE_URL }}" >> .env
@@ -40,21 +53,17 @@ jobs:
           echo "SMTP_USER=dummy" >> .env
           echo "SMTP_PASS=dummy" >> .env
           echo "SMTP_FROM=noreply@learnoz.local" >> .env
+          echo "OPENAI_API_KEY=dummy" >> .env
+          echo "ELEVENLABS_API_KEY=dummy" >> .env
           echo "VITE_APP_BASE_URL=${{ secrets.APP_BASE_URL }}" >> .env
           echo "VITE_CLOUD_ENDPOINT=${{ secrets.APP_BASE_URL }}/api" >> .env
- 
+
       - name: Build app (verbose)
         run: |
           npm run build -- -d
-          echo "----- dist listing -----" run: npm run buildrun: npm run build ls -la dist || true
+          echo "----- dist listing -----"
+          ls -la dist || true
 
-
-      - name: Sanity check preview
-        run: |
-          timeout 5s bash -lc "npm run preview" &
-          sleep 2
-          curl -sv http://127.0.0.1:4173/ || true
-          pkill -f "vite preview" || true
       - name: Run Playwright tests (Chromium)
         run: npx playwright test --project=chromium --reporter=line
 
