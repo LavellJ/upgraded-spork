@@ -1,5 +1,4 @@
-
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from "@playwright/test";
 
 // --- BEGIN: resilient helpers ---
 async function waitForApp(page: Page, timeout = 20000) {
@@ -394,7 +393,7 @@ test.describe("Governance Features", () => {
     test("should disable growth features with kill-switches", async () => {
       // Access development panel
       await openDebugTab(page);
-// Disable invite features
+      // Disable invite features
       await page.click('[data-testid="toggle-enable-invites"]');
       await page.click('[data-testid="toggle-enable-referrals"]');
 
@@ -412,7 +411,7 @@ test.describe("Governance Features", () => {
     test("should disable share/rate prompts with kill-switches", async () => {
       // Disable share and rate prompts
       await openDebugTab(page);
-await page.click('[data-testid="toggle-enable-share-prompt"]');
+      await page.click('[data-testid="toggle-enable-share-prompt"]');
       await page.click('[data-testid="toggle-enable-rate-prompt"]');
 
       // Trigger conditions that would normally show prompts
@@ -524,7 +523,9 @@ async function simulateUserActivity(page: Page) {
   await page.click('[data-testid="button-complete-lesson"]', { timeout: 5000 });
 
   // Use scout features
-  await safeClickByTestId(page, 'debug', 'button-scout-help', { timeout: 5000 });
+  await safeClickByTestId(page, "debug", "button-scout-help", {
+    timeout: 5000,
+  });
   await page.waitForTimeout(500);
 
   // Navigate between sections
