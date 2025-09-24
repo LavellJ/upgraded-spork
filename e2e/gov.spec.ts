@@ -133,6 +133,68 @@ async function safeClickByTestId(
     }
   }
 }
+
+/** Set flags so debug/strict-mode UI renders in test env. Idempotent. */
+async function primeE2EFlags(page: Page) {
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem("e2e", "1");
+      localStorage.setItem("dev", "1");
+      localStorage.setItem("debug:enabled", "1");
+      localStorage.setItem("feature:debugPanel", "true");
+      localStorage.setItem("feature:privacyControls", "true");
+      localStorage.setItem("feature:killSwitches", "true");
+      // Avoid service worker surprises in tests:
+      localStorage.setItem("sw:disable", "true");
+    } catch {}
+  });
+}
+
+/** Robust selector list for strict-mode toggle. */
+function privacyToggleSelector(): string {
+  return [
+    '[data-testid="toggle-privacy-strict-mode"]',
+    '[data-testid="privacy-strict-toggle"]',
+    'role=switch[name="Privacy Strict Mode"]',
+    '[aria-label="Privacy Strict Mode"]',
+    "#privacy-strict-mode",
+  ].join(", ");
+}
+
+/** Go straight to debug tab via URL and stabilize. */
+async function openDebugTab(page: Page) {
+  // Ensure flags are set before the first load:
+  await primeE2EFlags(page);
+  await page.goto("/teacher/debug?e2e=1&dev=1");
+  await restabilizeApp(page);
+  // Confirm some debug-root exists (fallback to teacher root)
+  await page.waitForSelector(
+    '[data-testid="teacher-debug-root"], [data-testid="teacher-root"], [data-testid="panel-debug"]',
+    { timeout: 10000 },
+  );
+}
+
+/** Click privacy strict toggle with full fallback and one recovery attempt. */
+async function clickPrivacyStrictToggle(page: Page) {
+  const sel = privacyToggleSelector();
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const loc = page.locator(sel).first();
+      await loc.waitFor({ state: "visible", timeout: 8000 });
+      await loc.click();
+      return;
+    } catch (err) {
+      if (attempt === 1) {
+        // Recover: re-prime flags, hard reload, re-open debug tab, retry
+        await primeE2EFlags(page);
+        await page.goto("/teacher/debug?e2e=1&dev=1");
+        await restabilizeApp(page);
+        continue;
+      }
+      throw err;
+    }
+  }
+}
 // --- END: resilient helpers ---
 
 /**
@@ -143,9 +205,10 @@ async function safeClickByTestId(
 test.describe("Governance Features", () => {
   let page: Page;
 
-  test.beforeEach(async ({ browser }) => {
-    page = await browser.newPage();
+  test.beforeEach(async ({ page: testPage }) => {
+    page = testPage;
     await blockWindowClose(page);
+    await primeE2EFlags(page);
     await page.goto("/");
 
     // Wait for app to load
@@ -156,11 +219,11 @@ test.describe("Governance Features", () => {
   test.describe("Privacy Strict Mode", () => {
     test("should hide Growth tab when privacy strict mode enabled", async () => {
       // Navigate to feature flags panel (development mode)
-      await gotoTeacherTabStable(page, "debug");
+      await openDebugTab(page);
       await page.waitForSelector('[data-testid="panel-feature-flags"]');
 
       // Enable privacy strict mode
-      await safeClickByTestId(page, "debug", "toggle-privacy-strict-mode");
+      await clickPrivacyStrictToggle(page);
       await page.waitForTimeout(500); // Allow state update
 
       // Navigate to Reports section
@@ -178,8 +241,8 @@ test.describe("Governance Features", () => {
 
     test("should restrict referral UI when privacy strict mode enabled", async () => {
       // Enable privacy strict mode
-      await gotoTeacherTabStable(page, "debug");
-      await safeClickByTestId(page, "debug", "toggle-privacy-strict-mode");
+      await openDebugTab(page);
+      await clickPrivacyStrictToggle(page);
 
       // Navigate to settings/growth area (if accessible)
       await page.goto("/settings");
@@ -204,8 +267,8 @@ test.describe("Governance Features", () => {
       });
 
       // Enable privacy strict mode
-      await gotoTeacherTabStable(page, "debug");
-      await safeClickByTestId(page, "debug", "toggle-privacy-strict-mode");
+      await openDebugTab(page);
+      await clickPrivacyStrictToggle(page);
 
       // Trigger analytics events (scout interactions, etc.)
       await safeClickByTestId(page, "debug", "button-scout-help", {
@@ -409,8 +472,8 @@ test.describe("Governance Features", () => {
 
     test("should filter audit events in privacy strict mode", async () => {
       // Enable privacy strict mode
-      await gotoTeacherTabStable(page, "debug");
-      await safeClickByTestId(page, "debug", "toggle-privacy-strict-mode");
+      await openDebugTab(page);
+      await clickPrivacyStrictToggle(page);
 
       // Generate various events
       await safeClickByTestId(page, "debug", "button-scout-help", {
