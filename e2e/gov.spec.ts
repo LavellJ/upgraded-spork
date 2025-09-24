@@ -1,16 +1,6 @@
 
 const IS_UNSUPPORTED_ENV = Boolean(process.env.REPLIT || process.env.REPLIT_PROJECT_ID || process.env.REPL_SLUG || process.env.CODESPACES);
 test.skip(IS_UNSUPPORTED_ENV, 'Skip E2E in Replit dev environment (missing browser deps)');
-// --- BEGIN: CI/Replit guard ---
-const IS_REPLIT = !!(process.env.REPLIT || process.env.REPLIT_PROJECT_ID);
-// Skip in Replit local sandboxes; these tests are intended for CI with browsers installed.
-// Keep enabled in CI.
-// eslint-disable-next-line playwright/no-skipped-test
-test.skip(
-  IS_REPLIT && !process.env.CI,
-  "Governance E2E runs only in CI environments with Playwright browsers installed.",
-);
-// --- END: CI/Replit guard ---
 
 // --- BEGIN: resilient helpers ---
 async function waitForApp(page: Page, timeout = 20000) {
