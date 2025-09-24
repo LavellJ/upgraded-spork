@@ -30,7 +30,6 @@ jobs:
         run: |
           echo "NODE_ENV=development" >> .env
           echo "PORT=4173" >> .env
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "TOKEN_TTL_DAYS=30" >> .env
           echo "DATABASE_URL=file:./qi.db" >> .env
           echo "APP_BASE_URL=${{ secrets.APP_BASE_URL }}" >> .env
@@ -41,15 +40,21 @@ jobs:
           echo "SMTP_USER=dummy" >> .env
           echo "SMTP_PASS=dummy" >> .env
           echo "SMTP_FROM=noreply@learnoz.local" >> .env
-          echo "OPENAI_API_KEY=dummy" >> .env
-          echo "ELEVENLABS_API_KEY=dummy" >> .env
           echo "VITE_APP_BASE_URL=${{ secrets.APP_BASE_URL }}" >> .env
           echo "VITE_CLOUD_ENDPOINT=${{ secrets.APP_BASE_URL }}/api" >> .env
  
-      - name: Build app
-        run: npm run build
+      - name: Build app (verbose)
+        run: |
+          npm run build -- -d
+          echo "----- dist listing -----" run: npm run buildrun: npm run build ls -la dist || true
 
 
+      - name: Sanity check preview
+        run: |
+          timeout 5s bash -lc "npm run preview" &
+          sleep 2
+          curl -sv http://127.0.0.1:4173/ || true
+          pkill -f "vite preview" || true
       - name: Run Playwright tests (Chromium)
         run: npx playwright test --project=chromium --reporter=line
 
