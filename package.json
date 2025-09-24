@@ -10,7 +10,17 @@
     "start": "vite preview --port 4173 --strictPort",
     "test": "echo \"no test checks yet\"",
     "art:preflight": "echo \"(stub) art/UI preflight not wired yet\"",
-    "a11y:ci": "http-server ./dist -p 4173 --silent & wait-on http://127.0.0.1:4173 && axe --save --exit --tags wcag2aa http://127.0.0.1:4173/?tab=dev"
+    "a11y:ci": "http-server ./dist -p 4173 --silent & wait-on http://127.0.0.1:4173 && axe --save --exit --tags wcag2aa http://127.0.0.1:4173/?tab=dev",
+
+    // --- E2E & CI helpers ---
+    "e2e": "playwright test",
+    "e2e:chromium": "playwright test --project=chromium",
+    "e2e:headed": "playwright test --project=chromium --headed",
+    "e2e:debug": "playwright test --project=chromium --debug",
+    "e2e:gov": "playwright test e2e/gov.spec.ts --project=chromium",
+    "e2e:trace": "playwright test --project=chromium --trace=on",
+    "e2e:report": "playwright show-report",
+    "test:ci": "playwright install-deps && playwright install --with-deps && npm run build && npm run e2e"
   },
   "dependencies": {
     "@axe-core/cli": "^4.10.2",
