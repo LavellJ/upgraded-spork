@@ -1,39 +1,40 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// A tiny plugin that strips test files from the client bundle.
+// It maps any import that matches *.spec|*.test or __tests__/ to an empty module.
+function ignoreTestsPlugin() {
+  const TEST_RE = /(\.test|\.spec)\.[tj]sx?$/i
+  return {
+    name: 'ignore-tests-in-build',
+    enforce: 'pre' as const,
+    resolveId(source: string) {
+      if (TEST_RE.test(source) || source.includes('__tests__/') || source.startsWith('client/test/') || source.includes('/test/')) {
+        return '\0ignore-test'
+      }
+      return null
+    },
+    load(id: string) {
+      if (id === '\0ignore-test') {
+        return 'export default {}'
+      }
+      return null
+    },
+  }
+}
 
 export default defineConfig({
-  plugins: [
-    react(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer(),
-          ),
-        ]
-      : []),
-  ],
-  resolve: {
-    alias: {
-      "@": path.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
-    },
-  },
-  root: path.resolve(import.meta.dirname, "client"),
+  root: 'client',
+  plugins: [ignoreTestsPlugin(), react()],
   build: {
+    // Modern target so top-level await is fine
     target: 'es2022',
     cssTarget: 'es2022',
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
+    outDir: '../dist/public',
+    sourcemap: false,
     emptyOutDir: true,
   },
-  server: {
-    fs: {
-      strict: true,
-      deny: ["**/.*"],
-    },
+  preview: {
+    // Playwright launches preview on PORT from env (4173 in CI)
   },
-});
+})
