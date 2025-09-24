@@ -1,16 +1,15 @@
-name: E2E Tests
+name: e2e
 
 on:
-  pull_request:
   push:
-    branches: [main, sprint-**, feat/**, chore/**, test/**, sprint-q-prompts]
-  workflow_dispatch:
+    branches: [ sprint-q-prompts ]
+  pull_request:
+    branches: [ sprint-q-prompts ]
 
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,40 +17,48 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: '20'
+          cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci
 
-      - name: Install Playwright browsers with OS dependencies
+      - name: Install Playwright browsers & OS deps
         run: npx playwright install --with-deps
 
-      - name: Run E2E tests
-        env:
-          CI: "true"
-        run: npx playwright test --project=chromium --reporter=html
+      - name: Create .env for preview
+        run: |
+          echo "NODE_ENV=development" >> .env
+          echo "PORT=4173" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "TOKEN_TTL_DAYS=30" >> .env
+          echo "DATABASE_URL=file:./qi.db" >> .env
+          echo "APP_BASE_URL=${{ secrets.APP_BASE_URL }}" >> .env
+          echo "RETAIN_DAYS=365" >> .env
+          echo "ENCRYPTION_ENABLED=true" >> .env
+          echo "SMTP_HOST=localhost" >> .env
+          echo "SMTP_PORT=1025" >> .env
+          echo "SMTP_USER=dummy" >> .env
+          echo "SMTP_PASS=dummy" >> .env
+          echo "SMTP_FROM=noreply@learnoz.local" >> .env
+          echo "OPENAI_API_KEY=dummy" >> .env
+          echo "ELEVENLABS_API_KEY=dummy" >> .env
+          echo "VITE_APP_BASE_URL=${{ secrets.APP_BASE_URL }}" >> .env
+          echo "VITE_CLOUD_ENDPOINT=${{ secrets.APP_BASE_URL }}/api" >> .env
+
+      - name: Run Playwright tests (Chromium)
+        run: npx playwright test --project=chromium --reporter=line
 
       - name: Upload Playwright HTML report
-        uses: actions/upload-artifact@v4
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report/
-          retention-days: 7
+          path: playwright-report
 
-      - name: Upload test traces
+      - name: Upload Traces
+        if: always()
         uses: actions/upload-artifact@v4
-        if: failure()
         with:
-          name: playwright-traces
-          path: test-results/
-          retention-days: 7
-
-      - name: Upload test screenshots
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: playwright-screenshots
-          path: test-results/**/*.png
-          retention-days: 7
+          name: traces
+          path: test-results/**/trace.zip
