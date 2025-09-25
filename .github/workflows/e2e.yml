@@ -11,23 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
-    # Keep CI in "development" so your app doesn't require prod-only envs
+    # Keep CI simple: static preview on port 4173
     env:
       NODE_ENV: development
       PORT: 4173
       APP_BASE_URL: http://127.0.0.1:4173
-      DATABASE_URL: file:./ci.db
-      JWT_SECRET: ci-test-secret
-      RETAIN_DAYS: '365'
-      ENCRYPTION_ENABLED: 'true'
-      SMTP_HOST: localhost
-      SMTP_PORT: '1025'
-      SMTP_USER: dummy
-      SMTP_PASS: dummy
-      SMTP_FROM: noreply@learnoz.local
-      OPENAI_API_KEY: dummy
-      ELEVENLABS_API_KEY: dummy
-      # Vite build-time vars (also read by the app at runtime)
       VITE_APP_BASE_URL: http://127.0.0.1:4173
       VITE_CLOUD_ENDPOINT: http://127.0.0.1:4173/api
 
@@ -41,16 +29,36 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Sanitize package.json (strip comments/trailing commas)
+        run: |
+          node -e "const fs=require('fs');
+          let s=fs.readFileSync('package.json','utf8');
+          s=s.replace(/\/\*[\s\S]*?\*\//g,'');
+          s=s.replace(/(^|\s)\/\/.*$/gm,'');
+          s=s.replace(/,\s*([}\]])/g,'$1');
+          const obj=JSON.parse(s);
+          fs.writeFileSync('package.json', JSON.stringify(obj, null, 2)+'\n');
+          console.log('sanitized ✅');"
+
       - name: Install deps
         run: npm ci
 
       - name: Install Playwright browsers & OS deps
         run: npx playwright install --with-deps
 
-      - name: Build app (serves /dist in preview)
-        run: npm run build -- -d
+      # Vite reads client/.env at build time
+      - name: Create client .env (Vite)
+        run: |
+          printf "VITE_APP_BASE_URL=%s\nVITE_CLOUD_ENDPOINT=%s\n" \
+            "$VITE_APP_BASE_URL" "$VITE_CLOUD_ENDPOINT" > client/.env
+          cat client/.env
 
-      # Playwright will start `npm run preview` itself (see playwright.config.ts)
+      - name: Build app (verbose)
+        run: |
+          npm run build -- -d
+          echo "----- dist/public listing -----"
+          ls -la dist/public || true
+
       - name: Run Playwright tests (Chromium)
         run: npx playwright test --project=chromium --reporter=line
 
@@ -61,7 +69,7 @@ jobs:
           name: playwright-report
           path: playwright-report
 
-      - name: Upload Playwright traces
+      - name: Upload Traces
         if: always()
         uses: actions/upload-artifact@v4
         with:
