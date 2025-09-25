@@ -59,6 +59,24 @@ jobs:
           echo "----- dist/public listing -----"
           ls -la dist/public || true
 
+      - name: Sanity check build output
+        run: |
+          test -d dist/public || { echo "dist/public missing — build failed or wrong outDir"; exit 1; }
+          test -f dist/public/index.html || { echo "index.html missing in dist/public"; exit 1; }
+
+      # 👇 Optional debug probe
+      - name: Probe static server (debug)
+        run: |
+          npx http-server dist/public -p 4173 --silent &
+          npx wait-on http://127.0.0.1:4173
+          echo "Static server is reachable ✅"
+          kill %1
+
+      - name: Run Playwright tests (Chromium)
+        run: npx playwright test --project=chromium --reporter=line
+          
+         
+
       - name: Run Playwright tests (Chromium)
         run: npx playwright test --project=chromium --reporter=line
 
