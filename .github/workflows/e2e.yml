@@ -11,15 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
-    # Job-wide env (also available to Playwright's webServer)
+    # Keep CI in "development" so your app doesn't require prod-only envs
     env:
       NODE_ENV: development
       PORT: 4173
-      # use your secrets when present; otherwise fall back to safe defaults
-      JWT_SECRET: ${{ secrets.JWT_SECRET || 'ci-test-secret' }}
-      TOKEN_TTL_DAYS: '30'
+      APP_BASE_URL: http://127.0.0.1:4173
       DATABASE_URL: file:./ci.db
-      APP_BASE_URL: ${{ secrets.APP_BASE_URL || 'http://127.0.0.1:4173' }}
+      JWT_SECRET: ci-test-secret
       RETAIN_DAYS: '365'
       ENCRYPTION_ENABLED: 'true'
       SMTP_HOST: localhost
@@ -29,9 +27,9 @@ jobs:
       SMTP_FROM: noreply@learnoz.local
       OPENAI_API_KEY: dummy
       ELEVENLABS_API_KEY: dummy
-      # Vite reads client/.env, but keep these here for convenience
-      VITE_APP_BASE_URL: ${{ secrets.APP_BASE_URL || 'http://127.0.0.1:4173' }}
-      VITE_CLOUD_ENDPOINT: ${{ secrets.APP_BASE_URL || 'http://127.0.0.1:4173' }}/api
+      # Vite build-time vars (also read by the app at runtime)
+      VITE_APP_BASE_URL: http://127.0.0.1:4173
+      VITE_CLOUD_ENDPOINT: http://127.0.0.1:4173/api
 
     steps:
       - name: Checkout
@@ -43,61 +41,16 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      # package.json in this repo had comments/trailing commas earlier; normalize it
-      - name: Sanitize package.json (strip comments/trailing commas)
-        run: |
-          node -e "const fs=require('fs');
-          let s=fs.readFileSync('package.json','utf8');
-          s=s.replace(/\/\*[\s\S]*?\*\//g,'');       // /* ... */
-          s=s.replace(/(^|\s)\/\/.*$/gm,'');         // // ...
-          s=s.replace(/,\s*([}\]])/g,'$1');          // trailing commas
-          const obj=JSON.parse(s);
-          fs.writeFileSync('package.json', JSON.stringify(obj, null, 2)+'\n');
-          console.log('sanitized ✅');
-          "
-
       - name: Install deps
         run: npm ci
 
       - name: Install Playwright browsers & OS deps
         run: npx playwright install --with-deps
 
-      # Server reads root .env
-      - name: Create root .env (server)
-        run: |
-          : > .env
-          echo "NODE_ENV=development" >> .env
-          echo "PORT=${PORT}" >> .env
-          echo "JWT_SECRET=${JWT_SECRET}" >> .env
-          echo "TOKEN_TTL_DAYS=${TOKEN_TTL_DAYS}" >> .env
-          echo "DATABASE_URL=${DATABASE_URL}" >> .env
-          echo "APP_BASE_URL=${APP_BASE_URL}" >> .env
-          echo "RETAIN_DAYS=${RETAIN_DAYS}" >> .env
-          echo "ENCRYPTION_ENABLED=${ENCRYPTION_ENABLED}" >> .env
-          echo "SMTP_HOST=${SMTP_HOST}" >> .env
-          echo "SMTP_PORT=${SMTP_PORT}" >> .env
-          echo "SMTP_USER=${SMTP_USER}" >> .env
-          echo "SMTP_PASS=${SMTP_PASS}" >> .env
-          echo "SMTP_FROM=${SMTP_FROM}" >> .env
-          echo "OPENAI_API_KEY=${OPENAI_API_KEY}" >> .env
-          echo "ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}" >> .env
+      - name: Build app (serves /dist in preview)
+        run: npm run build -- -d
 
-      # Vite reads env from client/.env since envDir is set to "client"
-      - name: Create client .env (Vite)
-        run: |
-          mkdir -p client
-          printf "VITE_APP_BASE_URL=%s\nVITE_CLOUD_ENDPOINT=%s\n" \
-            "${APP_BASE_URL}" "${APP_BASE_URL}/api" > client/.env
-          echo "Wrote client/.env:"
-          cat client/.env
-
-      - name: Build app (verbose)
-        run: |
-          npm run build -- -d
-          echo "----- dist listing -----"
-          ls -la dist || true
-
-      # Playwright will start the preview server defined in playwright.config.* via webServer
+      # Playwright will start `npm run preview` itself (see playwright.config.ts)
       - name: Run Playwright tests (Chromium)
         run: npx playwright test --project=chromium --reporter=line
 
@@ -108,7 +61,7 @@ jobs:
           name: playwright-report
           path: playwright-report
 
-      - name: Upload Traces
+      - name: Upload Playwright traces
         if: always()
         uses: actions/upload-artifact@v4
         with:
