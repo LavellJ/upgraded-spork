@@ -1,8 +1,17 @@
+name: e2e
+
+on:
+  push:
+    branches: [ sprint-q-prompts ]
+  pull_request:
+    branches: [ sprint-q-prompts ]
+
 jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    # CI uses a static preview on :4173
     env:
       NODE_ENV: development
       PORT: 4173
@@ -55,24 +64,21 @@ jobs:
           test -d dist/public || { echo "dist/public missing — build failed or wrong outDir"; exit 1; }
           test -f dist/public/index.html || { echo "index.html missing in dist/public"; exit 1; }
 
-      # Start server for tests and wait until it's reachable
+      # Start a static file server and keep its PID so we can stop it later
       - name: Start static server
         run: |
           npx http-server dist/public -p 4173 --silent &
-          echo $! > server.pid
+          echo $! > .server_pid
           npx wait-on http://127.0.0.1:4173
           echo "Static server is reachable ✅"
-
-      - name: List discovered tests
-        run: npx playwright test --project=chromium --list
 
       - name: Run Playwright tests (Chromium)
         run: npx playwright test --project=chromium --reporter=line
 
-      - name: Stop server
+      - name: Stop static server
         if: always()
         run: |
-          kill $(cat server.pid) || true
+          if [ -f .server_pid ]; then kill $(cat .server_pid) || true; fi
 
       - name: Upload Playwright HTML report
         if: always()
