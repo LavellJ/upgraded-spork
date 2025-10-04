@@ -1,0 +1,81 @@
+*** Begin Patch
+*** Update File: .github/workflows/e2e.yml
+@@
+ name: e2e
+@@
+ jobs:
+   e2e:
+     runs-on: ubuntu-latest
+     timeout-minutes: 20
+@@
+-    # Keep CI simple: static preview on port 4173
+-    env:
+-      NODE_ENV: development
+-      PORT: 4173
+-      APP_BASE_URL: http://127.0.0.1:4173
+-      VITE_APP_BASE_URL: http://127.0.0.1:4173
+-      VITE_CLOUD_ENDPOINT: http://127.0.0.1:4173/api
++    # Static preview on port 4173
++    env:
++      NODE_ENV: development
++      PORT: 4173
++      APP_BASE_URL: http://127.0.0.1:4173
++      VITE_APP_BASE_URL: http://127.0.0.1:4173
++      VITE_CLOUD_ENDPOINT: http://127.0.0.1:4173/api
+@@
+       - name: Build app (verbose)
+         run: |
+           npm run build -- -d
+           echo "----- dist/public listing -----"
+           ls -la dist/public || true
+@@
+       - name: Sanity check build output
+         run: |
+           test -d dist/public || { echo "dist/public missing — build failed or wrong outDir"; exit 1; }
+           test -f dist/public/index.html || { echo "index.html missing in dist/public"; exit 1; }
+ 
+-      # 👇 Optional debug probe
+-      - name: Probe static server (debug)
+-        run: |
+-          npx http-server dist/public -p 4173 --silent &
+-          npx wait-on http://127.0.0.1:4173
+-          echo "Static server is reachable ✅"
+-          kill %1
+-
+-- name: List discovered tests
+-  run: npx playwright test --project=chromium --list
+-          
+-      - name: Run Playwright tests (Chromium)
+-        run: npx playwright test --project=chromium --reporter=line
+-          
+-         
+-
+-      - name: Run Playwright tests (Chromium)
+-        run: npx playwright test --project=chromium --reporter=line
++      # Start static server for tests, keep it running
++      - name: Start static server
++        run: |
++          npx http-server dist/public -p 4173 --silent &
++          npx wait-on http://127.0.0.1:4173
+ 
++      # (Optional) list discovered tests for debug
++      - name: List discovered tests
++        run: npx playwright test --project=chromium --list
++
++      - name: Run Playwright tests (Chromium)
++        run: npx playwright test --project=chromium --reporter=line
++
+       - name: Upload Playwright HTML report
+         if: always()
+         uses: actions/upload-artifact@v4
+         with:
+           name: playwright-report
+           path: playwright-report
+ 
+       - name: Upload Traces
+         if: always()
+         uses: actions/upload-artifact@v4
+         with:
+           name: traces
+           path: test-results/**/trace.zip
+*** End Patch

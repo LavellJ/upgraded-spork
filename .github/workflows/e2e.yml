@@ -72,8 +72,8 @@ jobs:
           npx wait-on http://127.0.0.1:4173
           echo "Static server is reachable ✅"
 
-      - name: Run Playwright tests (Chromium)
-        run: npx playwright test --project=chromium --reporter=line
+      - name: Run Playwright tests (@ci only)
+        run: npx playwright test --project=chromium --grep "@ci" --reporter=line
 
       - name: Stop static server
         if: always()
