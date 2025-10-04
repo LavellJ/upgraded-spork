@@ -1,0 +1,32 @@
+[
+  {
+    "weekStartISO": "2024-01-01",
+    "learners": 25,
+    "activeLearners": 20,
+    "avgOnTaskMins": 45,
+    "medianOnTaskMins": 40,
+    "return7dPct": 85,
+    "assignments": {
+      "donePct": 75,
+      "dueSoon": 3,
+      "overdue": 1
+    },
+    "completionsPerLearner": 2.5,
+    "streakersPct": 60
+  },
+  {
+    "weekStartISO": "2024-01-08",
+    "learners": 25,
+    "activeLearners": 22,
+    "avgOnTaskMins": 50,
+    "medianOnTaskMins": 48,
+    "return7dPct": 88,
+    "assignments": {
+      "donePct": 80,
+      "dueSoon": 2,
+      "overdue": 0
+    },
+    "completionsPerLearner": 3.0,
+    "streakersPct": 65
+  }
+]
