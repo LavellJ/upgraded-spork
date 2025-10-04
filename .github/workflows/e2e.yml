@@ -2,9 +2,9 @@ name: e2e
 
 on:
   push:
-    branches: [ sprint-q-prompts ]
+    branches: [sprint-q-prompts]
   pull_request:
-    branches: [ sprint-q-prompts ]
+    branches: [sprint-q-prompts]
 
 jobs:
   e2e:
@@ -26,8 +26,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Sanitize package.json (strip comments/trailing commas)
         run: |
