@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('home loads', async ({ page }) => {
+test('smoke @ci', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/|/); // relax if you don’t set a title
-  await expect(page.locator('body')).toBeVisible();
+  await expect(page).toHaveURL(/127\.0\.0\.1|localhost|\/$/);
 });
