@@ -1,31 +1,20 @@
-import { test, expect } from "@playwright/test";
-import { setUiPrefs, devLogin } from "./helpers/dev";
-import { installApiMocks } from "./mocks/api";
+import { test, expect } from '@playwright/test';
+import { installApiMocks } from './mocks/api';
+import { setUiPrefs, devLogin } from './helpers/dev';
 
-test("Assignments — table @ci", async ({ page }) => {
-  // Install API mocks before navigation
-  await installApiMocks(page);
+const BASE_URL = process.env.CI_BASE_URL || 'http://127.0.0.1:4173';
 
-  // Set UI preferences
-  await setUiPrefs(page, { theme: "light", density: "comfy" });
+test.describe('@ci assignments page', () => {
+  test.beforeEach(async ({ page }) => {
+    if (process.env.SKIP_E2E_LOCAL) test.skip(true, 'Skipping locally');
+    await installApiMocks(page);
+    await setUiPrefs(page, { density: 'compact' });
+    await devLogin(page);
+  });
 
-  // Login as test teacher
-  await devLogin(page, { role: "teacher" });
-
-  // Navigate to assignments page
-  await page.goto("/teacher/assign");
-
-  // Wait for page to load - use stable locator
-  const heading = page.getByRole("heading", { level: 1, name: /assignments/i });
-  await heading.waitFor({ timeout: 10000 });
-
-  // Verify the heading is visible
-  await expect(heading).toBeVisible();
-
-  // Optionally verify the table is rendered with data-testid if available
-  // If not available, check for generic table or list elements
-  const contentArea = page.locator(
-    '[data-testid="assignments-table"], table, [role="table"]',
-  );
-  await expect(contentArea.first()).toBeVisible({ timeout: 5000 });
+  test('renders assignments list with mocked data @ci', async ({ page }) => {
+    await page.goto(`${BASE_URL}/teacher/assignments`);
+    await expect(page.getByText(/Algebra Practice/i)).toBeVisible();
+    await expect(page.getByText(/Reading Comprehension/i)).toBeVisible();
+  });
 });

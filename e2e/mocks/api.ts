@@ -1,42 +1,32 @@
-import { type Page } from "@playwright/test";
+import { Page } from '@playwright/test';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-/**
- * Installs API mocks for stable E2E testing
- */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+function fixture(name: string): string {
+  const file = path.join(__dirname, '../fixtures', name);
+  return fs.readFileSync(file, 'utf-8');
+}
+
 export async function installApiMocks(page: Page) {
-  await page.route("**/api/reports/trends", async (route) => {
-    const fixture = await import("../fixtures/reports-trends.json");
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify(fixture.default || fixture),
-    });
+  await page.route('**/api/reports/trends', async (route) => {
+    const body = fixture('reports-trends.json');
+    await route.fulfill({ status: 200, headers: { 'content-type': 'application/json' }, body });
   });
 
-  await page.route("**/api/assignments", async (route) => {
-    const fixture = await import("../fixtures/assignments-list.json");
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify(fixture.default || fixture),
-    });
+  await page.route('**/api/assignments', async (route) => {
+    const body = fixture('assignments-list.json');
+    await route.fulfill({ status: 200, headers: { 'content-type': 'application/json' }, body });
   });
 
-  // Catch-all for other API routes - return empty array
-  await page.route("**/api/**", async (route) => {
-    // Skip if already handled by specific routes above
-    const url = route.request().url();
-    if (
-      url.includes("/api/reports/trends") ||
-      url.includes("/api/assignments")
-    ) {
-      return;
-    }
-
+  await page.route('**/api/**', async (route) => {
     await route.fulfill({
       status: 200,
-      contentType: "application/json",
-      body: JSON.stringify([]),
+      headers: { 'content-type': 'application/json' },
+      body: '[]',
     });
   });
 }

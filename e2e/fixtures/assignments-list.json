@@ -1,42 +1,4 @@
 [
-  {
-    "id": "assignment-1",
-    "name": "Introduction to Addition",
-    "lessonIds": ["lesson-101", "lesson-102"],
-    "lessons": [
-      {
-        "lessonId": "lesson-101",
-        "status": "done",
-        "completedAt": 1704153600000,
-        "dueAt": 1704240000000
-      },
-      {
-        "lessonId": "lesson-102",
-        "status": "in_progress",
-        "dueAt": 1704326400000
-      }
-    ],
-    "createdAt": 1704067200000,
-    "updatedAt": 1704153600000,
-    "dueAt": 1704326400000,
-    "priority": "normal",
-    "archived": false
-  },
-  {
-    "id": "assignment-2",
-    "name": "Subtraction Basics",
-    "lessonIds": ["lesson-201"],
-    "lessons": [
-      {
-        "lessonId": "lesson-201",
-        "status": "not_started",
-        "dueAt": 1704412800000
-      }
-    ],
-    "createdAt": 1704067200000,
-    "updatedAt": 1704067200000,
-    "dueAt": 1704412800000,
-    "priority": "high",
-    "archived": false
-  }
+  { "id": "a1", "title": "Algebra Practice", "dueAt": "2025-10-10T00:00:00Z", "status": "assigned" },
+  { "id": "a2", "title": "Reading Comprehension", "dueAt": "2025-10-12T00:00:00Z", "status": "assigned" }
 ]
