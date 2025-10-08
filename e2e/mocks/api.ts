@@ -1,14 +1,12 @@
 import { Page } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Use CWD so it works in both CJS/ESM and on GitHub runners
+const fixturesDir = path.join(process.cwd(), 'e2e', 'fixtures');
 
 function fixture(name: string): string {
-  const file = path.join(__dirname, '../fixtures', name);
-  return fs.readFileSync(file, 'utf-8');
+  return fs.readFileSync(path.join(fixturesDir, name), 'utf-8');
 }
 
 export async function installApiMocks(page: Page) {
@@ -23,10 +21,6 @@ export async function installApiMocks(page: Page) {
   });
 
   await page.route('**/api/**', async (route) => {
-    await route.fulfill({
-      status: 200,
-      headers: { 'content-type': 'application/json' },
-      body: '[]',
-    });
+    await route.fulfill({ status: 200, headers: { 'content-type': 'application/json' }, body: '[]' });
   });
 }

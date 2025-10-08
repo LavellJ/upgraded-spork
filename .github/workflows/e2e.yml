@@ -1,5 +1,4 @@
 name: e2e-ci-smoke
-
 on:
   pull_request:
     branches: [ "main", "sprint-q-prompts" ]
@@ -9,7 +8,6 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,13 +27,14 @@ jobs:
       - name: Build app
         run: npm run build
 
-      - name: Start preview server
+      # More robust than vite preview on CI (IPv4 binding issues on some runners)
+      - name: Serve dist via http-server on 4173
         run: |
-          npm run preview &
-          npx wait-on http://127.0.0.1:4173
+          npx http-server ./dist -p 4173 --silent &
+          npx wait-on http-get://127.0.0.1:4173
 
-      - name: Run @ci smoke tests
+      - name: Run @ci smoke tests (trace always)
         env:
           CI_BASE_URL: http://127.0.0.1:4173
-          SKIP_E2E_LOCAL: ''   # ensure CI does not skip
-        run: npx playwright test --project=chromium --grep "@ci" --reporter=line
+          SKIP_E2E_LOCAL: ''   # ensure tests do NOT skip in CI
+        run: npx playwright test --project=chromium --grep "@ci" --reporter=line --trace on
