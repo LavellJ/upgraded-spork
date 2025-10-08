@@ -28,10 +28,10 @@ jobs:
         run: npm run build
 
       # More robust than vite preview on CI (IPv4 binding issues on some runners)
-      - name: Serve dist via http-server on 4173
-        run: |
-          npx http-server ./dist -p 4173 --silent &
-          npx wait-on http-get://127.0.0.1:4173
+- name: Start preview server (Vite)
+  run: |
+    npx vite preview --port 4173 --host 127.0.0.1 --strictPort &
+    npx wait-on http://127.0.0.1:4173
 
       - name: Run @ci smoke tests (trace always)
         env:

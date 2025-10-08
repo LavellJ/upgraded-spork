@@ -1,4 +1,18 @@
 [
-  { "id": "a1", "title": "Algebra Practice", "dueAt": "2025-10-10T00:00:00Z", "status": "assigned" },
-  { "id": "a2", "title": "Reading Comprehension", "dueAt": "2025-10-12T00:00:00Z", "status": "assigned" }
+  {
+    "id": "a1",
+    "title": "Algebra Practice",
+    "name": "Algebra Practice",
+    "displayTitle": "Algebra Practice",
+    "dueAt": "2025-10-10T00:00:00Z",
+    "status": "assigned"
+  },
+  {
+    "id": "a2",
+    "title": "Reading Comprehension",
+    "name": "Reading Comprehension",
+    "displayTitle": "Reading Comprehension",
+    "dueAt": "2025-10-12T00:00:00Z",
+    "status": "assigned"
+  }
 ]
