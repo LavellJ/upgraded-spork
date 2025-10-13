@@ -1,0 +1,6 @@
+[
+  { "id": "forest", "completed": 1, "total": 3, "locked": false },
+  { "id": "tropics", "completed": 3, "total": 3, "locked": false },
+  { "id": "desert", "completed": 0, "total": 3, "locked": true },
+  { "id": "coast", "completed": 0, "total": 3, "locked": true }
+]

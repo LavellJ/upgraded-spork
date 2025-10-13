@@ -200,6 +200,13 @@ export function AppRouter() {
 
         {/* Sprint 1 routes */}
         <Route path="/island" component={Island} />
+        <Route path="/island/:biomeId">
+          {(params) => (
+            <main className="p-6">
+              <h1 data-testid="biome-stub">Biome: {params.biomeId}</h1>
+            </main>
+          )}
+        </Route>
         <Route path="/progress" component={Progress} />
         <Route path="/settings" component={Settings} />
 
