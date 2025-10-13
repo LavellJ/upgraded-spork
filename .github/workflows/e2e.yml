@@ -3,6 +3,10 @@ name: e2e-ci-smoke
 on:
   pull_request:
     branches: ["main", "sprint-q-prompts"]
+    paths:
+      - "e2e/**"
+      - "client/**"
+      - ".github/workflows/e2e.yml"
   workflow_dispatch:
 
 concurrency:
