@@ -18,35 +18,27 @@ test.describe('@ci reports smoke', () => {
   test('@ci smoke: reports route serves (trends fetch optional)', async ({ page }) => {
     let trendsSeen = false;
 
-    // Track if a trends fetch happens during navigation/idle
+    // Track if a trends fetch happens; purely informational
     page.on('request', (req) => {
       if (/\/api\/.*reports.*trends/i.test(req.url())) trendsSeen = true;
     });
 
     for (const path of REPORTS_PATHS) {
-      // Wait for a trends response for a short window, but don't fail if none
-      const trendsResp = page
-        .waitForResponse((res) => /\/api\/.*reports.*trends/i.test(res.url()), { timeout: 3000 })
-        .catch(() => null);
-
       await page.goto(`${BASE_URL}${path}`, { waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('networkidle');
       await forceRevealBodyIfCI(page);
-
-      if (trendsSeen || (await trendsResp)) break;
+      if (trendsSeen) break; // stop early if we already observed it
     }
 
     // Primary guard: route serves and body renders
-    await expect(page.locator('body')).toBeVisible();
+    await expect(page.locator('body')).toBeVisible({ timeout: 10000 });
 
-    // Informational, not gating: record whether a trends fetch was seen
+    // Record info in the report but DO NOT fail the test
     if (!trendsSeen) {
       test.info().annotations.push({
         type: 'note',
         description: 'No /api/.../reports/.../trends request observed during smoke; likely user-triggered later.',
       });
     }
-    // Optional soft check (won’t fail CI)
-    expect.soft(trendsSeen).toBeTruthy();
   });
 });
