@@ -18,7 +18,8 @@
     "e2e:gov": "playwright test e2e/gov.spec.ts --project=chromium",
     "e2e:trace": "playwright test --project=chromium --trace=on",
     "e2e:report": "playwright show-report",
-    "test:ci": "playwright install-deps && playwright install --with-deps && npm run build && npm run e2e"
+    "test:ci": "playwright install-deps && playwright install --with-deps && npm run build && npm run e2e",
+    "ci:e2e": "playwright test --project=chromium --grep '@ci' --reporter=line --trace on"
   },
   "dependencies": {
     "@axe-core/cli": "^4.10.2",
