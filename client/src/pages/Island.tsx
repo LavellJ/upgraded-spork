@@ -1,70 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-
-type BiomeId = "forest" | "tropics" | "desert" | "coast";
-type BiomeProgress = {
-  id: BiomeId;
-  completed: number;
-  total: number;
-  locked: boolean;
-};
+import { loadProgress, chipText } from "../store/progress";
 
 export default function Island() {
-  const [progress, setProgress] = useState<BiomeProgress[] | null>(null);
   const [, setLocation] = useLocation();
+  const [local, setLocal] = useState(() => loadProgress());
 
   useEffect(() => {
-    fetch("/api/progress/island")
-      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
-      .then(setProgress)
-      .catch(() =>
-        setProgress([
-          { id: "forest", completed: 1, total: 3, locked: false },
-          { id: "tropics", completed: 3, total: 3, locked: false },
-          { id: "desert", completed: 0, total: 3, locked: true },
-          { id: "coast", completed: 0, total: 3, locked: true },
-        ]),
-      );
+    // refresh local store on mount (and when returning from biome)
+    setLocal(loadProgress());
+    const onVis = () => setLocal(loadProgress());
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
   }, []);
 
-  const byId = (id: BiomeId) => progress?.find((b) => b.id === id);
-
-  const Node = ({ id, label }: { id: BiomeId; label: string }) => {
-    const p = byId(id);
-    const locked = p?.locked;
-    const chip = p ? `${p.completed}/${p.total}` : "";
-
-    const handleClick = () => {
-      if (!locked) setLocation(`/island/${id}`);
-    };
-
+  const Node = ({
+    id,
+    label,
+  }: {
+    id: "forest" | "tropics" | "desert" | "coast";
+    label: string;
+  }) => {
+    const handleClick = () => setLocation(`/island/${id}`);
     return (
       <div
         className="relative w-44 h-44 rounded-full shadow-lg bg-white/80 flex items-center justify-center cursor-pointer select-none"
         data-testid={`biome-${id}`}
         onClick={handleClick}
-        aria-disabled={locked ? "true" : "false"}
         role="button"
-        tabIndex={locked ? -1 : 0}
+        tabIndex={0}
       >
         <span className="text-sm">{label}</span>
-        {!locked && p && (
-          <span
-            className="absolute top-2 right-2 px-2 py-1 text-xs rounded-full bg-emerald-100 text-emerald-700"
-            data-testid={`progress-${id}`}
-          >
-            {chip}
-          </span>
-        )}
-        {locked && (
-          <span
-            className="absolute top-2 right-2 px-2 py-1 text-xs rounded-full bg-neutral-200 text-neutral-700"
-            data-testid={`lock-${id}`}
-            aria-label="locked"
-          >
-            🔒
-          </span>
-        )}
+        <span
+          className="absolute top-2 right-2 px-2 py-1 text-xs rounded-full bg-emerald-100 text-emerald-700"
+          data-testid={`progress-${id}`}
+        >
+          {chipText(local, id)}
+        </span>
       </div>
     );
   };
@@ -76,6 +48,12 @@ export default function Island() {
           Quest Island
         </h1>
         <div className="flex items-center gap-3">
+          <div
+            data-testid="lap-badge"
+            className="rounded-full px-3 py-1 bg-indigo-100 text-indigo-700"
+          >
+            Lap {local.currentLap}
+          </div>
           <button
             data-testid="journal-btn"
             className="rounded-lg px-3 py-1 bg-white/80 shadow"
