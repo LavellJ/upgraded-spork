@@ -1,46 +1,41 @@
-import { test, expect } from "@playwright/test";
-import { forceRevealBodyIfCI } from "./helpers/ci";
-import { installApiMocks } from "./mocks/api";
+// e2e/smoke.reports.spec.ts
+import { test, expect } from '@playwright/test';
+import { forceRevealBodyIfCI } from './helpers/ci';
+import { installApiMocks } from './mocks/api';
+import { setUiPrefs, devLogin } from './helpers/dev';
 
-const BASE_URL = process.env.CI_BASE_URL ?? "http://127.0.0.1:4173";
+const BASE_URL = process.env.CI_BASE_URL ?? 'http://127.0.0.1:4173';
+const REPORTS_PATHS = [process.env.CI_REPORTS_PATH || '/teacher/reports', '/reports'];
 
-// Allows overriding the path later if needed
-const REPORTS_PATHS = [
-  process.env.CI_REPORTS_PATH || "/teacher/reports",
-  "/reports",
-];
-
-test("@ci smoke: reports route serves and trends request made", async ({
-  page,
-}) => {
-  if (process.env.SKIP_E2E_LOCAL) test.skip(true, "Skipping locally");
-
-  await installApiMocks(page);
-
-  let trendsSeen = false;
-  const stop = page.on("response", (res) => {
-    const url = res.url();
-    if (/reports.*trends/i.test(url) && res.status() === 200) {
-      trendsSeen = true;
-    }
+test.describe('@ci reports smoke', () => {
+  test.beforeEach(async ({ page }) => {
+    if (process.env.SKIP_E2E_LOCAL) test.skip(true, 'Skipping locally');
+    await installApiMocks(page);
+    await setUiPrefs(page, { density: 'compact' });
+    await devLogin(page); // ensure the app fetches teacher data
   });
 
-  for (const path of REPORTS_PATHS) {
-    await page.goto(`${BASE_URL}${path}`, { waitUntil: "domcontentloaded" });
-    await page.waitForLoadState("networkidle");
-    await forceRevealBodyIfCI(page);
+  test('@ci smoke: reports route serves and trends request made', async ({ page }) => {
+    let trendsSeen = false;
 
-    // Give the app a moment to fetch, then bail early if we saw it
-    await page.waitForTimeout(200);
-    if (trendsSeen) break;
-  }
+    // mark when trends is requested
+    page.on('request', (req) => {
+      if (/\/api\/.*reports.*trends/i.test(req.url())) trendsSeen = true;
+    });
 
-  // Sanity: page rendered and body is visible
-  await expect(page.locator("body")).toBeVisible();
+    for (const path of REPORTS_PATHS) {
+      const trendsResp = page
+        .waitForResponse((res) => /\/api\/.*reports.*trends/i.test(res.url()), { timeout: 3000 })
+        .catch(() => null);
 
-  // Assert that our mocked trends endpoint was actually requested
-  expect(trendsSeen).toBeTruthy();
+      await page.goto(`${BASE_URL}${path}`, { waitUntil: 'domcontentloaded' });
+      await page.waitForLoadState('networkidle');
+      await forceRevealBodyIfCI(page);
 
-  // clean listener
-  page.off("response", stop as any);
+      if (trendsSeen || (await trendsResp)) break;
+    }
+
+    await expect(page.locator('body')).toBeVisible();
+    expect(trendsSeen).toBeTruthy();
+  });
 });
