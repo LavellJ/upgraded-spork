@@ -1,17 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link, useLocation } from "wouter";
-import { ensureLapConsistency, chipText } from "../store/progress";
+import {
+  loadProgress,
+  chipText,
+  ensureLapConsistency,
+} from "../store/progress";
 
 export default function Island() {
   const [, setLocation] = useLocation();
-  const [local, setLocal] = useState(() => ensureLapConsistency());
+  const [local, setLocal] = React.useState(() => ensureLapConsistency());
 
-  useEffect(() => {
+  React.useEffect(() => {
     const refresh = () => setLocal(ensureLapConsistency());
     refresh();
+    const t1 = setTimeout(refresh, 0);
+    const t2 = setTimeout(refresh, 150);
+    const t3 = setTimeout(refresh, 500);
     const onVis = () => document.visibilityState === "visible" && refresh();
+    const onEvt = () => refresh();
     document.addEventListener("visibilitychange", onVis);
-    return () => document.removeEventListener("visibilitychange", onVis);
+    window.addEventListener("island-progress-updated", onEvt);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("island-progress-updated", onEvt);
+    };
   }, []);
 
   const Node = ({

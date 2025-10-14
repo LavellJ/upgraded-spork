@@ -56,6 +56,11 @@ export function loadProgress(): Progress {
 
 export function saveProgress(p: Progress) {
   localStorage.setItem(KEY, JSON.stringify(normalize(p)));
+  try {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("island-progress-updated"));
+    }
+  } catch {}
 }
 
 export function resetProgress() {
