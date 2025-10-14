@@ -15,6 +15,8 @@ export async function installApiMocks(page: Page) {
   const assignments = read("assignments-list.json");
   const trends = read("reports-trends.json");
   const island = read("island-progress.json");
+  const lessonsToday = read("lessons-today.json");
+  const activity = read("activity-act-001.json");
 
   // Match ANY endpoint that contains "assignments" (covers /api/assignments, /api/teacher/assignments, etc)
   await page.route(/assignments/i, async (route) => {
@@ -40,6 +42,24 @@ export async function installApiMocks(page: Page) {
       status: 200,
       contentType: "application/json",
       body: island,
+    });
+  });
+
+  // Lessons today
+  await page.route(/\/api\/lessons\/today/i, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: lessonsToday,
+    });
+  });
+
+  // Activity by ID
+  await page.route(/\/api\/activity\//i, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: activity,
     });
   });
 

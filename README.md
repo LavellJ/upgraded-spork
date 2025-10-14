@@ -33,4 +33,9 @@ await page.goto(`${BASE_URL}/island/forest?e2e=1`);
 await page.getByTestId("complete-lesson").click();
 ```
 
+### Activity E2E
+
+`/lesson` loads a mocked "today's lesson" and links to `/activity/:id?e2e=1`.  
+On the activity page, enabling E2E (via `?e2e=1` or `localStorage.E2E_CONTROLS="1"`) reveals **Complete lesson** used by tests.
+
 ![E2E Smoke](https://github.com/LavellJ/upgraded-spork/actions/workflows/e2e.yml/badge.svg)
