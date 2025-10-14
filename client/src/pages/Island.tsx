@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { loadProgress, chipText } from "../store/progress";
+import { ensureLapConsistency, chipText } from "../store/progress";
 
 export default function Island() {
   const [, setLocation] = useLocation();
-  const [local, setLocal] = useState(() => loadProgress());
+  const [local, setLocal] = useState(() => ensureLapConsistency());
 
   useEffect(() => {
     // refresh local store on mount (and when returning from biome)
-    setLocal(loadProgress());
+    setLocal(ensureLapConsistency());
     const onVis = () => {
       if (document.visibilityState === "visible") {
-        setLocal(loadProgress());
+        setLocal(ensureLapConsistency());
       }
     };
     document.addEventListener("visibilitychange", onVis);

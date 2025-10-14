@@ -92,3 +92,12 @@ export function chipText(p: Progress, biome: BiomeId): string {
   const t = targetFor(biome, lap);
   return `${c}/${t}`;
 }
+
+export function ensureLapConsistency(): Progress {
+  const p = loadProgress();
+  if (isLapComplete(p, p.currentLap)) {
+    advanceLap(p);
+    saveProgress(p);
+  }
+  return p;
+}
