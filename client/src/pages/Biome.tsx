@@ -1,43 +1,45 @@
-import React, { useMemo, useState } from "react";
-import type { BiomeId } from "../store/progress";
-import { loadProgress, increment, chipText } from "../store/progress";
-import { Link } from "wouter";
+import React from "react";
+import {
+  type BiomeId,
+  completeLesson,
+  ensureLapConsistency,
+  getBiomeCounts,
+} from "../store/progress";
 
-export default function Biome({ params }: { params: { biomeId: string } }) {
-  const biomeId = (params?.biomeId || "").toLowerCase() as BiomeId;
-  const [p, setP] = useState(() => loadProgress());
+type Props = { params?: { biomeId?: string } };
 
-  const valid = useMemo(
-    () => ["forest", "tropics", "desert", "coast"].includes(biomeId),
-    [biomeId],
-  );
-  if (!valid) {
-    return (
-      <main className="p-6">
-        <h1 data-testid="biome-stub">Biome: {biomeId}</h1>
-        <p>Unknown biome.</p>
-      </main>
-    );
-  }
+export default function Biome({ params }: Props) {
+  const asBiome = (id: string | undefined): BiomeId => {
+    const v = (id ?? "forest") as BiomeId;
+    return (["forest", "tropics", "desert", "coast"] as const).includes(v)
+      ? v
+      : "forest";
+  };
 
-  const onComplete = () => setP(increment(biomeId));
+  const biome = asBiome(params?.biomeId);
+  const [p, setP] = React.useState(() => ensureLapConsistency());
+  const { cur, total } = getBiomeCounts(p, biome);
+
+  const onComplete = () => {
+    const updated = completeLesson(biome);
+    setP(updated);
+  };
 
   return (
-    <main className="p-6 space-y-4">
-      <h1 data-testid="biome-stub">Biome: {biomeId}</h1>
-      <div className="flex items-center gap-3">
-        <div data-testid="biome-progress">{chipText(p, biomeId)}</div>
-        <button
-          data-testid="complete-lesson"
-          className="rounded px-3 py-1 bg-emerald-500 text-white"
-          onClick={onComplete}
-        >
-          Complete lesson
-        </button>
-        <Link href="/island" className="rounded px-3 py-1 bg-neutral-200">
-          Back to island
-        </Link>
+    <div className="p-4 space-y-4">
+      <h1 data-testid="biome-stub" className="text-xl font-semibold">
+        Biome: {biome}
+      </h1>
+      <div data-testid="biome-progress" className="text-sm">
+        {cur}/{total}
       </div>
-    </main>
+      <button
+        data-testid="complete-lesson"
+        className="px-3 py-2 rounded bg-indigo-600 text-white"
+        onClick={onComplete}
+      >
+        Complete Lesson
+      </button>
+    </div>
   );
 }

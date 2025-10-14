@@ -1,61 +1,53 @@
 export type BiomeId = "forest" | "tropics" | "desert" | "coast";
-export type LapNumber = number;
-
-type LapConfig = Record<BiomeId, number>;
-const LAPS: Record<LapNumber, LapConfig> = {
-  1: { forest: 3, tropics: 3, desert: 3, coast: 3 },
-  2: { forest: 4, tropics: 4, desert: 4, coast: 4 },
-  3: { forest: 5, tropics: 5, desert: 5, coast: 5 },
-};
+export const BIOMES: BiomeId[] = ["forest", "tropics", "desert", "coast"];
+const KEY = "island-progress-v2";
+const DEFAULT_TARGET = 3;
 
 export type Progress = {
-  currentLap: LapNumber;
-  completed: Record<LapNumber, Record<BiomeId, number>>;
+  currentLap: number; // starts at 1
+  targetPerLap: number; // per-lap target, default 3
+  completed: Record<number, Record<BiomeId, number>>; // lap -> biome -> count
 };
 
-const KEY = "island-progress-v2";
+function initLapCounts(): Record<BiomeId, number> {
+  return { forest: 0, tropics: 0, desert: 0, coast: 0 };
+}
 
-const BIOMES: BiomeId[] = ["forest", "tropics", "desert", "coast"];
-
-function emptyProgress(lap: LapNumber = 1): Progress {
+export function defaultProgress(): Progress {
   return {
-    currentLap: lap,
-    completed: { [lap]: { forest: 0, tropics: 0, desert: 0, coast: 0 } },
+    currentLap: 1,
+    targetPerLap: DEFAULT_TARGET,
+    completed: { 1: initLapCounts() },
   };
 }
 
-export function targetFor(biome: BiomeId, lap: LapNumber): number {
-  const cfg = LAPS[lap] || LAPS[1];
-  return cfg[biome] ?? 3;
-}
-
-export function normalize(p: Progress): Progress {
-  const lap = p?.currentLap ?? 1;
-  const base = emptyProgress(lap);
-  const completed = { ...base.completed, ...(p?.completed ?? {}) };
-  if (!completed[lap])
-    completed[lap] = { forest: 0, tropics: 0, desert: 0, coast: 0 };
-  // clamp counts to targets
+export function normalize(p: any): Progress {
+  if (!p || typeof p !== "object") return defaultProgress();
+  const currentLap = Number(p.currentLap) > 0 ? Number(p.currentLap) : 1;
+  const targetPerLap =
+    Number(p.targetPerLap) > 0 ? Number(p.targetPerLap) : DEFAULT_TARGET;
+  const completed =
+    typeof p.completed === "object" && p.completed ? p.completed : {};
+  if (!completed[currentLap]) completed[currentLap] = initLapCounts();
+  // Fill missing biomes for current lap
   for (const b of BIOMES) {
-    const t = targetFor(b, lap);
-    const v = Math.max(0, Math.min(t, completed[lap][b] ?? 0));
-    completed[lap][b] = v;
+    if (typeof completed[currentLap][b] !== "number")
+      completed[currentLap][b] = 0;
   }
-  return { currentLap: lap, completed };
+  return { currentLap, targetPerLap, completed };
 }
 
 export function loadProgress(): Progress {
   try {
     const raw = localStorage.getItem(KEY);
-    if (!raw) return normalize(emptyProgress(1));
-    return normalize(JSON.parse(raw));
+    return normalize(raw ? JSON.parse(raw) : undefined);
   } catch {
-    return normalize(emptyProgress(1));
+    return defaultProgress();
   }
 }
 
-export function saveProgress(p: Progress) {
-  localStorage.setItem(KEY, JSON.stringify(normalize(p)));
+export function saveProgress(p: Progress): void {
+  localStorage.setItem(KEY, JSON.stringify(p));
   try {
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("island-progress-updated"));
@@ -63,39 +55,15 @@ export function saveProgress(p: Progress) {
   } catch {}
 }
 
-export function resetProgress() {
-  localStorage.removeItem(KEY);
+export function isLapComplete(p: Progress, lap = p.currentLap): boolean {
+  const target = p.targetPerLap ?? DEFAULT_TARGET;
+  const lapCounts = p.completed[lap] || {};
+  return BIOMES.every((b) => (lapCounts[b] ?? 0) >= target);
 }
 
-export function increment(biome: BiomeId): Progress {
-  const p = loadProgress();
-  const lap = p.currentLap;
-  const cur = p.completed[lap][biome] ?? 0;
-  const max = targetFor(biome, lap);
-  p.completed[lap][biome] = Math.min(max, cur + 1);
-  if (isLapComplete(p, lap)) advanceLap(p);
-  saveProgress(p);
-  return p;
-}
-
-export function isLapComplete(p: Progress, lap: LapNumber): boolean {
-  return BIOMES.every((b) => (p.completed[lap][b] ?? 0) >= targetFor(b, lap));
-}
-
-export function advanceLap(p: Progress) {
-  const next = p.currentLap + 1;
-  if (!LAPS[next]) return; // no more laps configured
-  p.currentLap = next;
-  if (!p.completed[next]) {
-    p.completed[next] = { forest: 0, tropics: 0, desert: 0, coast: 0 };
-  }
-}
-
-export function chipText(p: Progress, biome: BiomeId): string {
-  const lap = p.currentLap;
-  const c = p.completed[lap][biome] ?? 0;
-  const t = targetFor(biome, lap);
-  return `${c}/${t}`;
+export function advanceLap(p: Progress): void {
+  p.currentLap = (p.currentLap ?? 1) + 1;
+  if (!p.completed[p.currentLap]) p.completed[p.currentLap] = initLapCounts();
 }
 
 export function ensureLapConsistency(): Progress {
@@ -104,5 +72,29 @@ export function ensureLapConsistency(): Progress {
     advanceLap(p);
     saveProgress(p);
   }
+  return p;
+}
+
+export function getBiomeCounts(
+  p: Progress,
+  biome: BiomeId,
+  lap = p.currentLap,
+): { cur: number; total: number } {
+  const total = p.targetPerLap ?? DEFAULT_TARGET;
+  const cur = p.completed[lap]?.[biome] ?? 0;
+  return { cur, total };
+}
+
+export function completeLesson(biome: BiomeId): Progress {
+  const p = loadProgress();
+  const lap = p.currentLap;
+  if (!p.completed[lap]) p.completed[lap] = initLapCounts();
+  const cur = p.completed[lap][biome] ?? 0;
+  const total = p.targetPerLap ?? DEFAULT_TARGET;
+  p.completed[lap][biome] = Math.min(cur + 1, total);
+  if (isLapComplete(p, lap)) {
+    advanceLap(p);
+  }
+  saveProgress(p);
   return p;
 }

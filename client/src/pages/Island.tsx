@@ -1,9 +1,9 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
 import {
-  loadProgress,
-  chipText,
   ensureLapConsistency,
+  getBiomeCounts,
+  type BiomeId,
 } from "../store/progress";
 
 export default function Island() {
@@ -29,6 +29,11 @@ export default function Island() {
     };
   }, []);
 
+  const chipFor = (id: BiomeId) => {
+    const { cur, total } = getBiomeCounts(local, id);
+    return `${cur}/${total}`;
+  };
+
   const Node = ({
     id,
     label,
@@ -50,7 +55,7 @@ export default function Island() {
           className="absolute top-2 right-2 px-2 py-1 text-xs rounded-full bg-emerald-100 text-emerald-700"
           data-testid={`progress-${id}`}
         >
-          {chipText(local, id)}
+          {chipFor(id)}
         </span>
       </div>
     );
