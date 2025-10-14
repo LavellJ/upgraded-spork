@@ -66,12 +66,19 @@ export function advanceLap(p: Progress): void {
   if (!p.completed[p.currentLap]) p.completed[p.currentLap] = initLapCounts();
 }
 
-export function ensureLapConsistency(): Progress {
-  const p = loadProgress();
+function advanceIfComplete(p: Progress): boolean {
+  const before = p.currentLap;
   if (isLapComplete(p, p.currentLap)) {
     advanceLap(p);
-    saveProgress(p);
+    return p.currentLap !== before;
   }
+  return false;
+}
+
+export function ensureLapConsistency(): Progress {
+  const p = loadProgress();
+  const advanced = advanceIfComplete(p);
+  if (advanced) saveProgress(p);
   return p;
 }
 
@@ -89,12 +96,9 @@ export function completeLesson(biome: BiomeId): Progress {
   const p = loadProgress();
   const lap = p.currentLap;
   if (!p.completed[lap]) p.completed[lap] = initLapCounts();
-  const cur = p.completed[lap][biome] ?? 0;
   const total = p.targetPerLap ?? DEFAULT_TARGET;
-  p.completed[lap][biome] = Math.min(cur + 1, total);
-  if (isLapComplete(p, lap)) {
-    advanceLap(p);
-  }
-  saveProgress(p);
+  p.completed[lap][biome] = Math.min((p.completed[lap][biome] ?? 0) + 1, total);
+  advanceIfComplete(p); // ensures deterministic lap flip
+  saveProgress(p); // dispatches 'island-progress-updated'
   return p;
 }
