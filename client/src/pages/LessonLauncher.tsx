@@ -37,7 +37,7 @@ export default function LessonLauncher() {
       {!loading && lesson && (
         <div className="mt-4 rounded-xl border p-4">
           <div className="text-lg mb-2" data-testid="lesson-title">
-            {lesson.displayTitle}
+            {lesson.displayTitle || lesson.id || "Untitled lesson"}
           </div>
           <Link href={`/activity/${lesson.activityId}?e2e=1`}>
             <a
