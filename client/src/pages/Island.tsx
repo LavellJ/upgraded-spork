@@ -7,13 +7,9 @@ export default function Island() {
   const [local, setLocal] = useState(() => ensureLapConsistency());
 
   useEffect(() => {
-    // refresh local store on mount (and when returning from biome)
-    setLocal(ensureLapConsistency());
-    const onVis = () => {
-      if (document.visibilityState === "visible") {
-        setLocal(ensureLapConsistency());
-      }
-    };
+    const refresh = () => setLocal(ensureLapConsistency());
+    refresh();
+    const onVis = () => document.visibilityState === "visible" && refresh();
     document.addEventListener("visibilitychange", onVis);
     return () => document.removeEventListener("visibilitychange", onVis);
   }, []);

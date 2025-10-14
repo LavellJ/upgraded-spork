@@ -14,10 +14,9 @@ test("@ci progress: finishing all biomes advances to next lap", async ({
   await setUiPrefs(page, { density: "compact" });
   await devLogin(page);
 
-  // Clean slate for the v2 store
+  // Clean slate
   await page.addInitScript(() => localStorage.removeItem("island-progress-v2"));
 
-  // Helper to open /island and ensure CI body visibility
   const openIsland = async () => {
     await page.goto(`${BASE_URL}/island`, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle");
@@ -25,47 +24,49 @@ test("@ci progress: finishing all biomes advances to next lap", async ({
   };
 
   await openIsland();
-  await expect(page.getByTestId("lap-badge")).toContainText("Lap 1");
+  await expect(page.getByTestId("lap-badge")).toContainText(/Lap\s+1/);
 
-  // UI-driven completion: read chip text, complete until target reached
-  const completeUntilDone = async (biome: string) => {
-    // Read chip text on island page (e.g., "0/3" or "2/3")
-    const chipText = await page.getByTestId(`progress-${biome}`).textContent();
-    const match = chipText?.match(/(\d+)\/(\d+)/);
-    if (!match) throw new Error(`Invalid chip text for ${biome}: ${chipText}`);
-
-    const [, current, target] = match;
-    const remaining = parseInt(target) - parseInt(current);
-
-    if (remaining > 0) {
-      await page.getByTestId(`biome-${biome}`).click();
-      await expect(page.getByTestId("biome-stub")).toContainText(biome);
-
-      for (let i = 0; i < remaining; i++) {
-        await page.getByTestId("complete-lesson").click();
-      }
-
-      await openIsland();
-
-      // Verify chip now shows target/target
-      await expect(page.getByTestId(`progress-${biome}`)).toContainText(
-        `${target}/${target}`,
-      );
-    }
+  const getCounts = (s: string) => {
+    const m = s.match(/(\d+)\s*\/\s*(\d+)/);
+    return {
+      cur: m ? parseInt(m[1], 10) : 0,
+      total: m ? parseInt(m[2], 10) : 3,
+    };
   };
 
-  // Complete all four biomes to their targets
-  await completeUntilDone("forest");
-  await completeUntilDone("tropics");
-  await completeUntilDone("desert");
-  await completeUntilDone("coast");
+  const completeToTarget = async (biome: string) => {
+    // Navigate into biome
+    await page.getByTestId(`biome-${biome}`).click();
+    await expect(page.getByTestId("biome-stub")).toContainText(biome);
 
-  // After finishing all biomes, lap should advance (> 1)
+    // Read current/total from the biome page
+    const prog = page.getByTestId("biome-progress");
+    const first = getCounts(await prog.innerText());
+    for (let i = first.cur; i < first.total; i++) {
+      await page.getByTestId("complete-lesson").click();
+    }
+    // Ensure biome page reached total/total
+    await expect(prog).toHaveText(`${first.total}/${first.total}`);
+
+    // Return to island and verify chip shows total/total
+    await openIsland();
+    await expect(page.getByTestId(`progress-${biome}`)).toHaveText(
+      `${first.total}/${first.total}`,
+      { timeout: 10000 },
+    );
+  };
+
+  for (const b of ["forest", "tropics", "desert", "coast"]) {
+    await completeToTarget(b);
+  }
+
+  // Island re-reads store and coerces lap if complete
   await openIsland();
-  const lapText = await page.getByTestId("lap-badge").textContent();
-  const lapMatch = lapText?.match(/Lap (\d+)/);
-  if (!lapMatch) throw new Error(`Invalid lap badge: ${lapText}`);
 
-  const lapNum = parseInt(lapMatch[1]);
-  expect(lapNum).toBeGreaterThan(1);
+  // Accept Lap > 1
+  const badge = page.getByTestId("lap-badge");
+  await expect(badge).toBeVisible();
+  const label = await badge.innerText();
+  const lap = parseInt(label.match(/Lap\s+(\d+)/)?.[1] ?? "1", 10);
+  expect(lap).toBeGreaterThan(1);
 });
