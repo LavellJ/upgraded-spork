@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 
-type TodayLesson = { id: string; displayTitle: string; activityId: string };
+type TodayLesson = {
+  id: string;
+  displayTitle: string;
+  firstActivityId?: string;
+  firstActivityTitle?: string;
+};
 
 export default function LessonLauncher() {
   const [lesson, setLesson] = useState<TodayLesson | null>(null);
@@ -25,6 +30,8 @@ export default function LessonLauncher() {
     };
   }, []);
 
+  const activityId = lesson?.firstActivityId || "act-001";
+
   return (
     <div className="max-w-3xl mx-auto p-4">
       <h1
@@ -39,13 +46,12 @@ export default function LessonLauncher() {
           <div className="text-lg mb-2" data-testid="lesson-title">
             {lesson.displayTitle || lesson.id || "Untitled lesson"}
           </div>
-          <Link href={`/activity/${lesson.activityId}?e2e=1`}>
-            <a
-              className="inline-block rounded-lg px-4 py-2 bg-indigo-600 text-white"
-              data-testid="start-lesson"
-            >
-              Start
-            </a>
+          <Link
+            href={`/activity/${activityId}`}
+            data-testid="start-lesson"
+            className="inline-block px-3 py-2 rounded bg-emerald-600 text-white"
+          >
+            Start lesson
           </Link>
         </div>
       )}

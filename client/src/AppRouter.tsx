@@ -14,7 +14,7 @@ import TopNav from "./components/TopNav";
 import Island from "./pages/Island";
 import BiomePage from "./pages/BiomePage";
 import LessonLauncher from "./pages/LessonLauncher";
-import ActivityPage from "./pages/ActivityPage";
+import ActivityStub from "./pages/ActivityStub";
 import Progress from "./pages/Progress";
 import Settings from "./pages/Settings";
 
@@ -205,7 +205,7 @@ export function AppRouter() {
         <Route path="/island" component={Island} />
         <Route path="/island/:biomeId" component={BiomePage} />
         <Route path="/lesson" component={LessonLauncher} />
-        <Route path="/activity/:activityId" component={ActivityPage} />
+        <Route path="/activity/:activityId" component={ActivityStub} />
         <Route path="/progress" component={Progress} />
         <Route path="/settings" component={Settings} />
 

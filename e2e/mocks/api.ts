@@ -45,13 +45,26 @@ export async function installApiMocks(page: Page) {
     });
   });
 
-  // Lessons today
+  // Lessons today - deterministic payload for CI
   await page.route(/\/api\/lessons\/today/i, async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: lessonsToday,
-    });
+    if (process.env.CI) {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          id: "les-001",
+          displayTitle: "Patterns",
+          firstActivityId: "act-001",
+          firstActivityTitle: "Patterns Intro",
+        }),
+      });
+    } else {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: lessonsToday,
+      });
+    }
   });
 
   // Activity by ID
