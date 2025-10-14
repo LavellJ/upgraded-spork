@@ -17,28 +17,48 @@ test("@ci progress: finishing all biomes advances to next lap", async ({
   // Clean slate for the v2 store
   await page.addInitScript(() => localStorage.removeItem("island-progress-v2"));
 
-  // Lap 1 targets are 3 per biome
-  await page.goto(`${BASE_URL}/island`, { waitUntil: "domcontentloaded" });
-  await page.waitForLoadState("networkidle");
-  await forceRevealBodyIfCI(page);
-  await expect(page.getByTestId("lap-badge")).toContainText("Lap 1");
-
-  const complete = async (biome: string, times: number) => {
-    await page.getByTestId(`biome-${biome}`).click();
-    for (let i = 0; i < times; i++) {
-      await page.getByTestId("complete-lesson").click();
-    }
+  // Helper to open /island and ensure CI body visibility
+  const openIsland = async () => {
     await page.goto(`${BASE_URL}/island`, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle");
     await forceRevealBodyIfCI(page);
   };
 
-  // Bring each biome to its target (3)
-  await complete("forest", 3); // going beyond clamps to target
+  await openIsland();
+  await expect(page.getByTestId("lap-badge")).toContainText("Lap 1");
+
+  // Complete N lessons for a biome, then return to island
+  const complete = async (biome: string, times: number) => {
+    await page.getByTestId(`biome-${biome}`).click();
+    await expect(page.getByTestId("biome-stub")).toContainText(biome);
+    for (let i = 0; i < times; i++) {
+      await page.getByTestId("complete-lesson").click();
+    }
+    await openIsland();
+  };
+
+  // Lap 1 targets are 3 per biome
+  await complete("forest", 3);
   await complete("tropics", 3);
   await complete("desert", 3);
   await complete("coast", 3);
 
-  // After all biomes reach target for Lap 1, lap should advance
+  // Wait for persisted state to show Lap 2,
+  // then reload /island and assert the badge
+  await page.waitForFunction(
+    () => {
+      try {
+        const raw = localStorage.getItem("island-progress-v2");
+        if (!raw) return false;
+        const p = JSON.parse(raw);
+        return p?.currentLap === 2;
+      } catch {
+        return false;
+      }
+    },
+    { timeout: 5000 },
+  );
+
+  await openIsland();
   await expect(page.getByTestId("lap-badge")).toContainText("Lap 2");
 });

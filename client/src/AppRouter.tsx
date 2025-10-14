@@ -201,7 +201,9 @@ export function AppRouter() {
 
         {/* Sprint 1 routes */}
         <Route path="/island" component={Island} />
-        <Route path="/island/:biomeId" component={Biome} />
+        <Route path="/island/:biomeId">
+          {(params) => <Biome params={params} />}
+        </Route>
         <Route path="/progress" component={Progress} />
         <Route path="/settings" component={Settings} />
 

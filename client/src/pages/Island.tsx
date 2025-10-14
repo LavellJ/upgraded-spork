@@ -9,7 +9,11 @@ export default function Island() {
   useEffect(() => {
     // refresh local store on mount (and when returning from biome)
     setLocal(loadProgress());
-    const onVis = () => setLocal(loadProgress());
+    const onVis = () => {
+      if (document.visibilityState === "visible") {
+        setLocal(loadProgress());
+      }
+    };
     document.addEventListener("visibilitychange", onVis);
     return () => document.removeEventListener("visibilitychange", onVis);
   }, []);
