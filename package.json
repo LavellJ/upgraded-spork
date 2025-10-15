@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview --port 4173 --strictPort",
-    "start": "vite preview --port 4173 --strictPort",
+    "preview": "vite preview --port 4173 --host 127.0.0.1 --strictPort",
+    "start": "vite preview --port 4173 --host 127.0.0.1 --strictPort",
+    "dev:mock": "node server/dev-mock-server.cjs",
+    "dev:mock:full": "npm-run-all -s build dev:mock",
     "test": "echo \"no test checks yet\"",
     "art:preflight": "echo \"(stub) art/UI preflight not wired yet\"",
     "a11y:ci": "http-server ./dist -p 4173 --silent & wait-on http://127.0.0.1:4173 && axe --save --exit --tags wcag2aa http://127.0.0.1:4173/?tab=dev",
