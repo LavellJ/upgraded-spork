@@ -8,6 +8,7 @@ try {
 } catch {}
 
 import DayPartChip from "./DayPartChip";
+import { SimpleThemeToggle } from "./ThemeToggle";
 
 export default function TopNav() {
   return (
@@ -29,7 +30,10 @@ export default function TopNav() {
           Settings
         </Link>
       </div>
-      <DayPartChip />
+      <div className="flex items-center gap-3">
+        <SimpleThemeToggle />
+        <DayPartChip />
+      </div>
     </nav>
   );
 }
