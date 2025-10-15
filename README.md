@@ -39,3 +39,19 @@ await page.getByTestId("complete-lesson").click();
 On the activity page, enabling E2E (via `?e2e=1` or `localStorage.E2E_CONTROLS="1"`) reveals **Complete lesson** used by tests.
 
 ![E2E Smoke](https://github.com/LavellJ/upgraded-spork/actions/workflows/e2e.yml/badge.svg)
+
+## Local Preview with CI-like Mocks
+
+Build once and serve mock APIs + static app on the same origin (127.0.0.1:4173):
+
+```bash
+npm run dev:mock:full
+# then open http://127.0.0.1:4173/__seed  (sets E2E_CONTROLS=1) -> redirects to /island
+```
+
+Endpoints served locally:
+
+- `GET /api/progress/island` (reads e2e/fixtures/island-progress.json if present, else fallback)
+- `GET /api/lessons/today` → `{ id: "les-001", displayTitle: "Patterns", firstActivityId: "act-001", firstActivityTitle: "Patterns Intro" }`
+
+**Tip:** Use `/__seed` once per fresh session to enable biome E2E controls.
