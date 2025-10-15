@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --port 4173 --strictPort",
+    "a11y:ci": "http-server ./dist -p 4173 --silent & wait-on http://127.0.0.1:4173 && playwright test e2e/a11y.spec.ts --project=chromium",
     "start": "vite preview --port 4173 --strictPort",
     "dev:mock": "node server/dev-mock-server.cjs",
     "dev:mock:full": "npm-run-all -s build dev:mock",
@@ -14,7 +15,6 @@
     "dev:mock:full:public": "npm-run-all -s build dev:mock:public",
     "test": "echo \"no test checks yet\"",
     "art:preflight": "echo \"(stub) art/UI preflight not wired yet\"",
-    "a11y:ci": "http-server ./dist -p 4173 --silent & wait-on http://127.0.0.1:4173 && axe --save --exit --tags wcag2aa http://127.0.0.1:4173/?tab=dev",
     "e2e": "playwright test",
     "e2e:chromium": "playwright test --project=chromium",
     "e2e:headed": "playwright test --project=chromium --headed",
@@ -26,7 +26,6 @@
     "ci:e2e": "playwright test --project=chromium --grep '@ci' --reporter=line --trace on"
   },
   "dependencies": {
-    "@axe-core/playwright": "^4.10.2",
     "@axe-core/react": "^4.10.2",
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.25",
@@ -129,6 +128,7 @@
   },
   "devDependencies": {
     "@axe-core/cli": "^4.10.2",
+    "@axe-core/playwright": "^4.10.2",
     "@replit/vite-plugin-cartographer": "^0.3.0",
     "@replit/vite-plugin-runtime-error-modal": "^0.0.3",
     "@tailwindcss/typography": "^0.5.15",
