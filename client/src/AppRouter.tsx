@@ -17,6 +17,7 @@ import LessonLauncher from "./pages/LessonLauncher";
 import ActivityStub from "./pages/ActivityStub";
 import Progress from "./pages/Progress";
 import Settings from "./pages/Settings";
+import Styleguide from "./routes/styleguide";
 
 function BootMarker() {
   useEffect(() => {
@@ -184,6 +185,9 @@ export function AppRouter() {
 
         {/* Prompt tools */}
         <Route path="/tools/prompts" component={PromptRunner} />
+
+        {/* Styleguide (temporary) */}
+        <Route path="/styleguide" component={Styleguide} />
 
         {/* Teacher panel: support both /teacher and /teacher/:sub* */}
         <Route path="/teacher/:sub*" component={TeacherPanelEntry} />
