@@ -33,31 +33,40 @@ export default function LessonLauncher() {
   const activityId = lesson?.firstActivityId || "act-001";
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
-      <h1
-        data-testid="lesson-launcher-heading"
-        className="text-2xl font-semibold"
-      >
-        Today's Quest
-      </h1>
-      {loading && <div data-testid="lesson-loading">Loading…</div>}
-      {!loading && lesson && (
-        <div className="mt-4 rounded-xl border p-4">
-          <div className="text-lg mb-2" data-testid="lesson-title">
-            {lesson.displayTitle || lesson.id || "Untitled lesson"}
+    <div className="min-h-screen bg-gradient-to-b from-sky-50 to-amber-50 p-8">
+      <div className="max-w-3xl mx-auto">
+        <h1
+          data-testid="lesson-launcher-heading"
+          className="text-3xl font-bold text-amber-900 mb-6"
+        >
+          Today's Quest
+        </h1>
+        {loading && (
+          <div data-testid="lesson-loading" className="text-amber-700">
+            Loading…
           </div>
-          <Link
-            href={`/activity/${activityId}`}
-            data-testid="start-lesson"
-            className="inline-block px-3 py-2 rounded bg-emerald-600 text-white"
-          >
-            Start lesson
-          </Link>
-        </div>
-      )}
-      {!loading && !lesson && (
-        <div className="mt-4 text-sm text-zinc-600">No lesson assigned.</div>
-      )}
+        )}
+        {!loading && lesson && (
+          <div className="mt-6 rounded-2xl border-2 border-amber-200 p-6 bg-white/80 backdrop-blur-sm shadow-xl">
+            <div
+              className="text-xl font-semibold mb-4 text-amber-900"
+              data-testid="lesson-title"
+            >
+              {lesson.displayTitle || lesson.id || "Untitled lesson"}
+            </div>
+            <Link
+              href={`/activity/${activityId}`}
+              data-testid="start-lesson"
+              className="inline-block px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold shadow-lg hover:bg-emerald-700 transition-colors"
+            >
+              Start lesson
+            </Link>
+          </div>
+        )}
+        {!loading && !lesson && (
+          <div className="mt-6 text-sm text-amber-700">No lesson assigned.</div>
+        )}
+      </div>
     </div>
   );
 }
