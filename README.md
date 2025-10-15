@@ -49,6 +49,14 @@ npm run dev:mock:full
 # then open http://127.0.0.1:4173/__seed  (sets E2E_CONTROLS=1) -> redirects to /island
 ```
 
+**Manual Step Required:** Add these scripts to package.json:
+
+```json
+"preview": "vite preview --port 4173 --host 127.0.0.1 --strictPort",
+"dev:mock": "node server/dev-mock-server.cjs",
+"dev:mock:full": "npm-run-all -s build dev:mock"
+```
+
 Endpoints served locally:
 
 - `GET /api/progress/island` (reads e2e/fixtures/island-progress.json if present, else fallback)
