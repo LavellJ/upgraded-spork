@@ -4,7 +4,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host --config vite.config.ts",
     "build": "vite build",
     "preview": "vite preview --port 4173 --strictPort",
     "a11y:ci": "http-server ./dist -p 4173 --silent & wait-on http://127.0.0.1:4173 && playwright test e2e/a11y.spec.ts --project=chromium",
