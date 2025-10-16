@@ -3,6 +3,13 @@ import AxeBuilder from '@axe-core/playwright';
 
 test('WCAG AA: app has no critical violations', async ({ page }) => {
   await page.goto('http://127.0.0.1:4173/');
+  // Ensure app booted
+  await page.waitForSelector('#root', { state: 'attached' });
+  // Wait until lang is set (covers static and runtime patch)
+  await page.waitForFunction(() => !!document.documentElement.getAttribute('lang'));
+  const lang = await page.getAttribute('html', 'lang');
+  expect(lang, 'html must have a lang attribute').toBeTruthy();
+
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa'])
     .analyze();
@@ -11,9 +18,7 @@ test('WCAG AA: app has no critical violations', async ({ page }) => {
     console.log('Accessibility violations:\n');
     for (const v of results.violations) {
       console.log(`- ${v.id}: ${v.help} (${v.impact})`);
-      for (const n of v.nodes) {
-        console.log(`  • ${n.target.join(' ')}`);
-      }
+      for (const n of v.nodes) console.log(`  • ${n.target.join(' ')}`);
     }
   }
 

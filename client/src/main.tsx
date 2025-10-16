@@ -1,3 +1,8 @@
+/* runtime lang safety — ensures <html lang> is present in all environments */
+if (!document.documentElement.getAttribute('lang')) {
+  document.documentElement.setAttribute('lang', 'en-AU');
+}
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
