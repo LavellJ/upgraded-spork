@@ -25,9 +25,5 @@ jobs:
         run: npm run build
       - name: Verify build output exists
         run: ls -la ./client/dist || ls -la ./dist
-      - name: Serve built app
-        run: |
-          if [ -d ./client/dist ]; then DIST=./client/dist; else DIST=./dist; fi
-          npx http-server "$DIST" -p 4173 --silent & npx wait-on http://127.0.0.1:4173
       - name: Run a11y tests (Chromium)
-        run: npx playwright test e2e/a11y.spec.ts --project=chromium
+        run: npx playwright test -c playwright.a11y.config.ts e2e/a11y.spec.ts
