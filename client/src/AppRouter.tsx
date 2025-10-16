@@ -10,12 +10,20 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import Providers from "./Providers";
 import { TeacherLayoutV2 } from "./guide/teacher/TeacherLayoutV2";
 import TabContentV2 from "./guide/teacher/TabContentV2";
+import TopNav from "./components/TopNav";
+import Island from "./pages/Island";
+import BiomePage from "./pages/BiomePage";
+import LessonLauncher from "./pages/LessonLauncher";
+import ActivityStub from "./pages/ActivityStub";
+import Progress from "./pages/Progress";
+import Settings from "./pages/Settings";
+import Styleguide from "./routes/styleguide";
 
 function BootMarker() {
   useEffect(() => {
-    const root = document.getElementById('root');
-    if (root) root.setAttribute('data-testid', 'app-loaded');
-    document.body.setAttribute('data-app-loaded', '1');
+    const root = document.getElementById("root");
+    if (root) root.setAttribute("data-testid", "app-loaded");
+    document.body.setAttribute("data-app-loaded", "1");
   }, []);
   return null;
 }
@@ -110,26 +118,8 @@ function AppWithHeroAccess() {
   return (
     <div className="relative">
       {/* Top Navigation Bar */}
-      <div className="fixed top-4 left-4 z-40">
-        <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg border border-gray-200">
-          <HealthBadge />
-          <span className="text-gray-300">|</span>
-          <Link
-            href="/teacher/referrals"
-            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-            data-testid="nav-referrals-main"
-          >
-            Referrals
-          </Link>
-          <span className="text-gray-300">|</span>
-          <Link
-            href="/teacher/debug"
-            className="text-sm text-gray-600 hover:text-gray-800"
-            data-testid="nav-debug-main"
-          >
-            Debug
-          </Link>
-        </div>
+      <div className="fixed top-4 left-4 right-4 z-40">
+        <TopNav />
       </div>
 
       {/* Hero Lesson Access Button */}
@@ -196,6 +186,9 @@ export function AppRouter() {
         {/* Prompt tools */}
         <Route path="/tools/prompts" component={PromptRunner} />
 
+        {/* Styleguide (temporary) */}
+        <Route path="/styleguide" component={Styleguide} />
+
         {/* Teacher panel: support both /teacher and /teacher/:sub* */}
         <Route path="/teacher/:sub*" component={TeacherPanelEntry} />
         <Route path="/teacher" component={TeacherPanelEntry} />
@@ -210,10 +203,15 @@ export function AppRouter() {
           component={() => <Redirect to="/teacher/debug" />}
         />
         {/* explicit legacy alias */}
-        <Route
-          path="/dev"
-          component={() => <Redirect to="/teacher/debug" />}
-        />
+        <Route path="/dev" component={() => <Redirect to="/teacher/debug" />} />
+
+        {/* Sprint 1 routes */}
+        <Route path="/island" component={Island} />
+        <Route path="/island/:biomeId" component={BiomePage} />
+        <Route path="/lesson" component={LessonLauncher} />
+        <Route path="/activity/:activityId" component={ActivityStub} />
+        <Route path="/progress" component={Progress} />
+        <Route path="/settings" component={Settings} />
 
         {/* App home */}
         <Route path="/" component={AppWithHeroAccess} />
