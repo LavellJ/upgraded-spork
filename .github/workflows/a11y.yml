@@ -1,7 +1,12 @@
 name: a11y
 on:
   push:
-    branches: [ main, master, sprint-* ]
+    branches:
+      - main
+      - master
+      - sprint-**
+      - ci/**
+      - ci/smokelane
   pull_request:
 
 jobs:
@@ -11,10 +16,18 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - run: npm run build
-      - run: npx http-server ./dist -p 4173 --silent & npx wait-on http://127.0.0.1:4173
-      - run: npx playwright test e2e/a11y.spec.ts --project=chromium
+      - name: Install Playwright browsers (Chromium)
+        run: npx playwright install --with-deps chromium
+      - name: Build
+        run: npm run build
+      - name: Verify build output exists
+        run: ls -la ./client/dist || ls -la ./dist
+      - name: Serve built app
+        run: |
+          if [ -d ./client/dist ]; then DIST=./client/dist; else DIST=./dist; fi
+          npx http-server "$DIST" -p 4173 --silent & npx wait-on http://127.0.0.1:4173
+      - name: Run a11y tests (Chromium)
+        run: npx playwright test e2e/a11y.spec.ts --project=chromium
