@@ -2,14 +2,32 @@ import { defineConfig } from '@playwright/test';
 import fs from 'fs';
 import { execSync } from 'node:child_process';
 
-const has = (p: string) => fs.existsSync(p);
-const distDir = has('./client/dist') ? './client/dist' : './dist';
-const distIndex = `${distDir}/index.html`;
+const candidates = [
+  './dist/public',
+  './client/dist',
+  './dist',
+  './client/build',
+  './build',
+];
 
-if (!has(distIndex)) {
-  console.log(`🔧 No build found at ${distIndex} — running "npm run build"`);
-  execSync('npm run build', { stdio: 'inherit' });
+function findDist() {
+  for (const d of candidates) {
+    if (fs.existsSync(`${d}/index.html`)) return d;
+  }
+  return null;
 }
+
+let distDir = findDist();
+if (!distDir) {
+  console.log('🔧 No built index.html found — running "npm run build"...');
+  execSync('npm run build', { stdio: 'inherit' });
+  distDir = findDist();
+  if (!distDir) {
+    throw new Error('❌ Could not find built index.html after build. Checked: ' + candidates.join(', '));
+  }
+}
+
+console.log(`✅ Serving dist from: ${distDir}`);
 
 export default defineConfig({
   timeout: 60000,

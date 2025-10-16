@@ -21,9 +21,5 @@ jobs:
       - run: npm ci
       - name: Install Playwright browsers (Chromium)
         run: npx playwright install --with-deps chromium
-      - name: Build
-        run: npm run build
-      - name: Verify build output exists
-        run: ls -la ./client/dist || ls -la ./dist
-      - name: Run a11y tests (Chromium)
+      - name: Run a11y test (builds automatically if needed)
         run: npx playwright test -c playwright.a11y.config.ts e2e/a11y.spec.ts
