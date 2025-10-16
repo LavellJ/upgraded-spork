@@ -41,8 +41,8 @@
 
   .email-preview .header {
     break-inside: avoid;
-    -webkit-print-color-adjust: exact;
-    color-adjust: exact;
+    -webkit-print-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .email-preview .content {
@@ -77,8 +77,8 @@
 
   /* Ensure colors print correctly */
   .email-preview * {
-    -webkit-print-color-adjust: exact;
-    color-adjust: exact;
+    -webkit-print-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   /* Page breaks */
