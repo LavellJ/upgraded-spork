@@ -1,45 +1,24 @@
-import { defineConfig } from 'vite'
-import { fileURLToPath, URL } from 'node:url'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-// Strip test files from the browser bundle
-function ignoreTestsPlugin() {
-  const TEST_RE = /(\.test|\.spec)\.[tj]sx?$/i
-  return {
-    name: 'ignore-tests-in-build',
-    enforce: 'pre' as const,
-    resolveId(source: string) {
-      if (
-        TEST_RE.test(source) ||
-        source.includes('__tests__/') ||
-        source.startsWith('client/test/') ||
-        source.includes('/test/')
-      ) return '\0ignore-test'
-      return null
-    },
-    load(id: string) {
-      if (id === '\0ignore-test') return 'export default {}'
-      return null
-    },
-  }
-}
-
+// Replit hosts change; allow all. Also set root to "client" so Vite reads the right index.html.
+// Build goes to dist/public (matches your current output).
 export default defineConfig({
   root: 'client',
-  plugins: [ignoreTestsPlugin()],
-  resolve: {
-    alias: { '@': fileURLToPath(new URL('./client/src', import.meta.url)) },
+  plugins: [react()],
+  server: {
+    host: true,              // listen on all interfaces
+    port: 5173,
+    allowedHosts: true,      // ✅ allow any host (Replit subdomains)
+    hmr: { clientPort: 443 } // helps HMR through https tunnels
+  },
+  preview: {
+    host: true,
+    port: 4173,
+    allowedHosts: true
   },
   build: {
-    target: 'es2022',
-    cssTarget: 'es2022',
     outDir: '../dist/public',
-    sourcemap: false,
-    emptyOutDir: true,
-  },
-  // ⬇️ Override PostCSS so Vite does NOT load postcss.config.js in CI
-  css: {
-    postcss: {
-      plugins: [], // no external plugins needed for e2e smoke
-    },
-  },
-})
+    emptyOutDir: true
+  }
+});
