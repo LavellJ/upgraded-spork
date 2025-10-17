@@ -1,1 +1,84 @@
-<paste the YAML above>
+name: e2e-ci-smoke
+
+on:
+  pull_request:
+    branches: ["main", "sprint-q-prompts"]
+    paths:
+      - "e2e/**"
+      - "client/**"
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright (Chromium + deps)
+        run: npx playwright install --with-deps chromium
+
+      # Build with the E2E shim baked in
+      - name: Build app (with E2E shim)
+        env:
+          VITE_E2E_SHIM: "1"
+        run: npm run build
+
+      # Serve the built app (SPA) on 127.0.0.1:4173
+      - name: Start preview server (Vite)
+        run: |
+          npx vite preview --port 4173 --host 127.0.0.1 --strictPort &
+          npx wait-on http://127.0.0.1:4173
+
+      # Provide a storage state that sets e2e_shim=1 cookie (runtime shim fallback)
+      - name: Create storage state with shim cookie
+        run: |
+          node -e "require('fs').writeFileSync('e2e.state.json', JSON.stringify({ cookies: [{ name:'e2e_shim', value:'1', domain:'127.0.0.1', path:'/', httpOnly:false, secure:false, sameSite:'Lax' }], origins: [] }))"
+          cat e2e.state.json
+
+      # Run @ci-tagged smoke tests with trace always
+      - name: Run @ci smoke tests (trace always)
+        env:
+          CI_BASE_URL: http://127.0.0.1:4173
+          SKIP_E2E_LOCAL: ""
+        run: npx playwright test --project=chromium --grep "@ci" --reporter=line --trace on --storage-state=e2e.state.json
+
+      - name: Upload Playwright report (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          if-no-files-found: ignore
+
+      - name: Upload traces (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces
+          path: test-results/**/*.zip
+          if-no-files-found: ignore
