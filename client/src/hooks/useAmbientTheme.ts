@@ -1,28 +1,35 @@
-import { useEffect } from 'react';
+import * as React from 'react';
 
-type Ambient = 'dawn' | 'day' | 'dusk' | 'night';
+type Theme = 'light' | 'dark';
 
-function pickAmbient(date = new Date()): Ambient {
-  const h = date.getHours();
-  if (h >= 5 && h < 9) return 'dawn';
-  if (h >= 9 && h < 17) return 'day';
-  if (h >= 17 && h < 20) return 'dusk';
-  return 'night';
+type CtxType = {
+  theme: Theme;
+  setTheme: (t: Theme) => void;
+  toggle: () => void;
+};
+
+const Ctx = React.createContext<CtxType | null>(null);
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setTheme] = React.useState<Theme>('light');
+  const toggle = () => setTheme(t => (t === 'light' ? 'dark' : 'light'));
+
+  React.useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
+
+  return <Ctx.Provider value={{ theme, setTheme, toggle }}>{children}</Ctx.Provider>;
 }
 
-export function useAmbientTheme(root: HTMLElement | null, forced?: Ambient) {
-  useEffect(() => {
-    if (!root) return;
-    const clazzes = ['ambient-dawn','ambient-day','ambient-dusk','ambient-night'];
-    const apply = (amb: Ambient) => {
-      clazzes.forEach(c => root.classList.remove(c));
-      root.classList.add(`ambient-${amb}`);
+export function useAmbientTheme() {
+  const ctx = React.useContext(Ctx);
+  if (!ctx) {
+    // Allow usage without explicit provider in dev
+    return {
+      theme: 'light' as Theme,
+      setTheme: (_t: Theme) => {},
+      toggle: () => {},
     };
-
-    const ambient = forced ?? pickAmbient();
-    apply(ambient);
-
-    const id = setInterval(() => apply(pickAmbient()), 5 * 60 * 1000);
-    return () => clearInterval(id);
-  }, [root, forced]);
+  }
+  return ctx;
 }
