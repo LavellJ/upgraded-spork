@@ -24,7 +24,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 export function useAmbientTheme() {
   const ctx = React.useContext(Ctx);
   if (!ctx) {
-    // Allow usage without explicit provider in dev
     return {
       theme: 'light' as Theme,
       setTheme: (_t: Theme) => {},
