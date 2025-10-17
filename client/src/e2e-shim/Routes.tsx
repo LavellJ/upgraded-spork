@@ -2,13 +2,21 @@ import * as React from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
 function Layout({ children }: { children: React.ReactNode }) {
+  const [clicks, setClicks] = React.useState(0);
+  const inc = () => setClicks(c => c + 1);
+
   return (
     <div>
-      <header className="border-b px-4 py-2 flex gap-4">
+      <header className="border-b px-4 py-2 flex gap-4 items-center">
         <Link to="/" data-testid="nav-home">Home</Link>
         <Link to="/island" data-testid="nav-island">Island</Link>
         <Link to="/progress" data-testid="nav-progress">Progress</Link>
         <Link to="/settings" data-testid="nav-settings">Settings</Link>
+        {/* Global test control so specs can always find it */}
+        <button data-testid="complete-lesson" onClick={inc} className="ml-auto px-3 py-1 border rounded">
+          Complete lesson
+        </button>
+        <span data-testid="complete-count" className="opacity-70">({clicks})</span>
       </header>
       <main className="p-4">{children}</main>
     </div>
@@ -19,7 +27,6 @@ function Home() {
   return (
     <Layout>
       <h1 data-testid="launcher-heading">Lesson Launcher</h1>
-      <button data-testid="complete-lesson">Complete lesson</button>
       <div data-testid="activity-stub">Activity stub</div>
     </Layout>
   );
