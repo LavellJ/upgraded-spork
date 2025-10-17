@@ -1,11 +1,16 @@
+// client/src/AppRouter.tsx
 import * as React from 'react';
 import App from '@/App';
 
 function wantShim() {
   try {
-    if (import.meta.env.VITE_E2E_SHIM === '1') return true;
+    if ((import.meta as any).env?.VITE_E2E_SHIM === '1') return true;
+
     const p = new URLSearchParams(window.location.search);
     if (p.has('shim') && p.get('shim') !== '0') return true;
+
+    const hasCookie = document.cookie.split(';').some(c => c.trim() === 'e2e_shim=1');
+    if (hasCookie) return true;
   } catch {}
   return false;
 }
