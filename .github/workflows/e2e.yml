@@ -6,7 +6,7 @@ on:
     paths:
       - "e2e/**"
       - "client/**"
-      - ".github/workflows/e2e.yml"
+      - ".github/workflows/**"
   workflow_dispatch:
 
 concurrency:
@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
 
     steps:
@@ -39,22 +39,28 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+      - name: Install Playwright (Chromium + deps)
+        run: npx playwright install --with-deps chromium
 
-      - name: Build app
+      # Build with the shim flag baked in (belt + braces)
+      - name: Build app (with E2E shim)
+        env:
+          VITE_E2E_SHIM: "1"
         run: npm run build
 
-      # Serve with Vite preview (SPA fallback) on 127.0.0.1:4173
+      # Serve the built site with SPA fallback on 127.0.0.1:4173
       - name: Start preview server (Vite)
         run: |
           npx vite preview --port 4173 --host 127.0.0.1 --strictPort &
           npx wait-on http://127.0.0.1:4173
 
+      # Run only @ci-tagged smoke tests, always collect trace
       - name: Run @ci smoke tests (trace always)
         env:
-          CI_BASE_URL: http://127.0.0.1:4173
-          SKIP_E2E_LOCAL: "" # ensure tests do NOT skip in CI
+          # If your Playwright config reads CI_BASE_URL, this will be used.
+          # The ?shim=1 ensures the CI shim is enabled even if env is missed.
+          CI_BASE_URL: http://127.0.0.1:4173/?shim=1
+          SKIP_E2E_LOCAL: ""  # ensure tests do NOT skip in CI
         run: npx playwright test --project=chromium --grep "@ci" --reporter=line --trace on
 
       - name: Upload Playwright report (on failure)
