@@ -5,6 +5,11 @@ import path from 'node:path';
 export default defineConfig({
   root: 'client',
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'client/src'),
+    },
+  },
   server: {
     host: true,
     port: 5173,
@@ -15,11 +20,6 @@ export default defineConfig({
     host: true,
     port: 4173,
     allowedHosts: true,
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'client/src'),
-    },
   },
   build: {
     outDir: '../dist/public',

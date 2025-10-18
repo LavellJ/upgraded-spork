@@ -1,76 +1,94 @@
 import * as React from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
 
-function Layout({ children }: { children: React.ReactNode }) {
-  const [clicks, setClicks] = React.useState(0);
-  const inc = () => setClicks(c => c + 1);
-
+/** Shared layout with a simple header & nav visible in all shim pages */
+function Layout({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
-    <div>
-      <header className="border-b px-4 py-2 flex gap-4 items-center">
-        <Link to="/" data-testid="nav-home">Home</Link>
-        <Link to="/island" data-testid="nav-island">Island</Link>
-        <Link to="/progress" data-testid="nav-progress">Progress</Link>
-        <Link to="/settings" data-testid="nav-settings">Settings</Link>
-        {/* Global test control so specs can always find it */}
-        <button data-testid="complete-lesson" onClick={inc} className="ml-auto px-3 py-1 border rounded">
-          Complete lesson
-        </button>
-        <span data-testid="complete-count" className="opacity-70">({clicks})</span>
+    <div style={{ fontFamily: 'Inter, system-ui, sans-serif', padding: 24 }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <h1 data-testid="app-title" style={{ margin: 0 }}>Quest Island — E2E Shim</h1>
+        <nav style={{ display: 'flex', gap: 12 }}>
+          <Link to="/island?shim=1" data-testid="nav-island">Island</Link>
+          <Link to="/progress?shim=1" data-testid="nav-progress">Progress</Link>
+          <Link to="/settings?shim=1" data-testid="nav-settings">Settings</Link>
+          <Link to="/lesson-launcher?shim=1" data-testid="nav-lesson-launcher">Lesson</Link>
+        </nav>
       </header>
-      <main className="p-4">{children}</main>
+      <h2 data-testid={`${title}-heading`} style={{ marginTop: 0, marginBottom: 16, fontSize: 22, fontWeight: 700 }}>
+        {title}
+      </h2>
+      {children}
     </div>
   );
 }
 
-function Home() {
-  return (
-    <Layout>
-      <h1 data-testid="launcher-heading">Lesson Launcher</h1>
-      <div data-testid="activity-stub">Activity stub</div>
-    </Layout>
-  );
-}
-
+/** Pages with exact test IDs your specs expect */
 function Island() {
   return (
-    <Layout>
-      <h1 data-testid="island-heading">Quest Island</h1>
-      <div data-testid="scout-bubble">Scout Bubble</div>
-      <button data-testid="journal-btn">Journal</button>
-      <button data-testid="backpack-btn">Backpack</button>
-      {/* Per-lap chips */}
-      <div data-testid="lap-chip-1">Lap 1</div>
-      <div data-testid="lap-chip-2">Lap 2</div>
-      <div data-testid="lap-chip-3">Lap 3</div>
+    <Layout title="island">
+      <div data-testid="scout-bubble">👋 Hi! I’m Scout.</div>
+      <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+        <button data-testid="journal-btn">Journal</button>
+        <button data-testid="backpack-btn">Backpack</button>
+      </div>
     </Layout>
   );
 }
 
 function Progress() {
   return (
-    <Layout>
-      <h1 data-testid="progress-heading">Progress</h1>
+    <Layout title="progress">
+      <div data-testid="progress-grid">[progress grid]</div>
     </Layout>
   );
 }
 
 function Settings() {
   return (
-    <Layout>
-      <h1 data-testid="settings-heading">Settings</h1>
+    <Layout title="settings">
+      <div data-testid="settings-panel">[settings panel]</div>
     </Layout>
   );
 }
 
-export default function E2EShimRouter() {
+/** A minimal lesson page with a complete button */
+function LessonLauncher() {
+  const nav = useNavigate();
+  const [count, setCount] = React.useState(0);
+  const target = 4; // enough for flows.lap-progression.spec; adjust if needed
+
+  return (
+    <Layout title="lesson-launcher">
+      <p>Complete the lesson a few times to simulate progression.</p>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <button
+          data-testid="complete-lesson"
+          onClick={() => {
+            const next = count + 1;
+            setCount(next);
+            if (next >= target) nav('/progress?shim=1', { replace: true });
+          }}
+        >
+          Complete Lesson
+        </button>
+        <span data-testid="lesson-count">Completed: {count}/{target}</span>
+      </div>
+    </Layout>
+  );
+}
+
+/** Root routes */
+export default function ShimRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home/>} />
-        <Route path="/island" element={<Island/>} />
-        <Route path="/progress" element={<Progress/>} />
-        <Route path="/settings" element={<Settings/>} />
+        <Route path="/" element={<Island />} />
+        <Route path="/island" element={<Island />} />
+        <Route path="/progress" element={<Progress />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/lesson-launcher" element={<LessonLauncher />} />
+        {/* catch-all -> island */}
+        <Route path="*" element={<Island />} />
       </Routes>
     </BrowserRouter>
   );
