@@ -28,7 +28,7 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Install deps
+      - name: Install dependencies
         run: npm ci
 
       - name: Cache Playwright browsers
@@ -42,30 +42,24 @@ jobs:
       - name: Install Playwright (Chromium + deps)
         run: npx playwright install --with-deps chromium
 
-      # Build with the E2E shim baked in
+      # Build with the E2E shim baked in (belt & braces)
       - name: Build app (with E2E shim)
         env:
           VITE_E2E_SHIM: "1"
         run: npm run build
 
-      # Serve the built app (SPA) on 127.0.0.1:4173
+      # Serve the built app on 127.0.0.1:4173
       - name: Start preview server (Vite)
         run: |
           npx vite preview --port 4173 --host 127.0.0.1 --strictPort &
           npx wait-on http://127.0.0.1:4173
 
-      # Provide a storage state that sets e2e_shim=1 cookie (runtime shim fallback)
-      - name: Create storage state with shim cookie
-        run: |
-          node -e "require('fs').writeFileSync('e2e.state.json', JSON.stringify({ cookies: [{ name:'e2e_shim', value:'1', domain:'127.0.0.1', path:'/', httpOnly:false, secure:false, sameSite:'Lax' }], origins: [] }))"
-          cat e2e.state.json
-
-      # Run @ci-tagged smoke tests with trace always
+      # Run only @ci-tagged smoke tests; force runtime shim via query param
       - name: Run @ci smoke tests (trace always)
         env:
-          CI_BASE_URL: http://127.0.0.1:4173
+          CI_BASE_URL: http://127.0.0.1:4173/?shim=1
           SKIP_E2E_LOCAL: ""
-        run: npx playwright test --project=chromium --grep "@ci" --reporter=line --trace on --storage-state=e2e.state.json
+        run: npx playwright test --project=chromium --grep "@ci" --reporter=line --trace on
 
       - name: Upload Playwright report (on failure)
         if: failure()
