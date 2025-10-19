@@ -4,6 +4,8 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
+    "pretest:ci": "playwright install --with-deps chromium || playwright   install chromium",
+    "test:ci": "playwright test --project=chromium --grep '@ci' -- reporter=line --trace on",
     "dev": "vite --host --config vite.config.ts",
     "build": "vite build",
     "preview": "vite preview --port 4173 --strictPort",

@@ -1,12 +1,11 @@
-// public/e2e-ci-shim.js
-// Tiny client-side router + DOM stub for static CI. Activates only when ?shim=1 is present.
+// client/public/e2e-ci-shim.js
 (function () {
   var hasShim =
     /[?&]shim=1(?![^#]*=)/.test(location.search) ||
     /^\?shim=1(?:\/?|$)/.test(location.search);
   if (!hasShim) return;
 
-  // Normalize legacy ?shim=1/<path> -> /<path>?shim=1
+  // Normalize legacy form `?shim=1/<path>` -> `/<path>?shim=1`
   var legacy = location.search.match(/^\?shim=1\/(.+)/);
   if (legacy && legacy[1]) {
     history.replaceState(null, "", "/" + legacy[1] + "?shim=1" + location.hash);
@@ -16,7 +15,9 @@
     var u = new URL(url, location.origin);
     if (!u.searchParams.has("shim")) u.searchParams.set("shim", "1");
     return (
-      u.pathname + (u.searchParams.toString() ? "?" + u.searchParams.toString() : "") + u.hash
+      u.pathname +
+      (u.searchParams.toString() ? "?" + u.searchParams.toString() : "") +
+      u.hash
     );
   }
   function html(strings, ...vals) {
@@ -30,8 +31,11 @@
     root.innerHTML = "";
     return root;
   }
+  function navTo(path) {
+    history.pushState(null, "", withShim(path));
+    window.dispatchEvent(new Event("popstate"));
+  }
 
-  // Persistent e2e state for lap progression
   var LS = {
     get completed() {
       return parseInt(localStorage.getItem("e2e.completedBiomes") || "0", 10) || 0;
@@ -67,7 +71,6 @@
           </div>
           <div data-testid="scout-bubble" style="margin:8px 0;">👋 hi!</div>
           <div data-testid="lap-badge" style="font-weight:600;">Lap ${LS.lap}</div>
-
           <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px;">
             ${["forest", "tropics", "desert", "coast"]
               .map(
@@ -82,8 +85,7 @@
                       )}">Enter</a></div>`
                     : ""
                 }
-              </div>
-            `
+              </div>`
               )
               .join("")}
           </div>
@@ -100,12 +102,7 @@
         <section style="padding:16px;font-family:Inter,system-ui">
           <h2 data-testid="lesson-launcher-heading">Today's Lesson</h2>
           <p>Patterns Intro</p>
-          <button
-            data-testid="start-lesson"
-            onclick="(function(p){history.pushState(null,'',p);dispatchEvent(new Event('popstate'));})('${withShim(
-              "/activity/act-001"
-            )}')"
-          >Start</button>
+          <button data-testid="start-lesson" onclick="(${navTo}).call(null, '/activity/act-001')">Start</button>
         </section>
       `
     );
@@ -139,14 +136,15 @@
       if (l) l.textContent = String(LS.lap);
     }
     window.__e2e_completeOnce = completeOnce;
-
     root.append(
       html`
         <section style="padding:16px;font-family:Inter,system-ui">
           <h2>Forest (e2e)</h2>
           <button data-testid="complete-lesson" onclick="__e2e_completeOnce()">Complete Lesson</button>
-          <div style="margin-top:8px">Completed biomes: <span id="biomeCount">${LS.completed}</span> — Lap:
-            <span id="lapVal">${LS.lap}</span></div>
+          <div style="margin-top:8px">
+            Completed biomes: <span id="biomeCount">${LS.completed}</span> — Lap:
+            <span id="lapVal">${LS.lap}</span>
+          </div>
         </section>
       `
     );
@@ -188,7 +186,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    document.body.style.opacity = "1"; // ensure visible
+    document.body.style.opacity = "1";
     render();
   });
   window.addEventListener("popstate", render);
