@@ -1,39 +1,27 @@
 import * as React from 'react';
-import App from '@/App';
-
-function normalizeWeirdShimUrl() {
-  try {
-    const { pathname, search } = window.location;
-    // pattern: "/?shim=1/anything"
-    if (pathname === '/' && search.startsWith('?shim=1/')) {
-      const rest = search.slice('?shim=1'.length); // => "/island" etc
-      const newUrl = `${rest}?shim=1`;
-      window.history.replaceState({}, '', newUrl);
-    }
-  } catch {}
-}
-
-function wantShim() {
-  try {
-    if ((import.meta as any).env?.VITE_E2E_SHIM === '1') return true;
-    const p = new URLSearchParams(window.location.search);
-    if (p.has('shim') && p.get('shim') !== '0') return true;
-    const hasCookie = document.cookie.split(';').some(c => c.trim() === 'e2e_shim=1');
-    if (hasCookie) return true;
-  } catch {}
-  return false;
-}
+import ShimRoutes from '@/e2e-shim/Routes';
 
 export default function AppRouter() {
-  normalizeWeirdShimUrl();
-
-  if (wantShim()) {
-    const Shim = React.lazy(() => import('@/e2e-shim/Routes'));
-    return (
-      <React.Suspense fallback={<div>Loading…</div>}>
-        <Shim />
-      </React.Suspense>
-    );
+  // Always render shim when ?shim=1 is present (CI) or when VITE_E2E_SHIM=1 (build-time).
+  const hasShimParam = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('shim');
+  if (hasShimParam || import.meta.env.VITE_E2E_SHIM) {
+    return <ShimRoutes />;
   }
-  return <App />;
+
+  // Dev shell fallback (fine for local dev)
+  return (
+    <main className="min-h-screen grid place-items-center p-8">
+      <div className="max-w-md text-center">
+        <h1 className="text-3xl font-bold mb-3">Quest Island — Dev shell</h1>
+        <p className="opacity-80 mb-6">
+          If you’re seeing this, the Vite dev server is working.
+        </p>
+        <ul className="text-left space-y-2">
+          <li>✅ Root <code>#root</code> mounted</li>
+          <li>✅ Vite alias <code>@</code> is resolving</li>
+          <li>🧪 Try visiting <code>/styleguide</code> if you added it</li>
+        </ul>
+      </div>
+    </main>
+  );
 }

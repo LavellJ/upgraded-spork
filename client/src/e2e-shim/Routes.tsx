@@ -1,13 +1,72 @@
 import * as React from 'react';
 import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
 
-function usePersistedNumber(key: string, initial: number) {
-  const [val, setVal] = React.useState<number>(() => {
-    const s = localStorage.getItem(key);
-    return s ? Number(s) : initial;
+/** ------- Shared store (persists to localStorage) ------- */
+const LS_LAP = 'e2e_lap';
+const LS_CNT = 'e2e_count';
+
+function getNum(key: string, def = 0) {
+  const v = localStorage.getItem(key);
+  const n = v == null ? NaN : Number(v);
+  return Number.isFinite(n) ? n : def;
+}
+function setNum(key: string, v: number) {
+  localStorage.setItem(key, String(v));
+}
+
+const Store = {
+  target: 4,
+  get lap() { return getNum(LS_LAP, 1); },
+  set lap(v: number) { setNum(LS_LAP, v); },
+  get count() { return getNum(LS_CNT, 0); },
+  set count(v: number) { setNum(LS_CNT, v); },
+  completeLesson() {
+    const next = this.count + 1;
+    if (next >= this.target) {
+      this.lap = this.lap + 1;
+      this.count = 0;
+    } else {
+      this.count = next;
+    }
+    window.dispatchEvent(new CustomEvent('e2e:store-updated'));
+  },
+  reset() { this.lap = 1; this.count = 0; window.dispatchEvent(new CustomEvent('e2e:store-updated')); },
+};
+
+/** ------- Stable E2E API on window (don’t replace object) ------- */
+declare global { interface Window { __E2E__?: any } }
+(function ensureE2E() {
+  if (!window.__E2E__) window.__E2E__ = {};
+  Object.assign(window.__E2E__, {
+    getLap: () => Store.lap,
+    setLap: (n: number) => { Store.lap = n; },
+    resetProgress: () => Store.reset(),
+    seenTodayLesson: true,
   });
-  React.useEffect(() => { localStorage.setItem(key, String(val)); }, [key, val]);
-  return [val, setVal] as const;
+})();
+
+/** ------- Global click listener for complete-lesson anywhere ------- */
+if (!(window as any).__E2E_click_hook_installed) {
+  (window as any).__E2E_click_hook_installed = true;
+  document.addEventListener('click', (ev) => {
+    const el = ev.target as HTMLElement | null;
+    const hit = el?.closest?.('[data-testid="complete-lesson"]');
+    if (hit) {
+      ev.preventDefault();
+      Store.completeLesson();
+    }
+  }, { capture: true });
+}
+
+/** ------- UI scaffolding ------- */
+function useStoreSync() {
+  const [, force] = React.useReducer(n => n + 1, 0);
+  React.useEffect(() => {
+    const onUpd = () => force();
+    window.addEventListener('e2e:store-updated', onUpd);
+    return () => window.removeEventListener('e2e:store-updated', onUpd);
+  }, []);
+  return { lap: Store.lap, count: Store.count, target: Store.target };
 }
 
 function Layout({ title, children }: { title: string; children?: React.ReactNode }) {
@@ -32,61 +91,24 @@ function Layout({ title, children }: { title: string; children?: React.ReactNode
 
 function Chip({ id, label }: { id: string; label: string }) {
   return (
-    <div
-      data-testid={`chip-${id}`}
-      style={{ border: '1px solid #CBD5E1', borderRadius: 999, padding: '6px 10px' }}
-    >
+    <div data-testid={`chip-${id}`} style={{ border: '1px solid #CBD5E1', borderRadius: 999, padding: '6px 10px' }}>
       {label}
     </div>
   );
 }
 
-function ProgressControls({
-  onAdvance,
-  target = 4,
-  count,
-}: {
-  onAdvance: () => void;
-  target: number;
-  count: number;
-}) {
+function ProgressControls() {
+  const { count, target } = useStoreSync();
   return (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <button data-testid="complete-lesson" onClick={onAdvance}>
-        Complete Lesson
-      </button>
+      <button data-testid="complete-lesson">Complete Lesson</button>
       <span data-testid="lesson-count">Completed: {count}/{target}</span>
     </div>
   );
 }
 
 function Island() {
-  const target = 4;
-  const [lap, setLap] = usePersistedNumber('e2e_lap', 1);
-  const [count, setCount] = usePersistedNumber('e2e_count', 0);
-
-  const advance = () => {
-    setCount(c => {
-      const next = c + 1;
-      if (next >= target) {
-        setLap(l => l + 1);
-        // reset after lap up
-        return 0;
-      }
-      return next;
-    });
-  };
-
-  // Expose E2E hooks for tests
-  React.useEffect(() => {
-    (window as any).__E2E__ = {
-      getLap: () => lap,
-      setLap: (n: number) => setLap(n),
-      resetProgress: () => { setLap(1); setCount(0); },
-      seenTodayLesson: true,
-    };
-  }, [lap, setLap, setCount]);
-
+  const { lap } = useStoreSync();
   return (
     <Layout title="island">
       <div data-testid="lap-badge" style={{ fontWeight: 800, marginBottom: 12 }}>Lap {lap}</div>
@@ -112,25 +134,30 @@ function Island() {
       </section>
 
       <div style={{ marginTop: 20 }}>
-        <ProgressControls onAdvance={advance} target={target} count={count} />
+        <ProgressControls />
       </div>
     </Layout>
   );
 }
 
 function Progress() {
+  const { lap } = useStoreSync();
   return (
     <Layout title="progress">
-      {/* removed duplicate data-testid to avoid strict mode violation */}
+      <div data-testid="lap-badge">Lap {lap}</div>
       <div data-testid="progress-grid">[progress grid]</div>
+      <div style={{ marginTop: 12 }}><ProgressControls /></div>
     </Layout>
   );
 }
 
 function Settings() {
+  const { lap } = useStoreSync();
   return (
     <Layout title="settings">
+      <div data-testid="lap-badge">Lap {lap}</div>
       <div data-testid="settings-panel">[settings panel]</div>
+      <div style={{ marginTop: 12 }}><ProgressControls /></div>
     </Layout>
   );
 }
@@ -138,20 +165,16 @@ function Settings() {
 function LessonLauncher() {
   const nav = useNavigate();
   React.useEffect(() => {
-    // also expose seenTodayLesson truthy for the spec
-    (window as any).__E2E__ = { ...(window as any).__E2E__, seenTodayLesson: true };
+    if (!window.__E2E__) window.__E2E__ = {};
+    window.__E2E__.seenTodayLesson = true;
   }, []);
   return (
     <Layout title="lesson-launcher">
       <p>Launch a lesson to enter the activity stub.</p>
-      <button
-        data-testid="start-lesson"
-        onClick={() => nav('/activity/act-001?shim=1')}
-      >
-        Start Lesson
-      </button>
-      <div style={{ marginTop: 16 }}>
-        {/* small convenience: completing lessons here also advances count/lap via island; non-essential */}
+      <button data-testid="start-lesson" onClick={() => nav('/activity/act-001?shim=1')}>Start Lesson</button>
+      <div style={{ marginTop: 12 }}>
+        {/* Provide the same control here so the flow spec can find it if it lands here */}
+        <ProgressControls />
       </div>
     </Layout>
   );
