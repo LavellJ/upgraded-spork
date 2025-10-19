@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { forceRevealBodyIfCI } from './helpers/ci';
 
 const BASE_URL = process.env.CI_BASE_URL ?? 'http://127.0.0.1:4173';

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { installApiMocks } from './mocks/api';
 import { setUiPrefs, devLogin } from './helpers/dev';
 import { forceRevealBodyIfCI } from './helpers/ci';

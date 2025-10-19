@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Lesson and Journal Flow', () => {
   test('should start lesson, answer incorrectly, see Scout CTA, and use Journal', async ({ page }) => {

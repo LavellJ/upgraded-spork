@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Profile and Export Coverage', () => {
   test('should export all analytics datasets including onTask and funnel data', async ({ page }) => {

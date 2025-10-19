@@ -1,5 +1,5 @@
 // e2e/teacher-panel.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Teacher Panel routing (unauth)', () => {
   test('visiting /teacher/referrals shows "Sign in required"', async ({ page }) => {

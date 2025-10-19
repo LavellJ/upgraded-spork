@@ -1,5 +1,5 @@
 // e2e/smoke.reports.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { forceRevealBodyIfCI } from './helpers/ci';
 import { installApiMocks } from './mocks/api';
 import { setUiPrefs, devLogin } from './helpers/dev';

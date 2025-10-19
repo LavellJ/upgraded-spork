@@ -1,0 +1,79 @@
+Auto-shim every page.goto in CI
+set -euo pipefail
+
+echo "🔧 Setting up Playwright CI auto-shim fixture…"
+
+mkdir -p e2e/utils
+
+# 1) Create the fixture that auto-appends ?shim=1 to every page.goto
+cat > e2e/fixtures.ts <<'TS'
+import { test as base, expect as baseExpect, Page } from '@playwright/test';
+
+function ensureShim(url: string | URL, origin = 'http://127.0.0.1:4173'): string {
+  // Normalize relative paths and full URLs onto our origin, then ensure shim=1
+  const u = new URL(typeof url === 'string' ? url : url.toString(), origin);
+  if (!u.searchParams.has('shim')) u.searchParams.set('shim', '1');
+  return u.toString();
+}
+
+export const test = base.extend({
+  page: async ({ page }, use) => {
+    // Make the app visible even if CSS tries to fade until boot
+    await page.addInitScript(() => {
+      try { document.documentElement.setAttribute('lang', document.documentElement.getAttribute('lang') || 'en-AU'); } catch {}
+      try { document.body && (document.body.style.opacity = '1'); } catch {}
+    });
+
+    // Monkey-patch goto so tests don’t need to remember ?shim=1
+    const originalGoto = page.goto.bind(page);
+    (page as Page).goto = (async (url: string | URL, options?: Parameters<Page['goto']>[1]) => {
+      return originalGoto(ensureShim(url), options);
+    }) as Page['goto'];
+
+    await use(page);
+  },
+});
+
+export const expect = baseExpect;
+TS
+
+# 2) (Optional) Keep the explicit helper for one-off navigations in tests
+cat > e2e/utils/nav.ts <<'TS'
+import type { Page } from '@playwright/test';
+
+export async function gotoShim(page: Page, url: string | URL) {
+  const u = new URL(typeof url === 'string' ? url : url.toString(), 'http://127.0.0.1:4173');
+  if (!u.searchParams.has('shim')) u.searchParams.set('shim', '1');
+  await page.goto(u.toString());
+}
+TS
+
+# 3) Update test imports to use our fixture (safe, idempotent)
+shopt -s nullglob
+files=(e2e/*.spec.ts e2e/**/*.spec.ts)
+if ((${#files[@]})); then
+  for f in "${files[@]}"; do
+    # Replace common import forms from '@playwright/test' with './fixtures'
+    sed -i \
+      -e "s|import[[:space:]]\+{[[:space:]]*test[[:space:]]*,[[:space:]]*expect[[:space:]]*}[[:space:]]\+from[[:space:]]\+['\"]@playwright/test['\"];|import { test, expect } from './fixtures';|g" \
+      -e "s|import[[:space:]]\+{[[:space:]]*test[[:space:]]*}[[:space:]]\+from[[:space:]]\+['\"]@playwright/test['\"];|import { test, expect } from './fixtures';|g" \
+      -e "s|import[[:space:]]\+{[[:space:]]*expect[[:space:]]*}[[:space:]]\+from[[:space:]]\+['\"]@playwright/test['\"];|import { test, expect } from './fixtures';|g" \
+      "$f"
+  done
+else
+  echo "ℹ️  No spec files found under e2e/. Skipping import rewrite."
+fi
+
+# 4) Ensure the shim file exists where Vite will serve it
+mkdir -p client/public public
+if [ ! -f client/public/e2e-ci-shim.js ] && [ -f public/e2e-ci-shim.js ]; then
+  cp public/e2e-ci-shim.js client/public/e2e-ci-shim.js
+fi
+
+# 5) Commit
+git add e2e/fixtures.ts e2e/utils/nav.ts client/public/e2e-ci-shim.js 2>/dev/null || true
+git add e2e/*.spec.ts e2e/**/*.spec.ts 2>/dev/null || true
+git commit -m "test(ci): auto-append ?shim=1 via Playwright fixture + import codemod" || echo "ℹ️  Nothing to commit."
+
+echo "✅ Done. Push when ready: git push"
+echo "▶️  Then run CI: npm run build && npx playwright test --project=chromium --grep \"@ci\" --reporter=line --trace on"
