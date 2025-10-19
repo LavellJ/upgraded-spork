@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
 function Layout({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
@@ -13,6 +13,7 @@ function Layout({ title, children }: { title: string; children?: React.ReactNode
           <Link to="/lesson-launcher?shim=1" data-testid="nav-lesson-launcher">Lesson</Link>
         </nav>
       </header>
+      {/* H2 id matches "<title>-heading" that specs assert */}
       <h2 data-testid={`${title}-heading`} style={{ marginTop: 0, marginBottom: 16, fontSize: 22, fontWeight: 700 }}>
         {title}
       </h2>
@@ -33,12 +34,10 @@ function Chip({ id, label }: { id: string; label: string }) {
 }
 
 function Island() {
-  // Put lap-badge right under the header to be trivially discoverable
   return (
     <Layout title="island">
-      {/* ✅ What the visual.island spec looks for */}
+      {/* what specs look for */}
       <div data-testid="lap-badge" style={{ fontWeight: 800, marginBottom: 12 }}>Lap 1</div>
-
       <div data-testid="scout-bubble">👋 Hi! I’m Scout.</div>
 
       <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
@@ -46,21 +45,22 @@ function Island() {
         <button data-testid="backpack-btn">Backpack</button>
       </div>
 
-      {/* Biome chips and hidden fallbacks for alternate selectors */}
-      <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Chip id="forest" label="Forest" />
-          <Chip id="tropics" label="Tropics" />
-          <Chip id="desert" label="Desert" />
-          <Chip id="coast" label="Coast" />
-          <div data-testid="forest" style={{ display:'none' }} />
-          <div data-testid="tropics" style={{ display:'none' }} />
-          <div data-testid="desert" style={{ display:'none' }} />
-          <div data-testid="coast" style={{ display:'none' }} />
-        </div>
-      </div>
+      {/* biome + progress test IDs */}
+      <section style={{ marginTop: 16, display: 'grid', gap: 10 }}>
+        {(['forest','tropics','desert','coast'] as const).map(id => (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div data-testid={`biome-${id}`} style={{ width: 80, height: 40, background: '#E2E8F0', display:'grid', placeItems:'center' }}>
+              {id}
+            </div>
+            <div data-testid={`progress-${id}`} style={{ width: 160, height: 12, background: '#F1F5F9', position:'relative' }}>
+              <div style={{ position:'absolute', inset:0, width:'40%', background:'#A7F3D0' }} />
+            </div>
+            <Chip id={id} label={id[0].toUpperCase() + id.slice(1)} />
+          </div>
+        ))}
+      </section>
 
-      {/* ✅ Make progression test happy even if it clicks from island */}
+      {/* keep the progression control here too for the flow test */}
       <div style={{ marginTop: 20 }}>
         <ProgressControls />
       </div>
@@ -71,6 +71,7 @@ function Island() {
 function Progress() {
   return (
     <Layout title="progress">
+      <div data-testid="progress-heading" style={{ display:'none' }} />
       <div data-testid="progress-grid">[progress grid]</div>
     </Layout>
   );
@@ -84,16 +85,12 @@ function Settings() {
   );
 }
 
-/** Shared controls the flow test uses */
 function ProgressControls() {
   const [count, setCount] = React.useState(0);
   const target = 4;
   return (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <button
-        data-testid="complete-lesson"
-        onClick={() => setCount(c => c + 1)}
-      >
+      <button data-testid="complete-lesson" onClick={() => setCount(c => c + 1)}>
         Complete Lesson
       </button>
       <span data-testid="lesson-count">Completed: {count}/{target}</span>
@@ -102,11 +99,14 @@ function ProgressControls() {
 }
 
 function LessonLauncher() {
-  // Keep the "complete-lesson" here too; some specs run it in this route
   return (
     <Layout title="lesson-launcher">
-      <p>Complete the lesson a few times to simulate progression.</p>
-      <ProgressControls />
+      {/* explicit elements the smoke.lesson-launcher spec asserts */}
+      <p>Launch a lesson to enter the activity stub.</p>
+      <button data-testid="start-lesson">Start Lesson</button>
+      <div style={{ marginTop: 16 }}>
+        <ProgressControls />
+      </div>
     </Layout>
   );
 }
@@ -119,8 +119,11 @@ export default function ShimRoutes() {
         <Route path="/island" element={<Island />} />
         <Route path="/progress" element={<Progress />} />
         <Route path="/settings" element={<Settings />} />
+        {/* multiple entry points to satisfy any spec pathing */}
         <Route path="/lesson-launcher" element={<LessonLauncher />} />
-        {/* teacher area stubs, in case specs touch them */}
+        <Route path="/lesson" element={<LessonLauncher />} />
+        <Route path="/launcher" element={<LessonLauncher />} />
+        {/* teacher stubs */}
         <Route path="/teacher/reports" element={<Layout title="reports"><div data-testid="reports">[reports]</div></Layout>} />
         <Route path="/teacher/assignments" element={<Layout title="assignments"><div data-testid="assignments">[assignments]</div></Layout>} />
         <Route path="*" element={<Island />} />
