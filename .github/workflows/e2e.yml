@@ -1,5 +1,8 @@
 name: e2e
-on: [push, pull_request]
+on:
+  push: { branches: [ main, master, ci/**, sprint-** ] }
+  pull_request:
+
 jobs:
   e2e:
     runs-on: ubuntu-22.04
@@ -8,10 +11,19 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20, cache: npm }
       - run: npm ci
-      - run: npm run build
-      - name: Install Playwright Chromium + system deps
+      - name: Install Playwright browsers (Chromium + deps)
         run: npx playwright install --with-deps chromium
-      - name: Preview app
-        run: npm run preview & npx wait-on http://127.0.0.1:4173
-      - name: Run @ci tests
-        run: npx playwright test --project=chromium --grep "@ci" --reporter=line --trace on
+      - name: Build app
+        run: npm run build
+      - name: Serve dist (static) & wait
+        env: { E2E_STATIC: "1" }
+        run: |
+          if [ -d ./client/dist/public ]; then DIST=./client/dist/public; elif [ -d ./client/dist ]; then DIST=./client/dist; else DIST=./dist/public; fi
+          npx http-server "$DIST" -p 4173 --silent & npx wait-on http://127.0.0.1:4173
+      - name: Run @ci tests (Chromium)
+        env: { E2E_STATIC: "1" }
+        run: npx playwright test --project=chromium --grep "@ci"
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: playwright-report, path: playwright-report }
