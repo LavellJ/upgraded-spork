@@ -1,23 +1,25 @@
-// playwright.config.ts
 import { defineConfig, devices } from "@playwright/test";
+
+const BASE = process.env.E2E_BASE_URL ?? "http://127.0.0.1:4173";
+const useStatic = process.env.E2E_STATIC === "1";
 
 export default defineConfig({
   testDir: "e2e",
-  reporter: [["line"], ["html", { open: "never" }]],
-  projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "webkit",   use: { ...devices["Desktop Safari"] } }, // good for Replit
-  ],
-  use: {
-    // Point all test navigations at the shimmed base.
-    // e.g. page.goto('/island') -> '/?shim=1/island' -> bootstrap normalizes to '/island?shim=1'
-    baseURL: "http://127.0.0.1:4173/?shim=1",
-    trace: "on-first-retry",
-  },
-  webServer: {
-    command: "npx vite preview --port 4173 --host 127.0.0.1 --strictPort",
-    url: "http://127.0.0.1:4173",
-    reuseExistingServer: true,
-    timeout: 60_000,
-  },
+  reporter: [["html", { open: "never" }]],
+  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  use: { baseURL: BASE },
+  webServer: useStatic
+    ? {
+        command:
+          'bash -lc "if [ -d ./client/dist/public ]; then DIST=./client/dist/public; elif [ -d ./client/dist ]; then DIST=./client/dist; else DIST=./dist/public; fi; npx http-server $DIST -p 4173 --silent"',
+        url: BASE,
+        reuseExistingServer: true,
+        timeout: 60_000,
+      }
+    : {
+        command: "npx vite preview --port 4173 --host 127.0.0.1 --strictPort",
+        url: BASE,
+        reuseExistingServer: true,
+        timeout: 60_000,
+      },
 });
