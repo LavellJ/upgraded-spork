@@ -10,12 +10,9 @@
     "dev": "vite --host 127.0.0.1 --port 5173",
     "build": "vite build",
     "preview": "vite preview --port 4173 --host 127.0.0.1 --strictPort",
-
     "pw:setup": "npx playwright install chromium",
-
     "test:ci": "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 playwright test --project=chromium --grep='@ci' --reporter=line --trace on",
     "ci:e2e": "npm run build && PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 playwright test --project=chromium --grep='@ci' --reporter=line --trace on",
-
     "serve:dist": "http-server dist/public -p 4173 --silent && wait-on http://127.0.0.1:4173"
   },
   "dependencies": {
@@ -28,7 +25,10 @@
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.0",
+    "autoprefixer": "^10.4.21",
     "http-server": "^14.1.1",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.18",
     "typescript": "^5.6.3",
     "vite": "^5.4.20",
     "wait-on": "^7.2.0"
