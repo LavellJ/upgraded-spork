@@ -1,3 +1,4 @@
+import './index.css';
 // client/src/main.tsx
 import React, { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
