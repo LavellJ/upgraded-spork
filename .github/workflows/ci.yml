@@ -1,93 +1,55 @@
-name: CI (a11y + @ci E2E)
-
+name: ci-matrix
 on:
   push:
-    branches:
-      - main
-      - master
-      - sprint-**
-      - ci/**
+    branches: [ main, master, sprint-**, ci/** ]
   pull_request:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  test:
-    name: ${{ matrix.lane }}
+  build-and-test:
     runs-on: ubuntu-22.04
-
     strategy:
       fail-fast: false
       matrix:
-        include:
-          # Lane 1: Accessibility against root (no shim)
-          - lane: a11y
-            serve_dist: false
-            base_url: "http://127.0.0.1:4173/"
-            grep: "a11y"
-            test_cmd: "npx playwright test e2e/a11y.spec.ts --project=chromium --reporter=line --trace on"
-
-          # Lane 2: @ci E2E against static dist with SPA routing + shim
-          - lane: e2e (@ci)
-            serve_dist: true
-            base_url: "http://127.0.0.1:4173/?shim=1"
-            grep: "@ci"
-            test_cmd: "npx playwright test --project=chromium --grep \"@ci\" --reporter=line --trace on"
-
-    env:
-      NODE_ENV: production
-      # The tests use BASE_URL in some helpers; we also pass it explicitly in the command.
-      E2E_BASE_URL: ${{ matrix.base_url }}
-      PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: "0"
-
+        lane: [ a11y, e2e ]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
       - name: Install deps
-        run: npm ci
+        run: npm ci || npm i
 
-      - name: Install Playwright (Chromium + system deps)
+      - name: Install Playwright (Chromium)
         run: npx playwright install --with-deps chromium
 
       - name: Build
         run: npm run build
 
-      - name: Verify build output
-        run: ls -la ./dist || true
-
-      # Serve production build only for the @ci E2E lane
-      - name: Serve static dist with SPA (shim-friendly)
-        if: ${{ matrix.serve_dist }}
+      - name: Serve static build (SPA)
         run: |
-          npx http-server dist/public -p 4173 --spa --silent &
-          npx wait-on ${{ matrix.base_url }}
+          DIST=""
+          if [ -d ./dist/public ]; then DIST=./dist/public; fi
+          if [ -d ./client/dist ]; then DIST=./client/dist; fi
+          if [ -z "$DIST" ]; then echo "No dist found" && ls -la && exit 1; fi
+          npx http-server "$DIST" -p 4173 --spa --silent &
+          npx wait-on http://127.0.0.1:4173
 
-      # For a11y lane we can also use vite preview (optional). If you prefer not to serve, delete this step.
-      - name: Serve with vite preview (a11y lane only)
-        if: ${{ matrix.lane == 'a11y' && !matrix.serve_dist }}
+      - name: Run lane
+        env:
+          PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: "1"
         run: |
-          npx vite preview --port 4173 --host 127.0.0.1 --strictPort &
-          npx wait-on http://127.0.0.1:4173/
+          if [ "${{ matrix.lane }}" = "a11y" ]; then
+            npx playwright test e2e/a11y.spec.ts --project=chromium --reporter=line --trace on
+          else
+            npx playwright test --project=chromium --grep "@ci" --reporter=line --trace on
+          fi
 
-      - name: Run tests — ${{ matrix.lane }}
-        run: ${{ matrix.test_cmd }}
-
-      # Upload artifacts on failure for easier debugging
-      - name: Upload Playwright report
+      - name: Upload traces on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.lane }}
-          path: |
-            playwright-report
-            test-results
-          if-no-files-found: ignore
+          name: playwright-traces-${{ matrix.lane }}
+          path: test-results/**/*.zip
