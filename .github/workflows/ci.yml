@@ -1,55 +1,131 @@
-name: ci-matrix
+name: CI (a11y + @ci E2E)
+
 on:
   push:
-    branches: [ main, master, sprint-**, ci/** ]
+    branches:
+      - main
+      - master
+      - sprint-**
+      - ci/**
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-and-test:
+  test:
+    name: ${{ matrix.lane }}
     runs-on: ubuntu-22.04
+
     strategy:
       fail-fast: false
       matrix:
-        lane: [ a11y, e2e ]
-    steps:
-      - uses: actions/checkout@v4
+        include:
+          # Lane 1: Accessibility against live preview (no shim)
+          - lane: a11y
+            serve_mode: "preview"            # use vite preview
+            serve_dist: false
+            sanity_paths: "/"                # minimal sanity; preview handles SPA itself
+            base_url: "http://127.0.0.1:4173/"
+            grep: "a11y"
+            test_cmd: "npx playwright test e2e/a11y.spec.ts --project=chromium --reporter=line --trace on"
 
-      - uses: actions/setup-node@v4
+          # Lane 2: @ci E2E against static dist with SPA routing + shim
+          - lane: e2e (@ci)
+            serve_mode: "static"             # use http-server --spa
+            serve_dist: true
+            sanity_paths: "/ /island?shim=1 /progress?shim=1 /settings?shim=1 /island/forest?e2e=1&shim=1 /teacher/assignments?shim=1"
+            base_url: "http://127.0.0.1:4173/?shim=1"
+            grep: "@ci"
+            test_cmd: "npx playwright test --project=chromium --grep \"@ci\" --reporter=line --trace on"
+
+    env:
+      NODE_ENV: production
+      E2E_BASE_URL: ${{ matrix.base_url }}
+      PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: "0"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
       - name: Install deps
-        run: npm ci || npm i
+        run: npm ci
 
-      - name: Install Playwright (Chromium)
+      - name: Install Playwright (Chromium + system deps)
         run: npx playwright install --with-deps chromium
 
       - name: Build
         run: npm run build
 
-      - name: Serve static build (SPA)
+      - name: Detect build output folder
+        id: dist
         run: |
-          DIST=""
-          if [ -d ./dist/public ]; then DIST=./dist/public; fi
-          if [ -d ./client/dist ]; then DIST=./client/dist; fi
-          if [ -z "$DIST" ]; then echo "No dist found" && ls -la && exit 1; fi
-          npx http-server "$DIST" -p 4173 --spa --silent &
-          npx wait-on http://127.0.0.1:4173
-
-      - name: Run lane
-        env:
-          PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: "1"
-        run: |
-          if [ "${{ matrix.lane }}" = "a11y" ]; then
-            npx playwright test e2e/a11y.spec.ts --project=chromium --reporter=line --trace on
+          if [ -d "./dist/public" ]; then
+            echo "dir=./dist/public" >> "$GITHUB_OUTPUT"
+          elif [ -d "./client/dist" ]; then
+            echo "dir=./client/dist" >> "$GITHUB_OUTPUT"
+          elif [ -d "./dist" ]; then
+            # fallback, some setups emit index.html directly under dist/
+            echo "dir=./dist" >> "$GITHUB_OUTPUT"
           else
-            npx playwright test --project=chromium --grep "@ci" --reporter=line --trace on
+            echo "❌ No build directory found (expected dist/public, dist, or client/dist)"; exit 1
           fi
+          echo "Detected build dir: $(cat $GITHUB_OUTPUT | sed -n 's/dir=//p')"
 
-      - name: Upload traces on failure
-        if: failure()
+      - name: List build dir
+        run: ls -la "${{ steps.dist.outputs.dir }}"
+
+      # Serve for a11y: vite preview (no shim, app routes naturally)
+      - name: Serve with vite preview (a11y)
+        if: ${{ matrix.serve_mode == 'preview' }}
+        run: |
+          npx vite preview --port 4173 --host 127.0.0.1 --strictPort &
+          npx wait-on http://127.0.0.1:4173/
+
+      # Serve for e2e: static HTTP server with SPA fallback (shim-friendly)
+      - name: Serve static dist with SPA (e2e)
+        if: ${{ matrix.serve_mode == 'static' }}
+        run: |
+          npx http-server "${{ steps.dist.outputs.dir }}" -p 4173 --spa --silent &
+          npx wait-on http://127.0.0.1:4173/
+
+      # Guardrail: ensure important routes return 200 before running Playwright
+      - name: Sanity-check routes
+        run: |
+          set -e
+          for path in ${{ matrix.sanity_paths }}; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:4173${path}")
+            echo "$code  ${path}"
+            if [ "$code" != "200" ]; then
+              echo "❌ Expected 200 for ${path}, got $code"; exit 1
+            fi
+          done
+
+      - name: Run tests — ${{ matrix.lane }}
+        env:
+          E2E_BASE_URL: ${{ matrix.base_url }}
+          PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: "1"
+        run: ${{ matrix.test_cmd }}
+
+      - name: Upload Playwright traces
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-traces-${{ matrix.lane }}
           path: test-results/**/*.zip
+          if-no-files-found: ignore
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.lane }}
+          path: playwright-report
+          if-no-files-found: ignore
