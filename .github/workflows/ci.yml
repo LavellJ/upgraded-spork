@@ -1,4 +1,4 @@
-name: CI (a11y + @ci E2E)
+ name: CI (a11y + @ci E2E)
 
 on:
   push:
@@ -18,11 +18,9 @@ jobs:
       matrix:
         include:
           - lane: a11y
-            serve_mode: vite
             base_url: "http://127.0.0.1:4173/"
             test_cmd: "npx playwright test e2e/a11y.spec.ts --project=chromium --reporter=line --trace on"
           - lane: e2e
-            serve_mode: static
             base_url: "http://127.0.0.1:4173/?shim=1"
             test_cmd: 'npx playwright test --project=chromium --grep "@ci" --reporter=line --trace on'
 
@@ -46,7 +44,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Try root build first
           if npm run -s build; then
             echo "✅ Built from repo root."
           elif [ -f client/package.json ]; then
@@ -79,24 +76,18 @@ jobs:
               break
             fi
           done
-
           if [ -z "$DIST" ]; then
-            echo "🔍 Could not find dist by heuristic; scanning…"
-            # last resort: find an index.html within 3 levels that looks like a build
+            echo "🔍 Scanning for built index.html…"
             FOUND=$(find . -maxdepth 4 -type f -name index.html | grep -E '/(dist|build)/' | head -n1 || true)
-            if [ -n "$FOUND" ]; then
-              DIST=$(dirname "$FOUND")
-            fi
+            if [ -n "$FOUND" ]; then DIST=$(dirname "$FOUND"); fi
           fi
-
           if [ -z "$DIST" ]; then
-            echo "❌ No build directory found. Listings for debugging:" >&2
+            echo "❌ No build directory found." >&2
             ls -la .
             ls -la dist || true
             ls -la client/dist || true
             exit 1
           fi
-
           echo "dir=$DIST" >> "$GITHUB_OUTPUT"
           echo "✅ Resolved dist dir: $DIST"
           ls -la "$DIST" | sed -n '1,120p'
@@ -113,7 +104,6 @@ jobs:
           elif [ -f "public/e2e-ci-shim.js" ]; then
             SRC="public/e2e-ci-shim.js"
           fi
-
           if [ -n "$SRC" ]; then
             cp "$SRC" "$DIST/e2e-ci-shim.js"
             echo "✅ Copied $SRC -> $DIST/e2e-ci-shim.js"
@@ -122,21 +112,11 @@ jobs:
           fi
           ls -la "$DIST" | sed -n '1,120p'
 
-      - name: Serve (vite preview) — a11y lane
-        if: ${{ matrix.serve_mode == 'vite' }}
+      - name: Serve build with vite preview
         shell: bash
         run: |
           set -euo pipefail
           npx vite preview --port 4173 --host 127.0.0.1 --strictPort &
-          npx wait-on "http://127.0.0.1:4173/"
-
-      - name: Serve (static SPA) — e2e lane
-        if: ${{ matrix.serve_mode == 'static' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          DIST="${{ steps.dist.outputs.dir }}"
-          npx http-server "$DIST" -p 4173 --spa --silent &
           npx wait-on "http://127.0.0.1:4173/"
 
       - name: Sanity-check — a11y lane
@@ -144,8 +124,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          code=$(curl -sS -L -H "Accept: text/html" -o /dev/null -w "%{http_code}" "http://127.0.0.1:4173/")
-          echo "$code  http://127.0.0.1:4173/"
+          url="http://127.0.0.1:4173/"
+          code=$(curl -sS -L -H "Accept: text/html" -o /dev/null -w "%{http_code}" "$url")
+          echo "$code  $url"
           [[ "$code" == 2* || "$code" == 3* ]]
 
       - name: Sanity-check — e2e lane
@@ -171,6 +152,8 @@ jobs:
           echo "✅ Sanity OK"
 
       - name: Run tests — ${{ matrix.lane }}
+        env:
+          E2E_BASE_URL: ${{ matrix.base_url }}
         run: ${{ matrix.test_cmd }}
 
       - name: Upload Playwright artifacts (on failure)
