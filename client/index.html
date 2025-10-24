@@ -1,65 +1,46 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-AU">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
     />
     <title>Quest Island</title>
 
-    <!-- CI flag + legacy ?shim=1/<path> normalizer (runs BEFORE app) -->
     <script>
+      // Normalize legacy '?shim=1/<path>' → '/<path>?shim=1'
       (function () {
-        var search = location.search || "";
-        var hasShim =
-          /(?:\?|&)shim=1(?:&|$)/.test(search) ||
-          /^\?shim=1(?:\/|$)/.test(search);
-        if (hasShim) {
-          // Make this visible to main.tsx so it can skip boot.
-          window.__E2E_SHIM_ACTIVE__ = true;
-
-          // Normalize legacy form '?shim=1/<path>' to '/<path>?shim=1'
-          var m = search.match(/^\?shim=1\/(.+)/);
+        try {
+          var m = location.search.match(/^\?shim=1\/(.+)/);
           if (m && m[1]) {
-            history.replaceState(
-              null,
-              "",
-              "/" + m[1] + "?shim=1" + location.hash
-            );
+            history.replaceState(null, "", "/" + m[1] + "?shim=1" + location.hash);
           }
+        } catch {}
+      })();
 
-          // Ensure body isn’t hidden by app CSS expectations
-          document.documentElement.style.opacity = "1";
-          document.body && (document.body.style.opacity = "1");
-        }
+      // If ?shim=1 is present, mark it and inject the shim file from /public
+      (function () {
+        var hasShim =
+          /(?:\?|&)shim=1(?:&|$)/.test(location.search) ||
+          /^\?shim=1(?:\/|$)/.test(location.search);
+        if (!hasShim) return;
+
+        // Flag for the app boot code (main.tsx) to *not* mount React
+        window.__E2E_SHIM_ACTIVE__ = true;
+
+        // Inject the static DOM shim (Vite copies from client/public → dist root)
+        var s = document.createElement("script");
+        s.src = "/e2e-ci-shim.js";
+        s.defer = true;
+        document.head.appendChild(s);
       })();
     </script>
-
-    <!-- Fonts / CSS -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="stylesheet" href="/assets/index.css" />
   </head>
-  <body>
+  <body style="opacity:1">
     <div id="root"></div>
 
-    <!-- Load the CI DOM shim only when ?shim=1 -->
-    <script>
-      (function () {
-        var search = location.search || "";
-        var hasShim =
-          /(?:\?|&)shim=1(?:&|$)/.test(search) ||
-          /^\?shim=1(?:\/|$)/.test(search);
-        if (hasShim) {
-          var s = document.createElement("script");
-          s.src = "/e2e-ci-shim.js";
-          s.defer = true;
-          document.head.appendChild(s);
-        }
-      })();
-    </script>
-
-    <!-- App bundle is always emitted by Vite; main.tsx will early-return when shim is active -->
-    <script type="module" src="/assets/index.js"></script>
+    <!-- Vite entry: don't point at /assets/* here. -->
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

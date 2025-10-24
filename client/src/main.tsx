@@ -1,60 +1,44 @@
 // client/src/main.tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import AppRouter from "./AppRouter";
 
-// ────────────────────────────────────────────────────────────────
-// CI SHIM EARLY EXIT
-// If we're on a ?shim=1 URL (or CI set the global flag), skip
-// booting the real app so the DOM shim can control #root.
-// ────────────────────────────────────────────────────────────────
 declare global {
   interface Window {
     __E2E_SHIM_ACTIVE__?: boolean;
   }
 }
 
-(function ensureHtmlLang() {
-  // Small a11y safety net: guarantee <html lang> exists
-  if (!document.documentElement.getAttribute("lang")) {
-    document.documentElement.setAttribute("lang", "en-AU");
-  }
-})();
+// Ensure <html lang> is present in all environments (helps a11y tests)
+if (!document.documentElement.getAttribute("lang")) {
+  document.documentElement.setAttribute("lang", "en-AU");
+}
 
-const search = typeof location !== "undefined" ? location.search || "" : "";
-const urlHasShim =
-  /(?:\?|&)shim=1(?:&|$)/.test(search) || /^\?shim=1(?:\/|$)/.test(search);
+// Detect CI shim mode:
+// - index.html sets window.__E2E_SHIM_ACTIVE__ when ?shim=1 is present
+// - we also defensively detect the query param directly
+const shimActive =
+  !!window.__E2E_SHIM_ACTIVE__ ||
+  /(?:\?|&)shim=1(?:&|$)/.test(location.search) ||
+  /^\?shim=1(?:\/|$)/.test(location.search);
 
-if (window.__E2E_SHIM_ACTIVE__ || urlHasShim) {
-  // Make sure page is visible in CI environments that hide body pre-boot
-  document.documentElement.style.opacity = "1";
-  if (document.body) document.body.style.opacity = "1";
-
-  // IMPORTANT: do NOT mount the app. Leave #root for the shim to populate.
-  // This keeps the test-ids deterministic for Playwright @ci tests.
+// If shim is active, don't boot the React app.
+// The static DOM shim (e2e-ci-shim.js) will render test markup instead.
+if (shimActive) {
+  // Make sure CI can see the page if any preboot CSS hides body
+  document.body.style.opacity = "1";
   // eslint-disable-next-line no-console
   console.log("[CI] Shim active — skipping React app boot.");
-  export {};
-}
-
-// ────────────────────────────────────────────────────────────────
-// NORMAL APP BOOT (runs only when shim is NOT active)
-// ────────────────────────────────────────────────────────────────
-import React from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App";
-import "./index.css";
-
-// Mount React app
-const rootEl = document.getElementById("root");
-if (!rootEl) {
-  // eslint-disable-next-line no-console
-  console.error(
-    '[boot] Could not find #root. Ensure <div id="root"></div> exists in index.html.'
-  );
 } else {
-  const root = createRoot(rootEl);
-  root.render(<App />);
-}
+  const rootEl = document.getElementById("root");
+  if (!rootEl) {
+    throw new Error('Root element "#root" not found');
+  }
 
-// Optional: HMR friendliness (safe no-op in prod)
-if (import.meta && (import.meta as any).hot) {
-  (import.meta as any).hot.accept?.();
+  ReactDOM.createRoot(rootEl).render(
+    <React.StrictMode>
+      <AppRouter />
+    </React.StrictMode>
+  );
 }
