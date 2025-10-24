@@ -45,8 +45,16 @@
 
     <div id="root"></div>
 
-    <!-- CI DOM shim: safe no-op unless ?shim=1 is present. Loads BEFORE the app bundle. -->
-    <script src="/e2e-ci-shim.js"></script>
+    <!-- Load shim only when ?shim=1 -->
+    <script>
+      (function () {
+        if (/[?&]shim=1(?:&|$)/.test(location.search)) {
+          var s = document.createElement("script");
+          s.src = "/e2e-ci-shim.js";
+          document.head.appendChild(s);
+        }
+      })();
+    </script>
 
     <!-- Main entry (Vite). The shim will skip/remove this when takeover is active. -->
     <script type="module" src="/src/main.tsx"></script>

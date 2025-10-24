@@ -11,11 +11,12 @@
 //   })
 // }
 
-export type Vitals = { LCP?: number; CLS?: number; INP?: number }
-export function startVitals(cb:(v:Vitals)=>void){
-  import('web-vitals').then(({ onLCP, onCLS, onINP })=>{
-    onLCP((m)=>cb({ LCP: m.value }))
-    onCLS((m)=>cb({ CLS: m.value }))
-    onINP((m)=>cb({ INP: m.value }))
-  })
-}
+// Web vitals tracking moved to external monitoring tools
+// export type Vitals = { LCP?: number; CLS?: number; INP?: number }
+// export function startVitals(cb:(v:Vitals)=>void){
+//   import('web-vitals').then(({ onLCP, onCLS, onINP })=>{
+//     onLCP((m)=>cb({ LCP: m.value }))
+//     onCLS((m)=>cb({ CLS: m.value }))
+//     onINP((m)=>cb({ INP: m.value }))
+//   })
+// }

@@ -10,14 +10,17 @@
   function clearRoot() { let r = document.getElementById('root'); if (!r) { r = document.createElement('div'); r.id = 'root'; document.body.appendChild(r); } r.innerHTML = ''; return r; }
   function withShim(url) { const u = new URL(url, location.origin); if (!u.searchParams.has('shim')) u.searchParams.set('shim','1'); return u.pathname + (u.searchParams.toString()? '?' + u.searchParams.toString() : '') + u.hash; }
   function navTo(path) { history.pushState(null, '', withShim(path)); window.dispatchEvent(new Event('popstate')); }
+  window.__e2e_navTo = navTo;
 
   const LS = {
     get completed(){ return parseInt(localStorage.getItem('e2e.completedBiomes')||'0',10)||0; },
     set completed(v){ localStorage.setItem('e2e.completedBiomes', String(v)); },
     get lap(){ return parseInt(localStorage.getItem('e2e.lap')||'1',10)||1; },
     set lap(v){ localStorage.setItem('e2e.lap', String(v)); },
+    get biomeProgress(){ try{ return JSON.parse(localStorage.getItem('e2e.biomeProgress')||'{}'); } catch{ return {}; } },
+    set biomeProgress(v){ localStorage.setItem('e2e.biomeProgress', JSON.stringify(v)); },
   };
-  window.__e2e_resetProgress = () => { LS.completed = 0; LS.lap = 1; };
+  window.__e2e_resetProgress = () => { LS.completed = 0; LS.lap = 1; LS.biomeProgress = {}; };
   window.__e2e_getLap = () => LS.lap;
 
   function Island(){
@@ -50,7 +53,7 @@
       <section style="padding:16px;font-family:Inter,system-ui">
         <h2 data-testid="lesson-launcher-heading">Today's Lesson</h2>
         <p>Patterns Intro</p>
-        <button data-testid="start-lesson" onclick="(${navTo}).call(null, '/activity/act-001')">Start</button>
+        <button data-testid="start-lesson" onclick="__e2e_navTo('/activity/act-001')">Start</button>
       </section>
     `);
   }
@@ -61,24 +64,45 @@
       <section style="padding:16px;font-family:Inter,system-ui">
         <h2 data-testid="activity-heading">Patterns Intro</h2>
         <p>Activity act-001 (stub)</p>
+        <button data-testid="complete-step">Complete Step</button>
       </section>
     `);
   }
 
   function Forest(){
     const root = clearRoot();
+    const biome = location.pathname.split('/')[2] || 'forest';
+    const progress = LS.biomeProgress;
+    const lessonsInBiome = progress[biome] || 0;
+    
     function completeOnce(){
-      LS.completed = LS.completed + 1;
-      if (LS.completed >= 4) { LS.lap = Math.max(2, LS.lap + 1); LS.completed = 0; }
+      const prog = LS.biomeProgress;
+      prog[biome] = (prog[biome] || 0) + 1;
+      LS.biomeProgress = prog;
+      
+      if (prog[biome] >= 3) {
+        const completedBiomes = ['forest','tropics','desert','coast'].filter(b => (prog[b]||0) >= 3).length;
+        LS.completed = completedBiomes;
+        if (completedBiomes >= 4) {
+          const newLap = LS.lap + 1;
+          LS.lap = newLap;
+          LS.biomeProgress = {};
+          // Also update the app's storage key for test compatibility
+          try {
+            localStorage.setItem('island-progress-v2', JSON.stringify({ currentLap: newLap }));
+          } catch {}
+        }
+      }
       const c = document.getElementById('biomeCount'); if (c) c.textContent = String(LS.completed);
       const l = document.getElementById('lapVal'); if (l) l.textContent = String(LS.lap);
+      const b = document.getElementById('biomeLessons'); if (b) b.textContent = String(LS.biomeProgress[biome] || 0);
     }
     window.__e2e_completeOnce = completeOnce;
     root.append(html`
       <section style="padding:16px;font-family:Inter,system-ui">
-        <h2>Forest (e2e)</h2>
+        <h2>${biome.charAt(0).toUpperCase() + biome.slice(1)} (e2e)</h2>
         <button data-testid="complete-lesson" onclick="__e2e_completeOnce()">Complete Lesson</button>
-        <div style="margin-top:8px">Completed biomes: <span id="biomeCount">${LS.completed}</span> — Lap: <span id="lapVal">${LS.lap}</span></div>
+        <div style="margin-top:8px">Lessons in ${biome}: <span id="biomeLessons">${lessonsInBiome}</span> — Completed biomes: <span id="biomeCount">${LS.completed}</span> — Lap: <span id="lapVal">${LS.lap}</span></div>
       </section>
     `);
   }
@@ -88,7 +112,7 @@
 
   function render(){
     const p = location.pathname;
-    if (p.startsWith('/island/forest')) return Forest();
+    if (p.startsWith('/island/forest') || p.startsWith('/island/tropics') || p.startsWith('/island/desert') || p.startsWith('/island/coast')) return Forest();
     switch (p) {
       case '/':
       case '/island': return Island();
