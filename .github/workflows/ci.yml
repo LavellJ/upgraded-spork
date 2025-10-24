@@ -22,28 +22,19 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Lane 1: Accessibility (served with vite preview; no shim)
+          # Lane 1: Accessibility (vite preview; no shim)
           - lane: a11y
             serve_mode: preview
-            sanity_paths: |
-              /
             base_url: "http://127.0.0.1:4173/"
             test_cmd: "npx playwright test e2e/a11y.spec.ts --project=chromium --reporter=line --trace on"
 
-          # Lane 2: @ci E2E (serve static dist with SPA + shim routes)
+          # Lane 2: @ci E2E (static dist + SPA + shim)
           - lane: e2e
             serve_mode: static
-            sanity_paths: |
-              /
-              /island?shim=1
-              /progress?shim=1
-              /settings?shim=1
-              /island/forest?e2e=1&shim=1
-              /teacher/assignments?shim=1
             base_url: "http://127.0.0.1:4173/?shim=1"
             test_cmd: "npx playwright test --project=chromium --grep \"@ci\" --reporter=line --trace on"
 
-    # NOTE: Don't force NODE_ENV=production here, or devDependencies (vite/http-server/wait-on) won't install.
+    # Do NOT force NODE_ENV=production here; we need dev deps (vite/http-server/wait-on)
     env:
       E2E_BASE_URL: ${{ matrix.base_url }}
       PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: "0"
@@ -58,7 +49,7 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Install deps (include dev deps)
+      - name: Install deps (includes dev deps)
         run: npm ci --include=dev
 
       - name: Install Playwright (Chromium + system deps)
@@ -88,35 +79,43 @@ jobs:
       # Serve for a11y lane with vite preview
       - name: Serve with vite preview (a11y)
         if: ${{ matrix.serve_mode == 'preview' }}
+        shell: bash
         run: |
           npx vite preview --port 4173 --host 127.0.0.1 --strictPort &
-          npx wait-on http://127.0.0.1:4173/
+          npx wait-on "http://127.0.0.1:4173/"
 
       # Serve for e2e lane with static http-server + SPA fallback
       - name: Serve static dist with SPA (e2e)
         if: ${{ matrix.serve_mode == 'static' }}
+        shell: bash
         run: |
           npx http-server "${{ steps.dist.outputs.dir }}" -p 4173 --spa --silent &
-          npx wait-on http://127.0.0.1:4173/
+          npx wait-on "http://127.0.0.1:4173/"
 
-      # Sanity-check a few routes; reads newline-separated paths safely (so & doesn't break the shell)
-      - name: Sanity-check routes
+      # Simple sanity checks (no '&' characters to keep YAML happy)
+      - name: Sanity-check (a11y)
+        if: ${{ matrix.lane == 'a11y' }}
         shell: bash
         run: |
           set -euo pipefail
-          while IFS= read -r path; do
-            [ -z "$path" ] && continue
+          for path in "/" ; do
             url="http://127.0.0.1:4173${path}"
             code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
             echo "$code  $url"
-            # Only enforce 200s in e2e (shim) lane; a11y lane only checks root
-            if [ "${{ matrix.lane }}" = "e2e" ] && [ "$code" != "200" ]; then
-              echo "Expected 200 for $url, got $code"
-              exit 1
-            fi
-          done <<'PATHS'
-${{ matrix.sanity_paths }}
-PATHS
+            [ "$code" = "200" ] || exit 1
+          done
+
+      - name: Sanity-check (e2e)
+        if: ${{ matrix.lane == 'e2e' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in "/" "/island?shim=1" "/progress?shim=1" "/settings?shim=1" "/teacher/assignments?shim=1" ; do
+            url="http://127.0.0.1:4173${path}"
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+            echo "$code  $url"
+            [ "$code" = "200" ] || exit 1
+          done
 
       - name: Run tests — ${{ matrix.lane }}
         env:
