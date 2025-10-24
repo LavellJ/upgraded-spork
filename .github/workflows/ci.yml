@@ -105,12 +105,12 @@ jobs:
           fi
           ls -la "$DIST" | sed -n '1,120p'
 
-      - name: Serve built app with SPA fallback
+      - name: Serve built app with SPA fallback (via `serve -s`)
         shell: bash
         run: |
           set -euo pipefail
           DIST="${{ steps.dist.outputs.dir }}"
-          npx http-server "$DIST" -p 4173 --spa --silent &
+          npx serve -s "$DIST" -l 4173 >/dev/null 2>&1 &
           npx wait-on "http://127.0.0.1:4173/"
 
       - name: Sanity-check — a11y lane
