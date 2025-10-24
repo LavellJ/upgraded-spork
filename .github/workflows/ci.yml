@@ -2,11 +2,7 @@ name: CI (a11y + @ci E2E)
 
 on:
   push:
-    branches:
-      - main
-      - master
-      - sprint-**
-      - ci/**
+    branches: [ main, master, 'sprint-**', 'ci/**' ]
   pull_request:
 
 concurrency:
@@ -17,26 +13,18 @@ jobs:
   test:
     name: ${{ matrix.lane }}
     runs-on: ubuntu-22.04
-
     strategy:
       fail-fast: false
       matrix:
         include:
-          # Lane 1: Accessibility (no shim). Served by vite preview.
           - lane: a11y
             serve_mode: vite
             base_url: "http://127.0.0.1:4173/"
             test_cmd: "npx playwright test e2e/a11y.spec.ts --project=chromium --reporter=line --trace on"
-          # Lane 2: @ci E2E against static dist with SPA routing (+ shim)
           - lane: e2e
             serve_mode: static
             base_url: "http://127.0.0.1:4173/?shim=1"
             test_cmd: 'npx playwright test --project=chromium --grep "@ci" --reporter=line --trace on'
-
-    env:
-      # Ensure devDependencies (vite, http-server, etc.) are installed on CI
-      # without relying on NODE_ENV hacks.
-      PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: "0"
 
     steps:
       - name: Checkout
@@ -48,32 +36,70 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Install dependencies (incl. dev)
+      - name: Install dependencies (root)
         run: npm ci --include=dev
 
       - name: Install Playwright (Chromium + system deps)
         run: npx playwright install --with-deps chromium
 
-      - name: Build (npx guarantees vite presence)
-        run: npx vite build
+      - name: Build app (root or fallback to client/)
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Try root build first
+          if npm run -s build; then
+            echo "✅ Built from repo root."
+          elif [ -f client/package.json ]; then
+            echo "ℹ️  Root build failed; trying client/…"
+            pushd client >/dev/null
+            npm ci --include=dev
+            npm run -s build
+            popd >/dev/null
+            echo "✅ Built from client/."
+          else
+            echo "❌ No build succeeded and no client/package.json found."
+            exit 1
+          fi
 
       - name: Locate build directory
         id: dist
         shell: bash
         run: |
           set -euo pipefail
-          # Prefer typical monorepo output first.
-          if [ -d "dist/public" ]; then
-            echo "dir=dist/public" >> "$GITHUB_OUTPUT"
-          elif [ -d "client/dist" ]; then
-            echo "dir=client/dist" >> "$GITHUB_OUTPUT"
-          elif [ -d "dist" ]; then
-            echo "dir=dist" >> "$GITHUB_OUTPUT"
-          else
-            echo "❌ No build directory found (tried dist/public, client/dist, dist)"; exit 1
+          CANDIDATES=(
+            "dist/public"
+            "client/dist/public"
+            "client/dist"
+            "dist"
+          )
+          DIST=""
+          for d in "${CANDIDATES[@]}"; do
+            if [ -d "$d" ] && [ -f "$d/index.html" ]; then
+              DIST="$d"
+              break
+            fi
+          done
+
+          if [ -z "$DIST" ]; then
+            echo "🔍 Could not find dist by heuristic; scanning…"
+            # last resort: find an index.html within 3 levels that looks like a build
+            FOUND=$(find . -maxdepth 4 -type f -name index.html | grep -E '/(dist|build)/' | head -n1 || true)
+            if [ -n "$FOUND" ]; then
+              DIST=$(dirname "$FOUND")
+            fi
           fi
-          echo "Resolved dist dir: ${{ steps.dist.outputs.dir }}"
-          ls -la "${{ steps.dist.outputs.dir }}"
+
+          if [ -z "$DIST" ]; then
+            echo "❌ No build directory found. Listings for debugging:" >&2
+            ls -la .
+            ls -la dist || true
+            ls -la client/dist || true
+            exit 1
+          fi
+
+          echo "dir=$DIST" >> "$GITHUB_OUTPUT"
+          echo "✅ Resolved dist dir: $DIST"
+          ls -la "$DIST" | sed -n '1,120p'
 
       - name: Ensure CI shim is in build output (e2e only)
         if: ${{ matrix.lane == 'e2e' }}
@@ -92,9 +118,8 @@ jobs:
             cp "$SRC" "$DIST/e2e-ci-shim.js"
             echo "✅ Copied $SRC -> $DIST/e2e-ci-shim.js"
           else
-            echo "⚠️  No e2e-ci-shim.js found in client/public or public (continuing)"
+            echo "⚠️  No e2e-ci-shim.js found (continuing)."
           fi
-
           ls -la "$DIST" | sed -n '1,120p'
 
       - name: Serve (vite preview) — a11y lane
@@ -110,7 +135,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx http-server "${{ steps.dist.outputs.dir }}" -p 4173 --spa --silent &
+          DIST="${{ steps.dist.outputs.dir }}"
+          npx http-server "$DIST" -p 4173 --spa --silent &
           npx wait-on "http://127.0.0.1:4173/"
 
       - name: Sanity-check — a11y lane
