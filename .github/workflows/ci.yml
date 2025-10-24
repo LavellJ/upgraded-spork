@@ -1,4 +1,4 @@
- name: CI (a11y + @ci E2E)
+name: CI (a11y + @ci E2E)
 
 on:
   push:
@@ -63,21 +63,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          CANDIDATES=(
-            "dist/public"
-            "client/dist/public"
-            "client/dist"
-            "dist"
-          )
+          CANDIDATES=( "dist/public" "client/dist/public" "client/dist" "dist" )
           DIST=""
           for d in "${CANDIDATES[@]}"; do
             if [ -d "$d" ] && [ -f "$d/index.html" ]; then
-              DIST="$d"
-              break
+              DIST="$d"; break
             fi
           done
           if [ -z "$DIST" ]; then
-            echo "🔍 Scanning for built index.html…"
             FOUND=$(find . -maxdepth 4 -type f -name index.html | grep -E '/(dist|build)/' | head -n1 || true)
             if [ -n "$FOUND" ]; then DIST=$(dirname "$FOUND"); fi
           fi
@@ -112,11 +105,12 @@ jobs:
           fi
           ls -la "$DIST" | sed -n '1,120p'
 
-      - name: Serve build with vite preview
+      - name: Serve built app with SPA fallback
         shell: bash
         run: |
           set -euo pipefail
-          npx vite preview --port 4173 --host 127.0.0.1 --strictPort &
+          DIST="${{ steps.dist.outputs.dir }}"
+          npx http-server "$DIST" -p 4173 --spa --silent &
           npx wait-on "http://127.0.0.1:4173/"
 
       - name: Sanity-check — a11y lane
