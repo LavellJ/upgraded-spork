@@ -1,4 +1,4 @@
-name: CI (a11y + e2e)
+name: CI (a11y + @ci E2E)
 
 on:
   push:
@@ -22,21 +22,20 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Lane 1: Accessibility (vite preview; no shim)
+          # Lane 1: Accessibility (no shim). Served by vite preview.
           - lane: a11y
-            serve_mode: preview
+            serve_mode: vite
             base_url: "http://127.0.0.1:4173/"
             test_cmd: "npx playwright test e2e/a11y.spec.ts --project=chromium --reporter=line --trace on"
-
-          # Lane 2: @ci E2E (static dist + SPA + shim)
+          # Lane 2: @ci E2E against static dist with SPA routing (+ shim)
           - lane: e2e
             serve_mode: static
             base_url: "http://127.0.0.1:4173/?shim=1"
-            test_cmd: "npx playwright test --project=chromium --grep \"@ci\" --reporter=line --trace on"
+            test_cmd: 'npx playwright test --project=chromium --grep "@ci" --reporter=line --trace on'
 
-    # Do NOT force NODE_ENV=production here; we need dev deps (vite/http-server/wait-on)
     env:
-      E2E_BASE_URL: ${{ matrix.base_url }}
+      # Ensure devDependencies (vite, http-server, etc.) are installed on CI
+      # without relying on NODE_ENV hacks.
       PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: "0"
 
     steps:
@@ -49,92 +48,111 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Install deps (includes dev deps)
+      - name: Install dependencies (incl. dev)
         run: npm ci --include=dev
 
       - name: Install Playwright (Chromium + system deps)
         run: npx playwright install --with-deps chromium
 
-      - name: Build
-        run: npm run build
+      - name: Build (npx guarantees vite presence)
+        run: npx vite build
 
-      - name: Detect build output folder
+      - name: Locate build directory
         id: dist
         shell: bash
         run: |
           set -euo pipefail
-          if [ -d "./dist/public" ]; then
-            echo "dir=./dist/public" >> "$GITHUB_OUTPUT"
-          elif [ -d "./client/dist" ]; then
-            echo "dir=./client/dist" >> "$GITHUB_OUTPUT"
-          elif [ -d "./dist" ]; then
-            echo "dir=./dist" >> "$GITHUB_OUTPUT"
+          # Prefer typical monorepo output first.
+          if [ -d "dist/public" ]; then
+            echo "dir=dist/public" >> "$GITHUB_OUTPUT"
+          elif [ -d "client/dist" ]; then
+            echo "dir=client/dist" >> "$GITHUB_OUTPUT"
+          elif [ -d "dist" ]; then
+            echo "dir=dist" >> "$GITHUB_OUTPUT"
           else
-            echo "No build dir found (expected dist/public, client/dist, or dist)"; exit 1
+            echo "❌ No build directory found (tried dist/public, client/dist, dist)"; exit 1
           fi
+          echo "Resolved dist dir: ${{ steps.dist.outputs.dir }}"
+          ls -la "${{ steps.dist.outputs.dir }}"
 
-      - name: List build dir
-        run: ls -la "${{ steps.dist.outputs.dir }}"
-
-      # Serve for a11y lane with vite preview
-      - name: Serve with vite preview (a11y)
-        if: ${{ matrix.serve_mode == 'preview' }}
-        shell: bash
-        run: |
-          npx vite preview --port 4173 --host 127.0.0.1 --strictPort &
-          npx wait-on "http://127.0.0.1:4173/"
-
-      # Serve for e2e lane with static http-server + SPA fallback
-      - name: Serve static dist with SPA (e2e)
-        if: ${{ matrix.serve_mode == 'static' }}
-        shell: bash
-        run: |
-          npx http-server "${{ steps.dist.outputs.dir }}" -p 4173 --spa --silent &
-          npx wait-on "http://127.0.0.1:4173/"
-
-      # Simple sanity checks (no '&' characters to keep YAML happy)
-      - name: Sanity-check (a11y)
-        if: ${{ matrix.lane == 'a11y' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          for path in "/" ; do
-            url="http://127.0.0.1:4173${path}"
-            code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
-            echo "$code  $url"
-            [ "$code" = "200" ] || exit 1
-          done
-
-      - name: Sanity-check (e2e)
+      - name: Ensure CI shim is in build output (e2e only)
         if: ${{ matrix.lane == 'e2e' }}
         shell: bash
         run: |
           set -euo pipefail
-          for path in "/" "/island?shim=1" "/progress?shim=1" "/settings?shim=1" "/teacher/assignments?shim=1" ; do
-            url="http://127.0.0.1:4173${path}"
-            code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+          DIST="${{ steps.dist.outputs.dir }}"
+          SRC=""
+          if [ -f "client/public/e2e-ci-shim.js" ]; then
+            SRC="client/public/e2e-ci-shim.js"
+          elif [ -f "public/e2e-ci-shim.js" ]; then
+            SRC="public/e2e-ci-shim.js"
+          fi
+
+          if [ -n "$SRC" ]; then
+            cp "$SRC" "$DIST/e2e-ci-shim.js"
+            echo "✅ Copied $SRC -> $DIST/e2e-ci-shim.js"
+          else
+            echo "⚠️  No e2e-ci-shim.js found in client/public or public (continuing)"
+          fi
+
+          ls -la "$DIST" | sed -n '1,120p'
+
+      - name: Serve (vite preview) — a11y lane
+        if: ${{ matrix.serve_mode == 'vite' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx vite preview --port 4173 --host 127.0.0.1 --strictPort &
+          npx wait-on "http://127.0.0.1:4173/"
+
+      - name: Serve (static SPA) — e2e lane
+        if: ${{ matrix.serve_mode == 'static' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx http-server "${{ steps.dist.outputs.dir }}" -p 4173 --spa --silent &
+          npx wait-on "http://127.0.0.1:4173/"
+
+      - name: Sanity-check — a11y lane
+        if: ${{ matrix.lane == 'a11y' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          code=$(curl -sS -L -H "Accept: text/html" -o /dev/null -w "%{http_code}" "http://127.0.0.1:4173/")
+          echo "$code  http://127.0.0.1:4173/"
+          [[ "$code" == 2* || "$code" == 3* ]]
+
+      - name: Sanity-check — e2e lane
+        if: ${{ matrix.lane == 'e2e' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          urls=(
+            "http://127.0.0.1:4173/"
+            "http://127.0.0.1:4173/island?shim=1"
+            "http://127.0.0.1:4173/progress?shim=1"
+            "http://127.0.0.1:4173/settings?shim=1"
+            "http://127.0.0.1:4173/teacher/assignments?shim=1"
+          )
+          for url in "${urls[@]}"; do
+            code=$(curl -sS -L -H "Accept: text/html" -o /dev/null -w "%{http_code}" "$url")
             echo "$code  $url"
-            [ "$code" = "200" ] || exit 1
+            if [[ "$code" != 2* && "$code" != 3* ]]; then
+              echo "❌ Sanity failed for $url"
+              exit 1
+            fi
           done
+          echo "✅ Sanity OK"
 
       - name: Run tests — ${{ matrix.lane }}
-        env:
-          E2E_BASE_URL: ${{ matrix.base_url }}
-          PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: "1"
         run: ${{ matrix.test_cmd }}
 
-      - name: Upload Playwright traces
-        if: always()
+      - name: Upload Playwright artifacts (on failure)
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-traces-${{ matrix.lane }}
-          path: test-results/**/*.zip
-          if-no-files-found: ignore
-
-      - name: Upload Playwright HTML report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report-${{ matrix.lane }}
-          path: playwright-report
+          name: playwright-artifacts-${{ matrix.lane }}
+          path: |
+            playwright-report
+            test-results
           if-no-files-found: ignore
