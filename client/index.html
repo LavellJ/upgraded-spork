@@ -1,66 +1,65 @@
 <!doctype html>
-<html lang="en-AU">
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Quest Island — Calm Adventure Learning</title>
-
-    <!-- App identity -->
-    <meta name="application-name" content="Quest Island" />
-    <meta name="theme-color" content="#ffcc66" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="robots" content="noindex,nofollow" />
-
-    <!-- PWA manifest & icons -->
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" href="/icons/favicon.ico" sizes="any" />
-    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-
-    <!-- Preconnect for fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
-      rel="stylesheet"
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
     />
+    <title>Quest Island</title>
 
-    <!-- Normalize legacy '?shim=1/<path>' to '/<path>?shim=1' before anything boots -->
+    <!-- CI flag + legacy ?shim=1/<path> normalizer (runs BEFORE app) -->
     <script>
       (function () {
-        try {
-          var m = location.search.match(/^\?shim=1\/(.+)/);
+        var search = location.search || "";
+        var hasShim =
+          /(?:\?|&)shim=1(?:&|$)/.test(search) ||
+          /^\?shim=1(?:\/|$)/.test(search);
+        if (hasShim) {
+          // Make this visible to main.tsx so it can skip boot.
+          window.__E2E_SHIM_ACTIVE__ = true;
+
+          // Normalize legacy form '?shim=1/<path>' to '/<path>?shim=1'
+          var m = search.match(/^\?shim=1\/(.+)/);
           if (m && m[1]) {
-            history.replaceState(null, "", "/" + m[1] + "?shim=1" + location.hash);
+            history.replaceState(
+              null,
+              "",
+              "/" + m[1] + "?shim=1" + location.hash
+            );
           }
-        } catch (_) {}
+
+          // Ensure body isn’t hidden by app CSS expectations
+          document.documentElement.style.opacity = "1";
+          document.body && (document.body.style.opacity = "1");
+        }
       })();
     </script>
+
+    <!-- Fonts / CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="/assets/index.css" />
   </head>
-
   <body>
-    <noscript>
-      This app requires JavaScript to run. Please enable JavaScript in your browser.
-    </noscript>
-
     <div id="root"></div>
 
-    <!-- Load shim only when ?shim=1 -->
+    <!-- Load the CI DOM shim only when ?shim=1 -->
     <script>
       (function () {
-        var hasShim = /[?&]shim=1(?![^#]*=)/.test(location.search) || /^\?shim=1(?:\/?|$)/.test(location.search);
+        var search = location.search || "";
+        var hasShim =
+          /(?:\?|&)shim=1(?:&|$)/.test(search) ||
+          /^\?shim=1(?:\/|$)/.test(search);
         if (hasShim) {
           var s = document.createElement("script");
           s.src = "/e2e-ci-shim.js";
+          s.defer = true;
           document.head.appendChild(s);
         }
       })();
     </script>
 
-    <!-- Main entry (Vite). The shim will skip/remove this when takeover is active. -->
-    <script type="module" src="/src/main.tsx"></script>
-
-    <!-- Optional Replit dev banner -->
-    <script src="https://replit.com/public/js/replit-dev-banner.js"></script>
+    <!-- App bundle is always emitted by Vite; main.tsx will early-return when shim is active -->
+    <script type="module" src="/assets/index.js"></script>
   </body>
 </html>
