@@ -22,26 +22,24 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Lane 1: Accessibility against live preview (no shim)
           - lane: a11y
-            serve_mode: "preview"            # use vite preview
+            serve_mode: "preview"
             serve_dist: false
-            sanity_paths: "/"                # minimal sanity; preview handles SPA itself
+            sanity_paths: "/"
             base_url: "http://127.0.0.1:4173/"
             grep: "a11y"
             test_cmd: "npx playwright test e2e/a11y.spec.ts --project=chromium --reporter=line --trace on"
 
-          # Lane 2: @ci E2E against static dist with SPA routing + shim
           - lane: e2e (@ci)
-            serve_mode: "static"             # use http-server --spa
+            serve_mode: "static"
             serve_dist: true
             sanity_paths: "/ /island?shim=1 /progress?shim=1 /settings?shim=1 /island/forest?e2e=1&shim=1 /teacher/assignments?shim=1"
             base_url: "http://127.0.0.1:4173/?shim=1"
             grep: "@ci"
             test_cmd: "npx playwright test --project=chromium --grep \"@ci\" --reporter=line --trace on"
 
+    # IMPORTANT: do NOT set NODE_ENV=production here, we need devDependencies (Vite)
     env:
-      NODE_ENV: production
       E2E_BASE_URL: ${{ matrix.base_url }}
       PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: "0"
 
@@ -55,8 +53,8 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Install deps
-        run: npm ci
+      - name: Install deps (include dev deps for Vite)
+        run: npm ci --include=dev
 
       - name: Install Playwright (Chromium + system deps)
         run: npx playwright install --with-deps chromium
@@ -72,31 +70,26 @@ jobs:
           elif [ -d "./client/dist" ]; then
             echo "dir=./client/dist" >> "$GITHUB_OUTPUT"
           elif [ -d "./dist" ]; then
-            # fallback, some setups emit index.html directly under dist/
             echo "dir=./dist" >> "$GITHUB_OUTPUT"
           else
             echo "❌ No build directory found (expected dist/public, dist, or client/dist)"; exit 1
           fi
-          echo "Detected build dir: $(cat $GITHUB_OUTPUT | sed -n 's/dir=//p')"
 
       - name: List build dir
         run: ls -la "${{ steps.dist.outputs.dir }}"
 
-      # Serve for a11y: vite preview (no shim, app routes naturally)
       - name: Serve with vite preview (a11y)
         if: ${{ matrix.serve_mode == 'preview' }}
         run: |
           npx vite preview --port 4173 --host 127.0.0.1 --strictPort &
           npx wait-on http://127.0.0.1:4173/
 
-      # Serve for e2e: static HTTP server with SPA fallback (shim-friendly)
       - name: Serve static dist with SPA (e2e)
         if: ${{ matrix.serve_mode == 'static' }}
         run: |
           npx http-server "${{ steps.dist.outputs.dir }}" -p 4173 --spa --silent &
           npx wait-on http://127.0.0.1:4173/
 
-      # Guardrail: ensure important routes return 200 before running Playwright
       - name: Sanity-check routes
         run: |
           set -e
