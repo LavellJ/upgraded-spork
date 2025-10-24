@@ -66,11 +66,12 @@
 
   function LessonLauncher() {
     var root = clearRoot(); if (!root) return;
+    window.__e2e_navTo = navTo;
     root.append(html`
       <section style="padding:16px;font-family:Inter,system-ui">
         <h2 data-testid="lesson-launcher-heading">Today's Lesson</h2>
         <p>Patterns Intro</p>
-        <button data-testid="start-lesson" onclick="(${navTo}).call(null, '/activity/act-001')">Start</button>
+        <button data-testid="start-lesson" onclick="window.__e2e_navTo('/activity/act-001')">Start</button>
       </section>
     `);
   }

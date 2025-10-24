@@ -48,7 +48,8 @@
     <!-- Load shim only when ?shim=1 -->
     <script>
       (function () {
-        if (/[?&]shim=1(?:&|$)/.test(location.search)) {
+        var hasShim = /[?&]shim=1(?![^#]*=)/.test(location.search) || /^\?shim=1(?:\/?|$)/.test(location.search);
+        if (hasShim) {
           var s = document.createElement("script");
           s.src = "/e2e-ci-shim.js";
           document.head.appendChild(s);
