@@ -25,7 +25,8 @@ jobs:
           - lane: a11y
             serve_mode: "preview"
             serve_dist: false
-            sanity_paths: "/"
+            sanity_paths: |
+              /
             base_url: "http://127.0.0.1:4173/"
             grep: "a11y"
             test_cmd: "npx playwright test e2e/a11y.spec.ts --project=chromium --reporter=line --trace on"
@@ -33,12 +34,18 @@ jobs:
           - lane: e2e (@ci)
             serve_mode: "static"
             serve_dist: true
-            sanity_paths: "/ /island?shim=1 /progress?shim=1 /settings?shim=1 /island/forest?e2e=1&shim=1 /teacher/assignments?shim=1"
+            sanity_paths: |
+              /
+              /island?shim=1
+              /progress?shim=1
+              /settings?shim=1
+              /island/forest?e2e=1&shim=1
+              /teacher/assignments?shim=1
             base_url: "http://127.0.0.1:4173/?shim=1"
             grep: "@ci"
             test_cmd: "npx playwright test --project=chromium --grep \"@ci\" --reporter=line --trace on"
 
-    # IMPORTANT: do NOT set NODE_ENV=production here, we need devDependencies (Vite)
+    # NOTE: Do NOT set NODE_ENV=production here; we need devDependencies (vite/http-server/wait-on)
     env:
       E2E_BASE_URL: ${{ matrix.base_url }}
       PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: "0"
@@ -53,7 +60,7 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Install deps (include dev deps for Vite)
+      - name: Install deps (include dev deps)
         run: npm ci --include=dev
 
       - name: Install Playwright (Chromium + system deps)
@@ -91,15 +98,20 @@ jobs:
           npx wait-on http://127.0.0.1:4173/
 
       - name: Sanity-check routes
+        shell: bash
         run: |
-          set -e
-          for path in ${{ matrix.sanity_paths }}; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:4173${path}")
-            echo "$code  ${path}"
+          set -euo pipefail
+          while IFS= read -r path; do
+            url="http://127.0.0.1:4173${path}"
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+            echo "$code  $url"
             if [ "$code" != "200" ]; then
-              echo "❌ Expected 200 for ${path}, got $code"; exit 1
+              echo "❌ Expected 200 for $url, got $code"
+              exit 1
             fi
-          done
+          done <<PATHS
+${{ matrix.sanity_paths }}
+PATHS
 
       - name: Run tests — ${{ matrix.lane }}
         env:
