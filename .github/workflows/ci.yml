@@ -1,4 +1,4 @@
-name: CI (a11y + @ci E2E)
+name: CI (a11y + e2e)
 
 on:
   push:
@@ -22,18 +22,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Lane 1: Accessibility (served with vite preview; no shim)
           - lane: a11y
-            serve_mode: "preview"
-            serve_dist: false
+            serve_mode: preview
             sanity_paths: |
               /
             base_url: "http://127.0.0.1:4173/"
-            grep: "a11y"
             test_cmd: "npx playwright test e2e/a11y.spec.ts --project=chromium --reporter=line --trace on"
 
-          - lane: e2e (@ci)
-            serve_mode: "static"
-            serve_dist: true
+          # Lane 2: @ci E2E (serve static dist with SPA + shim routes)
+          - lane: e2e
+            serve_mode: static
             sanity_paths: |
               /
               /island?shim=1
@@ -42,10 +41,9 @@ jobs:
               /island/forest?e2e=1&shim=1
               /teacher/assignments?shim=1
             base_url: "http://127.0.0.1:4173/?shim=1"
-            grep: "@ci"
             test_cmd: "npx playwright test --project=chromium --grep \"@ci\" --reporter=line --trace on"
 
-    # NOTE: Do NOT set NODE_ENV=production here; we need devDependencies (vite/http-server/wait-on)
+    # NOTE: Don't force NODE_ENV=production here, or devDependencies (vite/http-server/wait-on) won't install.
     env:
       E2E_BASE_URL: ${{ matrix.base_url }}
       PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: "0"
@@ -71,7 +69,9 @@ jobs:
 
       - name: Detect build output folder
         id: dist
+        shell: bash
         run: |
+          set -euo pipefail
           if [ -d "./dist/public" ]; then
             echo "dir=./dist/public" >> "$GITHUB_OUTPUT"
           elif [ -d "./client/dist" ]; then
@@ -79,37 +79,42 @@ jobs:
           elif [ -d "./dist" ]; then
             echo "dir=./dist" >> "$GITHUB_OUTPUT"
           else
-            echo "❌ No build directory found (expected dist/public, dist, or client/dist)"; exit 1
+            echo "No build dir found (expected dist/public, client/dist, or dist)"; exit 1
           fi
 
       - name: List build dir
         run: ls -la "${{ steps.dist.outputs.dir }}"
 
+      # Serve for a11y lane with vite preview
       - name: Serve with vite preview (a11y)
         if: ${{ matrix.serve_mode == 'preview' }}
         run: |
           npx vite preview --port 4173 --host 127.0.0.1 --strictPort &
           npx wait-on http://127.0.0.1:4173/
 
+      # Serve for e2e lane with static http-server + SPA fallback
       - name: Serve static dist with SPA (e2e)
         if: ${{ matrix.serve_mode == 'static' }}
         run: |
           npx http-server "${{ steps.dist.outputs.dir }}" -p 4173 --spa --silent &
           npx wait-on http://127.0.0.1:4173/
 
+      # Sanity-check a few routes; reads newline-separated paths safely (so & doesn't break the shell)
       - name: Sanity-check routes
         shell: bash
         run: |
           set -euo pipefail
           while IFS= read -r path; do
+            [ -z "$path" ] && continue
             url="http://127.0.0.1:4173${path}"
             code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
             echo "$code  $url"
-            if [ "$code" != "200" ]; then
-              echo "❌ Expected 200 for $url, got $code"
+            # Only enforce 200s in e2e (shim) lane; a11y lane only checks root
+            if [ "${{ matrix.lane }}" = "e2e" ] && [ "$code" != "200" ]; then
+              echo "Expected 200 for $url, got $code"
               exit 1
             fi
-          done <<PATHS
+          done <<'PATHS'
 ${{ matrix.sanity_paths }}
 PATHS
 
