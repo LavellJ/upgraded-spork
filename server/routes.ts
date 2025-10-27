@@ -1,6 +1,15 @@
 // server/routes.ts
 import type { Express, Request, Response, NextFunction } from "express";
 import { Router } from "express";
+import { StructuredLogger } from './log';
+
+// Extend Request interface to include custom properties
+declare module 'express' {
+  interface Request {
+    logger?: StructuredLogger;
+    startTime?: [number, number];
+  }
+}
 import { createServer, type Server } from "http";
 import { verifyToken, issueToken } from './auth';
 import { handleMagicLinkRequest, handleTokenVerification } from './magicAuth';
@@ -10,7 +19,7 @@ import { getCronJobStatus } from './cron';
 import { userStorage, type UserDoc } from './userStorage';
 import { dbUserStorage } from './dbStorage';
 import { auditLog, getAuditLogPath } from './audit';
-import { statements } from './db';
+import { statements, type ReferralRow } from './db';
 import fs from "fs";
 import path from "path";
 
@@ -180,7 +189,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Get referral from database
-      const referral = statements.getReferral.get(code);
+      const referral = statements.getReferral.get(code) as ReferralRow | undefined;
       
       if (!referral) {
         return res.status(404).send('Referral code not found');
@@ -306,12 +315,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Save updated document
     await saveUserDoc(userEmail, userDoc);
     
-    // Structured logging for sync operation
-    req.logger.sync('batch_sync', accepted, process.hrtime(req.startTime)[1] / 1000000, {
-      userId,
-      learnerId,
-      totalItems: items.length,
-    });
+    // Structured logging for sync operation  
+    const reqWithLogger = req as any;
+    if (reqWithLogger.logger && reqWithLogger.startTime) {
+      reqWithLogger.logger.sync('batch_sync', accepted, process.hrtime(reqWithLogger.startTime)[1] / 1000000, {
+        userId,
+        learnerId,
+        totalItems: items.length,
+      });
+    }
     
     // Audit log sync batch processing
     auditLog.syncBatch(userEmail, accepted, req.ip);

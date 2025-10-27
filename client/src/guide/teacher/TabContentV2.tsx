@@ -1,4 +1,7 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, lazy } from 'react'
+
+// Import DebugDashboard lazily for debug tab
+const DebugDashboard = lazy(() => import('@/pages/DebugDashboard'))
 
 // Import main panels that exist in the codebase
 import { Timeline } from '../Timeline'                             // from guide/Timeline.tsx
@@ -10,6 +13,7 @@ import Privacy from '../../settings/Privacy'                       // from setti
 import Appearance from '../../settings/Appearance'                  // from settings/Appearance.tsx
 import { InsightsCard } from '../InsightsCard'                      // from guide/InsightsCard.tsx
 import { Reports } from '../reports/Reports'                        // from guide/reports/Reports.tsx
+import { ReferralsPage } from '../../pages/ReferralsPage'           // from pages/ReferralsPage.tsx
 
 // Import missing components for complete coverage
 import { QuickStart } from '../../teacher/QuickStart'               // from teacher/QuickStart.tsx
@@ -62,403 +66,40 @@ function TimelineList() {
 
   const handleChangeTimeRange = () => {
     setLoading('time-range')
-    try {
-      const timeData = `=== TIME RANGE SELECTION ===
-
-📅 Available Time Periods:
-
-Current Selection: ${timeRange === '7d' ? 'Last 7 days' : timeRange === '30d' ? 'Last 30 days' : timeRange === '90d' ? 'Last 3 months' : 'Custom range'}
-
-Time Period Options:
-1. Last 7 days (detailed view)
-2. Last 30 days (current)
-3. Last 3 months (overview)
-4. This academic year
-5. Custom date range
-
-📊 Activity Summary for Current Range:
-• Lesson Events: ${activityData.lessons}
-• Journal Entries: ${activityData.journalEntries}
-• Scout Interactions: ${activityData.scoutInteractions}
-• Total Events: ${activityData.lessons + activityData.journalEntries + activityData.scoutInteractions}
-
-💡 Recommendations:
-• 7 days: Best for daily progress monitoring
-• 30 days: Ideal for monthly assessments
-• 3 months: Good for term progress reviews
-• Academic year: Complete learning journey overview
-
-Would you like to change the time range?`
-
-      const changeRange = confirm(timeData)
-      
-      if (changeRange) {
-        const newRange = prompt(`Select time range:
-
-1. Last 7 days
-2. Last 30 days  
-3. Last 3 months
-4. This academic year
-5. Custom range
-
-Enter option (1-5):`)
-        
-        if (newRange && ['1','2','3','4','5'].includes(newRange)) {
-          const ranges = ['7d', '30d', '90d', 'year', 'custom']
-          const labels = ['Last 7 days', 'Last 30 days', 'Last 3 months', 'This academic year', 'Custom range']
-          const selectedRange = ranges[parseInt(newRange) - 1]
-          const selectedLabel = labels[parseInt(newRange) - 1]
-          
-          setTimeRange(selectedRange)
-          
-          alert(`✅ Time Range Updated!
-
-New Range: ${selectedLabel}
-Applied to: All timeline views
-Refresh: Automatic
-
-The timeline will now show events from ${selectedLabel.toLowerCase()}. You'll see updated activity counts and progress metrics immediately.`)
-        }
-      }
-    } finally {
-      setLoading(null)
-    }
+    // Cycle through time ranges instead of popup
+    const ranges = ['7d', '30d', '90d', 'year']
+    const currentIndex = ranges.indexOf(timeRange)
+    const nextIndex = (currentIndex + 1) % ranges.length
+    setTimeRange(ranges[nextIndex])
+    setLoading(null)
   }
 
   const handleChangeFilter = () => {
     setLoading('filter')
-    try {
-      const filterData = `=== EVENT FILTER OPTIONS ===
-
-🔍 Current Filter: ${eventFilter === 'all' ? 'All Events' : eventFilter === 'lessons' ? 'Lessons Only' : eventFilter === 'journals' ? 'Journal Entries Only' : 'Scout Interactions Only'}
-
-Available Filters:
-1. All Events (show everything)
-2. Lessons Only (completions, attempts, scores)
-3. Journal Entries Only (reflections, writing)
-4. Scout Interactions Only (AI help, interventions)
-5. Learning Milestones (achievements, badges)
-6. Struggle Points (failed attempts, help requests)
-
-📈 Current Activity Breakdown:
-• Lesson Events: ${activityData.lessons} (${Math.round((activityData.lessons / (activityData.lessons + activityData.journalEntries + activityData.scoutInteractions)) * 100)}%)
-• Journal Entries: ${activityData.journalEntries} (${Math.round((activityData.journalEntries / (activityData.lessons + activityData.journalEntries + activityData.scoutInteractions)) * 100)}%)
-• Scout Interactions: ${activityData.scoutInteractions} (${Math.round((activityData.scoutInteractions / (activityData.lessons + activityData.journalEntries + activityData.scoutInteractions)) * 100)}%)
-
-🎯 Filter Use Cases:
-• All Events: Complete learning journey view
-• Lessons Only: Focus on curriculum progress
-• Journals: Review student reflection quality
-• Scout Interactions: Monitor AI assistance needs
-
-Would you like to change the event filter?`
-
-      const changeFilter = confirm(filterData)
-      
-      if (changeFilter) {
-        const newFilter = prompt(`Select event filter:
-
-1. All Events
-2. Lessons Only
-3. Journal Entries Only
-4. Scout Interactions Only
-5. Learning Milestones
-6. Struggle Points
-
-Enter option (1-6):`)
-        
-        if (newFilter && ['1','2','3','4','5','6'].includes(newFilter)) {
-          const filters = ['all', 'lessons', 'journals', 'scout', 'milestones', 'struggles']
-          const labels = ['All Events', 'Lessons Only', 'Journal Entries Only', 'Scout Interactions Only', 'Learning Milestones', 'Struggle Points']
-          const selectedFilter = filters[parseInt(newFilter) - 1]
-          const selectedLabel = labels[parseInt(newFilter) - 1]
-          
-          setEventFilter(selectedFilter)
-          
-          alert(`🔍 Filter Applied!
-
-Filter: ${selectedLabel}
-Active on: Timeline view
-Scope: ${timeRange === '7d' ? 'Last 7 days' : timeRange === '30d' ? 'Last 30 days' : 'Selected time range'}
-
-The timeline will now show only ${selectedLabel.toLowerCase()}. Use the time range selector to adjust the period being filtered.`)
-        }
-      }
-    } finally {
-      setLoading(null)
-    }
+    // Cycle through filters instead of popup
+    const filters = ['all', 'lessons', 'journals', 'scout']
+    const currentIndex = filters.indexOf(eventFilter)
+    const nextIndex = (currentIndex + 1) % filters.length
+    setEventFilter(filters[nextIndex])
+    setLoading(null)
   }
 
   const handleViewLessonEvents = () => {
     setLoading('lessons')
-    try {
-      const lessonData = `=== LESSON ACTIVITY TIMELINE ===
-
-📚 Lesson Events (${timeRange === '7d' ? 'Last 7 days' : timeRange === '30d' ? 'Last 30 days' : 'Selected period'}):
-
-Recent Lesson Completions:
-1. Mathematics: Fractions on Number Line
-   • Student: Emma Sullivan (Grade 3A)
-   • Completed: 2 hours ago
-   • Score: 94% (Excellent)
-   • Time: 8 minutes
-
-2. Literacy: Reading Comprehension - Narrative Text
-   • Student: Jack Liu (Grade 3A)
-   • Completed: 4 hours ago
-   • Score: 87% (Good)
-   • Time: 12 minutes
-
-3. Science: States of Matter Investigation
-   • Student: Sarah Mitchell (Grade 2B)
-   • Completed: Yesterday
-   • Score: 91% (Excellent)
-   • Time: 15 minutes
-
-📊 Lesson Summary Statistics:
-• Total Completions: ${activityData.lessons}
-• Average Score: 89%
-• Average Time: 11.5 minutes
-• Pass Rate: 94%
-• Most Popular: Mathematics lessons (42%)
-
-🎯 Performance Insights:
-• High performers: ${Math.floor(activityData.lessons * 0.35)} students (90%+ average)
-• On track: ${Math.floor(activityData.lessons * 0.55)} students (70-89%)
-• Need support: ${Math.floor(activityData.lessons * 0.1)} students (<70%)
-
-📈 Trending Topics:
-• Fractions: High engagement, good retention
-• Reading comprehension: Steady progress
-• Number operations: Some students struggling
-
-Would you like to view detailed lesson analytics or export this data?`
-
-      const viewDetails = confirm(lessonData)
-      
-      if (viewDetails) {
-        const action = prompt(`Lesson Events Actions:
-
-1. View individual student progress
-2. Generate lesson completion report
-3. Export CSV of all lesson data
-4. Identify students needing support
-5. View lesson difficulty analytics
-
-Enter option (1-5):`)
-        
-        if (action && ['1','2','3','4','5'].includes(action)) {
-          const actions = [
-            'Individual student progress viewer opened',
-            'Lesson completion report generated',
-            'CSV export of lesson data prepared',
-            'Support needed students identified',
-            'Lesson difficulty analytics displayed'
-          ]
-          
-          alert(`📊 Lesson Analytics Action
-
-Action: ${actions[parseInt(action) - 1]}
-Time Range: ${timeRange === '7d' ? 'Last 7 days' : timeRange === '30d' ? 'Last 30 days' : 'Selected range'}
-Data Points: ${activityData.lessons} lesson events
-
-${action === '3' ? 'CSV file will be downloaded with lesson completion data, scores, and time metrics.' : ''}
-${action === '4' ? 'Students with <70% average or multiple failed attempts have been flagged for intervention.' : ''}
-
-Navigate to the detailed analytics panel to explore this data further.`)
-        }
-      }
-    } finally {
-      setLoading(null)
-    }
+    // Navigation handled by Link component, not window.location
+    setLoading(null)
   }
 
   const handleViewJournalEntries = () => {
     setLoading('journals')
-    try {
-      const journalData = `=== JOURNAL ACTIVITY TIMELINE ===
-
-✍️ Student Journal Entries (${timeRange === '7d' ? 'Last 7 days' : timeRange === '30d' ? 'Last 30 days' : 'Selected period'}):
-
-Recent Journal Reflections:
-1. "My Learning Journey" - Maya Patel (Grade 2B)
-   • Written: 1 hour ago
-   • Topic: Mathematics reflection
-   • Length: 145 words
-   • Quality: Thoughtful and detailed
-
-2. "What I Discovered" - Alex Kumar (Grade 4C)
-   • Written: 3 hours ago
-   • Topic: Science experiment reflection
-   • Length: 203 words
-   • Quality: Creative and insightful
-
-3. "Reading Adventure" - Emma Sullivan (Grade 3A)
-   • Written: Yesterday
-   • Topic: Story comprehension
-   • Length: 127 words
-   • Quality: Clear understanding shown
-
-📊 Journal Activity Summary:
-• Total Entries: ${activityData.journalEntries}
-• Average Length: 156 words
-• Active Writers: ${Math.floor(activityData.journalEntries * 0.75)} students
-• Quality Score: 8.3/10 (Very Good)
-
-📝 Writing Development Trends:
-• Vocabulary Growth: +23% improvement
-• Expression Clarity: Strong progression
-• Critical Thinking: Increasing depth
-• Reflection Quality: Consistently improving
-
-🎯 Journal Insights:
-• Most Reflective: Science topics (45% of entries)
-• Engagement Level: High (94% completion rate)
-• Writing Confidence: Growing across all grades
-• Peer Interaction: Collaborative journaling successful
-
-📚 Popular Journal Topics:
-1. Science experiments and discoveries
-2. Mathematical problem-solving strategies
-3. Reading comprehension and story analysis
-4. Creative writing and imagination
-
-Would you like to review journal quality metrics or student writing development?`
-
-      const viewJournalDetails = confirm(journalData)
-      
-      if (viewJournalDetails) {
-        const journalAction = prompt(`Journal Analysis Options:
-
-1. Review individual student writing samples
-2. Generate writing development report
-3. Export journal entries for assessment
-4. View collaborative writing projects
-5. Analyze writing skill progression
-
-Enter option (1-5):`)
-        
-        if (journalAction && ['1','2','3','4','5'].includes(journalAction)) {
-          const journalActions = [
-            'Student writing portfolio opened for review',
-            'Writing development report with progress metrics generated',
-            'Journal entries exported for detailed assessment',
-            'Collaborative writing projects dashboard displayed',
-            'Writing skill progression analytics shown'
-          ]
-          
-          alert(`📝 Journal Analysis Complete
-
-Action: ${journalActions[parseInt(journalAction) - 1]}
-Entries Analyzed: ${activityData.journalEntries}
-Writing Quality: High engagement and thoughtful reflection
-
-${journalAction === '2' ? 'Report includes vocabulary growth, expression development, and critical thinking progression.' : ''}
-${journalAction === '3' ? 'Exported files include student reflections with metadata for assessment rubrics.' : ''}
-
-Use the writing analytics dashboard to track individual student progress and provide targeted feedback.`)
-        }
-      }
-    } finally {
-      setLoading(null)
-    }
+    // Navigation handled by Link component, not window.location
+    setLoading(null)
   }
 
   const handleViewScoutActivity = () => {
     setLoading('scout')
-    try {
-      const scoutData = `=== SCOUT AI ACTIVITY TIMELINE ===
-
-🧭 Scout Interventions (${timeRange === '7d' ? 'Last 7 days' : timeRange === '30d' ? 'Last 30 days' : 'Selected period'}):
-
-Recent Scout Interactions:
-1. Mathematics Support - Jack Liu (Grade 3A)
-   • Triggered: 45 minutes ago
-   • Issue: Struggling with fraction concepts
-   • Intervention: Step-by-step visual explanation
-   • Outcome: Student understanding improved
-
-2. Reading Encouragement - Oliver Chen (Grade 3A)
-   • Triggered: 2 hours ago
-   • Issue: Low confidence in reading aloud
-   • Intervention: Positive reinforcement + practice tips
-   • Outcome: Completed reading activity successfully
-
-3. Problem-Solving Guidance - Zoe Williams (Grade 2B)
-   • Triggered: Yesterday
-   • Issue: Stuck on multi-step word problem
-   • Intervention: Breaking down into smaller steps
-   • Outcome: Independent problem solving resumed
-
-🤖 Scout Activity Summary:
-• Total Interactions: ${activityData.scoutInteractions}
-• Success Rate: 91% (students improved after intervention)
-• Average Response Time: 2.3 seconds
-• Most Common: Mathematics support (38%)
-
-📊 Intervention Categories:
-• Concept Clarification: 34 interactions (38%)
-• Confidence Building: 27 interactions (30%)
-• Study Strategy Tips: 19 interactions (21%)
-• Error Correction: 9 interactions (11%)
-
-🎯 Scout Effectiveness Metrics:
-• Student Satisfaction: 94% positive feedback
-• Learning Continuity: 89% resumed activity after help
-• Teacher Workload: 67% reduction in basic questions
-• Personalization: 92% contextually relevant responses
-
-🏆 Scout Success Stories:
-• Mathematics: Helped 12 students master fractions
-• Reading: Boosted confidence for 8 struggling readers
-• Science: Guided 15 students through complex experiments
-• Problem-Solving: Taught strategies to 11 students
-
-⚡ Real-Time Scout Status:
-• Currently Active: Monitoring 24 students
-• Intervention Queue: 0 pending
-• Response Availability: 100%
-• Learning Context: Fully synchronized
-
-Would you like to review Scout intervention strategies or student feedback?`
-
-      const viewScoutDetails = confirm(scoutData)
-      
-      if (viewScoutDetails) {
-        const scoutAction = prompt(`Scout Analytics Options:
-
-1. Review intervention effectiveness
-2. View student feedback on Scout help
-3. Generate Scout impact report
-4. Analyze common struggle patterns
-5. Configure Scout intervention settings
-
-Enter option (1-5):`)
-        
-        if (scoutAction && ['1','2','3','4','5'].includes(scoutAction)) {
-          const scoutActions = [
-            'Intervention effectiveness dashboard opened with success metrics',
-            'Student feedback compilation showing Scout experience ratings',
-            'Scout impact report generated with learning outcome improvements',
-            'Common struggle patterns identified with suggested curriculum adjustments',
-            'Scout intervention settings panel opened for customization'
-          ]
-          
-          alert(`🧭 Scout Analytics Results
-
-Analysis: ${scoutActions[parseInt(scoutAction) - 1]}
-Interactions: ${activityData.scoutInteractions} total
-Success Rate: 91% effective interventions
-
-${scoutAction === '1' ? 'Data shows Scout interventions improve student outcomes in 91% of cases, with mathematics support being most successful.' : ''}
-${scoutAction === '4' ? 'Pattern analysis reveals fraction concepts and reading comprehension as primary challenge areas requiring curriculum reinforcement.' : ''}
-
-Scout AI continues learning from these interactions to provide increasingly personalized and effective student support.`)
-        }
-      }
-    } finally {
-      setLoading(null)
-    }
+    // Navigation handled by Link component, not window.location
+    setLoading(null)
   }
 
   const getDisplayRange = () => {
@@ -546,75 +187,15 @@ function ContentStudioList() {
   
   const handleBrowseLessons = () => {
     setLoading('browse')
-    try {
-      // Show available lessons and content
-      const lessonData = `=== CONTENT LIBRARY ===
-
-📚 Available Content:
-• Total Lessons: ${lessonCount}
-• Math: 15 lessons (Grades 1-6)
-• Literacy: 18 lessons (Reading & Writing)  
-• Science: 9 lessons (Nature & Experiments)
-
-🏞️ Biome Distribution:
-• Forest: 20 lessons (Foundation skills)
-• Desert: 12 lessons (Advanced concepts)
-• Ocean: 7 lessons (Exploration & Discovery)
-• Night: 3 lessons (Reflection & Review)
-
-📊 Content Status:
-✅ Published: 38 lessons
-⏳ Draft: 4 lessons
-🔍 Under Review: 0 lessons
-
-Click individual lessons to preview, edit metadata, or validate content quality.`
-
-      alert(lessonData)
-    } finally {
-      setLoading(null)
-    }
+    // Simple lesson count display without popup
+    setLoading(null)
   }
 
   const handleCreateLesson = () => {
     setLoading('create')
-    try {
-      // Interactive lesson creation dialog
-      const lessonType = prompt(`=== CREATE NEW LESSON ===
-
-Choose lesson type:
-
-1. Math Problem Solving
-2. Reading Comprehension  
-3. Science Experiment
-4. Creative Writing
-5. Critical Thinking
-6. Blank Template
-
-Enter number (1-6):`)
-      
-      if (lessonType && ['1','2','3','4','5','6'].includes(lessonType)) {
-        const types = ['Math Problem Solving', 'Reading Comprehension', 'Science Experiment', 'Creative Writing', 'Critical Thinking', 'Blank Template']
-        const selectedType = types[parseInt(lessonType) - 1]
-        
-        const lessonName = prompt(`Create ${selectedType} lesson:
-
-Enter lesson title:`)
-        
-        if (lessonName) {
-          setLessonCount(prev => prev + 1)
-          alert(`✨ New Lesson Created!
-
-Title: "${lessonName}"
-Type: ${selectedType}
-Status: Draft
-ID: lesson-${Date.now()}
-
-Your lesson has been added to the content library. You can now add activities, questions, and media assets.`)
-        }
-      }
-    } finally {
-      setLoading(null)
-    }
+    // Increment lesson count without popup
+    setLessonCount(prev => prev + 1)
+    setLoading(null)
   }
 
   const handleValidateContent = () => {
@@ -2420,8 +2001,11 @@ Last updated: ${new Date().toLocaleString()}`)}
 
 export default function TabContentV2({ tab }: Props) {
   
+  // Normalize legacy "dev" → "debug" for routing compatibility
+  const key = tab === "dev" ? "debug" : tab;
+  
   const body = (() => {
-    switch (tab) {
+    switch (key) {
       case 'timeline':     
         return <TimelineList />
       case 'assignments':  
@@ -2434,6 +2018,8 @@ export default function TabContentV2({ tab }: Props) {
         return <RosterList />
       case 'classes':      
         return <ClassesList />
+      case 'referrals':    
+        return <ReferralsPage />
       case 'privacy':      
         return <Privacy />
       case 'appearance':   
@@ -2454,6 +2040,12 @@ export default function TabContentV2({ tab }: Props) {
         return <QAPanel />
       case 'pilot':        
         return <PilotV3 />
+      case 'debug':
+        return (
+          <Suspense fallback={<div className="p-4 text-sm text-gray-500">Loading…</div>}>
+            <DebugDashboard />
+          </Suspense>
+        );
       case 'dev':          
         return <DevPanel />
       case 'overview':
@@ -2462,7 +2054,7 @@ export default function TabContentV2({ tab }: Props) {
       case undefined:      
         return <DashboardList />
       default:             
-        return <Missing name={tab} />
+        return <Missing name={key} />
     }
   })()
 

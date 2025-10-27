@@ -4,3 +4,17 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+# Local runtime data
+.data/
+.backups/
+
+# Database files
+data/*.db
+data/*.sqlite
+
+# Playwright artifacts
+playwright-report/
+test-results/
+
+# local backups
+package.json.bak

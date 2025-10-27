@@ -1,0 +1,175 @@
+Goal
+- Make Teacher Panel tabs use clean segment URLs: /teacher/<tab>
+- Keep backward compatibility with ?tab=<tab>
+- Normalize legacy "dev" → "debug"
+- Ensure clicking sidebar tabs updates the URL to /teacher/<tab>
+- Confirm /teacher/referrals and /teacher/debug both render correct panels
+
+Repo & Files
+- Repo root: ~/workspace
+- Primary file to edit: client/src/AppRouter.tsx
+- Existing components:
+  - TeacherLayoutV2 in "@/guide/teacher/TeacherLayoutV2"
+  - TabContentV2 in "@/guide/teacher/TabContentV2"
+  - HealthBadge, ErrorBoundary, Providers already used in router
+  - HeroLessonDemo, HeroLessonDemoIndex, PromptRunner already routed
+
+Tasks
+1) Open client/src/AppRouter.tsx.
+
+2) Implement a “TeacherPanelEntry” component that:
+   - Accepts wouter params { sub?: string }
+   - Derives tab from the first path segment after /teacher/ (params.sub split on "/")
+   - Falls back to `?tab=` query param if path segment is empty
+   - Normalizes "dev" → "debug"
+   - Renders:
+       <TeacherLayoutV2
+         activeTab={tab}
+         onTabChange={(next) => setLocation(`/teacher/${normalize(next)}`)}
+         onClose={() => window.history.back()}
+         renderContent={() => <TabContentV2 tab={tab} />}
+       />
+   - Optionally keeps `?tab=` synced via history.replaceState (idempotent and safe)
+
+3) Update routes to support both:
+   - /teacher/:sub* → TeacherPanelEntry
+   - /teacher → TeacherPanelEntry
+   - Keep legacy redirects:
+       /referrals → /teacher/referrals
+       /debug → /teacher/debug
+
+4) Ensure the top nav links already point to segment URLs:
+   - <Link href="/teacher/referrals" ...>
+   - <Link href="/teacher/debug" ...>
+
+5) Make the change idempotent:
+   - If TeacherPanelEntry exists, update it rather than duplicating.
+   - Do not add duplicate routes or imports.
+
+6) Build & Run:
+   - npm run build
+   - If env vars required, set:
+       export JWT_SECRET=devsecret
+       export APP_BASE_URL=http://localhost:5000
+   - Start unified server:
+       npx tsx server/index.ts
+
+7) Verify:
+   - Visit /teacher/debug → should render DebugDashboard (no redirect to referrals)
+   - Visit /teacher/referrals → should render ReferralsPage
+   - Visit /teacher?tab=debug → should also render DebugDashboard
+   - Click the "Debug" and "Referrals" sidebar tabs; URL should change to /teacher/<tab> and content should match
+   - Confirm API health widget in debug (if present) shows {"ok":true}
+
+8) If build fails because of path alias resolution for "@/...":
+   - Confirm tsconfig paths resolve "@/..." to "client/src"
+   - Otherwise adapt imports to relative paths without changing component behavior
+
+Deliverables
+- Brief summary of changes made (what was added/updated)
+- Exact code snippet(s) inserted/modified
+- Build logs summary
+- Verification results (URLs tested and outcomes)
+
+Reference Patch (apply if it matches current file layout; otherwise adapt):
+
+--- PATCH START ---
+*** Begin Patch
+*** Update File: client/src/AppRouter.tsx
+@@
+-import React, { useState } from 'react';
+-import { Route, Link, Redirect } from 'wouter';
++import React, { useState, useEffect } from 'react';
++import { Route, Link, Redirect, useLocation } from 'wouter';
+ import App from './App';
+ import { HeroLessonDemo, HeroLessonDemoIndex } from './pages/HeroLessonDemo';
+ import { PromptRunner } from './pages/PromptRunner';
+ import { HealthBadge } from './components/HealthBadge';
+ import { ErrorBoundary } from './components/ErrorBoundary';
+ import Providers from './Providers';
+ import { TeacherLayoutV2 } from './guide/teacher/TeacherLayoutV2';
+ import TabContentV2 from './guide/teacher/TabContentV2';
+ 
++// Helper to normalize/alias tab keys
++function normalizeTab(v?: string | null) {
++  const key = (v || '').trim().toLowerCase();
++  if (!key) return 'overview';
++  if (key === 'dev') return 'debug'; // legacy alias
++  return key;
++}
++
++// Entry that syncs URL <-> tab and supports both path & query param
++function TeacherPanelEntry({ params }: { params: { sub?: string } }) {
++  const [location, setLocation] = useLocation();
++  const fromPath = (params?.sub || '').split('/')[0] || '';
++  const qp = typeof window !== 'undefined'
++    ? new URLSearchParams(window.location.search).get('tab')
++    : null;
++  const tab = normalizeTab(fromPath || qp);
++
++  // Optional: keep ?tab synchronized for back-compat
++  useEffect(() => {
++    if (typeof window === 'undefined') return;
++    const sp = new URLSearchParams(window.location.search);
++    if (sp.get('tab') !== tab) {
++      sp.set('tab', tab);
++      const base = location.split('?')[0];
++      window.history.replaceState(null, '', `${base}?${sp.toString()}`);
++    }
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, [tab]);
++
++  return (
++    <TeacherLayoutV2
++      activeTab={tab}
++      onTabChange={(next) => {
++        const nextTab = normalizeTab(next);
++        setLocation(`/teacher/${nextTab}`);
++      }}
++      onClose={() => window.history.back()}
++      renderContent={() => <TabContentV2 tab={tab} />}
++    />
++  );
++}
++
+ export function AppRouter() {
+   return (
+     <ErrorBoundary>
+       <Providers>
+         <Route path="/hero-demo" component={HeroLessonDemoIndex} />
+         <Route path="/hero-demo/lesson" component={HeroLessonDemo} />
+         <Route path="/tools/prompts" component={PromptRunner} />
+-        {/* Teacher Panel Routes - nested routing handled inside TeacherLayoutV2 */}
+-        <Route path="/teacher/:sub*" component={TeacherPanelEntry} />
+-        
+-        {/* Redirect legacy routes to teacher panel */}
+-        <Route path="/referrals" component={() => <Redirect to="/teacher/referrals" />} />
+-        <Route path="/debug" component={() => <Redirect to="/teacher/debug" />} />
+-        
++        {/* Teacher panel: support both /teacher and /teacher/:sub* */}
++        <Route path="/teacher/:sub*" component={TeacherPanelEntry} />
++        <Route path="/teacher" component={TeacherPanelEntry} />
++        {/* Legacy redirects */}
++        <Route path="/referrals" component={() => <Redirect to="/teacher/referrals" />} />
++        <Route path="/debug" component={() => <Redirect to="/teacher/debug" />} />
++
+         <Route path="/" component={AppWithHeroAccess} />
+       </Providers>
+     </ErrorBoundary>
+   );
+ }
+*** End Patch
+--- PATCH END ---
+
+Run
+1) npm run build
+2) export JWT_SECRET=devsecret
+   export APP_BASE_URL=http://localhost:5000
+3) npx tsx server/index.ts
+
+Verify
+- /teacher/debug → renders DebugDashboard
+- /teacher/referrals → renders ReferralsPage
+- /teacher?tab=debug → also renders DebugDashboard
+- Clicking the "Debug" tab updates URL to /teacher/debug and shows debug content
+

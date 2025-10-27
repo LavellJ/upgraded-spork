@@ -1,0 +1,28 @@
+name: E2E Smoke
+
+on:
+  pull_request:
+  push:
+    branches: [ main, sprint-**, feat/**, chore/**, test/**, sprint-q-prompts ]
+
+jobs:
+  e2e-smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright (browsers + OS deps)
+        run: npx playwright install --with-deps
+
+      - name: Run smoke tests (chromium)
+        run: npx playwright test --project=chromium --reporter=line

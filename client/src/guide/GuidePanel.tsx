@@ -11,6 +11,7 @@ const Reports = lazy(() => import('./reports/Reports').then(m => ({ default: m.R
 const Assign = lazy(() => import('./AssignmentsManager').then(m => ({ default: m.AssignmentsManager })))
 const Learners = lazy(() => import('../components/RosterManagement').then(m => ({ default: m.RosterManagement })))
 const Classes = lazy(() => import('./Classes').then(m => ({ default: m.Classes })))
+const ReferralsPageLazy = lazy(() => import('../pages/ReferralsPage').then(m => ({ default: m.ReferralsPage })))
 const Settings = lazy(() => import('../settings/Appearance'))
 
 const TABS: TabItem[] = [
@@ -19,6 +20,7 @@ const TABS: TabItem[] = [
   { id: 'assign', label: 'Assignments' },
   { id: 'learners', label: 'Learners' },
   { id: 'classes', label: 'Classes' },
+  { id: 'referrals', label: 'Referrals' },
   { id: 'settings', label: 'Settings' },
 ]
 
@@ -53,13 +55,15 @@ export default function GuidePanel() {
           tab === 'reports' ? 'Trends' :
           tab === 'assign' ? 'Assignments' :
           tab === 'learners' ? 'Learners' :
-          tab === 'classes' ? 'Classes' : 'Settings'
+          tab === 'classes' ? 'Classes' :
+          tab === 'referrals' ? 'Referrals' : 'Settings'
         }
         subtitle={
           tab === 'reports' ? 'Analytics and growth metrics' :
           tab === 'assign' ? 'Manage due dates and paths' :
           tab === 'classes' ? 'Rosters, codes, and projector presets' :
-          tab === 'insights' ? 'Signals at a glance' : undefined
+          tab === 'insights' ? 'Signals at a glance' :
+          tab === 'referrals' ? 'Manage referral links and invitations' : undefined
         }
       />
       <SubTabs tabs={TABS} value={tab} onChange={setTab} />
@@ -70,6 +74,7 @@ export default function GuidePanel() {
           {tab === 'assign' && <Assign />}
           {tab === 'learners' && <Learners />}
           {tab === 'classes' && <Classes />}
+          {tab === 'referrals' && <ReferralsPageLazy />}
           {tab === 'settings' && <Settings />}
         </Suspense>
       </div>

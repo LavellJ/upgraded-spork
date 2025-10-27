@@ -1,0 +1,76 @@
+Goal: Make the Teacher Panel "Debug" tab render the actual dashboard (no more "panel not found").
+
+Context:
+- Repo root is ~/workspace
+- File to modify: client/src/guide/teacher/TabContentV2.tsx
+- Debug panel component is at @/pages/DebugDashboard (default export)
+- Router normalizes /teacher/dev → /teacher/debug. Inside TabContentV2 we also normalize "dev" → "debug" for safety.
+
+Tasks:
+
+1) Open client/src/guide/teacher/TabContentV2.tsx. Determine the rendering style:
+   - Style A: switch(tab)/switch(key)
+   - Style B: registry/map object (e.g., const PANELS = { ... } and render PANELS[tab])
+
+2) Add the lazy import for the debug dashboard at the top (only once):
+   - If there's already a React import, extend it to include lazy/Suspense.
+   - Add:
+     import React, { lazy, Suspense } from "react";
+     const DebugDashboard = lazy(() => import("@/pages/DebugDashboard"));
+
+   Ensure import order/format matches file style.
+
+3) Normalize legacy "dev" → "debug" inside the component before rendering:
+   - If the file computes a `key` from `tab`, set:
+       const key = tab === "dev" ? "debug" : tab;
+     and use `key` in the switch/map lookup instead of raw `tab`.
+   - If there is no key yet, introduce `const key = tab === "dev" ? "debug" : tab;`.
+
+4) Wire the "debug" panel, based on the file’s style:
+
+   Style A (switch):
+   - Add a new case in the switch:
+       case "debug":
+         return (
+           <Suspense fallback={<div className="p-4 text-sm text-gray-500">Loading…</div>}>
+             <DebugDashboard />
+           </Suspense>
+         );
+   - Keep existing fallback/default as-is.
+
+   Style B (registry/map):
+   - Register the "debug" entry:
+       debug: () => (
+         <Suspense fallback={<div className="p-4 text-sm text-gray-500">Loading…</div>}>
+           <DebugDashboard />
+         </Suspense>
+       ),
+   - Ensure the renderer uses `key` (not raw `tab`):
+       const Panel = PANELS[key];
+       return Panel ? <Panel /> : <Fallback keyName={key} />;
+
+5) Save the file. Make the change idempotent (don’t duplicate imports or cases/entries if re-run).
+
+6) Build the app:
+   - Run: npm run build
+   - If the unified server requires env vars, export safe dev defaults:
+       export JWT_SECRET=devsecret
+       export APP_BASE_URL=http://localhost:5000
+   - Start the unified server:
+       npx tsx server/index.ts
+
+7) Verify:
+   - Open /teacher/debug and confirm it renders the DebugDashboard (not the "panel not found" message).
+   - Click the "Debug" tab in the sidebar to confirm it updates URL to /teacher/debug and renders content.
+   - Also verify /teacher/referrals still works.
+
+8) If the build fails due to path resolution of "@/pages/DebugDashboard":
+   - Check for the actual location of DebugDashboard. In this repo it is client/src/pages/DebugDashboard.tsx and should be resolvable via "@/pages/DebugDashboard" (tsconfig paths). If not, switch the import to a relative path:
+       const DebugDashboard = lazy(() => import("../../pages/DebugDashboard"));
+   - Rebuild and re-verify.
+
+Deliverables:
+- A brief summary of what style was detected (switch or registry).
+- The exact code changes you applied (imports added/updated and the case/registry entry).
+- Build logs summary (success/failure).
+- Verification result (URLs tested and outcomes).

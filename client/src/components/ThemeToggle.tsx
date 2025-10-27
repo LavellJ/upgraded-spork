@@ -6,6 +6,21 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useTheme, type ThemeMode, type ContrastMode, type DensityMode } from '@/hooks/useTheme';
+import { isDark, setDark } from '../lib/theme';
+
+// Simple token-based light/dark toggle
+export function SimpleThemeToggle() {
+  const [dark, set] = React.useState(isDark());
+  return (
+    <button
+      className="px-3 py-2 rounded-lg border bg-surface"
+      style={{borderColor:`rgb(var(--border))`}}
+      onClick={() => { setDark(!dark); set(!dark); }}
+    >
+      {dark ? '🌙 Dark' : '☀️ Light'}
+    </button>
+  );
+}
 
 // Legacy ThemeToggle component for backwards compatibility
 export function ThemeToggle() {

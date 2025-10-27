@@ -1,0 +1,97 @@
+You are working in a Vite + Playwright project that already has a passing CI smoke lane. Please enforce and tidy the setup with the following exact actions. If a file already matches the target, skip writing it. After changes, show me a concise diff summary.
+
+1) Create/update file: e2e/helpers/ci.ts
+---8<---
+import type { Page } from '@playwright/test';
+
+/** CI-only body reveal to avoid timing flakes from hidden <body> during boot. */
+export async function forceRevealBodyIfCI(page: Page) {
+  if (process.env.CI) {
+    await page.addStyleTag({
+      content: 'body{visibility:visible!important;opacity:1!important}'
+    });
+  }
+}
+---8<---
+
+2) Update file: e2e/mocks/api.ts
+- Use process.cwd() to resolve fixtures.
+- Add broad regex routes for "assignments" and "reports.*trends".
+- Optional request/response logs only on CI.
+
+Target content:
+---8<---
+import { Page } from '@playwright/test';
+import fs from 'fs';
+import path from 'path';
+
+const fixturesDir = path.join(process.cwd(), 'e2e', 'fixtures');
+const read = (name: string) => fs.readFileSync(path.join(fixturesDir, name), 'utf-8');
+
+export async function installApiMocks(page: Page) {
+  if (process.env.CI) {
+    page.on('request', (r) => console.log('[req]', r.method(), r.url()));
+    page.on('response', (res) => console.log('[res]', res.status(), res.url()));
+  }
+
+  const assignments = read('assignments-list.json');
+  const trends = read('reports-trends.json');
+
+  await page.route(/assignments/i, async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: assignments });
+  });
+
+  await page.route(/reports.*trends/i, async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: trends });
+  });
+
+  await page.route('**/api/**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+  });
+}
+---8<---
+
+3) Ensure fixtures exist and include common title/name fields:
+- e2e/fixtures/assignments-list.json
+---8<---
+[
+  {"id":"a1","title":"Algebra Practice","name":"Algebra Practice","displayTitle":"Algebra Practice","dueAt":"2025-10-10T00:00:00Z","status":"assigned"},
+  {"id":"a2","title":"Reading Comprehension","name":"Reading Comprehension","displayTitle":"Reading Comprehension","dueAt":"2025-10-12T00:00:00Z","status":"assigned"}
+]
+---8<---
+
+- e2e/fixtures/reports-trends.json
+---8<---
+[
+  { "week": "2025-09-22", "activeUsers": 12, "correctRate": 0.72 },
+  { "week": "2025-09-29", "activeUsers": 15, "correctRate": 0.75 }
+]
+---8<---
+
+4) Update specs to use the CI helper:
+
+- e2e/smoke.spec.ts
+Insert:
+  import { forceRevealBodyIfCI } from './helpers/ci';
+After navigation + networkidle:
+  await forceRevealBodyIfCI(page);
+
+- e2e/visual.assignments.spec.ts
+Insert:
+  import { forceRevealBodyIfCI } from './helpers/ci';
+After navigation + networkidle:
+  await forceRevealBodyIfCI(page);
+
+5) Ensure .github/workflows/e2e.yml uses Vite preview with SPA fallback:
+- Keep name: e2e-ci-smoke
+- Start server with: npx vite preview --port 4173 --host 127.0.0.1 --strictPort &
+- Wait with: npx wait-on http://127.0.0.1:4173
+- Run: npx playwright test --project=chromium --grep "@ci" --reporter=line --trace on
+- Optional: add concurrency cancel-in-progress and upload artifacts on failure.
+
+6) (Optional) Add package.json script to mirror CI locally:
+Add or update:
+"ci:e2e": "playwright test --project=chromium --grep '@ci' --reporter=line --trace on"
+
+7) Do NOT run full E2E locally. If needed, set SKIP_E2E_LOCAL=1 to skip in this environment.
+8) Show a concise list of files changed with +/- line counts.

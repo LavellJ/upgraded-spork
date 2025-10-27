@@ -1,0 +1,54 @@
+import React from 'react';
+
+const ColorSwatch: React.FC<{name:string,varName:string}> = ({name,varName}) => (
+  <div className="rounded-lg shadow p-4 border border-[rgb(var(--border))] bg-surface">
+    <div className="h-12 w-full rounded" style={{backgroundColor: `rgb(var(${varName}))`}} />
+    <div className="mt-2 text-sm text-text">{name} <code className="text-text-muted">{varName}</code></div>
+  </div>
+);
+
+export default function Styleguide() {
+  const colors = [
+    ['Background','--bg'],['Bg Muted','--bg-muted'],['Surface','--surface'],['Surface Alt','--surface-alt'],
+    ['Text','--text'],['Text Muted','--text-muted'],
+    ['Brand','--brand'],['Brand Weak','--brand-weak'],['Accent','--accent'],
+    ['Success','--success'],['Warning','--warning'],['Danger','--danger'],
+    ['Border','--border'],['Ring','--ring']
+  ];
+
+  return (
+    <div className="max-w-container mx-auto px-6 py-10 space-y-10">
+      <header>
+        <h1 className="text-3xl font-semibold tracking-tight">Styleguide</h1>
+        <p className="text-text-muted">Tokens, type, and components</p>
+      </header>
+
+      <section>
+        <h2 className="text-xl font-medium mb-4">Colors</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {colors.map(([n,v]) => <ColorSwatch key={n} name={n} varName={v} />)}
+        </div>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-xl font-medium">Typography</h2>
+        <h1 className="text-4xl leading-tight tracking-tight">Display / H1 Heading</h1>
+        <h2 className="text-3xl leading-tight">H2 Heading</h2>
+        <h3 className="text-2xl leading-snug">H3 Heading</h3>
+        <p className="text-base leading-7 text-text">
+          Body text — comfortable line height for reading. <span className="text-text-muted">Muted text sample.</span>
+        </p>
+        <small className="text-sm text-text-muted">Caption / helper text</small>
+      </section>
+
+      <section>
+        <h2 className="text-xl font-medium mb-4">Buttons</h2>
+        <div className="flex gap-3">
+          <button className="px-4 py-2 rounded-lg bg-brand text-white shadow focus:outline-none focus:ring-2 focus:ring-[rgb(var(--ring))]">Primary</button>
+          <button className="px-4 py-2 rounded-lg bg-surfaceAlt text-text border" style={{borderColor: `rgb(var(--border))`}}>Secondary</button>
+          <button className="px-4 py-2 rounded-lg bg-accent text-black">Accent</button>
+        </div>
+      </section>
+    </div>
+  );
+}

@@ -33,6 +33,18 @@ export interface LogContext {
   duration?: number;
   statusCode?: number;
   method?: string;
+  feedbackId?: string;
+  kind?: string;
+  textLength?: number;
+  hasEmail?: boolean;
+  userAgent?: string;
+  classActive?: boolean;
+  timestamp?: string;
+  event?: string;
+  metric?: any;
+  sync?: any;
+  auth?: any;
+  [key: string]: any; // Allow any additional properties
 }
 
 /**

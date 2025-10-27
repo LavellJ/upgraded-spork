@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 test('SubTabs arrow navigation + aria-selected', async ({ page }) => {
-  await page.goto('/#/?guide&tab=insights')
+  await page.goto('/teacher/insights')
   const tablist = page.getByRole('tablist')
   await expect(tablist).toBeVisible()
   const tabs = await tablist.getByRole('tab').all()

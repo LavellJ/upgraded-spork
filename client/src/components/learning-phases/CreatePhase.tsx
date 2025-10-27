@@ -89,7 +89,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
       setCurrentDeliverable(prev => prev + 1);
     } else {
       // All deliverables completed, check if teach-back is enabled
-      if (createContent.teachBackMode.enabled) {
+      if (legacyContent?.teachBackMode?.enabled) {
         setShowTeachBack(true);
       }
     }
@@ -135,7 +135,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
     const teachBackArtifact: Artifact = {
       type: "text",
       content: teachBackResponse,
-      prompt: createContent.teachBackMode.scenario,
+      prompt: legacyContent?.teachBackMode?.scenario || "Teach Scout what you learned",
       timestamp: Date.now()
     };
     
@@ -412,7 +412,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
           {language.title}
         </h2>
         <p className="text-white/80 text-lg">
-          {createContent.title}
+          {legacyContent?.title || "Create Something Amazing"}
         </p>
         <p className="text-white/60 mt-2">
           {language.instruction}
@@ -427,7 +427,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
           </h3>
           
           <div className="grid gap-4">
-            {createContent.projectMissions.map((mission) => (
+            {(legacyContent?.projectMissions || []).map((mission) => (
               <motion.button
                 key={mission.id}
                 onClick={() => handleMissionSelect(mission.id)}
@@ -511,6 +511,7 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
                       value={textContent}
                       onChange={(e) => setTextContent(e.target.value)}
                       placeholder="Write your response here..."
+                      aria-label="Write your creative response"
                       className="w-full h-32 bg-white/10 border border-white/30 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:border-orange-400 focus:outline-none resize-none mb-4"
                       data-testid="text-creation-input"
                     />
@@ -598,13 +599,13 @@ export function CreatePhase({ content, ageGroup, sessionData, onPhaseComplete, p
             🎓 Teach Scout Mode
           </h3>
           <p className="text-white/80 mb-6">
-            {createContent.teachBackMode.scenario}
+            {legacyContent?.teachBackMode?.scenario || "Explain what you learned to Scout!"}
           </p>
           
           <textarea
             value={teachBackResponse}
             onChange={(e) => setTeachBackResponse(e.target.value)}
-            placeholder={ageGroup === "pre-primary" ? 
+            placeholder={(ageGroup as string) === "pre-primary" ? 
               "Tell Scout how to do it..." : 
               "Explain the concept to Scout..."
             }

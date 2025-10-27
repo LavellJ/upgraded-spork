@@ -1,0 +1,60 @@
+set -euo pipefail
+
+# 1) Ensure repo layout assumptions
+if [ ! -f client/src/main.tsx ]; then
+  echo "❌ Expected client/src/main.tsx not found. Aborting to avoid mangling files." >&2
+  exit 1
+fi
+mkdir -p e2e
+
+# 2) Prepend runtime lang patch to main.tsx (only once)
+if ! grep -q "document.documentElement.setAttribute('lang'" client/src/main.tsx; then
+  echo "🔧 Patching client/src/main.tsx with runtime lang safety..."
+  cat > /tmp/lang-patch.ts <<'TS'
+/* runtime lang safety — ensures <html lang> is present in all environments */
+if (!document.documentElement.getAttribute('lang')) {
+  document.documentElement.setAttribute('lang', 'en-AU');
+}
+TS
+  cat /tmp/lang-patch.ts client/src/main.tsx > /tmp/main.tsx && mv /tmp/main.tsx client/src/main.tsx
+else
+  echo "ℹ️  Runtime lang patch already present — skipping."
+fi
+
+# 3) Replace a11y test with stable Playwright + axe version
+cat > e2e/a11y.spec.ts <<'TS'
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+test('WCAG AA: app has no critical violations', async ({ page }) => {
+  await page.goto('http://127.0.0.1:4173/');
+  // Ensure app booted
+  await page.waitForSelector('#root', { state: 'attached' });
+  // Wait until lang is set (covers static and runtime patch)
+  await page.waitForFunction(() => !!document.documentElement.getAttribute('lang'));
+  const lang = await page.getAttribute('html', 'lang');
+  expect(lang, 'html must have a lang attribute').toBeTruthy();
+
+  const results = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa'])
+    .analyze();
+
+  if (results.violations.length) {
+    console.log('Accessibility violations:
+');
+    for (const v of results.violations) {
+      console.log(`- ${v.id}: ${v.help} (${v.impact})`);
+      for (const n of v.nodes) console.log(`  • ${n.target.join(' ')}`);
+    }
+  }
+
+  expect(results.violations.length, 'No WCAG A/AA violations').toBe(0);
+});
+TS
+
+echo "✅ Files updated. Creating commit..."
+
+git add client/src/main.tsx e2e/a11y.spec.ts || true
+git commit -m "fix(a11y): enforce <html lang> at runtime and stabilize axe test" || echo "ℹ️  Nothing to commit."
+
+echo "🎯 Done. Push changes when ready: git push"
