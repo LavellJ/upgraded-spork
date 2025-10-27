@@ -1,0 +1,25 @@
+name: a11y
+on:
+  push:
+    branches:
+      - main
+      - master
+      - sprint-**
+      - ci/**
+      - ci/smokelane
+  pull_request:
+
+jobs:
+  a11y:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Install Playwright browsers (Chromium)
+        run: npx playwright install --with-deps chromium
+      - name: Run a11y test (builds automatically if needed)
+        run: npx playwright test -c playwright.a11y.config.ts e2e/a11y.spec.ts

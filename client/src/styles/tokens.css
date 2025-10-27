@@ -1,0 +1,65 @@
+/* Design Tokens (CSS Variables) — semantic first */
+:root {
+  /* Base */
+  --bg: 246 247 250;       /* hsl-ish in rgb for tailwind rgb() use */
+  --bg-muted: 239 241 245;
+  --surface: 255 255 255;
+  --surface-alt: 247 249 252;
+  --text: 20 23 28;
+  --text-muted: 95 100 110;
+
+  /* Brand */
+  --brand: 28 177 201;     /* teal‑blue */
+  --brand-weak: 115 212 226;
+  --accent: 255 163 72;    /* campfire amber */
+  --success: 27 160 98;
+  --warning: 240 180 0;
+  --danger: 225 77 67;
+
+  /* UI */
+  --border: 221 226 233;
+  --ring: 28 177 201;
+
+  /* Radius */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-2xl: 32px;
+
+  /* Shadows */
+  --sh-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --sh-md: 0 4px 12px rgba(16, 24, 40, 0.08);
+  --sh-lg: 0 10px 24px rgba(16, 24, 40, 0.10);
+}
+
+/* Dark theme */
+.theme-dark {
+  --bg: 16 18 24;
+  --bg-muted: 24 28 36;
+  --surface: 22 26 34;
+  --surface-alt: 28 32 40;
+  --text: 234 238 244;
+  --text-muted: 158 164 176;
+
+  --brand: 90 210 230;
+  --brand-weak: 60 150 170;
+  --accent: 255 180 110;
+  --success: 66 193 135;
+  --warning: 245 201 71;
+  --danger: 239 119 111;
+
+  --border: 50 57 69;
+  --ring: 90 210 230;
+}
+
+/* Ambient tints — apply on the root container as classes
+   (combine with theme-light/dark: e.g., <div class="theme-dark ambient-dusk">) */
+.ambient-dawn { --ambient-overlay: 255 213 160; }
+.ambient-day { --ambient-overlay: 255 255 255; }
+.ambient-dusk { --ambient-overlay: 172 165 255; }
+.ambient-night { --ambient-overlay: 60 80 145; }
+
+/* Helpers */
+html, body, #root { background: rgb(var(--bg)); color: rgb(var(--text)); }

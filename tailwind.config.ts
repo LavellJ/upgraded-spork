@@ -1,7 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 export default {
-  darkMode: ['class', '[data-theme="dark"]'],
+  darkMode: ['class', '.theme-dark', '[data-theme="dark"]'],
   content: [
     './index.html',
     './client/src/**/*.{ts,tsx,js,jsx}',
@@ -9,19 +9,27 @@ export default {
   theme: {
     extend: {
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-        xl: '1rem',
-        '2xl': '1.25rem',
+        xs: 'var(--r-xs)',
+        sm: 'var(--r-sm)',
+        md: 'var(--r-md)',
+        lg: 'var(--r-lg)',
+        xl: 'var(--r-xl)',
+        '2xl': 'var(--r-2xl)',
+        // Legacy
+        DEFAULT: "var(--radius)",
       },
       boxShadow: {
+        sm: 'var(--sh-sm)',
+        DEFAULT: 'var(--sh-md)',
+        lg: 'var(--sh-lg)',
         card: '0 6px 18px rgba(0,0,0,.06)',
         'card-dark': '0 6px 18px rgba(0,0,0,.35)',
       },
       colors: {
         // mapped to CSS variables; do not hardcode in components
         bg: {
+          DEFAULT: 'rgb(var(--bg) / <alpha-value>)',
+          muted: 'rgb(var(--bg-muted) / <alpha-value>)',
           page: 'rgb(var(--bg-page))',
           card: 'rgb(var(--bg-card))',
           soft: 'rgb(var(--bg-soft))',
@@ -30,6 +38,14 @@ export default {
           // TP5 theme tokens
           base: 'rgb(var(--bg-base) / <alpha-value>)',
           elev: 'rgb(var(--bg-elev) / <alpha-value>)',
+        },
+        surface: {
+          DEFAULT: 'rgb(var(--surface) / <alpha-value>)',
+          alt: 'rgb(var(--surface-alt) / <alpha-value>)',
+        },
+        text: {
+          DEFAULT: 'rgb(var(--text) / <alpha-value>)',
+          muted: 'rgb(var(--text-muted) / <alpha-value>)',
         },
         fg: {
           DEFAULT: 'rgb(var(--fg-default))',
@@ -42,18 +58,23 @@ export default {
           base: 'rgb(var(--fg-base) / <alpha-value>)',
         },
         brand: {
-          DEFAULT: 'rgb(var(--brand))',
+          DEFAULT: 'rgb(var(--brand) / <alpha-value>)',
+          weak: 'rgb(var(--brand-weak) / <alpha-value>)',
           500: 'rgb(var(--brand-500) / <alpha-value>)',
           600: 'rgb(var(--brand-600) / <alpha-value>)',
           700: 'rgb(var(--brand-700) / <alpha-value>)',
           800: 'rgb(var(--brand-800) / <alpha-value>)',
         },
+        accent: 'rgb(var(--accent) / <alpha-value>)',
         border: 'rgb(var(--border) / <alpha-value>)',
+        ring: 'rgb(var(--ring) / <alpha-value>)',
         positive: 'rgb(var(--positive))',
-        warning: 'rgb(var(--warning))',
-        danger: 'rgb(var(--danger))',
-        // TP5 status tokens
-        success: { 500: 'rgb(var(--success-500) / <alpha-value>)' },
+        warning: 'rgb(var(--warning) / <alpha-value>)',
+        danger: 'rgb(var(--danger) / <alpha-value>)',
+        success: {
+          DEFAULT: 'rgb(var(--success) / <alpha-value>)',
+          500: 'rgb(var(--success-500) / <alpha-value>)',
+        },
         warn: { 500: 'rgb(var(--warn-500) / <alpha-value>)' },
         
         // Legacy shadcn/ui colors for compatibility
