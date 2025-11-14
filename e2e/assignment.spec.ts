@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Assignment Flow', () => {
   test('should apply assignment link, see chip, and have Compass choose assigned content', async ({ page }) => {

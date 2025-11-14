@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 const tabs = ['overview','quickstart','timeline','assignments','content','roster','classes','dashboard','studio','qa'];
 

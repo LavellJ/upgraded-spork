@@ -652,69 +652,8 @@ function AppContent(){
   useEffect(()=>{ try{localStorage.setItem(KEYS.proto,JSON.stringify(protoOnly));}catch{} },[protoOnly]);
   useEffect(()=>{ try{localStorage.setItem(KEYS.last,JSON.stringify(last));}catch{} },[last]);
 
-  // ---- Dev-only accessibility smoke checks (global singleton) ----
-  useEffect(() => {
-    if (!import.meta.env.DEV) return;
-    
-    // Global singleton pattern to prevent concurrent axe runs
-    const runAxeCheck = async (context = 'mount') => {
-      // Check if axe is already running globally
-      if ((window as any).__axeRunning) return;
-      (window as any).__axeRunning = true;
-      
-      try {
-        const axe = await import('axe-core');
-        
-        await new Promise(resolve => setTimeout(resolve, context === 'mount' ? 0 : 150));
-        
-        const results = await axe.default.run(document, {
-          runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] }
-        });
-        
-        if (results.violations.length) {
-          console.warn(`[a11y:${context}]`, results.violations);
-        }
-      } catch (err) {
-        console.error(`[a11y:${context}] Error running axe checks:`, err);
-      } finally {
-        (window as any).__axeRunning = false;
-      }
-    };
-    
-    // Run on initial mount
-    runAxeCheck('mount');
-  }, []);
-  
-  // ---- Run axe checks when overlays open/close ----
-  useEffect(() => {
-    if (!import.meta.env.DEV) return;
-    
-    const runDelayedAxeCheck = async () => {
-      // Check if axe is already running globally
-      if ((window as any).__axeRunning) return;
-      (window as any).__axeRunning = true;
-      
-      try {
-        const axe = await import('axe-core');
-        
-        await new Promise(resolve => setTimeout(resolve, 150));
-        
-        const results = await axe.default.run(document, {
-          runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] }
-        });
-        
-        if (results.violations.length) {
-          console.warn('[a11y:state-change]', results.violations);
-        }
-      } catch (err) {
-        console.error('[a11y:state-change] Error running axe checks:', err);
-      } finally {
-        (window as any).__axeRunning = false;
-      }
-    };
-    
-    runDelayedAxeCheck();
-  }, [showBP, showTeacher, showHelp, openBiome, player]);
+  // ---- Accessibility testing moved to Playwright E2E tests ----
+  // Production bundle stays clean; a11y checks run in CI with @axe-core/playwright
 
   // ---- Keyboard shortcuts ----
   useEffect(() => {

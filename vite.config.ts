@@ -1,45 +1,28 @@
-import { defineConfig } from 'vite'
-import { fileURLToPath, URL } from 'node:url'
-
-// Strip test files from the browser bundle
-function ignoreTestsPlugin() {
-  const TEST_RE = /(\.test|\.spec)\.[tj]sx?$/i
-  return {
-    name: 'ignore-tests-in-build',
-    enforce: 'pre' as const,
-    resolveId(source: string) {
-      if (
-        TEST_RE.test(source) ||
-        source.includes('__tests__/') ||
-        source.startsWith('client/test/') ||
-        source.includes('/test/')
-      ) return '\0ignore-test'
-      return null
-    },
-    load(id: string) {
-      if (id === '\0ignore-test') return 'export default {}'
-      return null
-    },
-  }
-}
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'node:path';
 
 export default defineConfig({
   root: 'client',
-  plugins: [ignoreTestsPlugin()],
+  plugins: [react()],
   resolve: {
-    alias: { '@': fileURLToPath(new URL('./client/src', import.meta.url)) },
-  },
-  build: {
-    target: 'es2022',
-    cssTarget: 'es2022',
-    outDir: '../dist/public',
-    sourcemap: false,
-    emptyOutDir: true,
-  },
-  // ⬇️ Override PostCSS so Vite does NOT load postcss.config.js in CI
-  css: {
-    postcss: {
-      plugins: [], // no external plugins needed for e2e smoke
+    alias: {
+      '@': path.resolve(__dirname, 'client/src'),
     },
   },
-})
+  server: {
+    host: true,
+    port: 5173,
+    allowedHosts: true,
+    hmr: { clientPort: 443 },
+  },
+  preview: {
+    host: true,
+    port: 4173,
+    allowedHosts: true,
+  },
+  build: {
+    outDir: '../dist/public',
+    emptyOutDir: true,
+  },
+});

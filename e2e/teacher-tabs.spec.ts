@@ -1,5 +1,5 @@
 // e2e/teacher-tabs.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test('debug via segment', async ({ page }) => {
   await page.goto('/teacher/debug');

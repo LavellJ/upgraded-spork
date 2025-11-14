@@ -1,13 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import './styles/tokens.css';
+@import './theme/tokens.css';
+@import './styles/geometric-shapes.css';
+@import './styles/print.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import "./styles/tokens.css";
-@import "./theme/tokens.css";
-@import "./styles/geometric-shapes.css";
-@import "./styles/print.css";
 
 /* TP6 List UI Helpers */
 .list-card   { @apply bg-bg-card border border-border rounded-2xl shadow-sm; }

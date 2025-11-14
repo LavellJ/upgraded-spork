@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Onboarding Flow', () => {
   test('should complete onboarding and see Compass tip', async ({ page }) => {

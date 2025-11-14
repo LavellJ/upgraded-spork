@@ -1,5 +1,5 @@
 // e2e/smoke.routes.spec.ts
-import { test, expect } from "@playwright/test";
+import { test, expect } from './fixtures';
 import { setUiPrefs, devLogin } from "./helpers/dev";
 import { forceRevealBodyIfCI } from "./helpers/ci";
 import { installApiMocks } from "./mocks/api";

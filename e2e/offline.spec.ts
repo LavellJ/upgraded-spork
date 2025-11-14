@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Offline Functionality', () => {
   test('should work offline and show offline banner', async ({ page, context }) => {

@@ -1,0 +1,53 @@
+set -euo pipefail
+
+# 1) Ensure file exists
+test -f client/src/App.tsx || { echo "❌ client/src/App.tsx not found"; exit 1; }
+
+# 2) Remove any direct 'axe-core' import and inline usage from App.tsx
+#    (non-destructive: creates a backup once)
+if ! [ -f client/src/App.tsx.bak ]; then cp client/src/App.tsx client/src/App.tsx.bak; fi
+# Drop import lines that reference axe-core or @axe-core/*
+sed -i '/from[[:space:]]\+["'\'']axe-core["'\''];\?$/d' client/src/App.tsx
+sed -i '/from[[:space:]]\+["'\'']@axe-core\/react["'\''];\?$/d' client/src/App.tsx
+sed -i '/import[[:space:]]\+["'\'']axe-core["'\''];\?$/d' client/src/App.tsx
+# Remove common inline calls like axe(...) if they exist
+sed -i '/axe(.*)/d' client/src/App.tsx
+
+# 3) (Optional but useful) Add a DEV-only, try/catch a11y hook using @axe-core/react.
+#    This will NOT run in production builds, so bundling stays clean.
+#    Only add if not already present.
+if ! grep -q "__DEV_A11Y_AXE_HOOK__" client/src/App.tsx; then
+  echo "🔧 Injecting optional dev-only axe hook (guarded) into App.tsx"
+  # Install the small helper (dev dep). Safe to install even if not used.
+  npm i -D @axe-core/react >/dev/null 2>&1 || true
+
+  # Insert right after the first React import block
+  awk '
+    BEGIN{done=0}
+    {
+      print $0
+      if (!done && $0 ~ /from .react[^\n]*;$/) {
+        print "\n// __DEV_A11Y_AXE_HOOK__: run axe only in dev; ignored in prod builds"
+        print "if (import.meta.env.DEV) {"
+        print "  (async () => {"
+        print "    try {"
+        print "      const ReactDOM = (await import(\"react-dom\")).default;"
+        print "      const axe = (await import(\"@axe-core/react\")).default;"
+        print "      // Run after a short delay so initial render completes"
+        print "      setTimeout(() => axe.default ? axe.default(React, ReactDOM, 1000) : axe(React, ReactDOM, 1000), 0);"
+        print "    } catch (_) { /* noop in environments without dev deps */ }"
+        print "  })();"
+        print "}"
+        done=1
+      }
+    }' client/src/App.tsx > /tmp/App.tsx && mv /tmp/App.tsx client/src/App.tsx
+fi
+
+# 4) Make sure tests use the Playwright axe runner (not the app bundle).
+#    (No file changes here if you already have @axe-core/playwright in e2e.)
+
+# 5) Try a clean build
+echo "🏗️  Building…"
+npm run build
+
+echo "✅ Build succeeded. Axe is no longer bundled; a11y stays in Playwright."

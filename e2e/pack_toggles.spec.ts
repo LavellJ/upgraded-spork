@@ -3,7 +3,7 @@
  * Tests pack management settings and new content badge system
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Content Pack Toggles and New Tags', () => {
   test.beforeEach(async ({ page }) => {
